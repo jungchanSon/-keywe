@@ -1,5 +1,5 @@
 ### 팀 노션
-https://www.notion.so/SSAFY-PJT-17a23efc8a32809cae48f248e9ad2058
+https://impossible-snout-9cd.notion.site/SSAFY-PJT-17a23efc8a32809cae48f248e9ad2058?pvs=4
 
 ### 피그마 와이어프레임
 ![alt text](image.png)
@@ -23,5 +23,5 @@ https://blog.naver.com/pham_cat/223726690583
 https://github.com/invent819/AOS_KakaoLogin
 
 #### 참고자료 정리
-https://www.notion.so/8c07e885028f4279b303cc0fe57e4bf9
-https://www.notion.so/b38ae3d7dd3b4085a0972d61277b425c
+https://impossible-snout-9cd.notion.site/8c07e885028f4279b303cc0fe57e4bf9?pvs=4
+https://impossible-snout-9cd.notion.site/b38ae3d7dd3b4085a0972d61277b425c?pvs=4
