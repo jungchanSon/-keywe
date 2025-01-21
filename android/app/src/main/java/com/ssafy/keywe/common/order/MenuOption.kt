@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -16,47 +18,55 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ssafy.keywe.R
+import com.ssafy.keywe.ui.theme.primaryColor
+import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
-fun OptionName(name: String) {
-
-}
-
-@Composable
-fun OptionPrice(price: Int) {
-
+fun Option(name: String) {
+    Text(
+        text = name,
+        style = subtitle1
+    )
 }
 
 @Composable
 fun OptionAmount(amount: Int) {
     Row(
-
+        modifier = Modifier
+            .width(88.dp)
+            .fillMaxHeight(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp),
             painter = painterResource(R.drawable.minus_circle),
-            contentDescription = ""
+            contentDescription = "minus in circle"
         )
-        Text("${amount}")
+        Text(
+            text = "${amount}",
+            style = subtitle1
+        )
         Image(
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp),
             painter = painterResource(R.drawable.plus_circle),
-            contentDescription = ""
+            contentDescription = "plus in circle"
         )
     }
 }
 
 @Composable
-fun OptionBox(name: String, price: Int, amount: Int) {
+fun OptionBox(name: String, amount: Int) {
     Box(
         modifier = Modifier
-            .width(312.dp)
-            .height(36.dp)
+            .fillMaxWidth()
+//            .fillMaxHeight()
+            .height(40.dp)
             .background(
                 color = whiteBackgroundColor,
                 shape = RoundedCornerShape(size = 8.dp)
@@ -65,12 +75,17 @@ fun OptionBox(name: String, price: Int, amount: Int) {
                 horizontal = 16.dp,
                 vertical = 8.dp
             )
+
     ) {
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-
+            Option(name)
+            OptionAmount(amount)
         }
     }
 }

@@ -34,7 +34,6 @@ fun MenuImage() {
             .background(color = whiteBackgroundColor),
         contentScale = ContentScale.Crop
     )
-
 }
 
 @Composable

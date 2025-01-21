@@ -19,11 +19,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ssafy.keywe.common.order.CartMenu
 import com.ssafy.keywe.common.order.HorizontalDivider
 import com.ssafy.keywe.common.order.Menu
 import com.ssafy.keywe.common.order.MenuCategoryScreen
+import com.ssafy.keywe.common.order.OptionBox
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.orangeColor
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,50 +68,64 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         HorizontalDivider()
-                        Column(
+//                        Column(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .fillMaxHeight()
+//                                .padding(horizontal = 16.dp)
+//                        ) {
+//                            Row(
+//                                modifier = Modifier
+//                                    .weight(1f)
+//                                    .fillMaxWidth()
+//                                    .fillMaxHeight(),
+//                                horizontalArrangement = Arrangement.spacedBy(
+//                                    0.dp,
+//                                    Alignment.CenterHorizontally
+//                                ),
+//                                verticalAlignment = Alignment.CenterVertically,
+//                            ) {
+//                                Box(modifier = Modifier.weight(1f)) {
+//                                    Menu("아메리카노", 2000)
+//                                }
+//                                Box(modifier = Modifier.weight(1f)) {
+//                                    Menu("카페라떼", 3000)
+//                                }
+//                            }
+//                            Row(
+//                                modifier = Modifier
+//                                    .weight(1f)
+//                                    .fillMaxWidth()
+//                                    .fillMaxHeight(),
+//                                horizontalArrangement = Arrangement.spacedBy(
+//                                    0.dp,
+//                                    Alignment.CenterHorizontally
+//                                ),
+//                                verticalAlignment = Alignment.CenterVertically,
+//                            ) {
+//                                Box(modifier = Modifier.weight(1f)) {
+//                                    Menu("바닐라라떼", 2500)
+//                                }
+//                                Box(modifier = Modifier.weight(1f)) {
+//                                    Menu("카페모카", 4000)
+//                                }
+//                            }
+//                        }
+//                        OptionAmount(amount = 3)
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                                    .fillMaxHeight(),
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    0.dp,
-                                    Alignment.CenterHorizontally
-                                ),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    Menu("아메리카노", 2000)
-                                }
-                                Box(modifier = Modifier.weight(1f)) {
-                                    Menu("카페라떼", 3000)
-                                }
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                                    .fillMaxHeight(),
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    0.dp,
-                                    Alignment.CenterHorizontally
-                                ),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Box(modifier = Modifier.weight(1f)) {
-                                    Menu("바닐라라떼", 2500)
-                                }
-                                Box(modifier = Modifier.weight(1f)) {
-                                    Menu("카페모카", 4000)
-                                }
+                                .padding(horizontal = 24.dp)
+                        ){
+                            Column {
+                                OptionBox("샷추가 +500", 1)
+                                HorizontalDivider()
+                                OptionBox(name = "시럽 추가", amount = 3)
                             }
                         }
-//                        OptionAmount(amount = 3)
+                        HorizontalDivider()
+                        CartMenu("아메리카노", "ICE, 얼음 많이", 1, 2000)
+                        HorizontalDivider()
+                        CartMenu("아메리카노", "ICE, 얼음 많이", 1, 2000)
                     }
                 }
             }
