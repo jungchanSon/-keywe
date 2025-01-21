@@ -9,3 +9,4 @@ spring:
     activate:
       on-profile: local
     import: secret/application-local.yml
+

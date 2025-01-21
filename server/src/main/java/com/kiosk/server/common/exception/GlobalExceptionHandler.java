@@ -1,6 +1,6 @@
 package com.kiosk.server.common.exception;
 
-import com.kiosk.server.common.exception.custom.EntityNotFoundException;
+import com.kiosk.server.common.exception.custom.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,30 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+	@ExceptionHandler(JwtValidationException.class)
+	public ResponseEntity<ErrorResponse> handleJwtValidationException(JwtValidationException e) {
+		ErrorResponse response = new ErrorResponse(e.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(InvalidProfileRoleException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidProfileRoleException(InvalidProfileRoleException e) {
+		ErrorResponse response = new ErrorResponse(e.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
+		ErrorResponse response = new ErrorResponse(e.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(InvalidFormatException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException e) {
+		ErrorResponse response = new ErrorResponse(e.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
 
 	@ExceptionHandler(EntityNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleException(EntityNotFoundException e) {
