@@ -114,7 +114,7 @@ fun Greeting(
 
         BottomButton(content = "호출", onClick = {
             scope.launch {
-                viewModel.test()
+                viewModel.loginMITI()
             }
         })
     }

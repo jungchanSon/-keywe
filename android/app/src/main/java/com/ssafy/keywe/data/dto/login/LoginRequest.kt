@@ -14,3 +14,12 @@ data class LoginRequest(
     @SerialName("id") val id: String,
     @SerialName("password") val password: String,
 )
+
+
+@Serializable
+data class MITILoginRequest(
+    @SerialName("email")
+    val email:String,
+    @SerialName("password")
+    val password:String,
+)
