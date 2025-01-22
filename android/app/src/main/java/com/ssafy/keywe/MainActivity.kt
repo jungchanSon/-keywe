@@ -4,14 +4,30 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ssafy.keywe.common.app.BottomButton
+import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.app.DefaultDialog
+import com.ssafy.keywe.common.app.DefaultModalBottomSheet
+import com.ssafy.keywe.common.app.DefaultTextFormField
 import com.ssafy.keywe.ui.theme.KeyWeTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,10 +35,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KeyWeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    topBar = { DefaultAppBar(title = "타이틀") }, modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
                     Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                        name = "Android", modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
@@ -30,12 +47,62 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+    var isShowDialog: Boolean by remember { mutableStateOf(false) }
+    var isShowModal: Boolean by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
+
+    val sheetState = rememberModalBottomSheetState()
+
+    val scope = rememberCoroutineScope()
+    Column() {
+        Text(text = "Hello $name!", modifier = modifier.clickable {
+            isShowDialog = !isShowDialog
+        })
+        BottomButton(content = "show Modal", onClick = {
+            isShowModal = true
+        })
+        if (isShowDialog) {
+            DefaultDialog(
+                title = "title", description = "description",
+                onCancel = {
+                    isShowDialog = false
+                },
+                onConfirm = {
+                    isShowDialog = false
+                },
+            )
+        }
+        if (isShowModal) {
+
+            DefaultModalBottomSheet(content = {
+                Text("텍스트텍스트")
+            }, sheetState = sheetState, onDismissRequest = {
+                isShowModal = false
+            }) {
+                Row {
+                    BottomButton(onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                        }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                isShowModal = false
+                            }
+                        }
+
+                    }, content = "버튼")
+                }
+            }
+        }
+
+        DefaultTextFormField(
+            label = "라벨",
+            placeholder = "placeholder",
+            text = text,
+            onValueChange = { text = it })
+    }
 }
 
 @Preview(showBackground = true)
