@@ -1,4 +1,4 @@
 /build
 
 # IDE
-*.idea
+/.idea

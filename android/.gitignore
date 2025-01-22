@@ -233,7 +233,7 @@ crashlytics-build.properties
 fabric.properties
 
 # IDE
-*.idea
+/.idea
 
 ### AndroidStudio Patch ###
 
