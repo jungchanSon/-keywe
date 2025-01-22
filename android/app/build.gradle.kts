@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlinSerialization)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -42,6 +45,31 @@ android {
 dependencies {
     implementation(libs.androidx.material)
 
+    implementation(libs.navigation.compose)
+
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.serialization.converter)
+    implementation(libs.converter.scalars)
+
+    // Kotlinx-Serialization
+    implementation(libs.kotlinx.serialization.json)
+    // OkHttp
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+
+    // Lifecycle
+    implementation(libs.lifecycle.viewmodel)
+
+    //hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+//    implementation(libs.hilt.android)
+//    kapt(libs.dagger.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,4 +88,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
+}
+
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
