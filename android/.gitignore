@@ -234,6 +234,7 @@ fabric.properties
 
 # IDE
 /.idea
+.idea/
 
 ### AndroidStudio Patch ###
 
