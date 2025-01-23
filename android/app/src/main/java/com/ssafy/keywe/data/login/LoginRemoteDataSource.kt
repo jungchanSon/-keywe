@@ -8,10 +8,10 @@ import com.ssafy.keywe.data.dto.login.MITIResponse
 import javax.inject.Inject
 
 class LoginRemoteDataSource @Inject
-constructor(private val loginApiService: LoginApiService) : LoginDataSource {
+constructor(private val loginService: LoginService) : LoginDataSource {
     override suspend fun requestLogin(loginRequest: MITILoginRequest):
             ResponseResult<MITIResponse<MITILoginResponse>> =
         handleApiResponse {
-            loginApiService.loginMiti(loginRequest)
+            loginService.loginMiti(loginRequest)
         }
 }

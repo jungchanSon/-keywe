@@ -11,15 +11,22 @@ import retrofit2.Retrofit
 
 
 object KeyWeClient {
-    private val BASE_URL = "https://jsonplaceholder.typicode.com"
+    private val BASE_URL = "https://dev.makeittakeit.kr"
 
     private val provideLoggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
+//    private val provideTokenManager = ITokenManger()
+
     // todo 헤더 토큰 인터셉터 추가
     private val provideHttpClient =
-        OkHttpClient.Builder().addInterceptor(provideLoggingInterceptor).build()
+        OkHttpClient.Builder()
+            //.addInterceptor(TokenInterceptor(provideTokenManager))
+            .addInterceptor(provideLoggingInterceptor)
+//            .addInterceptor(AuthInterceptor(provideTokenManager))
+//            .authenticator(AuthAuthenticator(provideTokenManager))
+            .build()
 
     private val jsonBuilder = Json { coerceInputValues = true }
 
@@ -38,43 +45,5 @@ object KeyWeClient {
     fun <T> create(service: Class<T>): T {
         return provideRetrofit.create(service)
     }
-
-//    val client = OkHttpClient.Builder()
-//        .addInterceptor(HttpLoggingInterceptor().apply {
-//            level = HttpLoggingInterceptor.Level.BODY
-//        }).build()
-//
-//    val retrofit = Retrofit.Builder()
-//        .baseUrl("https://api.example.com/")
-//        .addConverterFactory(GsonConverterFactory.create())
-//        .client(client).build()
-//
-//
-//    val request = Request.Builder().url("https://example.com").build()
-//
-//    fun fetch() {
-//        client.newCall(request).execute().use { response ->
-//            if (!response.isSuccessful)
-//                throw IOException("Unexpected code $response")
-//
-//            println()
-//
-//        }
-//    }
-//
-//    fun fetchAsync() {
-//        client.newCall(request).enqueue(
-//            object : Callback {
-//                override fun onFailure(call: Call, e: java.io.IOException) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//                override fun onResponse(call: Call, response: okhttp3.Response) {
-//
-//                }
-//            }
-//        )
-//    }
-
 }
 

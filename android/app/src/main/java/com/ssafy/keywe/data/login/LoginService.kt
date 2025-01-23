@@ -12,7 +12,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 //https://jsonplaceholder.typicode.com/todos/1
-interface LoginApiService {
+interface LoginService {
     @POST(LOGIN_PATH)
     suspend fun login(
         @Body loginRequest: LoginRequest,

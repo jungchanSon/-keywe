@@ -49,7 +49,9 @@ object ApiResponseHandler {
         }
     }
 
-    suspend fun <T : Any> ResponseResult<T>.onException(executable: suspend (e: Throwable, message: String) -> Unit): ResponseResult<T> =
+    suspend
+
+    fun <T : Any> ResponseResult<T>.onException(executable: suspend (e: Throwable, message: String) -> Unit): ResponseResult<T> =
         apply {
             if (this is ResponseResult.Exception<T>) {
                 executable(e, message)

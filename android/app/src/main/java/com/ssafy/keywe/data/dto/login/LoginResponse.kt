@@ -43,7 +43,7 @@ data class TestResponse(
 data class MITIResponse<T>(
     @SerialName("status_code") val statusCode: Int,
     @SerialName("message") val message: String,
-    @SerialName("data") val data: T,
+    @SerialName("data") val data: T?,
 )
 
 

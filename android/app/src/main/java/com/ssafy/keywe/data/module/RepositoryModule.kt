@@ -1,7 +1,7 @@
 package com.ssafy.keywe.data.module
 
-import com.ssafy.keywe.data.login.LoginApiImplRepository
-import com.ssafy.keywe.data.login.LoginApiRepository
+import com.ssafy.keywe.data.login.LoginRepository
+import com.ssafy.keywe.data.login.LoginRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -11,5 +11,5 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 abstract class RepositoryModule {
     @Binds
-    abstract fun bindLoginApiRepository(loginApiImplRepository: LoginApiImplRepository): LoginApiRepository
+    abstract fun bindLoginApiRepository(loginRepositoryImpl: LoginRepositoryImpl): LoginRepository
 }

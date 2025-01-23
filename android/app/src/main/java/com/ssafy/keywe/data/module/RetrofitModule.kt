@@ -1,7 +1,7 @@
 package com.ssafy.keywe.data.module
 
 import com.ssafy.keywe.data.KeyWeClient
-import com.ssafy.keywe.data.login.LoginApiService
+import com.ssafy.keywe.data.login.LoginService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 object RetrofitModule {
     @Singleton
     @Provides
-    fun provideLoginApiService(): LoginApiService = KeyWeClient.create(LoginApiService::class.java)
+    fun provideLoginApiService(): LoginService = KeyWeClient.create(LoginService::class.java)
 }
