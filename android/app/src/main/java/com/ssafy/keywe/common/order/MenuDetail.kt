@@ -5,12 +5,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -23,16 +31,17 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuImage() {
+    val imageUrl:String = "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
 
-    val imageUrl = "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
-
-    Image(
+        Image(
         painter = rememberAsyncImagePainter(model = imageUrl),
         contentDescription = "Web Image",
         modifier = Modifier
             .fillMaxWidth()
+            .height(100.dp)
+//            .fillMaxHeight()
             .background(color = whiteBackgroundColor),
-        contentScale = ContentScale.Crop
+        contentScale = ContentScale.Fit
     )
 }
 
@@ -41,13 +50,11 @@ fun MenuDetails(name: String, price: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = whiteBackgroundColor)
-            .padding(vertical = 8.dp),
+            .background(color = whiteBackgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -68,17 +75,75 @@ fun MenuDetails(name: String, price: Int) {
 
 @Composable
 fun Menu(name: String = "Menu", price: Int = 1000) {
-
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth()
-            .background(whiteBackgroundColor),
-        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        MenuImage()
-        MenuDetails(name, price)
+            .height(172.dp),
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(whiteBackgroundColor),
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            MenuImage()
+            MenuDetails(name, price)
+        }
     }
 
+}
+
+@Composable
+fun MenuSix(menuList: List<Pair<String, Int>>) {
+    Box(
+        modifier = Modifier
+            .background(whiteBackgroundColor)
+            .fillMaxSize()
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp, CenterVertically),
+        ) {
+            items(menuList.chunked(2)) { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    rowItems.forEach { menu ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        ) {
+                            Menu(name = menu.first, price = menu.second)
+                        }
+                    }
+                    if (rowItems.size < 2) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MenuScreen() {
+    val menuList = listOf(
+        "아메리카노" to 2000,
+        "카페라떼" to 3000,
+        "바닐라라떼" to 2500,
+        "카페모카" to 4000,
+        "콜드브루" to 4500
+    )
+    MenuSix(menuList = menuList)
 }
