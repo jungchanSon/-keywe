@@ -8,9 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +25,7 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultDialog
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.common.app.DefaultTextFormField
+import com.ssafy.keywe.ui.profile.ProfileScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import kotlinx.coroutines.launch
 
@@ -40,8 +38,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { DefaultAppBar(title = "타이틀") }, modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    Greeting(
-                        name = "Android", modifier = Modifier.padding(innerPadding)
+                    ProfileScreen(
                     )
                 }
             }

@@ -1,6 +1,20 @@
-package com.ssafy.keywe.profile
-
-
+//package com.ssafy.keywe.common.profile
+//
+//import androidx.compose.foundation.layout.Arrangement
+//import androidx.compose.foundation.layout.Column
+//import androidx.compose.material3.Text
+//import androidx.compose.runtime.Composable
+//import androidx.compose.ui.Alignment
+//import androidx.compose.ui.layout.ContentScale
+//import androidx.compose.ui.platform.LocalContext
+//import androidx.compose.ui.text.style.TextAlign
+//import androidx.compose.ui.unit.dp
+//import coil.compose.AsyncImage
+//import coil.request.ImageRequest
+//import com.ssafy.keywe.ui.theme.subtitle2
+//import java.lang.reflect.Modifier
+//
+//
 //@Composable
 //fun Profile(
 //    modifier: Modifier = Modifier,
@@ -19,7 +33,7 @@ package com.ssafy.keywe.profile
 //                .build(),
 //            contentDescription = "ExampleImage",
 //            contentScale = ContentScale.Fit,
-//            modifier = Modifier
+//            modifier = Modifier.size(80.dp)
 //        )
 //        Text(
 //            text = name,

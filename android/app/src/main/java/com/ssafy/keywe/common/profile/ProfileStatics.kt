@@ -1,4 +1,4 @@
-package com.ssafy.keywe.profile
+package com.ssafy.keywe.common.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +20,8 @@ import com.ssafy.keywe.ui.theme.subtitle2
 @Composable
 fun OrderStaticsBox(
     modifier: Modifier = Modifier,
-    orderCount: Int = 39
+    orderCount: Int = 39,
+    label: String
 ) {
     Box(
         modifier = modifier
@@ -43,8 +44,9 @@ fun OrderStaticsBox(
                 color = Color(0xFFEE5B22),
             )
             Text(
-                text = "Total Orders",
+                text = label,
                 style = overline,
+                color = Color.Black,
             )
         }
     }
