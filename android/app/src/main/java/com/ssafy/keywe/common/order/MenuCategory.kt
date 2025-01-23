@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +30,7 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
-fun MenuCategory(onClick: () -> Unit, selected: Boolean, category: String) {
+fun MenuCategoryBlock(onClick: () -> Unit, selected: Boolean, category: String) {
     Button(
         onClick = { onClick() },
         modifier = Modifier
@@ -42,7 +43,8 @@ fun MenuCategory(onClick: () -> Unit, selected: Boolean, category: String) {
         border = BorderStroke(
             width = 2.dp,
             color = if (selected) orangeColor else whiteBackgroundColor
-        )
+        ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text = category,
@@ -54,23 +56,21 @@ fun MenuCategory(onClick: () -> Unit, selected: Boolean, category: String) {
 
 @Composable
 fun MenuCategorySelect(category: String) {
-    // 선택 상태를 관리하는 상태 변수
+
     var isSelected by remember { mutableStateOf(false) }
 
-    Column() {
-        MenuCategory(
-            onClick = {
-                // 클릭 시 상태 변경
-                isSelected = !isSelected
-            },
-            selected = isSelected,
-            category = category
-        )
-    }
+    MenuCategoryBlock(
+        onClick = {
+            // 클릭 시 상태 변경
+            isSelected = !isSelected
+        },
+        selected = isSelected,
+        category = category
+    )
 }
 
 @Composable
-fun MenuCategoryScreen() {
+fun MenuCategory() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,22 +84,22 @@ fun MenuCategoryScreen() {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).fillMaxHeight()
             ){
                 MenuCategorySelect("커피")
             }
             Box(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).fillMaxHeight()
             ){
                 MenuCategorySelect("차")
             }
             Box(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).fillMaxHeight()
             ){
                 MenuCategorySelect("에이드")
             }
             Box(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).fillMaxHeight()
             ){
                 MenuCategorySelect("음료")
             }

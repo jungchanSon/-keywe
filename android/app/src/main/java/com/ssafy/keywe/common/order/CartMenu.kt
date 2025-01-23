@@ -13,10 +13,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
@@ -25,27 +29,30 @@ import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
 import com.ssafy.keywe.ui.theme.body2
+import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.h6sb
+import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import java.time.temporal.TemporalAmount
 
 @Composable
-fun CartMenuImage() {
-    val imageUrl = "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
-
+fun CartMenuImage(imageURL:String) {
     Box(
         modifier = Modifier
-            .width(88.dp)
-            .height(111.dp),
-        contentAlignment = Alignment.Center
+            .width(272.dp)
+            .height(272.dp)
+            .background(color = lightColor, shape = RoundedCornerShape(size = 1000.dp))
     ) {
         Image(
-            painter = rememberAsyncImagePainter(model = imageUrl),
-            contentDescription = "Cart Menu Image",
-            contentScale = ContentScale.Fit, // 이미지를 박스에 꽉 채움
-            modifier = Modifier.fillMaxWidth() // 부모 크기에 맞춤
+            painter = rememberAsyncImagePainter(model = imageURL),
+            contentDescription = "Web Image",
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(CircleShape)
+                .background(color = Color.Transparent),
+            contentScale = ContentScale.Crop
         )
     }
 }
@@ -141,11 +148,22 @@ fun CartMenu(name: String, option: String, amount: Int, price: Int) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CartMenuImage()
+                    val imageURL = "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
+                    CartMenuImage(imageURL)
                     CartMenuDescription("아메리카노", "ICE, 얼음 많이")
                 }
             }
             CartAmountPrice(1, 2000)
         }
     }
+}
+
+@Composable
+fun Spacer(interval:Int = 0){
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(interval.dp)
+            .background(greyBackgroundColor)
+    )
 }
