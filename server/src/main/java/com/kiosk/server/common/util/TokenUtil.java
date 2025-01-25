@@ -31,37 +31,37 @@ public class TokenUtil {
         this.expirationTime = expirationTime;
     }
 
-    public String createTemporaryToken(long userId) {
-        return generateToken(userId, UserRole.CUSTOMER, "temp", 60000L);
+    public String createTemporaryToken(long userId, String role) {
+        return generateTemporaryToken(userId, role, "temp", 60000L);
     }
 
-//    public String createAccessToken(long userId, long profileId, ProfileRole role) {
-//        return generateAccessToken(userId, profileId, role,"auth", expirationTime);
-//    }
+    public String createAccessToken(long userId, long profileId, String role) {
+        return generateAccessToken(userId, profileId, role, "auth", expirationTime);
+    }
 
-    private String generateToken(long userId, UserRole role, String tokenType, long expirationTime) {
+    private String generateTemporaryToken(long userId, String role, String tokenType, long expirationTime) {
         ClaimsBuilder claimsBuilder = Jwts.claims();
 
         claimsBuilder.subject(String.valueOf(userId));
         claimsBuilder.add(TOKEN_TYPE, tokenType);
-        claimsBuilder.add(ROLE_CLAIM, role.toString());
+        claimsBuilder.add(ROLE_CLAIM, role);
 
         Claims claims = claimsBuilder.build();
         return generateToken(claims, new Date(System.currentTimeMillis() + expirationTime));
     }
 
     // generateAccessToken 추가
-//    private String generateAccessToken(long userId, long profileId, ProfileRole role, String tokenType, long expirationTime) {
-//        ClaimsBuilder claimsBuilder = Jwts.claims();
-//
-//        claimsBuilder.subject(String.valueOf(userId));
-//        claimsBuilder.add("profileId",String.valueOf(profileId));
-//        claimsBuilder.add(TOKEN_TYPE, tokenType);
-//        claimsBuilder.add(ROLE_CLAIM, role.toString());
-//
-//        Claims claims = claimsBuilder.build();
-//        return generateToken(claims, new Date(System.currentTimeMillis() + expirationTime));
-//    }
+    private String generateAccessToken(long userId, long profileId, String role, String tokenType, long expirationTime) {
+        ClaimsBuilder claimsBuilder = Jwts.claims();
+
+        claimsBuilder.subject(String.valueOf(userId));
+        claimsBuilder.add("profileId",String.valueOf(profileId));
+        claimsBuilder.add(TOKEN_TYPE, tokenType);
+        claimsBuilder.add(ROLE_CLAIM, role);
+
+        Claims claims = claimsBuilder.build();
+        return generateToken(claims, new Date(System.currentTimeMillis() + expirationTime));
+    }
 
     private String generateToken(Claims claims, Date expiredTime) {
         return Jwts.builder()
@@ -79,13 +79,5 @@ public class TokenUtil {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
-//    public boolean checkIfTokenValid(String token) {
-//        Claims claims = extractAllClaims(token);
-//        String tokenType = (String) claims.get(TOKEN_TYPE);
-//        if("temp".equals(tokenType)) {
-//
-//        }
-//    }
 
 }
