@@ -1,11 +1,11 @@
 package com.ssafy.keywe.data.module
 
-import com.ssafy.keywe.data.KeyWeClient
-import com.ssafy.keywe.data.login.LoginService
+import com.ssafy.keywe.data.auth.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -13,5 +13,6 @@ import javax.inject.Singleton
 object RetrofitModule {
     @Singleton
     @Provides
-    fun provideLoginApiService(): LoginService = KeyWeClient.create(LoginService::class.java)
+    fun provideAuthService(retrofit: Retrofit): AuthService =
+        retrofit.create(AuthService::class.java)
 }

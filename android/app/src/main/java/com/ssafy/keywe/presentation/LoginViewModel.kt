@@ -7,9 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
+import com.ssafy.keywe.data.auth.AuthRepository
 import com.ssafy.keywe.data.dto.Status
-import com.ssafy.keywe.data.dto.login.MITILoginRequest
-import com.ssafy.keywe.data.login.LoginRepository
+import com.ssafy.keywe.data.dto.auth.MITILoginRequest
 import com.ssafy.keywe.domain.LoginModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: LoginRepository,
+    private val repository: AuthRepository,
 ) : ViewModel() {
     private val _errorMessage = mutableStateOf("")
 

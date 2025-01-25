@@ -7,7 +7,7 @@ import com.ssafy.keywe.TokenProto
 import java.io.InputStream
 import java.io.OutputStream
 
-object UserDataSerializer : Serializer<TokenProto> {
+object TokenSerializer : Serializer<TokenProto> {
     override val defaultValue: TokenProto = TokenProto.getDefaultInstance()
 
     override suspend fun readFrom(input: InputStream): TokenProto {

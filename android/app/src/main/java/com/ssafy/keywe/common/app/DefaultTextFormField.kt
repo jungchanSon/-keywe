@@ -37,11 +37,12 @@ fun DefaultTextFormField(
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(text = label, style = button)
-        OutlinedTextField(placeholder = {
-            Text(
-                text = placeholder, style = body2.copy(color = polishedSteelColor)
-            )
-        },
+        OutlinedTextField(
+            placeholder = {
+                Text(
+                    text = placeholder, style = body2.copy(color = polishedSteelColor)
+                )
+            },
             shape = RoundedCornerShape(8.dp),
 //            keyboardOptions = KeyboardOptions(
 //                keyboardType = KeyboardType.Number

@@ -1,4 +1,4 @@
-package com.ssafy.keywe.data.dto.login
+package com.ssafy.keywe.data.dto.auth
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,10 +1,10 @@
-package com.ssafy.keywe.data.login
+package com.ssafy.keywe.data.auth
 
 import com.ssafy.keywe.data.ResponseResult
-import com.ssafy.keywe.data.dto.login.MITILoginRequest
+import com.ssafy.keywe.data.dto.auth.MITILoginRequest
 import com.ssafy.keywe.domain.LoginModel
 
-interface LoginRepository {
+interface AuthRepository {
     suspend fun login(loginRequest: MITILoginRequest): ResponseResult<LoginModel>
 //    suspend fun login(loginRequest: LoginRequest): Response<LoginResponse> {
 //        return loginApiService.login(loginRequest)

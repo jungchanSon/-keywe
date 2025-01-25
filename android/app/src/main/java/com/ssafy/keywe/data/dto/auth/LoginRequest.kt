@@ -1,4 +1,4 @@
-package com.ssafy.keywe.data.dto.login
+package com.ssafy.keywe.data.dto.auth
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -19,7 +19,7 @@ data class LoginRequest(
 @Serializable
 data class MITILoginRequest(
     @SerialName("email")
-    val email:String,
+    val email: String,
     @SerialName("password")
-    val password:String,
+    val password: String,
 )

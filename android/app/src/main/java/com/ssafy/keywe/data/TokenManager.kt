@@ -1,57 +1,104 @@
 package com.ssafy.keywe.data
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.flow.Flow
+import com.ssafy.keywe.TokenProto
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
-interface ITokenManger {
-    fun getAccessToken(): Flow<String?>
-    fun getRefreshToken(): Flow<String?>
-    suspend fun saveAccessToken(token: String)
-    suspend fun saveRefreshToken(token: String)
-    suspend fun deleteRefreshToken()
-}
 
+@Singleton
 class TokenManager @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
-) : ITokenManger {
-    companion object {
-        private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
-        private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
-    }
+    private val dataStore: DataStore<TokenProto>,
+) {
 
-    override fun getAccessToken(): Flow<String?> {
-        return dataStore.data.map { prefs ->
-            prefs[ACCESS_TOKEN_KEY]
+
+    private var cachedTempToken: String? = null
+    private var cachedAccessToken: String? = null
+    private var cachedRefreshToken: String? = null
+
+    // 이벤트를 알리기 위한 SharedFlow
+    private val _tokenClearedEvent = MutableSharedFlow<Unit>()
+    val tokenClearedEvent: SharedFlow<Unit> = _tokenClearedEvent
+
+    suspend fun getTempToken(): String? {
+        return if (cachedTempToken == null) {
+            dataStore.data.map { token ->
+                token.tempToken.takeIf { it.isNotEmpty() }
+            }.first()
+        } else {
+            cachedTempToken
         }
     }
 
-    override fun getRefreshToken(): Flow<String?> {
-        return dataStore.data.map { prefs ->
-            prefs[REFRESH_TOKEN_KEY]
+    suspend fun getAccessToken(): String? {
+        return if (cachedAccessToken == null) {
+            dataStore.data.map { token ->
+                token.accessToken.takeIf { it.isNotEmpty() }
+            }.first()
+        } else {
+            cachedAccessToken
+        }
+    }
+
+    suspend fun getToken(): String? {
+        return if (cachedAccessToken != null) {
+            cachedAccessToken
+        } else if (cachedTempToken != null) {
+            cachedTempToken
+        } else if (getAccessToken() != null) {
+            getAccessToken()
+        } else {
+            getTempToken()
+        }
+    }
+
+    suspend fun getRefreshToken(): String? {
+        return if (cachedRefreshToken == null) {
+            dataStore.data.map { token ->
+                token.refreshToken.takeIf { it.isNotEmpty() }
+            }.first()
+        } else {
+            cachedRefreshToken
+        }
+    }
+
+    suspend fun saveTempToken(token: String) {
+        cachedTempToken = token
+        dataStore.updateData { currentToken ->
+            currentToken.toBuilder().setTempToken(token).build()
+        }
+    }
+
+    suspend fun saveAccessToken(token: String) {
+        cachedAccessToken = token
+        dataStore.updateData { currentToken ->
+            currentToken.toBuilder().setAccessToken(token).build()
         }
     }
 
 
-    override suspend fun saveAccessToken(token: String) {
-        dataStore.edit { prefs ->
-            prefs[ACCESS_TOKEN_KEY] = token
+    suspend fun saveRefreshToken(token: String) {
+        cachedRefreshToken = token
+        dataStore.updateData { currentToken ->
+            currentToken.toBuilder().setRefreshToken(token).build()
         }
     }
 
-    override suspend fun saveRefreshToken(token: String) {
-        dataStore.edit { prefs ->
-            prefs[REFRESH_TOKEN_KEY] = token
+    suspend fun clearTempToken() {
+        dataStore.updateData {
+            it.toBuilder().clearTempToken().build()
         }
     }
 
-    override suspend fun deleteRefreshToken() {
-        dataStore.edit { prefs ->
-            prefs.remove(ACCESS_TOKEN_KEY)
+    suspend fun clearTokens() {
+        dataStore.updateData {
+            it.toBuilder().clear().build()
         }
+        // 이벤트 발생
+        _tokenClearedEvent.emit(Unit)
     }
 }

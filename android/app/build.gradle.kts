@@ -77,6 +77,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation("com.google.protobuf:protobuf-javalite:$protobufVersion")
 
+    // jwt decode
+    implementation("com.auth0.android:jwtdecode:2.0.2")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

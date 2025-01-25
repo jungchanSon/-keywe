@@ -1,7 +1,6 @@
 package com.ssafy.keywe.data
 
-import com.ssafy.keywe.data.KeyWeClient.getErrorResponse
-import com.ssafy.keywe.data.dto.ErrorResponse
+import android.util.Log
 import com.ssafy.keywe.data.dto.Status
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -18,10 +17,10 @@ object ApiResponseHandler {
                 else -> {
                     val errorBody: ResponseBody = response.errorBody()
                         ?: throw IllegalArgumentException("erroryBody를 찾을 수 없습니다.")
-
-                    val errorResponse: ErrorResponse = getErrorResponse(errorBody)
+                    Log.d("rest api error", errorBody.toString())
+//                    val errorResponse: ErrorResponse = getErrorResponse(errorBody)
                     ResponseResult.ServerError(
-                        status = Status.Code(errorResponse.code),
+                        status = Status.Code(404),//errorResponse.code
                     )
                 }
             }
@@ -54,6 +53,7 @@ object ApiResponseHandler {
     fun <T : Any> ResponseResult<T>.onException(executable: suspend (e: Throwable, message: String) -> Unit): ResponseResult<T> =
         apply {
             if (this is ResponseResult.Exception<T>) {
+                Log.d("rest api error", message)
                 executable(e, message)
             }
         }

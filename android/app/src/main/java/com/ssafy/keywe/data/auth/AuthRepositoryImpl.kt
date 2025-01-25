@@ -1,17 +1,17 @@
-package com.ssafy.keywe.data.login
+package com.ssafy.keywe.data.auth
 
 import com.ssafy.keywe.data.ResponseResult
-import com.ssafy.keywe.data.dto.login.MITILoginRequest
+import com.ssafy.keywe.data.dto.auth.MITILoginRequest
 import com.ssafy.keywe.data.dto.mapper.toDomain
 import com.ssafy.keywe.domain.LoginModel
 import javax.inject.Inject
 
-class LoginRepositoryImpl @Inject constructor(
-    private val loginDataSource: LoginDataSource,
-) : LoginRepository {
+class AuthRepositoryImpl @Inject constructor(
+    private val authDataSource: AuthDataSource,
+) : AuthRepository {
     override suspend fun login(loginRequest: MITILoginRequest): ResponseResult<LoginModel> {
 
-        return when (val result = loginDataSource.requestLogin(loginRequest)) {
+        return when (val result = authDataSource.requestLogin(loginRequest)) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e,
                 EXCEPTION_NETWORK_ERROR_MESSAGE

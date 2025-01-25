@@ -1,6 +1,6 @@
 package com.ssafy.keywe.domain
 
-import com.ssafy.keywe.data.dto.login.TokenResponse
+import com.ssafy.keywe.data.dto.auth.TokenResponse
 
 data class LoginModel(
     val id: Int,

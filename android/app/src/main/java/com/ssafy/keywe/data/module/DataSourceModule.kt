@@ -1,7 +1,7 @@
 package com.ssafy.keywe.data.module
 
-import com.ssafy.keywe.data.login.LoginDataSource
-import com.ssafy.keywe.data.login.LoginRemoteDataSource
+import com.ssafy.keywe.data.auth.AuthDataSource
+import com.ssafy.keywe.data.auth.AuthRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -11,5 +11,5 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 abstract class DataSourceModule {
     @Binds
-    abstract fun bindLoginDataSource(loginRemoteDataSource: LoginRemoteDataSource): LoginDataSource
+    abstract fun bindLoginDataSource(loginRemoteDataSource: AuthRemoteDataSource): AuthDataSource
 }
