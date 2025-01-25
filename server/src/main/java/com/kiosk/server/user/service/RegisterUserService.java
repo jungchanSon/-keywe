@@ -2,5 +2,5 @@ package com.kiosk.server.user.service;
 
 public interface RegisterUserService {
 
-    boolean doService(String email, String password);
+    void doService(String email, String inputPassword, String inputRole);
 }

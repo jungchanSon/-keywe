@@ -3,7 +3,7 @@ package com.kiosk.server.user.domain;
 public interface UserRepository {
 
     // 회원 가입
-    boolean registerUser(User user);
+    void registerUser(User user);
 
     // 아이디 중복 확인
     boolean existsByEmail(String email);

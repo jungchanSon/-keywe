@@ -1,11 +1,15 @@
 package com.kiosk.server.user.service.impl;
 
+import com.kiosk.server.common.exception.custom.ConflictException;
+import com.kiosk.server.common.exception.custom.CreationFailedException;
 import com.kiosk.server.common.exception.custom.InvalidFormatException;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
+import com.kiosk.server.user.domain.UserRole;
 import com.kiosk.server.user.service.RegisterUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -13,22 +17,25 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
     private final UserRepository userRepository;
 
-    @Override
-    public boolean doService(String email, String password){
+    public void doService(String email, String password, String inputRole){
 
-        checkEmail(email);
+        checkEmailDuplication(email);
         verifyFormat(email, password);
+        UserRole role = verifyUserRole(inputRole);
 
-        User user = User.create(email, password);
+        User user = User.create(email, password, role);
 
-        return userRepository.registerUser(user);
-
+        try {
+            userRepository.registerUser(user);
+        } catch (CreationFailedException e) {
+            throw new CreationFailedException("Failed to create user");
+        }
     }
 
     // 이메일 중복 체크
-    private void checkEmail(String email) {
+    private void checkEmailDuplication(String email) {
         if (userRepository.existsByEmail(email)){
-            throw new RuntimeException("Email Duplicated");
+            throw new ConflictException("Email Duplicated");
         }
     }
 
@@ -54,6 +61,15 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
         if (!password.matches(passRegex)) {
             throw new InvalidFormatException("Invalid Password");
+        }
+    }
+
+    private UserRole verifyUserRole(String role) {
+
+        try{
+            return UserRole.fromString(role);
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException("Invalid Role");
         }
     }
 }
