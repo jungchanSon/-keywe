@@ -21,10 +21,16 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(JwtValidationException.class)
-	public ResponseEntity<ErrorResponse> handleJwtValidationException(JwtValidationException e) {
+	@ExceptionHandler(CreationFailedException.class)
+	public ResponseEntity<ErrorResponse> handleCreationFailedException(CreationFailedException e) {
 		ErrorResponse response = new ErrorResponse(e.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(ConflictException.class)
+	public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
+		ErrorResponse response = new ErrorResponse(e.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 	}
 
 	@ExceptionHandler(InvalidProfileRoleException.class)
