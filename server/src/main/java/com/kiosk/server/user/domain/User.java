@@ -16,10 +16,10 @@ public class User {
     private String salt;
     private LocalDateTime regDate;
 
-    public static User create(String email, String password) {
+    public static User create(String email, String password, UserRole role) {
         User user = new User();
         user.userId = IdUtil.create();
-        user.role = UserRole.CUSTOMER;
+        user.role = role;
         user.email = email;
         user.salt = HashUtil.generateSalt();
         user.password = HashUtil.hashPassword(password, user.salt);
