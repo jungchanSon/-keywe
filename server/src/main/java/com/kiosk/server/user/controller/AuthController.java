@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-public class UserController {
+public class AuthController {
 
     private final RegisterUserService registerUserService;
     private final UserLoginService userLoginService;
 
     @PostMapping("/user")
     public ResponseEntity<Void> register(@RequestBody RegisterUserRequest request) {
-        registerUserService.doService(request.email(), request.password(), request.role());
+        registerUserService.doService(request.email(), request.password());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/user/login")
     public ResponseEntity<LoginResponse> login(@RequestBody UserLoginRequest request) {
-        String temporaryToken = userLoginService.doService(request.email(), request.password());
-        LoginResponse response = new LoginResponse(temporaryToken, "Bearer");
+        String temporaryToken = "Bearer " + userLoginService.doService(request.email(), request.password());
+        LoginResponse response = new LoginResponse(temporaryToken);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
