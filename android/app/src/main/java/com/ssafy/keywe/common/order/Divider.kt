@@ -18,7 +18,7 @@ fun HorizontalDivider(
     MaterialHorizonDivider(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 8.dp),
+            .padding(horizontal = 24.dp),
         thickness = thickness,
         color = color
     )

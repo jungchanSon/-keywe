@@ -48,12 +48,15 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultDialog
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.common.app.DefaultTextFormField
+import com.ssafy.keywe.common.order.HorizontalDivider
 import com.ssafy.keywe.common.order.MenuCategory
 import com.ssafy.keywe.common.order.MenuCategoryScreen
-import com.ssafy.keywe.common.order.MenuCategorySelect
-import com.ssafy.keywe.common.order.MenuSix
-import com.ssafy.keywe.common.order.Spacer
-import com.ssafy.keywe.order.MenuProfile
+import com.ssafy.keywe.common.order.MenuDescription
+import com.ssafy.keywe.common.order.MenuMenu
+import com.ssafy.keywe.common.order.MenuMenuList
+import com.ssafy.keywe.common.order.MenuMenuScreen
+import com.ssafy.keywe.common.order.MenuSubCategory
+import com.ssafy.keywe.common.order.Quadruple
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.primaryColor
 
@@ -63,7 +66,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KeyWeTheme {
-                MenuDetailScreen()
+                MenuScreen()
             }
         }
     }
@@ -80,8 +83,6 @@ fun MenuDetailScreen() {
                 .padding(bottom = 32.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            MenuProfile()
-            Spacer(24)
         }
     }
 }
@@ -110,16 +111,56 @@ fun MenuScreen() {
                 .padding(innerPadding)
                 .padding(bottom = 32.dp)
         ) {
-            MenuCategory()
             MenuCategoryScreen()
+            MenuSubCategory("Popular Coffee")
+
+            val menuList = listOf(
+                Quadruple(
+                    "아메리카노",
+                    "커피+물",
+                    2000,
+                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+                ),
+                Quadruple(
+                    "카페라떼",
+                    "커피+우유",
+                    3000,
+                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+                ),
+                Quadruple(
+                    "카푸치노",
+                    "커피+거품 우유",
+                    3500,
+                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+                ),
+                Quadruple(
+                    "모카",
+                    "커피+초콜릿+우유",
+                    4000,
+                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+                ),
+                Quadruple(
+                    "에스프레소",
+                    "진한 커피 샷",
+                    2500,
+                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+                ),
+                Quadruple(
+                    "에스프레소",
+                    "진한 커피 샷",
+                    2500,
+                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+                ),
+                Quadruple(
+                    "에스프레소",
+                    "진한 커피 샷",
+                    2500,
+                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+                ),
+            )
+
+
+            MenuMenuList(menuList)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    KeyWeTheme {
-
     }
 }
