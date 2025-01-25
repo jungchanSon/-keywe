@@ -32,7 +32,9 @@ public class UserLoginServiceImpl implements UserLoginService {
             throw new UnauthorizedException("Wrong password");
         }
 
-        return tokenUtil.createTemporaryToken(foundUser.getUserId());
+        String role = foundUser.getRole().toString();
+
+        return tokenUtil.createTemporaryToken(foundUser.getUserId(), role);
 
     }
 }
