@@ -1,11 +1,9 @@
 package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.ConflictException;
-import com.kiosk.server.common.exception.custom.CreationFailedException;
 import com.kiosk.server.common.exception.custom.InvalidFormatException;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
-import com.kiosk.server.user.domain.UserRole;
 import com.kiosk.server.user.service.RegisterUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,24 +15,20 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
     private final UserRepository userRepository;
 
-    public void doService(String email, String password, String inputRole){
+    public void doService(String email, String password) {
 
         checkEmailDuplication(email);
         verifyFormat(email, password);
-        UserRole role = verifyUserRole(inputRole);
 
-        User user = User.create(email, password, role);
+        User user = User.create(email, password);
 
-        try {
-            userRepository.registerUser(user);
-        } catch (CreationFailedException e) {
-            throw new CreationFailedException("Failed to create user");
-        }
+        userRepository.registerUser(user);
+
     }
 
     // 이메일 중복 체크
     private void checkEmailDuplication(String email) {
-        if (userRepository.existsByEmail(email)){
+        if (userRepository.existsByEmail(email)) {
             throw new ConflictException("Email Duplicated");
         }
     }
@@ -55,7 +49,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         String passRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~!@#$%^&*_\\-+=`|\\\\(){}\\[\\]:;\"'<>,.?/]).{8,16}$";
 
-        if (!email.matches(emailRegex)){
+        if (!email.matches(emailRegex)) {
             throw new InvalidFormatException("Email format is incorrect");
         }
 
@@ -64,12 +58,4 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         }
     }
 
-    private UserRole verifyUserRole(String role) {
-
-        try{
-            return UserRole.fromString(role);
-        } catch (IllegalArgumentException e){
-            throw new IllegalArgumentException("Invalid Role");
-        }
-    }
 }

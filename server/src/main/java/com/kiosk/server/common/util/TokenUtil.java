@@ -1,6 +1,5 @@
 package com.kiosk.server.common.util;
 
-import com.kiosk.server.user.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
@@ -23,16 +22,13 @@ public class TokenUtil {
     private static final String TOKEN_TYPE = "tokenType";
 
     @Autowired
-    public TokenUtil(
-            @Value("${jwt.secret-key}") String secretKey,
-            @Value("${jwt.expiration-time}") long expirationTime
-    ) {
+    public TokenUtil(@Value("${jwt.secret-key}") String secretKey, @Value("${jwt.expiration-time}") long expirationTime) {
         this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(secretKey), "HmacSHA256");
         this.expirationTime = expirationTime;
     }
 
-    public String createTemporaryToken(long userId, String role) {
-        return generateTemporaryToken(userId, role, "temp", 60000L);
+    public String createTemporaryToken(long userId) {
+        return generateTemporaryToken(userId, "CUSTOMER", "temp", 60000L);
     }
 
     public String createAccessToken(long userId, long profileId, String role) {
@@ -55,7 +51,7 @@ public class TokenUtil {
         ClaimsBuilder claimsBuilder = Jwts.claims();
 
         claimsBuilder.subject(String.valueOf(userId));
-        claimsBuilder.add("profileId",String.valueOf(profileId));
+        claimsBuilder.add("profileId", String.valueOf(profileId));
         claimsBuilder.add(TOKEN_TYPE, tokenType);
         claimsBuilder.add(ROLE_CLAIM, role);
 
@@ -64,20 +60,11 @@ public class TokenUtil {
     }
 
     private String generateToken(Claims claims, Date expiredTime) {
-        return Jwts.builder()
-                .claims(claims)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(expiredTime)
-                .signWith(secretKey)
-                .compact();
+        return Jwts.builder().claims(claims).issuedAt(new Date(System.currentTimeMillis())).expiration(expiredTime).signWith(secretKey).compact();
     }
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
     }
 
 }
