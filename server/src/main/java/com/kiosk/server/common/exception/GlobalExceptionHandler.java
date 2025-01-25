@@ -21,91 +21,85 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(CreationFailedException.class)
-	public ResponseEntity<ErrorResponse> handleCreationFailedException(CreationFailedException e) {
-		ErrorResponse response = new ErrorResponse(e.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 
-	@ExceptionHandler(ConflictException.class)
-	public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
-		ErrorResponse response = new ErrorResponse(e.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-	}
+    @ExceptionHandler(InvalidProfileRoleException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidProfileRoleException(InvalidProfileRoleException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
-	@ExceptionHandler(InvalidProfileRoleException.class)
-	public ResponseEntity<ErrorResponse> handleInvalidProfileRoleException(InvalidProfileRoleException e) {
-		ErrorResponse response = new ErrorResponse(e.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-	}
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
 
-	@ExceptionHandler(UnauthorizedException.class)
-	public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
-		ErrorResponse response = new ErrorResponse(e.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-	}
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
-	@ExceptionHandler(InvalidFormatException.class)
-	public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException e) {
-		ErrorResponse response = new ErrorResponse(e.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-	}
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(EntityNotFoundException e) {
+        log.error("CustomException: {}", e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
 
-	@ExceptionHandler(EntityNotFoundException.class)
-	public ResponseEntity<ErrorResponse> handleException(EntityNotFoundException e) {
-		log.error("CustomException: {}", e.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-	}
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleException(MissingServletRequestParameterException e) {
+        log.error("MissingServletRequestParameterException: {}", e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse("Missing Request Parameter", e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
-	@ExceptionHandler(MissingServletRequestParameterException.class)
-	public ResponseEntity<ErrorResponse> handleException(MissingServletRequestParameterException e) {
-		log.error("MissingServletRequestParameterException: {}", e.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse("Missing Request Parameter", e.getMessage());
-		return ResponseEntity.badRequest().body(errorResponse);
-	}
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleException(MethodArgumentTypeMismatchException e) {
+        log.error("MethodArgumentTypeMismatchException: {}", e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse("Argument Type Mismatch", e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
-	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ResponseEntity<ErrorResponse> handleException(MethodArgumentTypeMismatchException e) {
-		log.error("MethodArgumentTypeMismatchException: {}", e.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse("Argument Type Mismatch", e.getMessage());
-		return ResponseEntity.badRequest().body(errorResponse);
-	}
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleException(HttpMessageNotReadableException e) {
+        log.error("HttpMessageNotReadableException: {}", e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse("HTTP Message Not Readable", e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
-	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<ErrorResponse> handleException(HttpMessageNotReadableException e) {
-		log.error("HttpMessageNotReadableException: {}", e.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse("HTTP Message Not Readable", e.getMessage());
-		return ResponseEntity.badRequest().body(errorResponse);
-	}
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleException(HttpRequestMethodNotSupportedException e) {
+        log.error("HttpRequestMethodNotSupportedException: {}", e.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse("HTTP Method Not Supported", e.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
-	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public ResponseEntity<ErrorResponse> handleException(HttpRequestMethodNotSupportedException e) {
-		log.error("HttpRequestMethodNotSupportedException: {}", e.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse("HTTP Method Not Supported", e.getMessage());
-		return ResponseEntity.badRequest().body(errorResponse);
-	}
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException e) {
+        log.error("MethodArgumentNotValidException : {}", e.getMessage());
+        String errorMessage = createValidationErrorMessage(e.getBindingResult());
+        ErrorResponse errorResponse = new ErrorResponse("Invalid Argument", errorMessage);
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException e) {
-		log.error("MethodArgumentNotValidException : {}", e.getMessage());
-		String errorMessage = createValidationErrorMessage(e.getBindingResult());
-		ErrorResponse errorResponse = new ErrorResponse("Invalid Argument", errorMessage);
-		return ResponseEntity.badRequest().body(errorResponse);
-	}
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        log.error(errors.toString());
+        ErrorResponse errorResponse = new ErrorResponse("Unexpected Error");
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleException(Exception e) {
-		StringWriter errors = new StringWriter();
-		e.printStackTrace(new PrintWriter(errors));
-		log.error(errors.toString());
-		ErrorResponse errorResponse = new ErrorResponse("Unexpected Error");
-		return ResponseEntity.badRequest().body(errorResponse);
-	}
-
-	private String createValidationErrorMessage(BindingResult bindingResult) {
-		return bindingResult.getFieldErrors().stream()
-			.map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-			.collect(Collectors.joining(", "));
-	}
+    private String createValidationErrorMessage(BindingResult bindingResult) {
+        return bindingResult.getFieldErrors().stream()
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+    }
 }
