@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
         e.printStackTrace(new PrintWriter(errors));
         log.error(errors.toString());
         ErrorResponse errorResponse = new ErrorResponse("Unexpected Error");
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.internalServerError().body(errorResponse);
     }
 
     private String createValidationErrorMessage(BindingResult bindingResult) {
