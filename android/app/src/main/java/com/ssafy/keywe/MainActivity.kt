@@ -25,7 +25,7 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultDialog
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.common.app.DefaultTextFormField
-import com.ssafy.keywe.ui.profile.ProfileScreen
+import com.ssafy.keywe.ui.profile.AddMember
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import kotlinx.coroutines.launch
 
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { DefaultAppBar(title = "타이틀") }, modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    ProfileScreen(
+                    AddMember(
                     )
                 }
             }
@@ -100,7 +100,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             label = "라벨",
             placeholder = "placeholder",
             text = text,
-            onValueChange = { text = it })
+            onValueChange = { newtext -> text = newtext })
     }
 }
 
