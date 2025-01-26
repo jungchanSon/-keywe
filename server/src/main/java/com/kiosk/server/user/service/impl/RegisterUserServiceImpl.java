@@ -1,7 +1,7 @@
 package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.ConflictException;
-import com.kiosk.server.common.exception.custom.InvalidFormatException;
+import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
 import com.kiosk.server.user.service.RegisterUserService;
@@ -50,11 +50,11 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         String passRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~!@#$%^&*_\\-+=`|\\\\(){}\\[\\]:;\"'<>,.?/]).{8,16}$";
 
         if (!email.matches(emailRegex)) {
-            throw new InvalidFormatException("Email format is incorrect");
+            throw new BadRequestException("Invalid Email Format");
         }
 
         if (!password.matches(passRegex)) {
-            throw new InvalidFormatException("Invalid Password");
+            throw new BadRequestException("Invalid Password Format");
         }
     }
 
