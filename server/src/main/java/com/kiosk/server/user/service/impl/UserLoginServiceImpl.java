@@ -29,7 +29,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         String hashedInputPassword = HashUtil.hashPassword(inputPassword, foundUser.getSalt());
 
         if (!foundUser.getPassword().equals(hashedInputPassword)) {
-            throw new UnauthorizedException("Wrong password");
+            throw new UnauthorizedException("Incorrect Credentials");
         }
 
         return tokenUtil.createTemporaryToken(foundUser.getUserId());
