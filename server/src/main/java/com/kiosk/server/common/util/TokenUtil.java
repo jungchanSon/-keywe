@@ -1,7 +1,6 @@
 package com.kiosk.server.common.util;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,56 +14,47 @@ import java.util.Date;
 @Service
 public class TokenUtil {
 
-    private final SecretKey secretKey;
-    private final long expirationTime;
+    private static final String TOKEN_TYPE_CLAIM = "TYPE";
+    private static final String TOKEN_TYPE_TEMP = "TEMP";
 
-    private static final String ROLE_CLAIM = "role";
-    private static final String TOKEN_TYPE = "tokenType";
+    private final SecretKey SECRET_KEY;
+    private final long TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS;
 
     @Autowired
-    public TokenUtil(@Value("${jwt.secret-key}") String secretKey, @Value("${jwt.expiration-time}") long expirationTime) {
-        this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(secretKey), "HmacSHA256");
-        this.expirationTime = expirationTime;
+    public TokenUtil(
+        @Value("${jwt.secret-key}") String SECRET_KEY,
+        @Value("${JWT.EXPIRATION-TIME.TEMP}") long TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS
+    ) {
+        this.SECRET_KEY = new SecretKeySpec(Base64.getDecoder().decode(SECRET_KEY), "HmacSHA256");
+        this.TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS = TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS;
     }
 
     public String createTemporaryToken(long userId) {
-        return generateTemporaryToken(userId, "CUSTOMER", "temp", 60000L);
-    }
+        Claims claims = Jwts.claims()
+            .subject(String.valueOf(userId))
+            .add(TOKEN_TYPE_CLAIM, TOKEN_TYPE_TEMP)
+            .build();
 
-    public String createAccessToken(long userId, long profileId, String role) {
-        return generateAccessToken(userId, profileId, role, "auth", expirationTime);
-    }
+        Date expiredAt = new Date(System.currentTimeMillis() + TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS);
 
-    private String generateTemporaryToken(long userId, String role, String tokenType, long expirationTime) {
-        ClaimsBuilder claimsBuilder = Jwts.claims();
-
-        claimsBuilder.subject(String.valueOf(userId));
-        claimsBuilder.add(TOKEN_TYPE, tokenType);
-        claimsBuilder.add(ROLE_CLAIM, role);
-
-        Claims claims = claimsBuilder.build();
-        return generateToken(claims, new Date(System.currentTimeMillis() + expirationTime));
-    }
-
-    // generateAccessToken 추가
-    private String generateAccessToken(long userId, long profileId, String role, String tokenType, long expirationTime) {
-        ClaimsBuilder claimsBuilder = Jwts.claims();
-
-        claimsBuilder.subject(String.valueOf(userId));
-        claimsBuilder.add("profileId", String.valueOf(profileId));
-        claimsBuilder.add(TOKEN_TYPE, tokenType);
-        claimsBuilder.add(ROLE_CLAIM, role);
-
-        Claims claims = claimsBuilder.build();
-        return generateToken(claims, new Date(System.currentTimeMillis() + expirationTime));
+        return generateToken(claims, expiredAt);
     }
 
     private String generateToken(Claims claims, Date expiredTime) {
-        return Jwts.builder().claims(claims).issuedAt(new Date(System.currentTimeMillis())).expiration(expiredTime).signWith(secretKey).compact();
+        return Jwts.builder()
+            .claims(claims)
+            .issuedAt(new Date(System.currentTimeMillis()))
+            .expiration(expiredTime)
+            .signWith(SECRET_KEY)
+            .compact();
     }
 
-    public Claims extractAllClaims(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+    public Claims extractClaims(String token) {
+        return Jwts.parser()
+            .verifyWith(SECRET_KEY)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
 }
