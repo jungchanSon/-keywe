@@ -9,14 +9,10 @@ public class HashUtil {
     /**
      * 비밀번호를 SHA-256 해시로 변환하는 메서드
      */
-
     public static String hashPassword(String password, String salt) {
-
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-
             messageDigest.update(salt.getBytes());
-
             byte[] hash = messageDigest.digest(password.getBytes());
 
             StringBuilder hexString = new StringBuilder();
@@ -27,23 +23,18 @@ public class HashUtil {
             }
 
             return hexString.toString();
-
         } catch (Exception e) {
             throw new RuntimeException("SHA-256 NOT FOUND", e);
         }
     }
 
-
     /**
      * 솔트 생성 메서드
      */
     public static String generateSalt() {
-
-        byte[] salt = new byte[16];
-
         SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
         random.nextBytes(salt);
-
         return Base64.getEncoder().encodeToString(salt);
     }
 }
