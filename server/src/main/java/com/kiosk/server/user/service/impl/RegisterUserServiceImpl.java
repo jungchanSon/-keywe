@@ -49,11 +49,11 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         String emailRegex = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         String passRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~!@#$%^&*_\\-+=`|\\\\(){}\\[\\]:;\"'<>,.?/]).{8,16}$";
 
-        if (!email.matches(emailRegex)) {
+        if (email == null || !email.matches(emailRegex)) {
             throw new BadRequestException("Invalid Email Format");
         }
 
-        if (!password.matches(passRegex)) {
+        if (password == null || !password.matches(passRegex)) {
             throw new BadRequestException("Invalid Password Format");
         }
     }
