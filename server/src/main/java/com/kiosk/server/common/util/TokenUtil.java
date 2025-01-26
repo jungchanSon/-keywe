@@ -22,8 +22,8 @@ public class TokenUtil {
 
     @Autowired
     public TokenUtil(
-        @Value("${jwt.secret-key}") String SECRET_KEY,
-        @Value("${JWT.EXPIRATION-TIME.TEMP}") long TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS
+        @Value("${JWT.SECRET_KEY}") String SECRET_KEY,
+        @Value("${JWT.EXPIRATION_TIME.TEMP}") long TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS
     ) {
         this.SECRET_KEY = new SecretKeySpec(Base64.getDecoder().decode(SECRET_KEY), "HmacSHA256");
         this.TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS = TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS;
