@@ -16,6 +16,7 @@ public class TokenUtil {
 
     private static final String TOKEN_TYPE_CLAIM = "TYPE";
     private static final String TOKEN_TYPE_TEMP = "TEMP";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final SecretKey SECRET_KEY;
     private final long TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS;
@@ -41,7 +42,7 @@ public class TokenUtil {
     }
 
     private String generateToken(Claims claims, Date expiredTime) {
-        return Jwts.builder()
+        return BEARER_PREFIX + Jwts.builder()
             .claims(claims)
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(expiredTime)

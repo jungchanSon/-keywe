@@ -20,7 +20,7 @@ public class AuthController {
 
     @PostMapping("/user/login")
     public ResponseEntity<LoginResponse> login(@RequestBody UserLoginRequest request) {
-        String temporaryToken = "Bearer " + userLoginService.doService(request.email(), request.password());
+        String temporaryToken = userLoginService.doService(request.email(), request.password());
         LoginResponse response = new LoginResponse(temporaryToken);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
