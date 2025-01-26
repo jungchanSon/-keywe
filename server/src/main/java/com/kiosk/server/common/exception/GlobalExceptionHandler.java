@@ -1,6 +1,9 @@
 package com.kiosk.server.common.exception;
 
-import com.kiosk.server.common.exception.custom.*;
+import com.kiosk.server.common.exception.custom.BadRequestException;
+import com.kiosk.server.common.exception.custom.ConflictException;
+import com.kiosk.server.common.exception.custom.EntityNotFoundException;
+import com.kiosk.server.common.exception.custom.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,20 +30,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(InvalidProfileRoleException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidProfileRoleException(InvalidProfileRoleException e) {
-        ErrorResponse response = new ErrorResponse(e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(InvalidFormatException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException e) {
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFormatException(BadRequestException e) {
         ErrorResponse response = new ErrorResponse(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -99,7 +96,7 @@ public class GlobalExceptionHandler {
 
     private String createValidationErrorMessage(BindingResult bindingResult) {
         return bindingResult.getFieldErrors().stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+            .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+            .collect(Collectors.joining(", "));
     }
 }
