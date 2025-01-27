@@ -5,7 +5,7 @@
 <mapper namespace="com.kiosk.server.user.domain.UserRepository">
 
     <!-- 회원가입 -->
-    <insert id="registerUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+    <insert id="registerUser" parameterType="User">
         INSERT INTO users (user_id, role, email, password, salt, reg_date)
         VALUES (#{userId}, #{role}, #{email}, #{password}, #{salt}, #{regDate});
     </insert>

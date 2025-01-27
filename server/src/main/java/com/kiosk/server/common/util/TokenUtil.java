@@ -16,6 +16,7 @@ public class TokenUtil {
 
     private static final String TOKEN_TYPE_CLAIM = "TYPE";
     private static final String TOKEN_TYPE_TEMP = "TEMP";
+    private static final String TOKEN_TYPE_AUTH = "AUTH";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final SecretKey SECRET_KEY;
@@ -35,6 +36,18 @@ public class TokenUtil {
             .subject(String.valueOf(userId))
             .add(TOKEN_TYPE_CLAIM, TOKEN_TYPE_TEMP)
             .build();
+
+        Date expiredAt = new Date(System.currentTimeMillis() + TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS);
+
+        return generateToken(claims, expiredAt);
+    }
+
+    public String createAuthenticationToken(long userId, long profileId) {
+        Claims claims = Jwts.claims()
+                .subject(String.valueOf(userId))
+                .add("profileId", String.valueOf(profileId))
+                .add(TOKEN_TYPE_CLAIM, TOKEN_TYPE_AUTH)
+                .build();
 
         Date expiredAt = new Date(System.currentTimeMillis() + TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS);
 
