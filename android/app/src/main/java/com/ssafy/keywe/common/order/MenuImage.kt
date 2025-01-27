@@ -14,7 +14,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuImage(imageURL:String){
-//    val imageURL = "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
+//    val imageURL = "https://img.freepik.com/free-photo/vertical-closeup-glass-ice-tea-table-lights-against-white-background_181624-22315.jpg?semt=ais_hybrid"
 
     Image(
         painter = rememberAsyncImagePainter(model = imageURL),

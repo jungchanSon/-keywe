@@ -15,11 +15,11 @@ import androidx.compose.ui.zIndex
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.order.MenuCategory
 
-@Composable
-fun MenuScreen(){
-    Box(
-
-    ){
-        Text("Popular Coffee")
-    }
-}
+//@Composable
+//fun MenuScreen(){
+//    Box(
+//
+//    ){
+//        Text("Popular Coffee")
+//    }
+//}

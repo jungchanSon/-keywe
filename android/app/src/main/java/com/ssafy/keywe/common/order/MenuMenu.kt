@@ -48,11 +48,6 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
 fun MenuMenu(menuName:String, menuRecipe:String, menuPrice:Int, imageURL:String) {
-//    val ImageURL =
-//        "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
-//    val MenuName = "아메리카노"
-//    val MenuRecipe = "커피+물"
-//    val MenuPrice = 2000
 
     Box(
         modifier = Modifier,
@@ -110,7 +105,7 @@ fun MenuMenuList(menuList: List<Quadruple<String, String, Int, String>>) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            verticalArrangement = Arrangement.spacedBy(12.dp, CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
 //            verticalArrangement = Arrangement.SpaceBetween
         ) {
             items(menuList.chunked(2)) { rowItems ->
@@ -123,7 +118,9 @@ fun MenuMenuList(menuList: List<Quadruple<String, String, Int, String>>) {
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxHeight()
+                                .fillMaxWidth()
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
                         ) {
                             MenuMenuScreen(menuName = menu.first, menuRecipe = menu.second, menuPrice = menu.third, imageURL = menu.fourth)
                         }
