@@ -28,8 +28,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -79,6 +78,12 @@ dependencies {
 
     // jwt decode
     implementation("com.auth0.android:jwtdecode:2.0.2")
+
+    // splash
+    implementation(libs.androidx.core.splashscreen)
+
+    // logging
+    implementation(libs.timber)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

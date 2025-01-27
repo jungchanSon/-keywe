@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.KeyWe" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.KeyWe" parent="android:Theme.Material.Light.NoActionBar">
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">
+            @color/white
+        </item>
+        <item name="windowSplashScreenAnimatedIcon">
+            @color/white
+        </item>
+        <item name="windowSplashScreenAnimationDuration">10</item>
+        <item name="postSplashScreenTheme">@style/Theme.KeyWe</item>
+    </style>
+
+    <!--    <style name="Theme.App.Starting" parent="Theme.SplashScreen">-->
+    <!--        &lt;!&ndash; Set the splash screen background, animated icon, and animation-->
+    <!--        duration. &ndash;&gt;-->
+    <!--        <item name="windowSplashScreenBackground">@color/purple_500</item>-->
+
+    <!--        &lt;!&ndash; Use windowSplashScreenAnimatedIcon to add a drawable or an animated-->
+    <!--             drawable. One of these is required. &ndash;&gt;-->
+    <!--        <item name="windowSplashScreenAnimatedIcon">@mipmap/app_icon</item>-->
+    <!--        &lt;!&ndash; Required for animated icons. &ndash;&gt;-->
+    <!--        <item name="windowSplashScreenAnimationDuration">200</item>-->
+
+    <!--        &lt;!&ndash; Set the theme of the Activity that directly follows your splash-->
+    <!--        screen. This is required. &ndash;&gt;-->
+    <!--        <item name="postSplashScreenTheme">@style/Theme.Kotlinarticles</item>-->
+    <!--    </style>-->
 </resources>

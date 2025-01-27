@@ -1,12 +1,14 @@
-package com.ssafy.keywe.presentation
+package com.ssafy.keywe.presentation.auth.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
+import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.auth.AuthRepository
 import com.ssafy.keywe.data.dto.Status
 import com.ssafy.keywe.data.dto.auth.MITILoginRequest
@@ -18,8 +20,25 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: AuthRepository,
+    private val tokenManager: TokenManager,
 ) : ViewModel() {
-    private val _errorMessage = mutableStateOf("")
+    private val _email = mutableStateOf("")
+    val email: State<String> = _email
+
+    private val _password = mutableStateOf("")
+    val password: State<String> = _password
+
+
+    private val _errorMessage = mutableStateOf<String?>(null)
+    val errorMessage: State<String?> = _errorMessage
+
+    fun onEmailChanged(email: String) {
+        _email.value = email
+    }
+
+    fun onPasswordChanged(password: String) {
+        _password.value = password
+    }
 
 
     suspend fun loginMITI() {
@@ -28,9 +47,7 @@ class LoginViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            repository.login(loginRequest)
-                .onSuccess(::saveUserToken)
-                .onServerError(::handleError)
+            repository.login(loginRequest).onSuccess(::saveUserToken).onServerError(::handleError)
                 .onException(::handleException)
         }
     }
@@ -56,5 +73,9 @@ class LoginViewModel @Inject constructor(
         errorMessage: String,
     ) {
 //        _errorMessage.postValue(errorMessage)
+    }
+
+    suspend fun logout() {
+        tokenManager.clearTokens()
     }
 }

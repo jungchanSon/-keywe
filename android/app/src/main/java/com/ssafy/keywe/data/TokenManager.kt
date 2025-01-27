@@ -101,4 +101,8 @@ class TokenManager @Inject constructor(
         // 이벤트 발생
         _tokenClearedEvent.emit(Unit)
     }
+
+    suspend fun hasValidToken(): Boolean {
+        return !getToken().isNullOrEmpty()
+    }
 }

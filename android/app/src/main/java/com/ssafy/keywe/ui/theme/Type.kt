@@ -1,7 +1,6 @@
 package com.ssafy.keywe.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,6 +21,16 @@ val pretendardkr = FontFamily(
     Font(R.font.pretendard_semi_bold, FontWeight.SemiBold, FontStyle.Normal),
     Font(R.font.pretendard_thin, FontWeight.Thin, FontStyle.Normal),
 )
+
+val sen = FontFamily(
+    Font(R.font.sen_bold, FontWeight.Bold, FontStyle.Normal),
+)
+
+val logo = TextStyle(
+    fontFamily = sen, fontWeight = FontWeight.Bold, fontSize = 36.sp,
+    lineHeight = 43.sp
+)
+
 val h1 = TextStyle(
     fontFamily = pretendardkr, fontWeight = FontWeight.Light,
     fontSize = 96.sp,

@@ -1,0 +1,100 @@
+package com.ssafy.keywe.presentation.auth
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.ssafy.keywe.common.app.BottomButton
+import com.ssafy.keywe.common.app.DefaultTextFormField
+import com.ssafy.keywe.presentation.SignUpScreen
+import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
+import com.ssafy.keywe.ui.theme.caption
+import com.ssafy.keywe.ui.theme.h6sb
+import com.ssafy.keywe.ui.theme.logo
+import com.ssafy.keywe.ui.theme.primaryColor
+
+
+@Composable
+fun LoginScreen(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
+) {
+    val focusManager = LocalFocusManager.current
+
+    Box(modifier = modifier
+//        .windowInsetsPadding(WindowInsets.systemBars)
+        .clickable {
+            focusManager.clearFocus()
+        }
+        .fillMaxSize()) {
+        Column(
+            modifier = modifier.padding(PaddingValues(horizontal = 24.dp))
+        ) {
+            Spacer(modifier = modifier.height(32.dp))
+            Text(
+                "KEYWE",
+                style = logo,
+                color = primaryColor,
+                modifier = modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = modifier.height(32.dp))
+            Text(
+                "키위로 더 간단하고\n" + "스마트한 하루를 시작하세요.", style = h6sb
+            )
+            Spacer(modifier = modifier.height(40.dp))
+            DefaultTextFormField(
+                label = "이메일",
+                text = viewModel.email.value,
+                placeholder = "이메일을 입력해주세요.",
+                onValueChange = {
+                    viewModel.onEmailChanged(it)
+                },
+            )
+            Spacer(modifier = modifier.height(12.dp))
+            DefaultTextFormField(
+                label = "비밀번호",
+                text = viewModel.password.value,
+                placeholder = "비밀번호를 입력해주세요.",
+                onValueChange = {
+                    viewModel.onPasswordChanged(it)
+                },
+            )
+
+            Spacer(modifier = modifier.height(32.dp))
+            BottomButton(content = "로그인", onClick = {
+                navController.navigate("greet", builder = {
+                    popUpTo("login") { inclusive = true }
+                })
+            })
+            Spacer(modifier = modifier.height(12.dp))
+            Text(
+                "계정이 없으신가요?",
+                modifier = modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(SignUpScreen.toString())
+                    },
+                textAlign = TextAlign.Center,
+                style = caption,
+                textDecoration = TextDecoration.Underline
+            )
+        }
+    }
+
+}
