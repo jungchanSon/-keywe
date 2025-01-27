@@ -1,9 +1,5 @@
 package com.ssafy.keywe.ui.profile
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,24 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.profile.Profile
-import com.ssafy.keywe.ui.theme.KeyWeTheme
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            KeyWeTheme {
-                Scaffold(
-                    topBar = { DefaultAppBar(title = "타이틀") }, modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    ProfileChoice(
-                    )
-                }
-            }
-        }
-    }
-}
 
 
 @Composable

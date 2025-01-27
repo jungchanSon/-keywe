@@ -28,6 +28,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,23 +47,6 @@ import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.viewmodel.AddMemberViewModel
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            KeyWeTheme {
-                Scaffold(
-                    topBar = { DefaultAppBar(title = "타이틀") }, modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    AddMember(
-                    )
-                }
-            }
-        }
-    }
-}
 
 
 @Composable
@@ -249,6 +234,20 @@ fun SwitchableTab(
             }
         }
     }
+}
+
+@Composable
+fun PhoneNumberInputScreen() {
+    var phoneNumber by remember { mutableStateOf("") }
+
+    DefaultTextFormField(
+        label = "핸드폰 번호",
+        placeholder = "010-1234-5678",
+        text = phoneNumber,
+        onValueChange = { phoneNumber = it }, // 실시간 값 갱신
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 //핸드폰 커서 순서 수정 중
