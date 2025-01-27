@@ -49,6 +49,7 @@ class AddMemberViewModel : ViewModel() {
         }
     }
 
+
     fun onVerificationCodeChange(code: String) {
         if (code.length <= 6 && code.all { it.isDigit() }) {
             _state.update { it.copy(verificationCode = code) }

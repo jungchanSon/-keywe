@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { DefaultAppBar(title = "타이틀") }, modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    AddMember(
+                    //screen이름(
                     )
                 }
             }
