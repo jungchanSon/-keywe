@@ -254,15 +254,13 @@ fun ProfileScreen() {
 fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
 
     val scope = rememberCoroutineScope()
-    Scaffold { innerPadding ->
-        Text("home")
-        TextButton(onClick = {
-            scope.launch {
-                tokenManager.clearTokens()
-            }
-        }) {
-            Text(text = "토큰 초기화")
+    Text("home")
+    TextButton(onClick = {
+        scope.launch {
+            tokenManager.clearTokens()
         }
+    }) {
+        Text(text = "토큰 초기화")
     }
 }
 
