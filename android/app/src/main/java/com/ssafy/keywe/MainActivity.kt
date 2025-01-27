@@ -71,37 +71,6 @@ class MainActivity : ComponentActivity() {
         val splashscreen = installSplashScreen()
         enableEdgeToEdge()
 
-
-//        splashscreen.setKeepOnScreenCondition { viewModel.isLoading.value }
-
-
-//        lifecycleScope.launch {
-//            // Save tokens
-//            tokenManager.saveAccessToken("new_access_token")
-//            tokenManager.saveRefreshToken("new_refresh_token")
-//
-//            // Retrieve tokens
-//            val accessToken = tokenManager.getAccessToken()?.first()
-//            val refreshToken = tokenManager.getRefreshToken()?.first()
-//
-//            Log.d("TokenManager", "Access Token: $accessToken")
-//            Log.d("TokenManager", "Refresh Token: $refreshToken")
-//
-//            val token =
-//                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
-//            val jwt = JWT(token)
-//
-//            val issuer = jwt.issuer //get registered claims
-//            val claim = jwt.getClaim("isAdmin").asString() //get custom claims
-//            val isExpired = jwt.isExpired(10) // Do time validation with 10 seconds leeway
-//
-//            Log.d(
-//                "jwt", "issuer = $issuer, claim = $claim, isExpired = $isExpired isTemp = ${
-//                    JWTUtil.isTempToken(token)
-//                }"
-//            )
-//        }
-
         setContent {
             val navController = rememberNavController()
 

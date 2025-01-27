@@ -4,6 +4,7 @@ import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.dto.auth.MITILoginRequest
 import com.ssafy.keywe.data.dto.mapper.toDomain
 import com.ssafy.keywe.domain.LoginModel
+import com.ssafy.keywe.domain.auth.AuthRepository
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(

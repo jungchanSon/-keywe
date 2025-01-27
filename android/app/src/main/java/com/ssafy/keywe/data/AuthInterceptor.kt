@@ -3,10 +3,10 @@ package com.ssafy.keywe.data
 import android.util.Log
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ssafy.keywe.data.auth.AuthService
-import com.ssafy.keywe.data.auth.NetworkUtil
-import com.ssafy.keywe.data.auth.NetworkUtil.AUTHORIZATION
-import com.ssafy.keywe.data.auth.NetworkUtil.jsonBuilder
 import com.ssafy.keywe.data.dto.auth.LoginRequest
+import com.ssafy.keywe.util.NetworkUtil
+import com.ssafy.keywe.util.NetworkUtil.AUTHORIZATION
+import com.ssafy.keywe.util.NetworkUtil.jsonBuilder
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
 import okhttp3.Interceptor

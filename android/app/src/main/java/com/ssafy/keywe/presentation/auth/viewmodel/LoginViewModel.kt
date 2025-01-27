@@ -9,10 +9,10 @@ import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.TokenManager
-import com.ssafy.keywe.data.auth.AuthRepository
 import com.ssafy.keywe.data.dto.Status
 import com.ssafy.keywe.data.dto.auth.MITILoginRequest
 import com.ssafy.keywe.domain.LoginModel
+import com.ssafy.keywe.domain.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
