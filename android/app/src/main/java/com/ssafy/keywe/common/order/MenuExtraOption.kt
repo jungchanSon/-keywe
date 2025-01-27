@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +18,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.R
-import com.ssafy.keywe.ui.theme.primaryColor
+import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+
+
+@Composable
+fun MenuExtraOption() {
+    Box(
+        modifier = Modifier
+            .background(greyBackgroundColor),
+    ){
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(text ="추가 선택", style = h6.copy(fontSize = 16.sp))
+            OptionBox("샷추가 +500", 1)
+            OptionBox("시럽 추가", 1)
+        }
+    }
+}
 
 @Composable
 fun Option(name: String) {
@@ -74,7 +97,7 @@ fun OptionBox(name: String, amount: Int) {
             .padding(
                 horizontal = 16.dp,
                 vertical = 8.dp
-            )
+            ),
 
     ) {
         Row(

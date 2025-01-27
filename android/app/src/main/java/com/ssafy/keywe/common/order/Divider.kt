@@ -1,5 +1,6 @@
 package com.ssafy.keywe.common.order
 
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -9,6 +10,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import androidx.compose.material3.HorizontalDivider as MaterialHorizonDivider
+import androidx.compose.material3.VerticalDivider as MatetialVerticalDivider
 
 @Composable
 fun HorizontalDivider(
@@ -18,7 +20,20 @@ fun HorizontalDivider(
     MaterialHorizonDivider(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 8.dp),
+            .padding(horizontal = 24.dp),
+        thickness = thickness,
+        color = color
+    )
+}
+
+@Composable
+fun VerticalDivider(
+    thickness: Dp = 1.dp,
+    color: Color = polishedSteelColor
+) {
+    MatetialVerticalDivider(
+        modifier = Modifier
+            .fillMaxHeight(),
         thickness = thickness,
         color = color
     )
