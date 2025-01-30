@@ -2,28 +2,29 @@ package com.ssafy.keywe.data.auth
 
 import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.data.dto.auth.LoginResponse
-import com.ssafy.keywe.data.dto.auth.MITILoginRequest
-import com.ssafy.keywe.data.dto.auth.MITILoginResponse
-import com.ssafy.keywe.data.dto.auth.MITIResponse
+import com.ssafy.keywe.data.dto.auth.SignUpRequest
+import com.ssafy.keywe.data.dto.auth.SignUpResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 
-//https://jsonplaceholder.typicode.com/todos/1
 interface AuthService {
+
     @POST(LOGIN_PATH)
     suspend fun login(
         @Body loginRequest: LoginRequest,
+//        @Header("Authorization") authorization: Boolean = false,
     ): Response<LoginResponse>
 
-    @POST(LOGIN_MITI)
-    suspend fun loginMiti(@Body loginRequest: MITILoginRequest)
-            : Response<MITIResponse<MITILoginResponse>>
-
+    @POST(SIGNUP_PATH)
+    suspend fun signup(
+        @Body signUpRequest: SignUpRequest,
+//        @Header("Authorization") authorization: Boolean = false,
+    ): Response<SignUpResponse>
 
     companion object {
-        private const val LOGIN_PATH = "/login"
-        private const val LOGIN_MITI = "/auth/login/email"
+        private const val LOGIN_PATH = "/auth/user/login"
+        private const val SIGNUP_PATH = "/user"
     }
 }

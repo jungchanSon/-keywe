@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -35,6 +39,25 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val focusManager = LocalFocusManager.current
+
+    val email by viewModel.email.collectAsStateWithLifecycle()
+    val password by viewModel.password.collectAsStateWithLifecycle()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
+
+    val onSearchExplicitlyTriggered = {
+//        keyboardController?.hide()
+        focusManager.clearFocus()
+//        onSearchTriggered(searchQuery)
+    }
+
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn) {
+            navController.navigate("home")
+        }
+    }
 
     Box(modifier = modifier
 //        .windowInsetsPadding(WindowInsets.systemBars)
@@ -60,7 +83,7 @@ fun LoginScreen(
             Spacer(modifier = modifier.height(40.dp))
             DefaultTextFormField(
                 label = "이메일",
-                text = viewModel.email.value,
+                text = email,
                 placeholder = "이메일을 입력해주세요.",
                 onValueChange = {
                     viewModel.onEmailChanged(it)
@@ -69,7 +92,7 @@ fun LoginScreen(
             Spacer(modifier = modifier.height(12.dp))
             DefaultTextFormField(
                 label = "비밀번호",
-                text = viewModel.password.value,
+                text = password,
                 placeholder = "비밀번호를 입력해주세요.",
                 onValueChange = {
                     viewModel.onPasswordChanged(it)
@@ -78,9 +101,11 @@ fun LoginScreen(
 
             Spacer(modifier = modifier.height(32.dp))
             BottomButton(content = "로그인", onClick = {
-                navController.navigate("greet", builder = {
-                    popUpTo("login") { inclusive = true }
-                })
+                onSearchExplicitlyTriggered()
+                viewModel.login()
+//                navController.navigate("greet", builder = {
+//                    popUpTo("login") { inclusive = true }
+//                })
             })
             Spacer(modifier = modifier.height(12.dp))
             Text(

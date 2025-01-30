@@ -10,10 +10,14 @@ import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.dto.Status
-import com.ssafy.keywe.data.dto.auth.MITILoginRequest
-import com.ssafy.keywe.domain.LoginModel
+import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.domain.auth.AuthRepository
+import com.ssafy.keywe.domain.auth.LoginModel
+import com.ssafy.keywe.util.JWTUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,11 +26,14 @@ class LoginViewModel @Inject constructor(
     private val repository: AuthRepository,
     private val tokenManager: TokenManager,
 ) : ViewModel() {
-    private val _email = mutableStateOf("")
-    val email: State<String> = _email
+    private val _email = MutableStateFlow("")
+    val email: StateFlow<String> = _email.asStateFlow()
 
-    private val _password = mutableStateOf("")
-    val password: State<String> = _password
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password.asStateFlow()
+
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
 
     private val _errorMessage = mutableStateOf<String?>(null)
@@ -41,11 +48,10 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    suspend fun loginMITI() {
-        val loginRequest = MITILoginRequest(
-            email = "testuser2@makeittakeit.kr", password = "Miti1234!"
+    fun login() {
+        val loginRequest = LoginRequest(
+            email = _email.value, password = password.value
         )
-
         viewModelScope.launch {
             repository.login(loginRequest).onSuccess(::saveUserToken).onServerError(::handleError)
                 .onException(::handleException)
@@ -55,10 +61,13 @@ class LoginViewModel @Inject constructor(
     private fun saveUserToken(
         newToken: LoginModel,
     ) {
+        _isLoggedIn.value = true
         Log.d("token", newToken.toString())
+
+        JWTUtil.isTempToken(newToken.accessToken.split(" ")[1])
+
         viewModelScope.launch {
-//            StaccatoApplication.userInfoPrefsManager.setToken(newToken)
-//            _isLoginSuccess.postValue(true)
+            tokenManager.saveTempToken(newToken.accessToken)
         }
     }
 
