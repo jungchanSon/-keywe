@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kiosk.server.store.domain.CategoryRepository">
+
+    <!-- 주어진 카테고리 이름으로 카테고리 ID 조회 -->
+    <select id="findCategoryIdByName" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT category_id FROM menu_category
+        WHERE category_name = #{menuCategoryName};
+    </select>
+
+    <!-- 주어진 카테고리 ID로 카테고리 조회 -->
+    <select id="findCategoryById" parameterType="int" resultType="StoreMenuCategory">
+        SELECT * FROM menu_category
+        WHERE category_id = #{categoryId};
+    </select>
+
+    <!-- 카테고리 등록 -->
+    <insert id="insertCategory" parameterType="StoreMenuCategory" useGeneratedKeys="true" keyProperty="categoryId">
+        INSERT INTO menu_category (category_name, image_id, created_at)
+        VALUES (#{categoryName}, #{imageId}, #{createdAt});
+    </insert>
+
+    <!-- 카테고리 모두 조회 -->
+    <select id="findAllCategories" resultType="FindAllCategoriesResponse">
+        SELECT c.category_id categoryId, c.category_name categoryName, i.image_path imagePath
+        FROM menu_category c
+        LEFT JOIN menu_image i ON c.image_id = i.image_id;
+    </select>
+
+    <!-- 카테고리 수정 -->
+    <update id="updateCategory" parameterType="map">
+        UPDATE menu_category
+        SET category_name = #{categoryName}, image_id = #{imageId}
+        WHERE category_id = #{categoryId};
+    </update>
+
+    <!-- 카테고리 삭제 -->
+    <delete id="deleteCategory" parameterType="int">
+        DELETE FROM menu_category WHERE category_id = #{categoryId};
+    </delete>
+
+
+</mapper>

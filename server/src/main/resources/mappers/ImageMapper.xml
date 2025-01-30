@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kiosk.server.store.domain.ImageRepository">
+
+    <!-- 이미지 생성 -->
+    <insert id="insertImage" useGeneratedKeys="true" keyProperty="imageId">
+        INSERT INTO menu_image (image_path, created_at)
+        VALUES (#{imagePath}, #{createdAt});
+    </insert>
+    
+    <!-- ID로 이미지 찾기 -->
+    <select id="findImageById" resultType="Images">
+        SELECT image_id, image_path, created_at FROM menu_image
+        WHERE image_id = #{imageId};
+    </select>
+
+    <delete id="deleteImageById" parameterType="java.lang.Integer">
+        DELETE FROM menu_image WHERE WHERE image_id = #{imageId};
+    </delete>
+
+</mapper>
