@@ -36,11 +36,11 @@ import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
+import com.ssafy.keywe.presentation.profile.viewmodel.AddMemberViewModel
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.primaryColor
-import com.ssafy.keywe.presentation.profile.viewmodel.AddMemberViewModel
 
 
 @Composable

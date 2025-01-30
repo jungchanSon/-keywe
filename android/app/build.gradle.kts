@@ -67,6 +67,7 @@ dependencies {
 
     //hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation(libs.androidx.navigation.runtime.ktx)
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 //    implementation(libs.hilt.android)
 //    kapt(libs.dagger.hilt.android.compiler)
