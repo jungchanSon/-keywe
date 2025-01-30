@@ -1,7 +1,8 @@
-package com.ssafy.keywe.presentation.order.component
+package com.ssafy.keywe.common.order
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -31,14 +34,14 @@ fun MenuExtraOption() {
     Box(
         modifier = Modifier
             .background(greyBackgroundColor),
-    ) {
+    ){
         Column(
             modifier = Modifier
                 .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            Text(text = "추가 선택", style = h6.copy(fontSize = 16.sp))
+            Text(text ="추가 선택", style = h6.copy(fontSize = 16.sp))
             OptionBox("샷추가 +500", 1)
             OptionBox("시럽 추가", 1)
         }
@@ -54,7 +57,7 @@ fun Option(name: String) {
 }
 
 @Composable
-fun OptionAmount(amount: Int) {
+fun OptionAmount(amount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
     Row(
         modifier = Modifier
             .width(88.dp)
@@ -65,7 +68,8 @@ fun OptionAmount(amount: Int) {
         Image(
             modifier = Modifier
                 .width(20.dp)
-                .height(20.dp),
+                .height(20.dp)
+                .clickable{ onDecrease() },
             painter = painterResource(R.drawable.minus_circle),
             contentDescription = "minus in circle"
         )
@@ -76,7 +80,8 @@ fun OptionAmount(amount: Int) {
         Image(
             modifier = Modifier
                 .width(20.dp)
-                .height(20.dp),
+                .height(20.dp)
+                .clickable { onIncrease() },
             painter = painterResource(R.drawable.plus_circle),
             contentDescription = "plus in circle"
         )
@@ -84,7 +89,9 @@ fun OptionAmount(amount: Int) {
 }
 
 @Composable
-fun OptionBox(name: String, amount: Int) {
+fun OptionBox(name: String, initialAmount: Int) {
+    val amount = remember { mutableStateOf(initialAmount) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,7 +115,13 @@ fun OptionBox(name: String, amount: Int) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Option(name)
-            OptionAmount(amount)
+            OptionAmount(amount.value, onDecrease = {
+                if (amount.value > 1) { // 1 이하로 내려가지 않도록 제한
+                    amount.value--
+                }
+            }, onIncrease = {
+                amount.value++
+            })
         }
     }
 }
