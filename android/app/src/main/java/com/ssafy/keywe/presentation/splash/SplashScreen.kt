@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.ssafy.keywe.presentation.splash.viewmodel.SplashRoute
 import com.ssafy.keywe.presentation.splash.viewmodel.SplashViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -33,24 +33,35 @@ fun SplashScreen(
     navController: NavHostController,
     viewModel: SplashViewModel = hiltViewModel(),
 ) {
-    val isDataLoaded by remember { derivedStateOf { viewModel.isLoading.value } }
+    val isDataLoaded = !remember { derivedStateOf { viewModel.isLoading.value } }.value
     val scope = rememberCoroutineScope()
     // 로고와 텍스트를 중심에 배치
     LaunchedEffect(isDataLoaded) {
-        scope.launch {
-            delay(3000)
-            if (viewModel.isLoggedIn.value) {
-                navController.navigateUp()
+        if (isDataLoaded) {
+            scope.launch {
+                delay(1500)
+                when (viewModel.splashRoute.value) {
+                    SplashRoute.LOGIN -> {
+                        navController.navigate("login") {
+                            popUpTo("splash") { inclusive = true }
+                        }
+                    }
 
-                navController.navigate("home") {
-                    popUpTo("splash") { inclusive = true }
-                }
-            } else {
-                navController.navigate("login") {
-                    popUpTo("splash") { inclusive = true }
+                    SplashRoute.PROFILE -> {
+                        navController.navigate("profile") {
+                            popUpTo("splash") { inclusive = true }
+                        }
+                    }
+
+                    SplashRoute.HOME -> {
+                        navController.navigate("home") {
+                            popUpTo("splash") { inclusive = true }
+                        }
+                    }
                 }
             }
         }
+
     }
 
     Box(

@@ -3,26 +3,6 @@ package com.ssafy.keywe.data.dto.auth
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class LoginResponse(
-    @SerialName("token") val token: String,
-)
-
-/*
-{
-  "userId": 1,
-  "id": 1,
-  "title": "delectus aut autem",
-  "completed": false
-}
- */
-@Serializable
-data class TestResponse(
-    val userId: Int,
-    val id: Int,
-    val title: String,
-    val completed: Boolean,
-)
 
 /*
     "status_code": 200,
@@ -48,13 +28,10 @@ data class MITIResponse<T>(
 
 
 @Serializable
-data class MITILoginResponse(
-    @SerialName("id") val id: Int,
-    @SerialName("email") val email: String,
-    @SerialName("nickname") val nickname: String,
-    @SerialName("signup_method") val signupMethod: String,
-    @SerialName("token") val token: TokenResponse,
+data class LoginResponse(
+    @SerialName("accessToken") val accessToken: String,
 )
+
 
 @Serializable
 data class TokenResponse(

@@ -39,7 +39,8 @@ object NetworkModule {
         val provideLoggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
-        return OkHttpClient.Builder().addInterceptor(authInterceptor) // Add AuthInterceptor
+        return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor) // Add AuthInterceptor
             .authenticator(authAuthenticator) // Add AuthAuthenticator
             .addInterceptor(provideLoggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS) // 연결 타임아웃 설정

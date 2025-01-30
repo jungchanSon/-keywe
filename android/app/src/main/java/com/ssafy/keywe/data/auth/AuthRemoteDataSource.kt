@@ -2,15 +2,21 @@ package com.ssafy.keywe.data.auth
 
 import com.ssafy.keywe.data.ApiResponseHandler.handleApiResponse
 import com.ssafy.keywe.data.ResponseResult
-import com.ssafy.keywe.data.dto.auth.MITILoginRequest
-import com.ssafy.keywe.data.dto.auth.MITILoginResponse
-import com.ssafy.keywe.data.dto.auth.MITIResponse
+import com.ssafy.keywe.data.dto.auth.LoginRequest
+import com.ssafy.keywe.data.dto.auth.LoginResponse
+import com.ssafy.keywe.data.dto.auth.SignUpRequest
+import com.ssafy.keywe.data.dto.auth.SignUpResponse
 import javax.inject.Inject
 
 class AuthRemoteDataSource @Inject constructor(private val authService: AuthService) :
     AuthDataSource {
-    override suspend fun requestLogin(loginRequest: MITILoginRequest): ResponseResult<MITIResponse<MITILoginResponse>> =
+    override suspend fun requestLogin(loginRequest: LoginRequest): ResponseResult<LoginResponse> =
         handleApiResponse {
-            authService.loginMiti(loginRequest)
+            authService.login(loginRequest)
+        }
+
+    override suspend fun requestSignUp(signUpRequest: SignUpRequest): ResponseResult<SignUpResponse> =
+        handleApiResponse {
+            authService.signup(signUpRequest)
         }
 }

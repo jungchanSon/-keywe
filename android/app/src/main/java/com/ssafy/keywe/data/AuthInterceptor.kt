@@ -27,33 +27,22 @@ class AuthInterceptor @Inject constructor(
         /**
          * 인증 토큰 가져오기
          */
-        val token: String? = runBlocking {
-            tokenManager.getToken()
+        val request = chain.request()
+
+        if (isRequestWithToken(request.url.toUri().path)) {
+            val token = runBlocking {
+                tokenManager.getToken()
+            }
+            val newRequest = request.newBuilder().header("Authorization", "$token").build()
+            return chain.proceed(newRequest)
         }
-        val request = chain.request().newBuilder().header(AUTHORIZATION, "Bearer $token").build()
-        Log.d("API REQUEST", "token = $token")
-        ////////////////////////////////// 여기부터 추가된 코드 /////////////////////////////////////
-        val response = chain.proceed(request)
-//        if (response.isSuccessful) {
-//            val newAccessToken: String = response.header(AUTHORIZATION, null) ?: return response
-//            Log.d("AUTH", "new Access Token = $newAccessToken")
-//
-//            CoroutineScope(Dispatchers.IO).launch {
-//                val existedAccessToken: String = tokenManager.getAccessToken().toString()
-//                if (existedAccessToken != newAccessToken) {
-//                    tokenManager.saveAccessToken(newAccessToken)
-//                    Log.d(
-//                        "AUTH",
-//                        "newAccessToken = ${newAccessToken}\n" + "ExistedAccessToken = $existedAccessToken"
-//                    )
-//                }
-//            }
-//        } else {
-//            Log.d(
-//                "AUTH", "${response.code} : ${response.request} \n" + " ${response.message}"
-//            )
-//        }
-        return response
+
+        return chain.proceed(request)
+    }
+
+
+    private fun isRequestWithToken(path: String): Boolean {
+        return NetworkUtil.WITH_TOKEN.contains(path)
     }
 }
 
@@ -61,6 +50,16 @@ class AuthAuthenticator @Inject constructor(
     private val tokenManager: TokenManager,
 ) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
+        Log.d("authenticate", "call AuthAuthenticator")
+//        if (response.request.header("Authorization") != null) {
+//            val newToken = "tokenManager.getToken()" ?: return null
+//            return response.request.newBuilder()
+//                .header("Authorization", "Bearer $newToken")
+//                .build()
+//        }
+//        return null
+
+
         Log.d("AUTH", "authenticatprivate val authService: AuthService,e")
 
         // 리프레쉬 토큰 가져오기
@@ -69,8 +68,8 @@ class AuthAuthenticator @Inject constructor(
         }
 
         // 없으면 추가 작업 X
-        if (refreshToken == null || refreshToken == "LOGIN") {
-            response.close()
+        if (refreshToken == null || isRequestWithToken(response.request.url.toUri().path)) {
+//            response.close()
             return null
         }
 
@@ -94,14 +93,15 @@ class AuthAuthenticator @Inject constructor(
         var newAccessToken: String? = null
 
         runBlocking {
-            val response = authService.login(loginRequest = LoginRequest("", ""))
+            val response =
+                authService.login(loginRequest = LoginRequest("ssafy1@ssafy.com", "Ssafy1234!"))
             // Access Token 토큰 재발급 성공
             if (response.isSuccessful) {
                 val body = response.body()
                 body?.let {
-                    newAccessToken = it.token
-                    tokenManager.saveAccessToken(it.token)
-                    tokenManager.saveRefreshToken(it.token)
+                    newAccessToken = it.accessToken
+                    tokenManager.saveAccessToken(it.accessToken)
+                    tokenManager.saveRefreshToken(it.accessToken)
                 }
             } else {
                 // 재발급 실패 시 로그아웃
@@ -116,6 +116,10 @@ class AuthAuthenticator @Inject constructor(
         if (newAccessToken == null) return null
 
         return newRequestWithToken(newAccessToken!!, response.request)
+    }
+
+    private fun isRequestWithToken(path: String): Boolean {
+        return NetworkUtil.WITH_TOKEN.contains(path)
     }
 
     private fun newRequestWithToken(token: String, request: Request): Request =

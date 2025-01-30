@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -27,7 +28,11 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val focusManager = LocalFocusManager.current
-    val scrollState = rememberScrollState()
+    val name by viewModel.name.collectAsStateWithLifecycle()
+    val email by viewModel.email.collectAsStateWithLifecycle()
+    val password by viewModel.password.collectAsStateWithLifecycle()
+    val passwordCheck by viewModel.passwordCheck.collectAsStateWithLifecycle()
+
     Box(modifier = modifier
         .fillMaxSize()
         .clickable {
@@ -43,38 +48,50 @@ fun SignUpScreen(
                 Spacer(modifier.height(32.dp))
                 DefaultTextFormField(
                     label = "이름",
-                    text = viewModel.name.value,
+                    text = name,
                     placeholder = "이름을 입력해주세요.",
-                    onValueChange = {},
+                    onValueChange = {
+                        viewModel.onNameChanged(it)
+                    },
                 )
                 Spacer(modifier.height(12.dp))
                 DefaultTextFormField(
                     label = "이메일",
-                    text = viewModel.email.value,
+                    text = email,
                     placeholder = "이메일을 입력해주세요.",
-                    onValueChange = {},
+                    onValueChange = {
+                        viewModel.onEmailChanged(it)
+
+                    },
                 )
                 Spacer(modifier.height(12.dp))
                 DefaultTextFormField(
                     label = "비밀번호",
-                    text = viewModel.password.value,
+                    text = password,
                     placeholder = "비밀번호를 입력해주세요.",
-                    onValueChange = {},
+                    onValueChange = {
+                        viewModel.onPasswordChanged(it)
+
+                    },
                 )
                 Spacer(modifier.height(12.dp))
                 DefaultTextFormField(
                     label = "비밀번호 확인",
-                    text = viewModel.passwordCheck.value,
+                    text = passwordCheck,
                     placeholder = "비밀번호 확인을 입력해주세요.",
-                    onValueChange = {},
-                )
+                    onValueChange = {
+                        viewModel.onPasswordCheckChanged(it)
 
+                    },
+                )
             }
             Box(
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
-                BottomButton(content = "회원가입", onClick = {})
-
+                BottomButton(content = "회원가입", onClick = {
+                    focusManager.clearFocus()
+                    viewModel.signUp()
+                })
             }
         }
     }

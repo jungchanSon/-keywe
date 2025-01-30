@@ -6,4 +6,6 @@ object NetworkUtil {
     const val BASE_URL = "http://43.201.85.41:8080"
     val jsonBuilder = Json { coerceInputValues = true }
     const val AUTHORIZATION = "Authorization"
+
+    val WITH_TOKEN = listOf("/auth/user/login")
 }
