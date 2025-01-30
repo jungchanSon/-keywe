@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,13 +20,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
+import java.text.DecimalFormat
 
 @Composable
 fun DefaultTextFormField(
@@ -135,39 +140,39 @@ fun DefaultTextFormField(
 
 
 // 데시멀 활용 텍스프 필드
-//@Composable
-//fun ThousandFormatTextField() {
-//    var text by remember {
-//        mutableStateOf(TextFieldValue(""))
-//    }
-//    TextField(
-//        value = text,
-//        onValueChange = { newInput ->
-//            val newValue = if (newInput.text.isNotBlank()) {
-//                newInput.text
-//                    .clearThousandFormat()
-//                    .toLong()
-//                    .formatThousand()
-//            } else newInput.text
-//
-//            text = newInput.copy(
-//                text = newValue,
-//                selection = TextRange(newValue.length)
-//            )
-//        },
-//        placeholder = {
-//            Text(text = "Using textfieldvalue")
-//        },
-//        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-//    )
-//}
-//
-//fun Long.formatThousand(): String {
-//    val decimalFormatter = DecimalFormat("#,###")
-//    return decimalFormatter.format(this)
-//}
-//
-//fun String.clearThousandFormat(): String {
-//    return this.replace(",", "")
-//}
+@Composable
+fun PhoneNumberTextField() {
+    var text by remember {
+        mutableStateOf(TextFieldValue(""))
+    }
+    TextField(
+        value = text,
+        onValueChange = { newInput ->
+            val newValue = if (newInput.text.isNotBlank()) {
+                newInput.text
+                    .clearThousandFormat()
+                    .toLong()
+                    .formatThousand()
+            } else newInput.text
+
+            text = newInput.copy(
+                text = newValue,
+                selection = TextRange(newValue.length)
+            )
+        },
+        placeholder = {
+            Text(text = "Using textfieldvalue")
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+    )
+}
+
+fun Long.formatThousand(): String {
+    val decimalFormatter = DecimalFormat("-####")
+    return decimalFormatter.format(this)
+}
+
+fun String.clearThousandFormat(): String {
+    return this.replace("-", "")
+}
 
