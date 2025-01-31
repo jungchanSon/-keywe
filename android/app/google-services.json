@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1054950978706",
+    "project_id": "keywe-538fe",
+    "storage_bucket": "keywe-538fe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1054950978706:android:8a60ea55a081149d10e24b",
+        "android_client_info": {
+          "package_name": "com.ssafy.keywe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnQ1rrUQcalsEOmG5JInAxx6XFWudNK6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
