@@ -19,8 +19,8 @@
 
     <!-- 카테고리 등록 -->
     <insert id="insertCategory" parameterType="StoreMenuCategory" useGeneratedKeys="true" keyProperty="categoryId">
-        INSERT INTO menu_category (category_name, created_at)
-        VALUES (#{categoryName}, #{createdAt});
+        INSERT INTO menu_category (category_id, user_id, category_name, created_at)
+        VALUES (#{categoryId}, #{userId}, #{categoryName}, #{createdAt});
     </insert>
 
     <!-- 카테고리 모두 조회 -->
