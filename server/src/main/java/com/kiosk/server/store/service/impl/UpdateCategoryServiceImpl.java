@@ -21,9 +21,9 @@ public class UpdateCategoryServiceImpl implements UpdateCategoryService {
     @Override
     public void doService(long userId, long categoryId, String newCategoryName) {
         // 기존 카테고리 조회
-        StoreMenuCategory category = findCategory(categoryId);
+        validateCategoryId(categoryId);
 
-        if (StringUtils.hasLength(newCategoryName)) {
+        if (!StringUtils.hasLength(newCategoryName)) {
             throw new BadRequestException("Category name is empty");
         }
 
@@ -35,11 +35,10 @@ public class UpdateCategoryServiceImpl implements UpdateCategoryService {
         categoryRepository.updateCategory(updateParams);
     }
 
-    private StoreMenuCategory findCategory(long categoryId) {
+    private void validateCategoryId(long categoryId) {
         StoreMenuCategory category = categoryRepository.findCategoryById(categoryId);
         if (category == null) {
             throw new EntityNotFoundException("Category not found");
         }
-        return category;
     }
 }
