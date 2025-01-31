@@ -51,7 +51,11 @@ import com.ssafy.keywe.presentation.BottomNavItem
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
+import com.ssafy.keywe.presentation.profile.AddMemberScreen
 import com.ssafy.keywe.presentation.profile.EditMember
+import com.ssafy.keywe.presentation.profile.EmailVerification
+import com.ssafy.keywe.presentation.profile.ProfileChoice
+import com.ssafy.keywe.presentation.profile.ProfileScreen
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
@@ -149,7 +153,11 @@ fun MyApp(
                 composable("signup") {
                     SignUpScreen(navController)
                 }
-                composable("profile") { EditMember() }
+                composable("profile") { ProfileScreen(navController) }
+                composable("choiceProfile") { ProfileChoice(navController) }
+                composable("editProfile") { EditMember(navController) }
+                composable("emailVerify") { EmailVerification(navController) }
+                composable("addProfile") { AddMemberScreen(navController) }
             }
         }
 
@@ -213,11 +221,6 @@ private fun MyBottomNavigation(
             }
         }
     }
-}
-
-@Composable
-fun ProfileScreen() {
-    Text(text = "Profile")
 }
 
 
