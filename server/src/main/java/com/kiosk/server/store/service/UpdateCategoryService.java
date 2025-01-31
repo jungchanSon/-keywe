@@ -2,5 +2,5 @@ package com.kiosk.server.store.service;
 
 public interface UpdateCategoryService {
 
-    void doService(String categoryName, int categoryId);
+    void doService(long userId, long categoryId, String newCategoryName);
 }

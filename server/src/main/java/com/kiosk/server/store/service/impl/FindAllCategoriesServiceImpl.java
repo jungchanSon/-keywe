@@ -15,7 +15,7 @@ public class FindAllCategoriesServiceImpl implements FindAllCategoriesService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public List<FindAllCategoriesResponse> doService() {
-        return categoryRepository.findAllCategories();
+    public List<FindAllCategoriesResponse> doService(long userId) {
+        return categoryRepository.findAllCategoriesByUserId(userId);
     }
 }

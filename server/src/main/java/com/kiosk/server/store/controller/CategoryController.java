@@ -6,6 +6,7 @@ import com.kiosk.server.store.service.CreateCategoryService;
 import com.kiosk.server.store.service.DeleteCategoryService;
 import com.kiosk.server.store.service.FindAllCategoriesService;
 import com.kiosk.server.store.service.UpdateCategoryService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,27 +25,30 @@ public class CategoryController {
     private final FindAllCategoriesService findAllCategoriesService;
 
     @PostMapping
-    public ResponseEntity<Integer> insertCategory(CategoryRequest request) {
-        int categoryId = createCategoryService.doService(request.categoryName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryId);
+    public ResponseEntity<String> insertCategory(HttpServletRequest servletRequest, CategoryRequest request) {
+        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+        long categoryId = createCategoryService.doService(userId, request.categoryName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(String.valueOf(categoryId));
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable int categoryId) {
-        String ceo = "CEO";
-        deleteCategoryService.doService(ceo, categoryId);
+    public ResponseEntity<Void> deleteCategory(HttpServletRequest servletRequest, @PathVariable int categoryId) {
+        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+        deleteCategoryService.doService(userId, categoryId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{categoryId}")
-    public ResponseEntity<Integer> updateCategory(CategoryRequest request, @PathVariable int categoryId) {
-        updateCategoryService.doService(request.categoryName(), categoryId);
-        return ResponseEntity.status(HttpStatus.OK).body(categoryId);
+    public ResponseEntity<Void> updateCategory(HttpServletRequest servletRequest, CategoryRequest request, @PathVariable int categoryId) {
+        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+        updateCategoryService.doService(userId, categoryId, request.categoryName());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<FindAllCategoriesResponse>> findAllCategories() {
-        List<FindAllCategoriesResponse> response = findAllCategoriesService.doService();
+    public ResponseEntity<List<FindAllCategoriesResponse>> findAllCategories(HttpServletRequest servletRequest) {
+        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+        List<FindAllCategoriesResponse> response = findAllCategoriesService.doService(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

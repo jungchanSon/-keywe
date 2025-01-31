@@ -1,4 +1,4 @@
 package com.kiosk.server.store.controller.dto;
 
-public record FindAllCategoriesResponse (int categoryId, String categoryName) {
+public record FindAllCategoriesResponse (long categoryId, String categoryName) {
 }

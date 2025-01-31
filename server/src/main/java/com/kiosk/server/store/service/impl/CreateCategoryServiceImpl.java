@@ -14,14 +14,9 @@ public class CreateCategoryServiceImpl implements CreateCategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public int doService(String categoryName) {
+    public long doService(long userId, String categoryName) {
 
-        // 이미 존재하는 카테고리인지 확인
-        if (categoryRepository.findCategoryIdByName(categoryName) != null) {
-            throw new BadRequestException("Category already exists");
-        }
-
-        StoreMenuCategory category = StoreMenuCategory.create(categoryName);
+        StoreMenuCategory category = StoreMenuCategory.create(userId, categoryName);
 
         categoryRepository.insertCategory(category);
 
