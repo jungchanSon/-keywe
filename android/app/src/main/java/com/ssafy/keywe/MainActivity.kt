@@ -71,6 +71,9 @@ import com.ssafy.keywe.presentation.BottomNavItem
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
+import com.ssafy.keywe.presentation.order.MenuCartScreen
+import com.ssafy.keywe.presentation.order.MenuDetailScreen
+import com.ssafy.keywe.presentation.order.MenuScreen
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -213,12 +216,17 @@ fun MyApp(
             composable("splash") {
                 SplashScreen(navController)
             }
-            composable("home") { HomeScreen(navController, tokenManager) }
+//            composable("home") {
+//                HomeScreen(navController, tokenManager)
+//            }
             composable("login") { LoginScreen(navController) }
             composable("signup") {
                 SignUpScreen(navController)
             }
             composable("profile") { ProfileScreen() }
+            composable("home") { MenuScreen(navController) }
+            composable("menuDetail") { MenuDetailScreen(navController) }
+            composable("menuCart") { MenuCartScreen(navController) }
         }
 
     }
@@ -391,8 +399,7 @@ fun Greeting(
             }
         }
 
-        DefaultTextFormField(
-            label = "라벨",
+        DefaultTextFormField(label = "라벨",
             placeholder = "placeholder",
             text = text,
             onValueChange = { text = it })

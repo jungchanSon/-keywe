@@ -11,14 +11,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.DefaultAppBar
-import com.ssafy.keywe.common.order.HorizontalDivider
-import com.ssafy.keywe.common.order.MenuCartBottom
+import com.ssafy.keywe.presentation.order.component.HorizontalDivider
+import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartMenuBox
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
@@ -27,19 +27,24 @@ data class CartItem(
     val name: String,
     val price: Int,
     val quantity: Int,
-    val imageURL: String
+    val imageURL: String,
 )
 
 @Composable
-fun MenuCartScreen() {
+fun MenuCartScreen(navController: NavController) {
 
     var cartItems = remember {
         mutableStateListOf(
-            CartItem(1, "아메리카노", 3000, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"),
-            CartItem(2, "카페라떼", 3500, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"),
-            CartItem(3, "카푸치노", 4000, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg")
+            CartItem(
+                1, "아메리카노", 3000, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
+            ), CartItem(
+                2, "카페라떼", 3500, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
+            ), CartItem(
+                3, "카푸치노", 4000, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
+            )
         )
     }
+
     fun removeItem(itemId: Int) {
         cartItems.removeAll { it.id == itemId }
     }
@@ -52,7 +57,7 @@ fun MenuCartScreen() {
     }
 
     Scaffold(
-        topBar = { DefaultAppBar(title = "장바구니") },
+        topBar = { DefaultAppBar(title = "장바구니", navController = navController) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Box(
@@ -69,11 +74,9 @@ fun MenuCartScreen() {
                     .padding(vertical = 24.dp),
             ) {
                 items(cartItems) { item ->
-                    MenuCartMenuBox(
-                        cartItem = item,
+                    MenuCartMenuBox(cartItem = item,
                         onDelete = { removeItem(it) },
-                        onQuantityChange = { id, newQuantity -> updateQuantity(id, newQuantity)}
-                    )
+                        onQuantityChange = { id, newQuantity -> updateQuantity(id, newQuantity) })
 
                     Box(
                         modifier = Modifier

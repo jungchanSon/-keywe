@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.order.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
 import com.ssafy.keywe.R
 
 @Composable
@@ -72,7 +74,10 @@ fun MenuMenu(menuName: String, menuRecipe: String, menuPrice: Int, imageURL: Str
 }
 
 @Composable
-fun MenuMenuList(menuList: List<Quadruple<String, String, Int, String>>) {
+fun MenuMenuList(
+    menuList: List<Quadruple<String, String, Int, String>>,
+    navController: NavController,
+) {
     Box(
         modifier = Modifier
             .background(Color.Transparent)
@@ -104,7 +109,10 @@ fun MenuMenuList(menuList: List<Quadruple<String, String, Int, String>>) {
                                 menuName = menu.first,
                                 menuRecipe = menu.second,
                                 menuPrice = menu.third,
-                                imageURL = menu.fourth
+                                imageURL = menu.fourth,
+                                selectItem = {
+                                    navController.navigate("menuDetail")
+                                }
                             )
                         }
                     }
@@ -122,7 +130,13 @@ fun MenuMenuList(menuList: List<Quadruple<String, String, Int, String>>) {
 }
 
 @Composable
-fun MenuMenuScreen(menuName: String, menuRecipe: String, menuPrice: Int, imageURL: String) {
+fun MenuMenuScreen(
+    menuName: String,
+    menuRecipe: String,
+    menuPrice: Int,
+    imageURL: String,
+    selectItem: () -> Unit,
+) {
 //    val ImageURL =
 //        "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
 //    val MenuName = "아메리카노"
@@ -132,7 +146,8 @@ fun MenuMenuScreen(menuName: String, menuRecipe: String, menuPrice: Int, imageUR
     Box(
         modifier = Modifier
             .width(145.5.dp)
-            .height(190.dp),
+            .height(190.dp)
+            .clickable { selectItem() },
         contentAlignment = Alignment.BottomCenter
     ) {
         Box(
