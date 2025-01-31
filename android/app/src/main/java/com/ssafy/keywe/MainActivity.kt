@@ -14,14 +14,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -39,9 +43,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -221,9 +227,9 @@ fun MyApp(
             composable("splash") {
                 SplashScreen(navController)
             }
-//            composable("home") {
-//                HomeScreen(navController, tokenManager)
-//            }
+            composable("home") {
+                HomeScreen(navController, tokenManager)
+            }
             composable("login") { LoginScreen(navController) }
             composable("signup") {
                 SignUpScreen(navController)
@@ -233,7 +239,7 @@ fun MyApp(
             composable("editProfile") { EditMember(navController) }
             composable("emailVerify") { EmailVerification(navController) }
             composable("addProfile") { AddMemberScreen(navController) }
-            composable("home") { MenuScreen(navController) }
+            composable("menu") { MenuScreen(navController) }
             composable("menuDetail") { MenuDetailScreen(navController) }
             composable("menuCart") { MenuCartScreen(navController) }
         }
@@ -333,13 +339,10 @@ fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
     val scope = rememberCoroutineScope()
     Column {
         DefaultAppBar(title = "title", navController = navController)
-        TextButton(onClick = {
-            scope.launch {
-                tokenManager.clearTokens()
-            }
-        }) {
-            Text(text = "토큰 초기화")
-        }
+        BottomButton(content = "메뉴 스크린", onClick = {
+            navController.navigate("menu")
+        })
+
     }
 }
 

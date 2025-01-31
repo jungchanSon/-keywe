@@ -21,63 +21,60 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 
 @Composable
 fun MenuDescription(name: String, recipe: String, price: Int) {
-    Box(
+
+    Row(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize().padding(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Box(
-                modifier = Modifier
 //                    .fillMaxSize()
-                    .fillMaxHeight()
-                    .padding(horizontal = 6.dp)
-            ) {
-                Column(
-                    modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 6.dp)
+        ) {
+            Column(
+                modifier = Modifier
 //                        .fillMaxSize(),
-                        .fillMaxHeight(),
+                    .fillMaxHeight(),
 //                        .padding(bottom = 1.dp),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.Start,
-                ) {
-                    Box(
-                        modifier = Modifier
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Box(
+                    modifier = Modifier
 //                            .fillMaxSize()
 //                            .fillMaxHeight()
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
+                        horizontalAlignment = Alignment.Start,
                     ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
-                            horizontalAlignment = Alignment.Start,
-                        ) {
-                            Text(
-                                text = name,
-                                style = TextStyle(
-                                    fontSize = 15.sp,
-                                    fontFamily = pretendardkr,
-                                    fontWeight = FontWeight.Bold,
-                                    color = titleTextColor
-                                )
+                        Text(
+                            text = name,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                fontFamily = pretendardkr,
+                                fontWeight = FontWeight.Bold,
+                                color = titleTextColor
                             )
-                            Text(
-                                text = recipe,
-                                style = TextStyle(
-                                    fontSize = 13.sp,
-                                    fontFamily = pretendardkr,
-                                    fontWeight = FontWeight.Normal,
-                                    color = polishedSteelColor
-                                )
+                        )
+                        Text(
+                            text = recipe,
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontFamily = pretendardkr,
+                                fontWeight = FontWeight.Normal,
+                                color = polishedSteelColor
                             )
-                        }
+                        )
                     }
-                    Text("${price}원")
                 }
+                Text("${price}원")
             }
-            MenuPlusButton()
         }
+        MenuPlusButton()
     }
+
 }
