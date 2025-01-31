@@ -18,21 +18,19 @@
 
     <!-- 카테고리 등록 -->
     <insert id="insertCategory" parameterType="StoreMenuCategory" useGeneratedKeys="true" keyProperty="categoryId">
-        INSERT INTO menu_category (category_name, image_id, created_at)
-        VALUES (#{categoryName}, #{imageId}, #{createdAt});
+        INSERT INTO menu_category (category_name, created_at)
+        VALUES (#{categoryName}, #{createdAt});
     </insert>
 
     <!-- 카테고리 모두 조회 -->
     <select id="findAllCategories" resultType="FindAllCategoriesResponse">
-        SELECT c.category_id categoryId, c.category_name categoryName, i.image_path imagePath
-        FROM menu_category c
-        LEFT JOIN menu_image i ON c.image_id = i.image_id;
+        SELECT category_id, category_name FROM menu_category;
     </select>
 
     <!-- 카테고리 수정 -->
     <update id="updateCategory" parameterType="map">
         UPDATE menu_category
-        SET category_name = #{categoryName}, image_id = #{imageId}
+        SET category_name = #{categoryName}
         WHERE category_id = #{categoryId};
     </update>
 

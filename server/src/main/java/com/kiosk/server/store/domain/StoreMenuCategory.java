@@ -10,19 +10,17 @@ public class StoreMenuCategory {
 
     private Integer categoryId; // mybatis에서 자동생성
     private String categoryName;
-    private int imageId;
     private LocalDateTime createdAt;
 
     public StoreMenuCategory() {}
 
-    private StoreMenuCategory(String categoryName, int imageId, LocalDateTime createdAt) {
+    private StoreMenuCategory(String categoryName, LocalDateTime createdAt) {
         this.categoryName = categoryName;
-        this.imageId = imageId;
         this.createdAt = createdAt;
     }
 
-    public static StoreMenuCategory create(String categoryName, int imageId) {
-        return new StoreMenuCategory(categoryName, imageId, LocalDateTime.now());
+    public static StoreMenuCategory create(String categoryName) {
+        return new StoreMenuCategory(categoryName, LocalDateTime.now());
     }
 
     public void setCategoryId(Integer categoryId) {

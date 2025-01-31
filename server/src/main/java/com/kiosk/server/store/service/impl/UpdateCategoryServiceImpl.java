@@ -2,13 +2,10 @@ package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.store.domain.CategoryRepository;
-import com.kiosk.server.store.domain.Images;
 import com.kiosk.server.store.domain.StoreMenuCategory;
-import com.kiosk.server.store.service.ImageDeleteService;
 import com.kiosk.server.store.service.UpdateCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +15,9 @@ import java.util.Map;
 public class UpdateCategoryServiceImpl implements UpdateCategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final ImageDeleteService imageDeleteService;
-    private final ImageUploadServiceImpl imageUploadService;
 
     @Override
-    public void doService(String categoryName, MultipartFile file, int categoryId) {
+    public void doService(String categoryName, int categoryId) {
 
         // 기존 카테고리 조회
         StoreMenuCategory category = fetchCategory(categoryId);
@@ -32,20 +27,6 @@ public class UpdateCategoryServiceImpl implements UpdateCategoryService {
         Map<String, Object> updateParams = new HashMap<>();
         updateParams.put("categoryId", categoryId);
         updateParams.put("categoryName", updatedName);
-
-        // 새 이미지 있을 경우 처리
-        if (file != null && !file.isEmpty()) {
-            Images newImage = imageUploadService.doService(file);
-            updateParams.put("imageId", newImage.getImageId());
-
-            // 기존 이미지 삭제
-            if (category.getImageId() != 0) {
-                imageDeleteService.doService(category.getImageId());
-            }
-        } else {
-            // 기존 이미지 유지
-            updateParams.put("imageId", category.getImageId());
-        }
 
         categoryRepository.updateCategory(updateParams);
     }

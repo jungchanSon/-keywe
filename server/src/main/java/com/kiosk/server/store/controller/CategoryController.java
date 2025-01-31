@@ -1,5 +1,6 @@
 package com.kiosk.server.store.controller;
 
+import com.kiosk.server.store.controller.dto.CategoryRequest;
 import com.kiosk.server.store.controller.dto.FindAllCategoriesResponse;
 import com.kiosk.server.store.service.CreateCategoryService;
 import com.kiosk.server.store.service.DeleteCategoryService;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,9 +24,8 @@ public class CategoryController {
     private final FindAllCategoriesService findAllCategoriesService;
 
     @PostMapping
-    public ResponseEntity<Integer> insertCategory(@RequestParam("categoryName") String categoryName,
-                                                  @RequestParam(value = "image", required = false) MultipartFile image) {
-        int categoryId = createCategoryService.doService(categoryName, image);
+    public ResponseEntity<Integer> insertCategory(CategoryRequest request) {
+        int categoryId = createCategoryService.doService(request.categoryName());
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryId);
     }
 
@@ -38,10 +37,8 @@ public class CategoryController {
     }
 
     @PatchMapping("/{categoryId}")
-    public ResponseEntity<Integer> updateCategory(@RequestParam("categoryName") String categoryName,
-                                                  @RequestParam(value = "image", required = false) MultipartFile image,
-                                                  @PathVariable int categoryId) {
-        updateCategoryService.doService(categoryName, image, categoryId);
+    public ResponseEntity<Integer> updateCategory(CategoryRequest request, @PathVariable int categoryId) {
+        updateCategoryService.doService(request.categoryName(), categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(categoryId);
     }
 
