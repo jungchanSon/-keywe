@@ -9,16 +9,22 @@ import java.time.LocalDateTime;
 public class Images {
 
     private int imageId; // mybatis에서 자동생성
-    private String imagePath;
+    private long userId;
+    private byte[] imageBytes;
     private LocalDateTime createdAt;
+
 
     public Images(){}
 
-    public Images(String imagePath) {
-        if (imagePath == null) {
+    public Images(long userId, byte[] imageBytes) {
+        if (userId <= 0) {
+            throw new BadRequestException("Invalid user id");
+        }
+        if (imageBytes == null) {
             throw new BadRequestException("Invalid image path");
         }
-        this.imagePath = imagePath;
+        this.userId = userId;
+        this.imageBytes = imageBytes;
         this.createdAt = LocalDateTime.now();
     }
 
