@@ -44,33 +44,40 @@ fun DefaultTextFormField(
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    Column(
+    // 핸드폰 번호 포맷팅 로직
+    fun String.clearFormatting(): String = this.filter { it.isDigit() }
+    fun String.formatAsPhoneNumber(): String {
+        val digits = this.clearFormatting()
+        return when {
+            digits.length <= 3 -> digits
+            digits.length <= 7 -> "${digits.take(3)}-${digits.substring(3)}"
+            else -> "${digits.take(3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
+        }
+    }
 
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-
-    ) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(text = label, style = button)
         OutlinedTextField(
-
             placeholder = {
                 Text(
                     text = placeholder, style = body2.copy(color = polishedSteelColor)
                 )
             },
             shape = RoundedCornerShape(8.dp),
-//            keyboardOptions = KeyboardOptions(
-//                keyboardType = KeyboardType.Number
-//            ),
             colors = TextFieldDefaults.colors().copy(
                 focusedContainerColor = greyBackgroundColor,
                 unfocusedContainerColor = greyBackgroundColor,
-                focusedIndicatorColor = Color.Transparent, // 포커스 시 경계선 색상 제거
-                unfocusedIndicatorColor = Color.Transparent // 비포커스 시 경계선 색상 제거
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent
             ),
             keyboardOptions = keyboardOptions,
             singleLine = true,
             value = text,
-            onValueChange = onValueChange,
+            onValueChange = { newInput ->
+                // 핸드폰 번호 포맷 적용
+                val formattedInput = newInput.formatAsPhoneNumber()
+                onValueChange(formattedInput) // 부모로 전달
+            },
             visualTransformation = if (isPassword) {
                 if (isPasswordVisible) {
                     VisualTransformation.None
@@ -81,23 +88,87 @@ fun DefaultTextFormField(
                 if (!isPassword) null
                 else {
                     if (isPasswordVisible) {
-                        IconButton(onClick = {
-                            isPasswordVisible = false
-                        }) {
+                        IconButton(onClick = { isPasswordVisible = false }) {
                             Icon(Icons.Filled.Visibility, contentDescription = "")
                         }
                     } else {
-                        IconButton(onClick = {
-                            isPasswordVisible = true
-                        }) {
+                        IconButton(onClick = { isPasswordVisible = true }) {
                             Icon(Icons.Filled.VisibilityOff, contentDescription = "")
                         }
                     }
                 }
-
-            })
+            }
+        )
     }
 }
+
+
+//@Composable
+//fun DefaultTextFormField(
+//    label: String,
+//    placeholder: String,
+//    text: String,
+//    onValueChange: (String) -> Unit,
+//    isPassword: Boolean = false,
+//    modifier: Modifier = Modifier,
+//    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+//) {
+//    var isPasswordVisible by remember { mutableStateOf(false) }
+//
+//    Column(
+//
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//
+//    ) {
+//        Text(text = label, style = button)
+//        OutlinedTextField(
+//
+//            placeholder = {
+//                Text(
+//                    text = placeholder, style = body2.copy(color = polishedSteelColor)
+//                )
+//            },
+//            shape = RoundedCornerShape(8.dp),
+////            keyboardOptions = KeyboardOptions(
+////                keyboardType = KeyboardType.Number
+////            ),
+//            colors = TextFieldDefaults.colors().copy(
+//                focusedContainerColor = greyBackgroundColor,
+//                unfocusedContainerColor = greyBackgroundColor,
+//                focusedIndicatorColor = Color.Transparent, // 포커스 시 경계선 색상 제거
+//                unfocusedIndicatorColor = Color.Transparent // 비포커스 시 경계선 색상 제거
+//            ),
+//            keyboardOptions = keyboardOptions,
+//            singleLine = true,
+//            value = text,
+//            onValueChange = onValueChange,
+//            visualTransformation = if (isPassword) {
+//                if (isPasswordVisible) {
+//                    VisualTransformation.None
+//                } else PasswordVisualTransformation()
+//            } else VisualTransformation.None,
+//            textStyle = body2,
+//            trailingIcon = {
+//                if (!isPassword) null
+//                else {
+//                    if (isPasswordVisible) {
+//                        IconButton(onClick = {
+//                            isPasswordVisible = false
+//                        }) {
+//                            Icon(Icons.Filled.Visibility, contentDescription = "")
+//                        }
+//                    } else {
+//                        IconButton(onClick = {
+//                            isPasswordVisible = true
+//                        }) {
+//                            Icon(Icons.Filled.VisibilityOff, contentDescription = "")
+//                        }
+//                    }
+//                }
+//
+//            })
+//    }
+//}
 
 
 //핸드폰번호 수정 텍스트필드
