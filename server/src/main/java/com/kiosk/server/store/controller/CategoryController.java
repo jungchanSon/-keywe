@@ -25,31 +25,35 @@ public class CategoryController {
     private final FindAllCategoriesService findAllCategoriesService;
 
     @PostMapping
-    public ResponseEntity<String> insertCategory(HttpServletRequest servletRequest, CategoryRequest request) {
-        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+    public ResponseEntity<String> insertCategory(HttpServletRequest servletRequest, @RequestBody CategoryRequest request) {
+        long userId = extractUserId(servletRequest);
         long categoryId = createCategoryService.doService(userId, request.categoryName());
         return ResponseEntity.status(HttpStatus.CREATED).body(String.valueOf(categoryId));
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(HttpServletRequest servletRequest, @PathVariable int categoryId) {
-        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+    public ResponseEntity<Void> deleteCategory(HttpServletRequest servletRequest, @PathVariable long categoryId) {
+        long userId = extractUserId(servletRequest);
         deleteCategoryService.doService(userId, categoryId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{categoryId}")
-    public ResponseEntity<Void> updateCategory(HttpServletRequest servletRequest, CategoryRequest request, @PathVariable int categoryId) {
-        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+    public ResponseEntity<Void> updateCategory(HttpServletRequest servletRequest, @RequestBody CategoryRequest request, @PathVariable long categoryId) {
+        long userId = extractUserId(servletRequest);
         updateCategoryService.doService(userId, categoryId, request.categoryName());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
     public ResponseEntity<List<FindAllCategoriesResponse>> findAllCategories(HttpServletRequest servletRequest) {
-        long userId = Long.parseLong(servletRequest.getParameter("userId"));
+        long userId = extractUserId(servletRequest);
         List<FindAllCategoriesResponse> response = findAllCategoriesService.doService(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    private long extractUserId(HttpServletRequest request){
+        return (long) request.getAttribute("userId");
     }
 
 }
