@@ -48,8 +48,7 @@ fun ProfileScreen(navController: NavController) {
                 Image(
                     painter = painterResource(id = R.drawable.humanimage),
                     contentDescription = "프로필이미지",
-                    modifier = Modifier
-                        .size(80.dp)
+                    modifier = Modifier.size(80.dp)
                 )
                 Column(
                     modifier = Modifier
@@ -58,15 +57,10 @@ fun ProfileScreen(navController: NavController) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "김동철",
-                        style = h6sb,
-                        modifier = Modifier.padding(top = 8.dp)
+                        text = "김동철", style = h6sb, modifier = Modifier.padding(top = 8.dp)
                     )
-
                     Text(
-                        text = "Keywe@ssafy.com",
-                        style = subtitle1,
-                        color = Color.Gray
+                        text = "Keywe@ssafy.com", style = subtitle1, color = Color.Gray
                     )
                 }
             }
@@ -79,31 +73,23 @@ fun ProfileScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 OrderStaticsBox(
-                    modifier = Modifier.weight(1f),
-                    orderCount = 39,
-                    label = "Total Orders"
+                    modifier = Modifier.weight(1f), orderCount = 39, label = "Total Orders"
                 )
                 OrderStaticsBox(
-                    modifier = Modifier.weight(1f),
-                    orderCount = 2,
-                    label = "Active Orders"
+                    modifier = Modifier.weight(1f), orderCount = 2, label = "Active Orders"
                 )
                 OrderStaticsBox(
-                    modifier = Modifier.weight(1f),
-                    orderCount = 39,
-                    label = "Cancle Orders"
+                    modifier = Modifier.weight(1f), orderCount = 39, label = "Cancle Orders"
                 )
             }
 
 //            // 계정관리 버튼
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { }
-                    .padding(16.dp),
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .clickable { }
+                .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {}
+                verticalAlignment = Alignment.CenterVertically) {}
             MenuButtonComponent(navController)
         }
     }
@@ -118,26 +104,12 @@ fun MenuButtonComponent(navController: NavController) {
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        MenuButton(
-            text = "본인정보",
-            onClick = {}
-        )
-        MenuButton(
-            text = "계정 관리",
-            onClick = { navController.navigate("choiceProfile") }
+        MenuButton(text = "본인정보", onClick = {})
+        MenuButton(text = "계정 관리", onClick = { navController.navigate("choiceProfile") }
 
         )
-        MenuButton(
-            text = "도움말",
-            onClick = {}
-        )
-        MenuButton(
-            text = "로그아웃",
-            onClick = {}
-        )
-        MenuButton(
-            text = "회원탈퇴",
-            onClick = {}
-        )
+        MenuButton(text = "도움말", onClick = {})
+        MenuButton(text = "로그아웃", onClick = {})
+        MenuButton(text = "회원탈퇴", onClick = {})
     }
 }

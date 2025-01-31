@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.splash.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.TokenManager
@@ -18,6 +19,7 @@ enum class SplashRoute {
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val tokenManager: TokenManager, // 로그인 상태 확인용
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _isLoading = mutableStateOf(true)

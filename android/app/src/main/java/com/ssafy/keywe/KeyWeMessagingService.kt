@@ -1,7 +1,6 @@
 package com.ssafy.keywe
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -23,81 +22,100 @@ class KeyWeMessagingService : FirebaseMessagingService() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        remoteMessage.notification?.let { message ->
-            sendNotification(message, 1)
+        Log.d("FCM notification", "${remoteMessage.notification}")
+        Log.d("FCM data", "${remoteMessage.data}")
+
+
+        if (remoteMessage.data.isNotEmpty()) {
+            val title = remoteMessage.data["title"] ?: "No Title"
+            val body = remoteMessage.data["body"] ?: "No Body"
+            val count = remoteMessage.data["count"]?.toIntOrNull() ?: 0
+            sendNotification(title, body, count)
         }
+
+//        remoteMessage.notification?.let { message ->
+//            sendNotification(message, 1)
+//        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalMaterialApi::class)
-    private fun sendNotification(notification: RemoteMessage.Notification, count: Int) {
-        val intent = Intent(
-            this, MainActivity::class.java
-        )
-        intent.putExtra("count", count.toString())
+    private fun sendNotification(title: String, body: String, count: Int) {
+        val channelId = "FCM_Channel"
+        val notificationId = System.currentTimeMillis().toInt()
 
-        val requestCode = System.currentTimeMillis().toInt()
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra("count", count.toString())
+        }
+
         val pendingIntent = PendingIntent.getActivity(
-            this,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-
-        val channelId = "FCMDemoChannel"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val builder: NotificationCompat.Builder =
-            NotificationCompat.Builder(this, channelId).setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(notification.title).setStyle(
-                    NotificationCompat.BigTextStyle().bigText(notification.body)
-                ).setShowWhen(true).setWhen(System.currentTimeMillis()).setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent)
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setAutoCancel(true)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setSound(defaultSoundUri)
+            .setContentIntent(pendingIntent)
+
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        val channel = NotificationChannel(
-            channelId, notification.title, NotificationManager.IMPORTANCE_HIGH
-        )
-
-        channel.setShowBadge(true)
-        channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        val channel =
+            NotificationChannel(channelId, "FCM Channel", NotificationManager.IMPORTANCE_HIGH)
         manager.createNotificationChannel(channel)
 
-        val notificationId = System.currentTimeMillis().toInt()
         manager.notify(notificationId, builder.build())
     }
-
+//
+//    @RequiresApi(Build.VERSION_CODES.O)
 //    @OptIn(ExperimentalMaterialApi::class)
-//    private fun sendNotification(message: RemoteMessage.Notification) {
-//        // If you want the notifications to appear when your app is in foreground
-//
-//        val intent = Intent(this, MainActivity::class.java).apply {
-//            addFlags(FLAG_ACTIVITY_CLEAR_TOP)
-//        }
-//
-//        val pendingIntent = PendingIntent.getActivity(
-//            this, 0, intent, FLAG_IMMUTABLE
+//    private fun sendNotification(notification: RemoteMessage.Notification, count: Int) {
+//        val intent = Intent(
+//            this, MainActivity::class.java
 //        )
+//        intent.putExtra("count", count.toString())
 //
-//        val channelId = this.getString(R.string.app_name)
+//        val requestCode = System.currentTimeMillis().toInt()
+//        val pendingIntent = PendingIntent.getActivity(
+//            this,
+//            requestCode,
+//            intent,
+//            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+//        )
+//        Log.d("FCM", "sendNotification: $notification")
 //
-//        val notificationBuilder =
-//            NotificationCompat.Builder(this, channelId).setContentTitle(message.title)
-//                .setContentText(message.body).setSmallIcon(R.mipmap.ic_launcher).setAutoCancel(true)
+//        val channelId = "FCMDemoChannel"
+//        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+//        val builder: NotificationCompat.Builder =
+//            NotificationCompat.Builder(this, channelId).setSmallIcon(R.mipmap.ic_launcher)
+//                .setContentTitle(notification.title).setStyle(
+//                    NotificationCompat.BigTextStyle().bigText(notification.body)
+//                ).setShowWhen(true).setWhen(System.currentTimeMillis()).setAutoCancel(true)
+//                .setDefaults(NotificationCompat.DEFAULT_ALL)
+//                .setPriority(NotificationCompat.PRIORITY_MAX)
+//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).setSound(defaultSoundUri)
 //                .setContentIntent(pendingIntent)
-//
 //        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 //
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val channel = NotificationChannel(channelId, CHANNEL_NAME, IMPORTANCE_DEFAULT)
-//            manager.createNotificationChannel(channel)
-//        }
+//        val channel = NotificationChannel(
+//            channelId, notification.title, NotificationManager.IMPORTANCE_HIGH
+//        )
 //
-//        manager.notify(random.nextInt(), notificationBuilder.build())
+//        channel.setShowBadge(true)
+//        channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+//        manager.createNotificationChannel(channel)
+//
+//        val notificationId = System.currentTimeMillis().toInt()
+//        manager.notify(notificationId, builder.build())
 //    }
+
 
     @SuppressLint("ResourceType")
     override fun onNewToken(token: String) {

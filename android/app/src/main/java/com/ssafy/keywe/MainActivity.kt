@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -85,10 +86,14 @@ import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
+object NavControllerHolder {
+    var navController: NavController? = null
+}
 
 @AndroidEntryPoint
 @ExperimentalMaterialApi
@@ -105,6 +110,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            NavControllerHolder.navController = navController
             // TokenManager의 이벤트를 전역적으로 구독
             LaunchedEffect(Unit) {
                 tokenManager.tokenClearedEvent.collect {
@@ -125,6 +131,13 @@ class MainActivity : ComponentActivity() {
         count?.let {
             PushNotificationManager.setDataReceived(count = count)
             lifecycleScope.launch {
+
+                while (NavControllerHolder.navController == null) {
+                    Log.d("push notification", "not logged in, waiting...")
+                    delay(500)
+                }
+
+                NavControllerHolder.navController?.navigate("menuDetail")
 //                while (rootNavigationViewModel.getMainNavigationViewModel() == null) {
 //                    Log.d("push notification", "not logged in, waiting...")
 //                    delay(500)
@@ -148,6 +161,8 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleNotification(intent)
+        NavControllerHolder.navController?.navigate("menuDetail")
+
         Log.d("push notification ", " on new intent extras? : ${intent?.extras}")
 
         // notification coming when app in inactive/background, data included in intent extra
@@ -404,8 +419,7 @@ fun Greeting(
             }
         }
 
-        DefaultTextFormField(
-            label = "라벨",
+        DefaultTextFormField(label = "라벨",
             placeholder = "placeholder",
             text = text,
             onValueChange = { text = it })
