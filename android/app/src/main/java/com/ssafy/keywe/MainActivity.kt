@@ -1,22 +1,26 @@
 package com.ssafy.keywe
 
 //import androidx.hilt.navigation.compose.hiltViewModel
+import android.Manifest
 import android.annotation.SuppressLint
-import android.graphics.BlurMaskFilter
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -34,29 +38,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
+import com.ssafy.keywe.common.PermissionDialog
+import com.ssafy.keywe.common.RationaleDialog
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultDialog
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.common.app.DefaultTextFormField
+import com.ssafy.keywe.common.ext.dropShadow
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.BottomNavItem
 import com.ssafy.keywe.presentation.auth.LoginScreen
@@ -74,13 +83,16 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
+@ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         Timber.plant(Timber.DebugTree())
+        retrieveFCMToken()
         val splashscreen = installSplashScreen()
         enableEdgeToEdge()
         setContent {
@@ -99,7 +111,72 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // notification comes when app is killed
+        val count: Int? = intent?.extras?.getString("count")?.toInt()
+        Log.d("push notification", "on create count : $count")
+        count?.let {
+            PushNotificationManager.setDataReceived(count = count)
+            lifecycleScope.launch {
+//                while (rootNavigationViewModel.getMainNavigationViewModel() == null) {
+//                    Log.d("push notification", "not logged in, waiting...")
+//                    delay(500)
+//                }
+//                val mainNavigationController = rootNavigationViewModel.getMainNavigationViewModel()
+//                mainNavigationController!!.showPushNotification()
+                return@launch
+            }
+            return
+        }
+
     }
+
+    private fun handleNotification(intent: Intent) {
+        val message = intent.getStringExtra("notification_message")
+        message?.let {}
+        Toast.makeText(this, "notification_message", Toast.LENGTH_SHORT).show()
+
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNotification(intent)
+        Log.d("push notification ", " on new intent extras? : ${intent?.extras}")
+
+        // notification coming when app in inactive/background, data included in intent extra
+        val count: Int? = intent?.extras?.getString("count")?.toInt()
+        count?.let {
+            Log.d("push notification ", " on new intent count : $count")
+            PushNotificationManager.setDataReceived(count = count)
+            lifecycleScope.launch {
+
+//                while (rootNavigationViewModel.getMainNavigationViewModel() == null) {
+//                    Log.d("push notification", "not logged in, waiting...")
+//                    delay(100)
+//                }
+//
+//                val mainNavigationController = rootNavigationViewModel.getMainNavigationViewModel()
+//                mainNavigationController!!.showPushNotification()
+                return@launch
+            }
+            return
+        }
+    }
+
+
+    private fun retrieveFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.d("push notification device token", "failed with error: ${task.exception}")
+                return@OnCompleteListener
+            }
+            val token = task.result
+            Log.d("push notification device token", "token received: $token")
+            lifecycleScope.launch {
+                PushNotificationManager.registerTokenOnServer(token)
+            }
+        })
+    }
+
 }
 
 
@@ -108,33 +185,40 @@ fun MyApp(
     navController: NavHostController,
     tokenManager: TokenManager,
 ) {
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        RequestNotificationPermissionDialog()
+    }
+
     val state by navController.currentBackStackEntryAsState()
     // splash 와 login 은 topAppBar 없음
     val isShowTopAppBar: Boolean = state?.destination?.route?.let {
         it != "splash" && it != "login"
     } ?: false
 
-    Scaffold(topBar = {
-        if (isShowTopAppBar) DefaultAppBar("title", navController = navController)
-    }, bottomBar = {
-        MyBottomNavigation(
-            navController = navController
-        )
-    }) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(
-                navController = navController, startDestination = "splash"
-            ) {
-                composable("splash") {
-                    SplashScreen(navController)
-                }
-                composable("home") { HomeScreen(navController, tokenManager) }
-                composable("login") { LoginScreen(navController) }
-                composable("signup") {
-                    SignUpScreen(navController)
-                }
-                composable("profile") { ProfileScreen() }
+    Scaffold(
+//        topBar = {
+//            if (isShowTopAppBar) DefaultAppBar("title", navController = navController)
+//        },
+        bottomBar = {
+            MyBottomNavigation(
+                navController = navController
+            )
+        }) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "splash",
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable("splash") {
+                SplashScreen(navController)
             }
+            composable("home") { HomeScreen(navController, tokenManager) }
+            composable("login") { LoginScreen(navController) }
+            composable("signup") {
+                SignUpScreen(navController)
+            }
+            composable("profile") { ProfileScreen() }
         }
 
     }
@@ -142,46 +226,19 @@ fun MyApp(
 
 }
 
-fun Modifier.dropShadow(
-    color: Color = Color.Black,
-    borderRadius: Dp = 0.dp,
-    offsetX: Dp = 0.dp,
-    offsetY: Dp = 0.dp,
-    blurRadius: Dp = 0.dp,
-    spreadRadius: Dp = 0.dp,
-    modifier: Modifier = Modifier,
-) = then(
-    modifier.drawBehind {
-        drawIntoCanvas { canvas ->
-            val paint = Paint()
-            val frameworkPaint = paint.asFrameworkPaint()
-            val spreadPixel = spreadRadius.toPx()
-            val leftPixel = (0f - spreadPixel) + offsetX.toPx()
-            val topPixel = (0f - spreadPixel) + offsetY.toPx()
-            val rightPixel = size.width + spreadPixel
-            val bottomPixel = size.height + spreadPixel
 
-            frameworkPaint.color = color.toArgb()
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun RequestNotificationPermissionDialog() {
+    val permissionState =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
-            if (blurRadius != 0.dp) {
-                frameworkPaint.maskFilter = BlurMaskFilter(
-                    blurRadius.toPx(),
-                    BlurMaskFilter.Blur.NORMAL
-                )
-            }
-
-            canvas.drawRoundRect(
-                left = leftPixel,
-                top = topPixel,
-                right = rightPixel,
-                bottom = bottomPixel,
-                radiusX = borderRadius.toPx(),
-                radiusY = borderRadius.toPx(),
-                paint = paint
-            )
-        }
+    if (!permissionState.status.isGranted) {
+        if (permissionState.status.shouldShowRationale) RationaleDialog()
+        else PermissionDialog { permissionState.launchPermissionRequest() }
     }
-)
+}
 
 @SuppressLint("RestrictedApi")
 @Composable
@@ -200,17 +257,14 @@ private fun MyBottomNavigation(
         visible = items.map { it.screenRoute }.contains(currentRoute)
     ) {
         NavigationBar(
-
-
             modifier = modifier
                 .border(
                     border = BorderStroke(0.dp, Color.Black),
                     shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
                 )
                 .dropShadow(
-                    blurRadius = 18.dp,
-
-                    ),
+                    blurRadius = 18.dp
+                ),
             containerColor = whiteBackgroundColor,
             contentColor = primaryColor,
         ) {
@@ -263,15 +317,16 @@ fun ProfileScreen() {
 
 @Composable
 fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
-
     val scope = rememberCoroutineScope()
-    Text("home")
-    TextButton(onClick = {
-        scope.launch {
-            tokenManager.clearTokens()
+    Column {
+        DefaultAppBar(title = "title", navController = navController)
+        TextButton(onClick = {
+            scope.launch {
+                tokenManager.clearTokens()
+            }
+        }) {
+            Text(text = "토큰 초기화")
         }
-    }) {
-        Text(text = "토큰 초기화")
     }
 }
 

@@ -6,6 +6,8 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.protobuf") version "0.9.4"
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 val protobufVersion = "3.21.7"
@@ -46,6 +48,14 @@ android {
 }
 
 dependencies {
+    // Firebase FCM
+    implementation(platform(libs.firebase.bom))
+
+    implementation(libs.material)
+
+    // Permission
+    implementation(libs.accompanist.permissions)
+
     implementation(libs.androidx.material)
 
     implementation(libs.navigation.compose)
@@ -67,7 +77,7 @@ dependencies {
 
     //hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
-    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.firebase.messaging.ktx)
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 //    implementation(libs.hilt.android)
 //    kapt(libs.dagger.hilt.android.compiler)
