@@ -87,234 +87,216 @@ class MainActivity : ComponentActivity() {
                         popUpTo(0) { inclusive = true }
                     }
                 }
+
+
             }
-
             KeyWeTheme {
-
                 MyApp(navController, tokenManager)
-//                Scaffold(
-//                    topBar = { DefaultAppBar(title = "타이틀") }, modifier = Modifier.fillMaxSize()
-//                ) { innerPadding ->
-//                    Greeting(name = "Android",
-//                        modifier = Modifier.padding(innerPadding),
-//                        onClick = {
-//                            lifecycleScope.launch {
-//
-//
-////                                dataStore.updateData { currentNames ->
-////                                    currentNames.toBuilder()
-////                                        .setTempToken("tempToken")
-////                                        .build()
-////                                }
-//                            }
-//                        })
-//                }
             }
         }
-
     }
-}
 
 
-@Composable
-fun MyApp(
-    navController: NavHostController,
-    tokenManager: TokenManager,
-) {
-    val state by navController.currentBackStackEntryAsState()
-    // splash 와 login 은 topAppBar 없음
-    val isShowTopAppBar: Boolean = state?.destination?.route?.let {
-        it != "splash" && it != "login"
-    } ?: false
+    @Composable
+    fun MyApp(
+        navController: NavHostController,
+        tokenManager: TokenManager,
+    ) {
+        val state by navController.currentBackStackEntryAsState()
+        // splash 와 login 은 topAppBar 없음
+        val isShowTopAppBar: Boolean = state?.destination?.route?.let {
+            it != "splash" && it != "login"
+        } ?: false
 
 //    val isShowTopAppBar: Boolean = navController.currentBackStackEntry?.destination?.route?.let {
 //        it != "splash" && it != "login"
 //    } ?: false
 
-    Scaffold(topBar = {
-        if (isShowTopAppBar) DefaultAppBar("title", navController = navController)
-    }, bottomBar = {
-        MyBottomNavigation(
-            containerColor = Color.Green,
-            contentColor = Color.White,
-            indicatorColor = Color.Green,
-            navController = navController
-        )
-    }) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(
-                navController = navController, startDestination = "splash"
-            ) {
-                composable("splash") {
-                    SplashScreen(navController)
+        Scaffold(topBar = {
+            if (isShowTopAppBar) DefaultAppBar("title", navController = navController)
+        }, bottomBar = {
+            MyBottomNavigation(
+                containerColor = Color.Green,
+                contentColor = Color.White,
+                indicatorColor = Color.Green,
+                navController = navController
+            )
+        }) { innerPadding ->
+            Box(modifier = Modifier.padding(innerPadding)) {
+                NavHost(
+                    navController = navController, startDestination = "splash"
+                ) {
+                    composable("splash") {
+                        SplashScreen(navController)
+                    }
+                    composable("home") { HomeScreen(navController, tokenManager) }
+                    composable("login") { LoginScreen(navController) }
+                    composable("signup") {
+                        SignUpScreen(navController)
+                    }
+                    composable("profile") { ProfileScreen(navController) }
+                    composable("choiceProfile") { ProfileChoice(navController) }
+                    composable("editProfile") { EditMember(navController) }
+                    composable("emailVerify") { EmailVerification(navController) }
+                    composable("addProfile") { AddMemberScreen(navController) }
                 }
-                composable("home") { HomeScreen(navController, tokenManager) }
-                composable("login") { LoginScreen(navController) }
-                composable("signup") {
-                    SignUpScreen(navController)
-                }
-                composable("profile") { ProfileScreen(navController) }
-                composable("choiceProfile") { ProfileChoice(navController) }
-                composable("editProfile") { EditMember(navController) }
-                composable("emailVerify") { EmailVerification(navController) }
-                composable("addProfile") { AddMemberScreen(navController) }
             }
+
         }
+
 
     }
 
 
-}
-
-
-@SuppressLint("RestrictedApi")
-@Composable
-private fun MyBottomNavigation(
-    modifier: Modifier = Modifier,
-    containerColor: Color,
-    contentColor: Color,
-    indicatorColor: Color,
-    navController: NavHostController,
-) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-    val items = listOf(
-        BottomNavItem.Home, BottomNavItem.Profile, BottomNavItem.Login
-    )
-
-    AnimatedVisibility(
-        visible = items.map { it.screenRoute }.contains(currentRoute)
+    @SuppressLint("RestrictedApi")
+    @Composable
+    private fun MyBottomNavigation(
+        modifier: Modifier = Modifier,
+        containerColor: Color,
+        contentColor: Color,
+        indicatorColor: Color,
+        navController: NavHostController,
     ) {
-        NavigationBar(
-            modifier = modifier,
-            containerColor = whiteBackgroundColor,
-            contentColor = contentColor,
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        val items = listOf(
+            BottomNavItem.Home, BottomNavItem.Profile, BottomNavItem.Login
+        )
+
+        AnimatedVisibility(
+            visible = items.map { it.screenRoute }.contains(currentRoute)
         ) {
-            items.forEach { item ->
-                NavigationBarItem(
-                    selected = currentRoute == item.screenRoute,
-                    label = {
-                        Text(
-                            text = stringResource(id = item.title), style = TextStyle(
-                                fontSize = 12.sp
+            NavigationBar(
+                modifier = modifier,
+                containerColor = whiteBackgroundColor,
+                contentColor = contentColor,
+            ) {
+                items.forEach { item ->
+                    NavigationBarItem(
+                        selected = currentRoute == item.screenRoute,
+                        label = {
+                            Text(
+                                text = stringResource(id = item.title), style = TextStyle(
+                                    fontSize = 12.sp
+                                )
                             )
-                        )
-                    },
-                    icon = {
-                        Icon(
-                            item.icon, contentDescription = stringResource(id = item.title)
-                        )
-                    },
-                    onClick = {
-                        navController.navigate(item.screenRoute) {
-                            navBackStackEntry?.destination?.route?.let {
-                                Timber.d("entry = $it")
-                                popUpTo(it) {
-                                    inclusive = true
+                        },
+                        icon = {
+                            Icon(
+                                item.icon, contentDescription = stringResource(id = item.title)
+                            )
+                        },
+                        onClick = {
+                            navController.navigate(item.screenRoute) {
+                                navBackStackEntry?.destination?.route?.let {
+                                    Timber.d("entry = $it")
+                                    popUpTo(it) {
+                                        inclusive = true
+                                    }
                                 }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+                        },
+                    )
+                }
+            }
+        }
+    }
+
+
+    @Composable
+    fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
+
+        val scope = rememberCoroutineScope()
+        Text("home")
+        TextButton(onClick = {
+            scope.launch {
+                tokenManager.clearTokens()
+            }
+        }) {
+            Text(text = "토큰 초기화")
+        }
+    }
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun Greeting(
+        name: String,
+        modifier: Modifier = Modifier,
+        viewModel: LoginViewModel = hiltViewModel(),
+        onClick: () -> Unit,
+    ) {
+
+        val textFieldValue: TextFieldValue = TextFieldValue()
+
+
+        textFieldValue.selection
+        var isShowDialog: Boolean by remember { mutableStateOf(false) }
+        var isShowModal: Boolean by remember { mutableStateOf(false) }
+        var text by remember { mutableStateOf("") }
+
+        val sheetState = rememberModalBottomSheetState()
+
+        val scope = rememberCoroutineScope()
+        Column() {
+            Text(text = "Hello $name!", modifier = modifier.clickable {
+                isShowDialog = !isShowDialog
+            })
+            BottomButton(content = "show Modal", onClick = {
+                isShowModal = true
+            })
+            if (isShowDialog) {
+                DefaultDialog(
+                    title = "title", description = "description",
+                    onCancel = {
+                        isShowDialog = false
+                    },
+                    onConfirm = {
+                        isShowDialog = false
                     },
                 )
             }
-        }
-    }
-}
+            if (isShowModal) {
 
-
-@Composable
-fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
-
-    val scope = rememberCoroutineScope()
-    Text("home")
-    TextButton(onClick = {
-        scope.launch {
-            tokenManager.clearTokens()
-        }
-    }) {
-        Text(text = "토큰 초기화")
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Greeting(
-    name: String,
-    modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = hiltViewModel(),
-    onClick: () -> Unit,
-) {
-
-    val textFieldValue: TextFieldValue = TextFieldValue()
-
-
-    textFieldValue.selection
-    var isShowDialog: Boolean by remember { mutableStateOf(false) }
-    var isShowModal: Boolean by remember { mutableStateOf(false) }
-    var text by remember { mutableStateOf("") }
-
-    val sheetState = rememberModalBottomSheetState()
-
-    val scope = rememberCoroutineScope()
-    Column() {
-        Text(text = "Hello $name!", modifier = modifier.clickable {
-            isShowDialog = !isShowDialog
-        })
-        BottomButton(content = "show Modal", onClick = {
-            isShowModal = true
-        })
-        if (isShowDialog) {
-            DefaultDialog(
-                title = "title", description = "description",
-                onCancel = {
-                    isShowDialog = false
-                },
-                onConfirm = {
-                    isShowDialog = false
-                },
-            )
-        }
-        if (isShowModal) {
-
-            DefaultModalBottomSheet(content = {
-                Text("텍스트텍스트")
-            }, sheetState = sheetState, onDismissRequest = {
-                isShowModal = false
-            }) {
-                Row {
-                    BottomButton(onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                        }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                isShowModal = false
+                DefaultModalBottomSheet(content = {
+                    Text("텍스트텍스트")
+                }, sheetState = sheetState, onDismissRequest = {
+                    isShowModal = false
+                }) {
+                    Row {
+                        BottomButton(onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                            }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    isShowModal = false
+                                }
                             }
-                        }
 
-                    }, content = "버튼")
+                        }, content = "버튼")
+                    }
                 }
             }
-        }
 
-        DefaultTextFormField(label = "라벨",
-            placeholder = "placeholder",
-            text = text,
-            onValueChange = { text = it })
+            DefaultTextFormField(label = "라벨",
+                placeholder = "placeholder",
+                text = text,
+                onValueChange = { text = it })
 
-        BottomButton(content = "호출", onClick = {
+            BottomButton(content = "호출", onClick = {
 //            onClick()
-            scope.launch {
-                viewModel.logout()
-            }
+                scope.launch {
+                    viewModel.logout()
+                }
 
 
-            Log.d("login", "request Login")
+                Log.d("login", "request Login")
 //            scope.launch {
 //                viewModel.loginMITI()
 //            }
-        })
+            })
+        }
     }
 }
