@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.order.MenuExtraOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
-import com.ssafy.keywe.presentation.order.component.MenuExtraOption
 import com.ssafy.keywe.presentation.order.component.Spacer
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 

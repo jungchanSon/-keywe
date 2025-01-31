@@ -28,7 +28,10 @@ fun MenuScreen(navController: NavController) {
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick =
+                {
+                    navController.navigate("menuCart")
+                },
                 elevation = FloatingActionButtonDefaults.elevation(Dp(0F)),
                 containerColor = primaryColor,
                 shape = CircleShape
@@ -94,7 +97,7 @@ fun MenuScreen(navController: NavController) {
             )
 
 
-            MenuMenuList(menuList)
+            MenuMenuList(menuList, navController)
         }
     }
 }
