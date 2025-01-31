@@ -74,6 +74,11 @@ import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
+import com.ssafy.keywe.presentation.profile.AddMemberScreen
+import com.ssafy.keywe.presentation.profile.EditMember
+import com.ssafy.keywe.presentation.profile.EmailVerification
+import com.ssafy.keywe.presentation.profile.ProfileChoice
+import com.ssafy.keywe.presentation.profile.ProfileScreen
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -223,7 +228,11 @@ fun MyApp(
             composable("signup") {
                 SignUpScreen(navController)
             }
-            composable("profile") { ProfileScreen() }
+            composable("profile") { ProfileScreen(navController) }
+            composable("choiceProfile") { ProfileChoice(navController) }
+            composable("editProfile") { EditMember(navController) }
+            composable("emailVerify") { EmailVerification(navController) }
+            composable("addProfile") { AddMemberScreen(navController) }
             composable("home") { MenuScreen(navController) }
             composable("menuDetail") { MenuDetailScreen(navController) }
             composable("menuCart") { MenuCartScreen(navController) }
@@ -318,10 +327,6 @@ private fun MyBottomNavigation(
     }
 }
 
-@Composable
-fun ProfileScreen() {
-    Text(text = "Profile")
-}
 
 @Composable
 fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
@@ -399,7 +404,8 @@ fun Greeting(
             }
         }
 
-        DefaultTextFormField(label = "라벨",
+        DefaultTextFormField(
+            label = "라벨",
             placeholder = "placeholder",
             text = text,
             onValueChange = { text = it })
