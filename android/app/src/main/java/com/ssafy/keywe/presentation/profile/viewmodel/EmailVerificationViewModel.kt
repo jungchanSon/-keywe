@@ -33,4 +33,8 @@ class EmailVerificationViewModel @Inject constructor() : ViewModel() {
             _state.update { it.copy(isVerificationSent = true) }
         }
     }
+
+    private fun isValidEmail(email: String): Boolean {
+        return true
+    }
 }

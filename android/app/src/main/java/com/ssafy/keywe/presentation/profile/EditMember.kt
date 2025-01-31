@@ -12,7 +12,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.app.DefaultAppBar
@@ -28,12 +30,12 @@ import com.ssafy.keywe.presentation.profile.viewmodel.EditMemberViewModel
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.primaryColor
 
-
+@Composable
 fun EditMember(
     navController: NavController,
     viewModel: EditMemberViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.collectAsState().value
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {

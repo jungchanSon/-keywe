@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.component.OrderStaticsBox
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.subtitle1
@@ -104,14 +104,14 @@ fun ProfileScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {}
-            MenuButtonComponent()
+            MenuButtonComponent(navController)
         }
     }
 }
 
 
 @Composable
-fun MenuButtonComponent() {
+fun MenuButtonComponent(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -124,7 +124,8 @@ fun MenuButtonComponent() {
         )
         MenuButton(
             text = "계정 관리",
-            onClick = {}
+            onClick = { navController.navigate("choiceProfile") }
+
         )
         MenuButton(
             text = "도움말",

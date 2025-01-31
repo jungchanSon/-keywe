@@ -44,9 +44,9 @@ import com.ssafy.keywe.ui.theme.primaryColor
 
 
 @Composable
-fun AddMember(
-    viewModel: AddMemberViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+fun AddMemberScreen(
     navController: NavController,
+    viewModel: AddMemberViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
     val state = viewModel.state.collectAsState().value
 
