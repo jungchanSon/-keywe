@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
-enum class SplashRoute {
+enum class SplashRouteType {
     HOME, LOGIN, PROFILE
 }
 
@@ -25,8 +25,8 @@ class SplashViewModel @Inject constructor(
     private val _isLoading = mutableStateOf(true)
     val isLoading: State<Boolean> = _isLoading
 
-    private val _splashRoute = mutableStateOf(SplashRoute.LOGIN)
-    val splashRoute: State<SplashRoute> = _splashRoute
+    private val _splashRouteType = mutableStateOf(SplashRouteType.LOGIN)
+    val splashRouteType: State<SplashRouteType> = _splashRouteType
 
     init {
         checkLoginStatus()
@@ -38,9 +38,9 @@ class SplashViewModel @Inject constructor(
                 val token = tokenManager.getToken()
                 token?.let {
                     if (JWTUtil.isTempToken(it.split(" ")[1])) {
-                        _splashRoute.value = SplashRoute.PROFILE
+                        _splashRouteType.value = SplashRouteType.PROFILE
                     } else {
-                        _splashRoute.value = SplashRoute.HOME
+                        _splashRouteType.value = SplashRouteType.HOME
                     }
                 }
                 _isLoading.value = false

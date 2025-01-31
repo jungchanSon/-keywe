@@ -8,6 +8,8 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+
+    id("kotlin-parcelize") // add
 }
 
 val protobufVersion = "3.21.7"
@@ -48,6 +50,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core.ktx.v1120)  // ✅ Parcelable 확장 함수 포함
+
     // Firebase FCM
     implementation(platform(libs.firebase.bom))
 

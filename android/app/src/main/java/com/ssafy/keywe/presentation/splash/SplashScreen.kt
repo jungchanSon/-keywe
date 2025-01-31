@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.ssafy.keywe.presentation.splash.viewmodel.SplashRoute
+import com.ssafy.keywe.common.BottomRoute
+import com.ssafy.keywe.common.SplashRoute
+import com.ssafy.keywe.presentation.splash.viewmodel.SplashRouteType
 import com.ssafy.keywe.presentation.splash.viewmodel.SplashViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -40,22 +42,22 @@ fun SplashScreen(
         if (isDataLoaded) {
             scope.launch {
                 delay(1500)
-                when (viewModel.splashRoute.value) {
-                    SplashRoute.LOGIN -> {
-                        navController.navigate("login") {
-                            popUpTo("splash") { inclusive = true }
+                when (viewModel.splashRouteType.value) {
+                    SplashRouteType.LOGIN -> {
+                        navController.navigate(BottomRoute.LoginRoute) {
+                            popUpTo(SplashRoute) { inclusive = true }
                         }
                     }
 
-                    SplashRoute.PROFILE -> {
-                        navController.navigate("profile") {
-                            popUpTo("splash") { inclusive = true }
+                    SplashRouteType.PROFILE -> {
+                        navController.navigate(BottomRoute.ProfileRoute) {
+                            popUpTo(SplashRoute) { inclusive = true }
                         }
                     }
 
-                    SplashRoute.HOME -> {
-                        navController.navigate("home") {
-                            popUpTo("splash") { inclusive = true }
+                    SplashRouteType.HOME -> {
+                        navController.navigate(BottomRoute.HomeRoute) {
+                            popUpTo(SplashRoute) { inclusive = true }
                         }
                     }
                 }

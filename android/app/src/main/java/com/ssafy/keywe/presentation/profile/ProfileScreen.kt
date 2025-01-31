@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.component.OrderStaticsBox
@@ -105,8 +106,12 @@ fun MenuButtonComponent(navController: NavController) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         MenuButton(text = "본인정보", onClick = {})
-        MenuButton(text = "계정 관리", onClick = { navController.navigate("choiceProfile") }
-
+        MenuButton(text = "계정 관리",
+            onClick = {
+                navController.navigate(
+                    Route.ProfileBaseRoute.ProfileChoiceRoute
+                )
+            }
         )
         MenuButton(text = "도움말", onClick = {})
         MenuButton(text = "로그아웃", onClick = {})

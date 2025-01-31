@@ -2,7 +2,6 @@ package com.ssafy.keywe
 
 //import androidx.hilt.navigation.compose.hiltViewModel
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -12,20 +11,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,12 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
@@ -59,32 +46,26 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import com.ssafy.keywe.common.BottomRoute
+import com.ssafy.keywe.common.MyBottomNavigation
 import com.ssafy.keywe.common.PermissionDialog
 import com.ssafy.keywe.common.RationaleDialog
+import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.SignUpRoute
+import com.ssafy.keywe.common.SplashRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultDialog
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.common.app.DefaultTextFormField
-import com.ssafy.keywe.common.ext.dropShadow
+import com.ssafy.keywe.common.menuGraph
+import com.ssafy.keywe.common.profileGraph
 import com.ssafy.keywe.data.TokenManager
-import com.ssafy.keywe.presentation.BottomNavItem
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
-import com.ssafy.keywe.presentation.order.MenuCartScreen
-import com.ssafy.keywe.presentation.order.MenuDetailScreen
-import com.ssafy.keywe.presentation.order.MenuScreen
-import com.ssafy.keywe.presentation.profile.AddMemberScreen
-import com.ssafy.keywe.presentation.profile.EditMember
-import com.ssafy.keywe.presentation.profile.EmailVerification
-import com.ssafy.keywe.presentation.profile.ProfileChoice
-import com.ssafy.keywe.presentation.profile.ProfileScreen
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
-import com.ssafy.keywe.ui.theme.primaryColor
-import com.ssafy.keywe.ui.theme.titleTextColor
-import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -115,7 +96,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 tokenManager.tokenClearedEvent.collect {
                     // 로그인 화면으로 이동
-                    navController.navigate("login") {
+                    navController.navigate(BottomRoute.LoginRoute) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
@@ -203,6 +184,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MyApp(
     navController: NavHostController,
@@ -230,27 +212,30 @@ fun MyApp(
         }) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "splash",
+            startDestination = SplashRoute,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("splash") {
+            composable<SplashRoute> {
                 SplashScreen(navController)
             }
-//            composable("home") {
-//                HomeScreen(navController, tokenManager)
-//            }
-            composable("login") { LoginScreen(navController) }
-            composable("signup") {
+            composable<BottomRoute.HomeRoute> {
+                HomeScreen(navController, tokenManager)
+            }
+            composable<BottomRoute.LoginRoute> { LoginScreen(navController) }
+            composable<SignUpRoute> {
                 SignUpScreen(navController)
             }
-            composable("profile") { ProfileScreen(navController) }
-            composable("choiceProfile") { ProfileChoice(navController) }
-            composable("editProfile") { EditMember(navController) }
-            composable("emailVerify") { EmailVerification(navController) }
-            composable("addProfile") { AddMemberScreen(navController) }
-            composable("home") { MenuScreen(navController) }
-            composable("menuDetail") { MenuDetailScreen(navController) }
-            composable("menuCart") { MenuCartScreen(navController) }
+
+//            composable<BottomRoute.ProfileRoute> { ProfileScreen(navController) }
+//            composable("choiceProfile") { ProfileChoice(navController) }
+//            composable("editProfile") { EditMember(navController) }
+//            composable("emailVerify") { EmailVerification(navController) }
+//            composable("addProfile") { AddMemberScreen(navController) }
+            profileGraph(navController)
+            menuGraph(navController)
+//            composable<Route.MenuRoute> { MenuScreen(navController) }
+//            composable<Route.MenuRoute.MenuDetailRoute> { MenuDetailScreen(navController) }
+//            composable<Route.MenuRoute.MenuCartRoute> { MenuCartScreen(navController) }
         }
 
     }
@@ -272,76 +257,6 @@ fun RequestNotificationPermissionDialog() {
     }
 }
 
-@SuppressLint("RestrictedApi")
-@Composable
-private fun MyBottomNavigation(
-    modifier: Modifier = Modifier,
-    navController: NavHostController,
-) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-    val items = listOf(
-        BottomNavItem.Home, BottomNavItem.Profile, BottomNavItem.Login
-    )
-
-
-    AnimatedVisibility(
-        visible = items.map { it.screenRoute }.contains(currentRoute)
-    ) {
-        NavigationBar(
-            modifier = modifier
-                .border(
-                    border = BorderStroke(0.dp, Color.Black),
-                    shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
-                )
-                .dropShadow(
-                    blurRadius = 18.dp
-                ),
-            containerColor = whiteBackgroundColor,
-            contentColor = primaryColor,
-        ) {
-            items.forEach { item ->
-                NavigationBarItem(
-                    selected = currentRoute == item.screenRoute,
-                    colors = NavigationBarItemColors(
-                        selectedIconColor = primaryColor,
-                        selectedTextColor = primaryColor,
-                        selectedIndicatorColor = whiteBackgroundColor,
-                        unselectedIconColor = titleTextColor,
-                        unselectedTextColor = titleTextColor,
-                        disabledIconColor = titleTextColor,
-                        disabledTextColor = titleTextColor,
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(id = item.title), style = TextStyle(
-                                fontSize = 12.sp
-                            )
-                        )
-                    },
-                    icon = {
-                        Icon(
-                            item.icon, contentDescription = stringResource(id = item.title)
-                        )
-                    },
-                    onClick = {
-                        navController.navigate(item.screenRoute) {
-                            navBackStackEntry?.destination?.route?.let {
-                                Timber.d("entry = $it")
-                                popUpTo(it) {
-                                    inclusive = true
-                                }
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                )
-            }
-        }
-    }
-}
-
 
 @Composable
 fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
@@ -354,6 +269,11 @@ fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
             }
         }) {
             Text(text = "토큰 초기화")
+            Button(onClick = {
+                navController.navigate(Route.MenuBaseRoute.MenuRoute)
+            }) {
+                Text("메뉴 라우팅")
+            }
         }
     }
 }
@@ -419,7 +339,8 @@ fun Greeting(
             }
         }
 
-        DefaultTextFormField(label = "라벨",
+        DefaultTextFormField(
+            label = "라벨",
             placeholder = "placeholder",
             text = text,
             onValueChange = { text = it })

@@ -15,8 +15,7 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val repository: AuthRepository,
 ) : ViewModel() {
-    private val _name = MutableStateFlow("")
-    val name: StateFlow<String> = _name.asStateFlow()
+
 
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
@@ -29,10 +28,6 @@ class SignUpViewModel @Inject constructor(
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
-
-    fun onNameChanged(value: String) {
-        _name.value = value
-    }
 
     fun onEmailChanged(value: String) {
         _email.value = value

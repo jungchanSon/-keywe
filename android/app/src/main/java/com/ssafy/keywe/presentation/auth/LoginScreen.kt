@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
-import com.ssafy.keywe.presentation.SignUpScreen
 import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.h6sb
@@ -113,7 +113,7 @@ fun LoginScreen(
                 modifier = modifier
                     .fillMaxWidth()
                     .clickable {
-                        navController.navigate(SignUpScreen.toString())
+                        navController.navigate(SignUpRoute)
                     },
                 textAlign = TextAlign.Center,
                 style = caption,
