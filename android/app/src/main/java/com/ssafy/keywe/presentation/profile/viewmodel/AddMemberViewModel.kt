@@ -2,14 +2,11 @@ package com.ssafy.keywe.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-<<<<<<< HEAD:android/app/src/main/java/com/ssafy/keywe/viewmodel/AddMemberViewModel.kt
 import com.ssafy.keywe.data.state.AddMemberState
 import com.ssafy.keywe.data.state.VerificationStatus
-=======
-import com.ssafy.keywe.presentation.profile.state.AddMemberState
-import com.ssafy.keywe.presentation.profile.state.VerificationStatus
+//import com.ssafy.keywe.presentation.profile.state.AddMemberState
+//import com.ssafy.keywe.presentation.profile.state.VerificationStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
->>>>>>> 15bb131 (profile screen):android/app/src/main/java/com/ssafy/keywe/presentation/profile/viewmodel/AddMemberViewModel.kt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,7 +80,7 @@ class AddMemberViewModel @Inject constructor() : ViewModel() {
                 it.copy(
                     phone = formatted,
                     isPhoneValid = newNumbersOnly.length == 11,
-                    phoneSelection = newCusorPosition
+//                    phoneSelection = newCusorPosition
                 )
             }
         }
@@ -101,7 +98,7 @@ class AddMemberViewModel @Inject constructor() : ViewModel() {
 
     fun onSimplePasswordChange(password: String) {
         if (password.length <= 4 && password.all { it.isDigit() }) {
-            _state.update { it.copy(simplePassword = password) }
+//            _state.update { it.copy(simplePassword = password) }
         }
     }
 
