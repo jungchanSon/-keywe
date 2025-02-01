@@ -7,6 +7,7 @@ data class Menu(
 
 data class MenuData(
     val name: String,
-    val imageURL: String,
+    val recipe: String,
     val price: Int,
+    val imageURL: String
 )

@@ -26,7 +26,6 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
 import com.ssafy.keywe.presentation.order.component.MenuSubCategory
-import com.ssafy.keywe.presentation.order.component.Quadruple
 import com.ssafy.keywe.presentation.order.component.Spacer
 import com.ssafy.keywe.ui.theme.primaryColor
 
@@ -59,47 +58,47 @@ fun MenuScreen(navController: NavController) {
             MenuSubCategory("Popular Coffee")
 
             val menuList = listOf(
-                Quadruple(
+                MenuData(
                     "아메리카노",
                     "커피+물",
                     2000,
-                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/3d710341-b8ae-46ec-8286-801269d38a40/%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png?table=block&id=3fcdd36d-5807-4fbc-8588-9b2b60887c37&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1738324800000&signature=01VqrY4SK1LHvxxWAgYzbw7KasHDRBu1AzU9hFER0OI&downloadName=%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png"
+                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
                 ),
-                Quadruple(
+                MenuData(
                     "카페라떼",
                     "커피+우유",
                     3000,
-                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/3d710341-b8ae-46ec-8286-801269d38a40/%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png?table=block&id=3fcdd36d-5807-4fbc-8588-9b2b60887c37&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1738324800000&signature=01VqrY4SK1LHvxxWAgYzbw7KasHDRBu1AzU9hFER0OI&downloadName=%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png"
+                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
                 ),
-                Quadruple(
+                MenuData(
                     "카푸치노",
                     "커피+거품 우유",
                     3500,
-                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/3d710341-b8ae-46ec-8286-801269d38a40/%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png?table=block&id=3fcdd36d-5807-4fbc-8588-9b2b60887c37&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1738324800000&signature=01VqrY4SK1LHvxxWAgYzbw7KasHDRBu1AzU9hFER0OI&downloadName=%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png"
+                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
                 ),
-                Quadruple(
-                    "모카",
+                MenuData(
+                    "카페모카",
                     "커피+초콜릿+우유",
                     4000,
-                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/3d710341-b8ae-46ec-8286-801269d38a40/%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png?table=block&id=3fcdd36d-5807-4fbc-8588-9b2b60887c37&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1738324800000&signature=01VqrY4SK1LHvxxWAgYzbw7KasHDRBu1AzU9hFER0OI&downloadName=%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png"
+                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
                 ),
-                Quadruple(
+                MenuData(
                     "에스프레소",
                     "진한 커피 샷",
                     2500,
-                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/3d710341-b8ae-46ec-8286-801269d38a40/%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png?table=block&id=3fcdd36d-5807-4fbc-8588-9b2b60887c37&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1738324800000&signature=01VqrY4SK1LHvxxWAgYzbw7KasHDRBu1AzU9hFER0OI&downloadName=%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png"
+                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
                 ),
-                Quadruple(
+                MenuData(
                     "에스프레소",
                     "진한 커피 샷",
                     2500,
-                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/3d710341-b8ae-46ec-8286-801269d38a40/%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png?table=block&id=3fcdd36d-5807-4fbc-8588-9b2b60887c37&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1738324800000&signature=01VqrY4SK1LHvxxWAgYzbw7KasHDRBu1AzU9hFER0OI&downloadName=%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png"
+                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
                 ),
-                Quadruple(
+                MenuData(
                     "에스프레소",
                     "진한 커피 샷",
                     2500,
-                    "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/3d710341-b8ae-46ec-8286-801269d38a40/%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png?table=block&id=3fcdd36d-5807-4fbc-8588-9b2b60887c37&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1738324800000&signature=01VqrY4SK1LHvxxWAgYzbw7KasHDRBu1AzU9hFER0OI&downloadName=%EC%B9%B4%ED%8E%98%EB%AA%A8%EC%B9%B4.png"
+                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
                 ),
             )
 

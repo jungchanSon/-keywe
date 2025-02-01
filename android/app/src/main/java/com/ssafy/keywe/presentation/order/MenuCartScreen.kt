@@ -96,7 +96,7 @@ fun MenuCartScreen(navController: NavController) {
                     .background(whiteBackgroundColor)
                     .align(Alignment.BottomCenter),
             ) {
-                MenuCartBottom(cartItems.size, cartItems.sumOf { it.price * it.quantity })
+                MenuCartBottom(cartItems.sumOf { it.quantity }, cartItems.sumOf { it.price * it.quantity })
             }
         }
     }

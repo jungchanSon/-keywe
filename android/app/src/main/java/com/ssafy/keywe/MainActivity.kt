@@ -4,6 +4,7 @@ package com.ssafy.keywe
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -240,7 +241,14 @@ fun MyApp(
             composable("emailVerify") { EmailVerification(navController) }
             composable("addProfile") { AddMemberScreen(navController) }
             composable("menu") { MenuScreen(navController) }
-            composable("menuDetail") { MenuDetailScreen(navController) }
+            composable("menuDetail/{menuName}/{menuPrice}/{menuImageURL}")
+            { backStackEntry ->
+                val menuName = backStackEntry.arguments?.getString("menuName") ?: "Unknown"
+                val menuPrice = backStackEntry.arguments?.getString("menuPrice")?.toIntOrNull() ?: 0
+                val menuImageURL = Uri.decode(backStackEntry.arguments?.getString("menuImageURL") ?: "")
+
+                MenuDetailScreen(navController, menuName, menuPrice, menuImageURL)
+            }
             composable("menuCart") { MenuCartScreen(navController) }
         }
 

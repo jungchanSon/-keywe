@@ -73,12 +73,12 @@ fun MenuDetailCommonOptionButton(option: String, modifier: Modifier = Modifier) 
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp)) // 모서리 둥글게 처리
-            .background(whiteBackgroundColor) // 배경색 지정
+            .clip(RoundedCornerShape(10.dp))
+            .background(whiteBackgroundColor)
             .border(
                 width = 2.dp,
                 color = if (isClicked) orangeColor else whiteBackgroundColor,
-                shape = RoundedCornerShape(10.dp) // 외곽선도 동일한 모양 적용
+                shape = RoundedCornerShape(10.dp)
             )
     ) {
         Button(
