@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    default: local
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+GATEWAY:
+  USER_SERVICE_URL: http://localhost:8090
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+GATEWAY:
+  USER_SERVICE_URL: http://user-service-app:8090
