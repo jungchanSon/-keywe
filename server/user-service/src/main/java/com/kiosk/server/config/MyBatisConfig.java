@@ -1,4 +1,4 @@
-package com.kiosk.server.common.config;
+package com.kiosk.server.config;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Configuration;

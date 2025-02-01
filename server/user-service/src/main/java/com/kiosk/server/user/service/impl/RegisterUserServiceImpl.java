@@ -1,7 +1,7 @@
 package com.kiosk.server.user.service.impl;
 
-import com.kiosk.server.common.exception.custom.ConflictException;
 import com.kiosk.server.common.exception.custom.BadRequestException;
+import com.kiosk.server.common.exception.custom.ConflictException;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
 import com.kiosk.server.user.service.RegisterUserService;

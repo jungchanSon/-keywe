@@ -3,10 +3,10 @@ spring:
     name: server
   profiles:
     active: local
+
 ---
 spring:
   config:
     activate:
       on-profile: local
     import: secret/application-local.yml
-

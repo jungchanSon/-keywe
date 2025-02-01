@@ -1,6 +1,5 @@
 package com.kiosk.server.store.service.impl;
 
-import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.store.domain.CategoryRepository;
 import com.kiosk.server.store.domain.StoreMenuCategory;
 import com.kiosk.server.store.service.CreateCategoryService;
