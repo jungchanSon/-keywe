@@ -2,6 +2,7 @@ package com.ssafy.keywe.common.app
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -39,7 +40,7 @@ fun DefaultTextFormField(
     text: String,
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -58,6 +59,7 @@ fun DefaultTextFormField(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(text = label, style = button)
         OutlinedTextField(
+            modifier = modifier,
             placeholder = {
                 Text(
                     text = placeholder, style = body2.copy(color = polishedSteelColor)
@@ -247,3 +249,67 @@ fun String.clearThousandFormat(): String {
     return this.replace("-", "")
 }
 
+//@Composable
+//fun DefaultTextFormField(
+//    label: String,
+//    placeholder: String,
+//    text: String,
+//    onValueChange: (String) -> Unit,
+//    isPassword: Boolean = false,
+//    modifier: Modifier = Modifier.fillMaxWidth(),
+//    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+//) {
+//    var isPasswordVisible by remember { mutableStateOf(false) }
+//
+//    Column(
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
+//        Text(text = label, style = button)
+//        OutlinedTextField(
+//            value = text,
+//            onValueChange = onValueChange,
+//            modifier = modifier,
+//            placeholder = {
+//                Text(
+//                    text = placeholder,
+//                    style = body2.copy(color = polishedSteelColor)
+//                )
+//            },
+//            shape = RoundedCornerShape(8.dp),
+//            colors = TextFieldDefaults.colors().copy(
+//                focusedContainerColor = greyBackgroundColor,
+//                unfocusedContainerColor = greyBackgroundColor,
+//                focusedIndicatorColor = Color.Transparent,
+//                unfocusedIndicatorColor = Color.Transparent
+//            ),
+//            keyboardOptions = keyboardOptions,
+//            singleLine = true,
+//            visualTransformation = if (isPassword) {
+//                if (isPasswordVisible) {
+//                    VisualTransformation.None
+//                } else PasswordVisualTransformation()
+//            } else VisualTransformation.None,
+//            textStyle = body2,
+//            trailingIcon = if (isPassword) {
+//                {
+//                    IconButton(
+//                        onClick = { isPasswordVisible = !isPasswordVisible }
+//                    ) {
+//                        Icon(
+//                            imageVector = if (isPasswordVisible) {
+//                                Icons.Default.Visibility
+//                            } else {
+//                                Icons.Default.VisibilityOff
+//                            },
+//                            contentDescription = if (isPasswordVisible) {
+//                                "Hide password"
+//                            } else {
+//                                "Show password"
+//                            }
+//                        )
+//                    }
+//                }
+//            } else null
+//        )
+//    }
+//}

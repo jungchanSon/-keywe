@@ -64,7 +64,7 @@ fun EditMember(
             // 이름 입력
             DefaultTextFormField(
                 label = "이름",
-                placeholder = "이름을 입력해주세요.",
+                placeholder = "김동철", //기존에 저장한 이름 넣기
                 text = state.name,
                 onValueChange = { viewModel.onNameChange(it) },
                 modifier = Modifier.fillMaxWidth()
@@ -73,21 +73,16 @@ fun EditMember(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 휴대폰 번호
-            Row(modifier = Modifier.fillMaxWidth()) {
-
-                DefaultTextFormField(
-                    label = "휴대폰 번호",
-                    placeholder = "휴대폰 번호를 입력해주세요.",
-                    text = state.phone,
-                    onValueChange = { viewModel.onPhoneChange(it) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-
-                TextButton(onClick = {}, Modifier.width(50.dp)) { Text("AA") }
-            }
-
-
+            DefaultTextFormField(
+                label = "휴대폰 번호",
+                placeholder = "***-****-****", //기존에 저장한 핸드폰 번호 넣기
+                text = state.simplePassword,
+                onValueChange = { viewModel.onSimplePasswordChange(it) },
+                isPassword = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+            
             Spacer(modifier = Modifier.height(16.dp))
 
             // 간편 비밀번호
