@@ -3,25 +3,21 @@ package com.kiosk.server.store.service.impl;
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
 import com.kiosk.server.store.domain.ImageRepository;
 import com.kiosk.server.store.domain.Images;
-import com.kiosk.server.store.service.ImageDeleteService;
+import com.kiosk.server.store.service.DeleteImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ImageDeleteServiceImpl implements ImageDeleteService {
+public class DeleteImageServiceImpl implements DeleteImageService {
 
     private final ImageRepository imageRepository;
 
     @Override
-    public void doService(long userId, int imageId) {
-
-        if (imageId == 0) {
-            return; // 이미지 없는 경우 삭제하지 않음
-        }
+    public void doService(long userId, long menuId) {
 
         // 기존 이미지 정보 조회
-        Images exImage = imageRepository.findImageById(imageId);
+        Images exImage = imageRepository.findById(menuId);
         if (exImage == null) {
             return;
         }
@@ -30,6 +26,6 @@ public class ImageDeleteServiceImpl implements ImageDeleteService {
         }
 
         // DB에서 이미지 삭제
-        imageRepository.deleteImageById(imageId);
+        imageRepository.deleteById(menuId);
     }
 }
