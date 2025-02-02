@@ -38,6 +38,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -78,6 +79,7 @@ import com.ssafy.keywe.presentation.BottomNavItem
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
+import com.ssafy.keywe.presentation.order.CartItem
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
@@ -211,6 +213,13 @@ fun MyApp(
         it != "splash" && it != "login"
     } ?: false
 
+    val cartItems = remember { mutableStateListOf<CartItem>() }
+
+    fun updateCart(newCart: List<CartItem>) {
+        cartItems.clear()
+        cartItems.addAll(newCart)
+    }
+
     Scaffold(
 //        topBar = {
 //            if (isShowTopAppBar) DefaultAppBar("title", navController = navController)
@@ -240,16 +249,16 @@ fun MyApp(
             composable("editProfile") { EditMember(navController) }
             composable("emailVerify") { EmailVerification(navController) }
             composable("addProfile") { AddMemberScreen(navController) }
-            composable("menu") { MenuScreen(navController) }
+            composable("menu") { MenuScreen(navController, cartItems) }
             composable("menuDetail/{menuName}/{menuPrice}/{menuImageURL}")
             { backStackEntry ->
                 val menuName = backStackEntry.arguments?.getString("menuName") ?: "Unknown"
                 val menuPrice = backStackEntry.arguments?.getString("menuPrice")?.toIntOrNull() ?: 0
                 val menuImageURL = Uri.decode(backStackEntry.arguments?.getString("menuImageURL") ?: "")
 
-                MenuDetailScreen(navController, menuName, menuPrice, menuImageURL)
+                MenuDetailScreen(navController, menuName, menuPrice, menuImageURL, cartItems)
             }
-            composable("menuCart") { MenuCartScreen(navController) }
+            composable("menuCart") { MenuCartScreen(navController, cartItems, ::updateCart) }
         }
 
     }

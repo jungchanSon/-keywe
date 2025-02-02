@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -20,7 +21,7 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
-fun MenuDetailBottom() {
+fun MenuDetailBottom(navController: NavController, onAddToCart: () -> Unit) {
     Box(modifier = Modifier.background(greyBackgroundColor)) {
         Row(
             modifier = Modifier
@@ -29,7 +30,10 @@ fun MenuDetailBottom() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.weight(1f)) {
-                MenuDetailBottomBackButton("담기", onClick = {})
+                MenuDetailBottomBackButton("담기", onClick = {
+                    onAddToCart()
+                    navController.navigate("menu")
+                })
             }
             Box(modifier = Modifier.weight(1f)) {
                 MenuDetailBottomCartButton("주문하기", onClick = {})

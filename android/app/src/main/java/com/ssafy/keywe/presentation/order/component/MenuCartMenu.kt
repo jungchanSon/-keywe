@@ -91,7 +91,7 @@ fun MenuCartMenu(cartItem: CartItem, onQuantityChange: (Int, Int) -> Unit) {
         .fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.Bottom
         ) {
@@ -105,8 +105,8 @@ fun MenuCartMenu(cartItem: CartItem, onQuantityChange: (Int, Int) -> Unit) {
                 contentScale = ContentScale.Crop // 이미지를 원에 맞게 잘라냄
             )
 
-            Box() {
-                MenuCartMenuInfo(cartItem.name, cartItem.price, cartItem.quantity)
+            Box(modifier = Modifier.fillMaxHeight()) {
+                MenuCartMenuInfo(cartItem.name, cartItem.price, cartItem.size, cartItem.temperature)
             }
 
             Box(modifier = Modifier.height(24.dp)) {
@@ -129,10 +129,10 @@ fun MenuCartMenu(cartItem: CartItem, onQuantityChange: (Int, Int) -> Unit) {
 }
 
 @Composable
-fun MenuCartMenuInfo(name: String, price: Int, optionCount: Int) {
+fun MenuCartMenuInfo(name: String, price: Int, size: String, temperature: String) {
     Box(
         modifier = Modifier
-            .height(50.dp)
+            .fillMaxHeight()
             .width(122.dp),
         contentAlignment = Alignment.BottomStart
     ) {
@@ -140,11 +140,11 @@ fun MenuCartMenuInfo(name: String, price: Int, optionCount: Int) {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(18.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            Text(name)
-            Box(modifier = Modifier) {
+            Text("$name $temperature"   )
+//            Box(modifier = Modifier.fillMaxHeight()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -157,13 +157,13 @@ fun MenuCartMenuInfo(name: String, price: Int, optionCount: Int) {
                     )
                     VerticalDivider()
                     Text(
-                        text = "${optionCount}개의 옵션",
-                        style = caption.copy(fontSize = 12.sp, letterSpacing = 0.em),
+                        text = size,
+                        style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                         color = polishedSteelColor
                     )
 
                 }
-            }
+//            }
         }
     }
 }

@@ -30,7 +30,10 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
-fun MenuDetailCommonOption() {
+fun MenuDetailCommonOption(
+    onSizeSelected: (String) -> Unit,
+    onTemperatureSelected: (String) -> Unit
+) {
     val sizeList = listOf("Tall", "Grande", "Venti")
     val temperatureList = listOf("Hot", "Ice")
 
@@ -45,8 +48,8 @@ fun MenuDetailCommonOption() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MenuDetailCommonOptionRow(sizeList)
-            MenuDetailCommonOptionRow(temperatureList)
+            MenuDetailCommonOptionRow(sizeList, onSizeSelected)
+            MenuDetailCommonOptionRow(temperatureList, onTemperatureSelected)
 
         }
     }
@@ -54,7 +57,9 @@ fun MenuDetailCommonOption() {
 }
 
 @Composable
-fun MenuDetailCommonOptionRow(options: List<String>) {
+fun MenuDetailCommonOptionRow(options: List<String>, onSelect: (String) -> Unit) {
+    var selectedOption by remember { mutableStateOf(options.first()) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,14 +67,26 @@ fun MenuDetailCommonOptionRow(options: List<String>) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         options.forEach { option ->
-            MenuDetailCommonOptionButton(option = option, modifier = Modifier.weight(1f))
+            MenuDetailCommonOptionButton(
+                option = option,
+                modifier = Modifier.weight(1f),
+                isSelected = selectedOption == option,
+                onSelect = {
+                    selectedOption = option
+                    onSelect(option)
+                }
+            )
         }
     }
 }
 
 @Composable
-fun MenuDetailCommonOptionButton(option: String, modifier: Modifier = Modifier) {
-    var isClicked by remember { mutableStateOf(false) }
+fun MenuDetailCommonOptionButton(
+    option: String,
+    modifier: Modifier = Modifier,
+    isSelected: Boolean,
+    onSelect: () -> Unit,
+) {
 
     Box(
         modifier = modifier
@@ -77,14 +94,13 @@ fun MenuDetailCommonOptionButton(option: String, modifier: Modifier = Modifier) 
             .background(whiteBackgroundColor)
             .border(
                 width = 2.dp,
-                color = if (isClicked) orangeColor else whiteBackgroundColor,
+                color = if (isSelected) orangeColor else whiteBackgroundColor,
                 shape = RoundedCornerShape(10.dp)
             )
     ) {
         Button(
-            onClick = { isClicked = !isClicked },
-            modifier = modifier
-                .fillMaxWidth(),
+            onClick = onSelect,
+            modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,

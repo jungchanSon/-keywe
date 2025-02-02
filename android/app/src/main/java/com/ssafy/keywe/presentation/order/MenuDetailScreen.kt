@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,8 +27,17 @@ import com.ssafy.keywe.presentation.order.component.Spacer
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
-fun MenuDetailScreen(navController: NavController, menuName: String, menuPrice: Int, menuImageURL: String) {
+fun MenuDetailScreen(
+    navController: NavController,
+    menuName: String,
+    menuPrice: Int,
+    menuImageURL: String,
+    cartItems: MutableList<CartItem>
+) {
 
+    val selectedSize = remember { mutableStateOf("Tall") }
+    val selectedTemperature = remember { mutableStateOf("Hot") }
+    val extraOptions = remember { mutableStateMapOf<String, Int>() }
     val totalPrice = remember { mutableIntStateOf(menuPrice) }
 
     Scaffold(
@@ -61,12 +72,50 @@ fun MenuDetailScreen(navController: NavController, menuName: String, menuPrice: 
                     modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
                 ) {
                     Spacer(24)
-                    MenuDetailCommonOption()
+                    MenuDetailCommonOption(
+                        onSizeSelected = { size -> selectedSize.value = size },
+                        onTemperatureSelected = { temp -> selectedTemperature.value = temp }
+                    )
                     Spacer(12)
-                    MenuExtraOption(onPriceChange = { priceChange ->
-                        totalPrice.value += priceChange
-                    })
-                    MenuDetailBottom()
+                    MenuExtraOption(
+                        onOptionSelected = { name, newAmount, optionPrice ->
+                            val oldAmount = extraOptions[name] ?: 0
+                            val priceChange = (newAmount - oldAmount) * (optionPrice)
+
+                            extraOptions[name] = newAmount
+                            totalPrice.intValue += priceChange
+                        }
+                    )
+                    MenuDetailBottom(
+                        onAddToCart = {
+                            val newCartItem = CartItem(
+                                id = cartItems.size + 1,
+                                name = menuName,
+                                price = totalPrice.value,
+                                quantity = 1,
+                                imageURL = menuImageURL,
+                                size = selectedSize.value,
+                                temperature = selectedTemperature.value,
+                                extraOptions = extraOptions.toMap()
+                            )
+
+                            val existingItemIndex = cartItems.indexOfFirst {
+                                it.name == newCartItem.name &&
+                                it.size == newCartItem.size &&
+                                it.temperature == newCartItem.temperature &&
+                                it.extraOptions == newCartItem.extraOptions
+                            }
+
+                            if (existingItemIndex != -1) {
+                                cartItems[existingItemIndex] = cartItems[existingItemIndex].copy(
+                                    quantity = cartItems[existingItemIndex].quantity + 1
+                                )
+                            } else {
+                                cartItems.add(newCartItem)
+                            }
+                        },
+                        navController = navController
+                    )
                 }
             }
         }

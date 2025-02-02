@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,20 +31,24 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 
 @Composable
-fun MenuExtraOption(onPriceChange: (Int) -> Unit) {
+fun MenuExtraOption(
+    onOptionSelected: (String, Int, Int) -> Unit
+) {
+
+    val extraOptions = remember { mutableStateMapOf<String, Int>() }
+
     Box(
         modifier = Modifier
             .background(greyBackgroundColor),
-    ){
+    ) {
         Column(
-            modifier = Modifier
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            Text(text ="추가 선택", style = h6.copy(fontSize = 16.sp))
-            OptionBox("샷추가", 500, 1, onPriceChange)
-            OptionBox("시럽 추가", 0, 1, onPriceChange)
+            Text(text = "추가 선택", style = h6.copy(fontSize = 16.sp))
+            OptionBox("샷추가", 500, extraOptions, onOptionSelected)
+            OptionBox("시럽 추가", 0, extraOptions, onOptionSelected)
         }
     }
 }
@@ -69,7 +74,7 @@ fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Un
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .clickable{ onDecrease() },
+                .clickable { onDecrease() },
             painter = painterResource(R.drawable.minus_circle),
             contentDescription = "minus in circle"
         )
@@ -89,9 +94,14 @@ fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Un
 }
 
 @Composable
-fun OptionBox(name: String, optionPrice:Int, initialAmount: Int, onPriceChange: (Int) -> Unit ) {
+fun OptionBox(
+    name: String,
+    optionPrice: Int,
+    extraOptions: MutableMap<String, Int>,
+    onOptionSelected: (String, Int, Int) -> Unit
+) {
 
-    val optionAmount = remember { mutableIntStateOf(initialAmount) }
+    val optionAmount = remember { mutableIntStateOf(extraOptions[name] ?: 0) }
 
     Box(
         modifier = Modifier
@@ -102,7 +112,7 @@ fun OptionBox(name: String, optionPrice:Int, initialAmount: Int, onPriceChange: 
                 shape = RoundedCornerShape(size = 8.dp)
             )
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        ) {
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -111,18 +121,21 @@ fun OptionBox(name: String, optionPrice:Int, initialAmount: Int, onPriceChange: 
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Option(name, optionPrice)
-            OptionAmount(optionAmount.intValue,
+            OptionAmount(
+                optionAmount.intValue,
                 onDecrease = {
-                if (optionAmount.intValue > 1) {
-                    optionAmount.intValue--
-                    onPriceChange(-optionPrice)
-                }
-            }, onIncrease = {
-                if (optionAmount.intValue < 10) {
-                    optionAmount.intValue++
-                    onPriceChange(+optionPrice)
-                }
-            })
+                    if (optionAmount.intValue > 0) {
+                        optionAmount.intValue--
+                        extraOptions[name] = optionAmount.intValue
+                        onOptionSelected(name, optionAmount.intValue, optionPrice)
+                    }
+                }, onIncrease = {
+                    if (optionAmount.intValue < 9) {
+                        optionAmount.intValue++
+                        extraOptions[name] = optionAmount.intValue
+                        onOptionSelected(name, optionAmount.intValue, optionPrice)
+                    }
+                })
         }
     }
 }
