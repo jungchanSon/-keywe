@@ -5,19 +5,23 @@
 <mapper namespace="com.kiosk.server.store.domain.ImageRepository">
 
     <!-- 이미지 생성 -->
-    <insert id="insertImage" useGeneratedKeys="true" keyProperty="imageId">
-        INSERT INTO menu_image (user_id, image_bytes, created_at)
-        VALUES (#{userId}, #{imagePath}, #{createdAt});
+    <insert id="insert" parameterType="Images">
+        INSERT INTO menu_image (user_id, menu_id, image_id, image_bytes, created_at)
+        VALUES (#{userId}, #{menuId}, #{imageId}, #{imageBytes}, #{createdAt});
     </insert>
     
     <!-- ID로 이미지 찾기 -->
-    <select id="findImageById" resultType="Images">
-        SELECT image_id, user_id, image_bytes, created_at FROM menu_image
-        WHERE image_id = #{imageId};
+    <select id="findById" parameterType="java.lang.Long" resultType="Images">
+        SELECT * FROM menu_image
+        WHERE menu_id = #{menuId};
     </select>
 
-    <delete id="deleteImageById" parameterType="java.lang.Integer">
-        DELETE FROM menu_image WHERE WHERE image_id = #{imageId};
+    <select id="findImageBytesById" parameterType="java.util.Map" resultType="java.lang.Object">
+        SELECT image_bytes FROM menu_image WHERE user_id = #{userId} AND menu_id = #{menuId}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM menu_image WHERE menu_id = #{menuId};
     </delete>
 
 </mapper>
