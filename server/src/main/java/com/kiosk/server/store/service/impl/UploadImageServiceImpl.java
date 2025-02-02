@@ -3,7 +3,7 @@ package com.kiosk.server.store.service.impl;
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.store.domain.ImageRepository;
 import com.kiosk.server.store.domain.Images;
-import com.kiosk.server.store.service.ImageUploadService;
+import com.kiosk.server.store.service.UploadImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,15 +13,13 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class ImageUploadServiceImpl implements ImageUploadService {
+public class UploadImageServiceImpl implements UploadImageService {
 
     private final ImageRepository imageRepository;
-
-
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png");
 
     @Override
-    public Images doService(long userId, MultipartFile file) {
+    public void doService(long userId, long menuId, MultipartFile file) {
 
         // 파일 존재 여부 확인
         if (file == null || file.isEmpty()) {
@@ -36,13 +34,11 @@ public class ImageUploadServiceImpl implements ImageUploadService {
             byte[] imageBytes = file.getBytes();
 
             // 이미지 정보 DB 저장
-            Images image = new Images(userId, imageBytes);
-            imageRepository.insertImage(image);
-            int imageId = image.getImageId();
+            Images image = Images.create(userId, menuId, imageBytes);
+            imageRepository.insert(image);
 
-            return imageRepository.findImageById(imageId);
         } catch (IOException e) {
-            throw new BadRequestException("Failed to process the image file");
+            throw new RuntimeException("Failed to process the image file");
         }
     }
 
@@ -55,4 +51,5 @@ public class ImageUploadServiceImpl implements ImageUploadService {
             throw new BadRequestException("Unsupported file format: " + extension);
         }
     }
+
 }
