@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,9 @@ fun LoginScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
+
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val validForm by viewModel.validForm.collectAsStateWithLifecycle()
 
     val onSearchExplicitlyTriggered = {
 //        keyboardController?.hide()
@@ -85,6 +90,8 @@ fun LoginScreen(
                 label = "이메일",
                 text = email,
                 placeholder = "이메일을 입력해주세요.",
+                isError = errorMessage != null,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 onValueChange = {
                     viewModel.onEmailChanged(it)
                 },
@@ -94,11 +101,17 @@ fun LoginScreen(
                 label = "비밀번호",
                 text = password,
                 placeholder = "비밀번호를 입력해주세요.",
+                isPassword = true,
+                isError = errorMessage != null,
                 onValueChange = {
                     viewModel.onPasswordChanged(it)
                 },
             )
-
+            if (errorMessage != null) Text(
+                text = errorMessage!!,
+                color = androidx.compose.ui.graphics.Color.Red,
+                modifier = modifier.padding(top = 8.dp)
+            )
             Spacer(modifier = modifier.height(32.dp))
             BottomButton(content = "로그인", onClick = {
                 onSearchExplicitlyTriggered()
@@ -106,7 +119,7 @@ fun LoginScreen(
 //                navController.navigate("greet", builder = {
 //                    popUpTo("login") { inclusive = true }
 //                })
-            })
+            }, enabled = validForm)
             Spacer(modifier = modifier.height(12.dp))
             Text(
                 "계정이 없으신가요?",

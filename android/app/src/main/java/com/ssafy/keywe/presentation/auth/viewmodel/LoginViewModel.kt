@@ -1,8 +1,6 @@
 package com.ssafy.keywe.presentation.auth.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ApiResponseHandler.onException
@@ -14,10 +12,12 @@ import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.domain.auth.AuthRepository
 import com.ssafy.keywe.domain.auth.LoginModel
 import com.ssafy.keywe.util.JWTUtil
+import com.ssafy.keywe.util.RegUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,15 +36,20 @@ class LoginViewModel @Inject constructor(
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
 
-    private val _errorMessage = mutableStateOf<String?>(null)
-    val errorMessage: State<String?> = _errorMessage
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    private val _validForm = MutableStateFlow<Boolean>(false)
+    val validForm: StateFlow<Boolean> = _validForm.asStateFlow()
 
     fun onEmailChanged(email: String) {
         _email.value = email
+        validateForm()
     }
 
     fun onPasswordChanged(password: String) {
         _password.value = password
+        validateForm()
     }
 
 
@@ -56,6 +61,11 @@ class LoginViewModel @Inject constructor(
             repository.login(loginRequest).onSuccess(::saveUserToken).onServerError(::handleError)
                 .onException(::handleException)
         }
+    }
+
+    private fun validateForm() {
+        _validForm.value =
+            Regex(RegUtil.EMAIL_REG).matches(_email.value) && _password.value.isNotEmpty()
     }
 
     private fun saveUserToken(
@@ -74,7 +84,9 @@ class LoginViewModel @Inject constructor(
     private fun handleError(
         status: Status,
     ) {
-//        _errorMessage.postValue(errorMessage)
+        _errorMessage.update {
+            "일치하는 사용자 정보가 없습니다."
+        }
     }
 
     private fun handleException(
