@@ -1,8 +1,13 @@
 package com.ssafy.keywe.common.app
 
+import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -13,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,38 +41,45 @@ fun DefaultTextFormField(
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false,
     modifier: Modifier = Modifier.fillMaxWidth(),
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    isError: Boolean = false,
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    var isFocused by remember { mutableStateOf(false) }
 
-    // 핸드폰 번호 포맷팅 로직
-    fun String.clearFormatting(): String = this.filter { it.isDigit() }
-    fun String.formatAsPhoneNumber(): String {
-        val digits = this.clearFormatting()
-        return when {
-            digits.length <= 3 -> digits
-            digits.length <= 7 -> "${digits.take(3)}-${digits.substring(3)}"
-            else -> "${digits.take(3)}-${digits.substring(3, 7)}-${digits.substring(7)}"
+    // 포커스 상태 감지
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction: Interaction ->
+            when (interaction) {
+                is FocusInteraction.Focus -> isFocused = true
+                is FocusInteraction.Unfocus -> isFocused = false
+            }
         }
     }
 
     Column {
         if (label.isNotEmpty()) {
-            Text(text = label, style = button)
+            Text(text = label, style = button, modifier = modifier.padding(bottom = 8.dp))
         }
-        OutlinedTextField(
+        OutlinedTextField(interactionSource = interactionSource,
             modifier = modifier,
             placeholder = {
                 Text(
                     text = placeholder, style = body2.copy(color = polishedSteelColor)
                 )
             },
+            isError = isError,
+            keyboardActions = KeyboardActions.Default,
             shape = RoundedCornerShape(8.dp),
             colors = TextFieldDefaults.colors().copy(
                 focusedContainerColor = greyBackgroundColor,
                 unfocusedContainerColor = greyBackgroundColor,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                errorTextColor = Color.Red,
+                errorIndicatorColor = Color.Red,
+                errorContainerColor = greyBackgroundColor
             ),
             keyboardOptions = keyboardOptions,
             singleLine = true,
@@ -81,8 +94,8 @@ fun DefaultTextFormField(
             } else VisualTransformation.None,
             textStyle = body2,
             trailingIcon = {
-                if (!isPassword) null
-                else {
+
+                if (isPassword && isFocused) {
                     if (isPasswordVisible) {
                         IconButton(onClick = { isPasswordVisible = false }) {
                             Icon(Icons.Filled.Visibility, contentDescription = "")
@@ -93,7 +106,6 @@ fun DefaultTextFormField(
                         }
                     }
                 }
-            }
-        )
+            })
     }
 }
