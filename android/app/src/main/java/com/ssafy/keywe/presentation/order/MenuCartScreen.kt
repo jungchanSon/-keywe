@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.order
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,38 +23,24 @@ import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartMenuBox
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
-data class CartItem(
-    val id: Int,
-    val name: String,
-    val price: Int,
-    val quantity: Int,
-    val imageURL: String,
-)
 
 @Composable
-fun MenuCartScreen(navController: NavController) {
-
-    var cartItems = remember {
-        mutableStateListOf(
-            CartItem(
-                1, "아메리카노", 3000, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
-            ), CartItem(
-                2, "카페라떼", 3500, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
-            ), CartItem(
-                3, "카푸치노", 4000, 1, "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
-            )
-        )
-    }
+fun MenuCartScreen(
+    navController: NavController,
+    cartItems: List<CartItem>,
+    onUpdateCart: (List<CartItem>) -> Unit
+) {
 
     fun removeItem(itemId: Int) {
-        cartItems.removeAll { it.id == itemId }
+        val updatedCart = cartItems.filter { it.id != itemId }
+        onUpdateCart(updatedCart)
     }
 
     fun updateQuantity(itemId: Int, newQuantity: Int) {
-        val index = cartItems.indexOfFirst { it.id == itemId }
-        if (index != -1) {
-            cartItems[index] = cartItems[index].copy(quantity = newQuantity)
+        val updatedCart = cartItems.map {
+            if (it.id == itemId) it.copy(quantity = newQuantity) else it
         }
+        onUpdateCart(updatedCart)
     }
 
     Scaffold(
@@ -71,10 +58,11 @@ fun MenuCartScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter)
-                    .padding(vertical = 24.dp),
+                    .padding(top = 24.dp, bottom = 152.dp),
             ) {
                 items(cartItems) { item ->
-                    MenuCartMenuBox(cartItem = item,
+                    MenuCartMenuBox(
+                        cartItem = item,
                         onDelete = { removeItem(it) },
                         onQuantityChange = { id, newQuantity -> updateQuantity(id, newQuantity) })
 
@@ -92,11 +80,15 @@ fun MenuCartScreen(navController: NavController) {
             // 하단 고정 영역
             Box(
                 modifier = Modifier
-                    .padding(vertical = 24.dp)
+//                    .padding(vertical = 24.dp)
+                    .align(Alignment.BottomCenter)
                     .background(whiteBackgroundColor)
-                    .align(Alignment.BottomCenter),
+                    .fillMaxWidth(),
             ) {
-                MenuCartBottom(cartItems.size, cartItems.sumOf { it.price * it.quantity })
+                MenuCartBottom(
+                    cartItems.sumOf { it.quantity },
+                    cartItems.sumOf { it.price * it.quantity }
+                )
             }
         }
     }

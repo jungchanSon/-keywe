@@ -1,4 +1,4 @@
-package com.ssafy.keywe.common.order
+package com.ssafy.keywe.presentation.order.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,7 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,34 +31,38 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 
 @Composable
-fun MenuExtraOption() {
+fun MenuExtraOption(
+    onOptionSelected: (String, Int, Int) -> Unit
+) {
+
+    val extraOptions = remember { mutableStateMapOf<String, Int>() }
+
     Box(
         modifier = Modifier
             .background(greyBackgroundColor),
-    ){
+    ) {
         Column(
-            modifier = Modifier
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            Text(text ="추가 선택", style = h6.copy(fontSize = 16.sp))
-            OptionBox("샷추가 +500", 1)
-            OptionBox("시럽 추가", 1)
+            Text(text = "추가 선택", style = h6.copy(fontSize = 16.sp))
+            OptionBox("샷추가", 500, extraOptions, onOptionSelected)
+            OptionBox("시럽 추가", 0, extraOptions, onOptionSelected)
         }
     }
 }
 
 @Composable
-fun Option(name: String) {
+fun Option(name: String, optionPrice: Int) {
     Text(
-        text = name,
+        text = if (optionPrice == 0) name else "$name + ${optionPrice}원",
         style = subtitle1
     )
 }
 
 @Composable
-fun OptionAmount(amount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
     Row(
         modifier = Modifier
             .width(88.dp)
@@ -69,12 +74,12 @@ fun OptionAmount(amount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .clickable{ onDecrease() },
+                .clickable { onDecrease() },
             painter = painterResource(R.drawable.minus_circle),
             contentDescription = "minus in circle"
         )
         Text(
-            text = "${amount}",
+            text = "$optionAmount",
             style = subtitle1
         )
         Image(
@@ -89,24 +94,25 @@ fun OptionAmount(amount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
 }
 
 @Composable
-fun OptionBox(name: String, initialAmount: Int) {
-    val amount = remember { mutableStateOf(initialAmount) }
+fun OptionBox(
+    name: String,
+    optionPrice: Int,
+    extraOptions: MutableMap<String, Int>,
+    onOptionSelected: (String, Int, Int) -> Unit
+) {
+
+    val optionAmount = remember { mutableIntStateOf(extraOptions[name] ?: 0) }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-//            .fillMaxHeight()
             .height(40.dp)
             .background(
                 color = whiteBackgroundColor,
                 shape = RoundedCornerShape(size = 8.dp)
             )
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            ),
-
-        ) {
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -114,14 +120,22 @@ fun OptionBox(name: String, initialAmount: Int) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Option(name)
-            OptionAmount(amount.value, onDecrease = {
-                if (amount.value > 1) { // 1 이하로 내려가지 않도록 제한
-                    amount.value--
-                }
-            }, onIncrease = {
-                amount.value++
-            })
+            Option(name, optionPrice)
+            OptionAmount(
+                optionAmount.intValue,
+                onDecrease = {
+                    if (optionAmount.intValue > 0) {
+                        optionAmount.intValue--
+                        extraOptions[name] = optionAmount.intValue
+                        onOptionSelected(name, optionAmount.intValue, optionPrice)
+                    }
+                }, onIncrease = {
+                    if (optionAmount.intValue < 9) {
+                        optionAmount.intValue++
+                        extraOptions[name] = optionAmount.intValue
+                        onOptionSelected(name, optionAmount.intValue, optionPrice)
+                    }
+                })
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,9 +25,9 @@ import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.primaryColor
 
 @Composable
-fun MenuDetailMenu(modifier: Modifier = Modifier) {
+fun MenuDetailMenu(modifier: Modifier = Modifier, menuName: String, menuPrice: Int, menuImageURL: String) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
@@ -35,14 +36,14 @@ fun MenuDetailMenu(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            MenuDetailImage()    // {원 + 이미지}
+            MenuDetailImage(menuImageURL)
             Text(
-                text = "아이스 아메리카노",
+                text = menuName,
                 color = primaryColor,
                 style = h5.copy(fontWeight = FontWeight.ExtraBold)
             )
             Text(
-                text = "1800 원",
+                text = "$menuPrice 원",
                 style = h5.copy(fontWeight = FontWeight.SemiBold)
             )
         }
@@ -50,21 +51,23 @@ fun MenuDetailMenu(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MenuDetailImage() {
+fun MenuDetailImage(menuImageURL:String) {
     Box(
         modifier = Modifier
-            .size(200.dp) // width와 height를 size로 합침
-            .background(color = lightColor, shape = CircleShape) // 원형 배경
-            .padding(12.dp) // 내부 여백
+            .size(200.dp)
+            .background(color = lightColor, shape = CircleShape)
+            .padding(12.dp)
     ) {
-        val imageUrl = "https://fibercreme.com/wp-content/uploads/2024/10/Sub-1.jpg"
+
+        val decodedMenuImageUrl = Uri.decode(menuImageURL)
+
         Image(
-            painter = rememberAsyncImagePainter(model = imageUrl),
+            painter = rememberAsyncImagePainter(model = decodedMenuImageUrl),
             contentDescription = "Web Image",
             modifier = Modifier
                 .fillMaxSize()
-                .clip(CircleShape), // 이미지를 원형으로 자름
-            contentScale = ContentScale.Crop // 이미지를 원에 맞게 잘라냄
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
         )
     }
 }

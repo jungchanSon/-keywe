@@ -1,129 +1,62 @@
 package com.ssafy.keywe.presentation.order.component
 
-import androidx.compose.foundation.Image
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.ssafy.keywe.R
-
-@Composable
-fun MenuMenu(menuName: String, menuRecipe: String, menuPrice: Int, imageURL: String) {
-
-    Box(
-        modifier = Modifier,
-//        verticalAlign = Bottom
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(bottom = 15.dp)
-                .width(135.dp)
-                .height(190.dp)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                MenuImage(imageURL)
-                MenuDescription(menuName, menuRecipe, menuPrice)
-            }
-        }
-        Image(
-            modifier = Modifier
-                .width(146.dp)
-                .height(130.dp)
-                .zIndex(-1f),
-            painter = painterResource(R.drawable.menu_background_rectangle),
-            contentDescription = "menu background rectangle"
-        )
-    }
-
-    Box(
-        modifier = Modifier
-            .padding(bottom = 15.dp)
-            .width(135.dp)
-            .height(190.dp)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            MenuImage(imageURL)
-            MenuDescription(menuName, menuRecipe, menuPrice)
-        }
-    }
-}
+import com.ssafy.keywe.presentation.order.MenuData
+import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuMenuList(
-    menuList: List<Quadruple<String, String, Int, String>>,
+    menuList: List<MenuData>,
     navController: NavController,
 ) {
     Box(
         modifier = Modifier
             .background(Color.Transparent)
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(horizontal = 24.dp),
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
-//            verticalArrangement = Arrangement.SpaceBetween
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2), // 2열 그리드
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            items(menuList.chunked(2)) { rowItems ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    rowItems.forEach { menu ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            MenuMenuScreen(
-                                menuName = menu.first,
-                                menuRecipe = menu.second,
-                                menuPrice = menu.third,
-                                imageURL = menu.fourth,
-                                selectItem = {
-                                    navController.navigate("menuDetail")
-                                }
-                            )
-                        }
+            items(menuList) { menu ->
+                MenuMenuScreen(
+                    menuName = menu.name,
+                    menuRecipe = menu.recipe,
+                    menuPrice = menu.price,
+                    menuImageURL = menu.imageURL,
+                    selectItem = {
+                        navController.navigate("menuDetail/${menu.name}/${menu.price}/${
+                            Uri.encode(menu.imageURL)}")
                     }
-                    if (rowItems.size < 2) {
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                        )
-                    }
-                }
+                )
             }
         }
     }
@@ -134,43 +67,46 @@ fun MenuMenuScreen(
     menuName: String,
     menuRecipe: String,
     menuPrice: Int,
-    imageURL: String,
+    menuImageURL: String,
     selectItem: () -> Unit,
 ) {
-//    val ImageURL =
-//        "https://file.notion.so/f/f/6e800ee0-e9da-4766-b834-502cf74dc80f/f674efcc-0102-4645-ad48-801e111e90a8/%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png?table=block&id=b022cea1-d75a-4644-85c2-839109a6113a&spaceId=6e800ee0-e9da-4766-b834-502cf74dc80f&expirationTimestamp=1737720000000&signature=jOqHikoR8etsHVDbV5vIQ3J7Z2qu6sFu_8k6SlqCq6A&downloadName=%EC%95%84%EB%A9%94%EB%A6%AC%EC%B9%B4%EB%85%B8.png"
-//    val MenuName = "아메리카노"
-//    val MenuRecipe = "커피+물"
-//    val MenuPrice = 2000
-
     Box(
         modifier = Modifier
-            .width(145.5.dp)
-            .height(190.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
             .clickable { selectItem() },
         contentAlignment = Alignment.BottomCenter
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(190.dp)
+                .padding(bottom = 15.dp)
+                .wrapContentHeight(),
+            verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            MenuImage(menuImageURL)
+            MenuDescription(menuName, menuRecipe, menuPrice)
+        }
+
+        val density = LocalDensity.current.density // Density 가져오기
+
         Box(
             modifier = Modifier
-                .padding(bottom = 15.dp)
-                .width(135.dp)
-                .height(190.dp)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                MenuImage(imageURL)
-                MenuDescription(menuName, menuRecipe, menuPrice)
-            }
-        }
-        Image(
-            modifier = Modifier
-                .width(146.dp)
-                .height(130.dp)
-                .zIndex(-1f),
-            painter = painterResource(R.drawable.menu_background_rectangle),
-            contentDescription = "menu background rectangle"
+                .zIndex(-1f)
+                .width(160.dp)
+                .height(145.dp)
+                .shadow(elevation = 10.dp, spotColor = Color(0x88696969), ambientColor = Color(0x11696969))
+                .graphicsLayer(
+                    rotationX = 15f,
+                    cameraDistance = 8f * density
+                )
+                .background(
+                    whiteBackgroundColor,
+                    shape = RoundedCornerShape(24.dp)
+                )
         )
+
     }
 }
