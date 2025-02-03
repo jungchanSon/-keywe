@@ -1,13 +1,12 @@
 package com.ssafy.keywe.presentation.order.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,57 +21,40 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 
 @Composable
 fun MenuDescription(name: String, recipe: String, price: Int) {
-
     Row(
         modifier = Modifier
-            .width(160.dp)
-            .padding(horizontal = 12.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {
-        Box(
-            modifier = Modifier
-//                    .fillMaxSize()
-                .fillMaxHeight()
-                .padding(horizontal = 6.dp)
-        ) {
-            Column(
-                modifier = Modifier
-//                        .fillMaxSize(),
-                    .fillMaxHeight(),
-//                        .padding(bottom = 1.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.Start,
-            ) {
-                Box(
-                    modifier = Modifier
-//                            .fillMaxSize()
-//                            .fillMaxHeight()
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Top),
-                        horizontalAlignment = Alignment.Start,
-                    ) {
-                        Text(
-                            text = name, style = TextStyle(
-                                fontSize = 15.sp,
-                                fontFamily = pretendardkr,
-                                fontWeight = FontWeight.Bold,
-                                color = titleTextColor
-                            )
-                        )
-                        Text(
-                            text = recipe, style = TextStyle(
-                                fontSize = 13.sp,
-                                fontFamily = pretendardkr,
-                                fontWeight = FontWeight.Normal,
-                                color = polishedSteelColor
-                            )
-                        )
-                    }
-                }
-                Text("${price}원")
-            }
+        Column {
+            Text(
+                text = name, style = TextStyle(
+                    fontSize = 15.sp,
+                    fontFamily = pretendardkr,
+                    fontWeight = FontWeight.Bold,
+                    color = titleTextColor
+                )
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = recipe, style = TextStyle(
+                    fontSize = 13.sp,
+                    fontFamily = pretendardkr,
+                    fontWeight = FontWeight.Normal,
+                    color = polishedSteelColor
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "${price}원", style = TextStyle(
+                    fontSize = 16.sp,
+                    fontFamily = pretendardkr,
+                    fontWeight = FontWeight.Bold,
+                    color = titleTextColor
+                )
+            )
         }
         MenuPlusButton()
     }

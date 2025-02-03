@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonColors
@@ -53,7 +52,6 @@ fun MenuDetailBottomBackButton(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier
-            .fillMaxHeight()
             .fillMaxWidth(),
         colors = ButtonColors(
             containerColor = whiteBackgroundColor,
@@ -75,7 +73,6 @@ fun MenuDetailBottomCartButton(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier
-            .fillMaxHeight()
             .fillMaxWidth(),
         colors = ButtonColors(
             containerColor = primaryColor,

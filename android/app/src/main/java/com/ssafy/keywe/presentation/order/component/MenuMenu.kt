@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -92,7 +91,8 @@ fun MenuMenuScreen(
         Box(
             modifier = Modifier
                 .zIndex(-1f)
-                .width(160.dp)
+                .fillMaxWidth()
+//                .width(160.dp)
                 .height(145.dp)
                 .shadow(
                     elevation = 10.dp,

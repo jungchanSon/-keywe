@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +24,7 @@ import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
 import com.ssafy.keywe.presentation.order.component.MenuExtraOption
-import com.ssafy.keywe.presentation.order.component.Spacer
+import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
@@ -63,17 +64,17 @@ fun MenuDetailScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(370.dp) // 고정 높이
+//                    .height(370.dp) // 고정 높이
                     .align(Alignment.BottomCenter) // 하단 정렬
-                    .background(whiteBackgroundColor)
+                    .background(greyBackgroundColor)
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
+                    verticalArrangement = Arrangement.Bottom
                 ) {
-                    Spacer(24)
+                    Spacer(modifier = Modifier.height(24.dp))
                     MenuDetailCommonOption(onSizeSelected = { size -> selectedSize.value = size },
                         onTemperatureSelected = { temp -> selectedTemperature.value = temp })
-                    Spacer(12)
+                    Spacer(modifier = Modifier.height(12.dp))
                     MenuExtraOption(onOptionSelected = { name, newAmount, optionPrice ->
                         val oldAmount = extraOptions[name] ?: 0
                         val priceChange = (newAmount - oldAmount) * (optionPrice)
