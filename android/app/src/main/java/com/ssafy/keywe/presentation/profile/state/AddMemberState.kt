@@ -1,4 +1,4 @@
-package com.ssafy.keywe.presentation.profile.state
+package com.ssafy.keywe.data.state
 
 data class AddMemberState(
     val name: String = "",
@@ -9,7 +9,7 @@ data class AddMemberState(
     val isVerificationSent: Boolean = false,
     val isVerificationValid: Boolean = false,
     val verificationStatus: VerificationStatus = VerificationStatus.NONE,
-    val simplePassword: String = "",
+    val simplePassword: String = ""
 )
 
 enum class VerificationStatus {

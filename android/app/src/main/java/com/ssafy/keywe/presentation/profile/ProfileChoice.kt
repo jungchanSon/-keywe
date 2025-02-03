@@ -36,7 +36,10 @@ fun ProfileChoice(navController: NavController) {
         ) {
             // 메인 프로필
             Profile(
-                name = "김동철", modifier = Modifier.padding(20.dp)
+                name = "김동철",
+                modifier = Modifier
+                    .padding(20.dp)
+                    .clickable { navController.navigate("editProfile") }
             )
 
             // 첫번째 행
@@ -45,10 +48,16 @@ fun ProfileChoice(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Profile(
-                    name = "김싸피", modifier = Modifier.weight(1f)
+                    name = "김싸피",
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate("editProfile") }
                 )
                 Profile(
-                    name = "이싸피", modifier = Modifier.weight(1f)
+                    name = "이싸피",
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate("editProfile") }
                 )
             }
 
@@ -60,19 +69,27 @@ fun ProfileChoice(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Profile(
-                    name = "박싸피", modifier = Modifier.weight(1f)
+                    name = "박싸피",
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate("editProfile") }
                 )
                 Profile(
-                    name = "정싸피", modifier = Modifier.weight(1f)
+                    name = "정싸피",
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate("editProfile") }
                 )
             }
             // 추가하기 아이콘
-            Image(painter = painterResource(id = R.drawable.profileplus),
+            Image(
+                painter = painterResource(id = R.drawable.profileplus),
                 contentDescription = "프로필 추가",
                 modifier = Modifier
                     .padding(top = 60.dp)
                     .size(48.dp)
-                    .clickable {/* 여기에 다음 페이지 넘어가도록 하기 */ })
+                    .clickable { navController.navigate("addProfile") }
+            )
         }
     }
 }

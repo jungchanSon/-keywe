@@ -2,12 +2,14 @@ package com.ssafy.keywe.presentation.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,24 +34,17 @@ import com.ssafy.keywe.ui.theme.primaryColor
 
 @Composable
 fun EditMember(
-    navController: NavController,
-    viewModel: EditMemberViewModel = hiltViewModel()
+    navController: NavController, viewModel: EditMemberViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = {
-            DefaultAppBar(
-                title = "구성원 수정",
-                navController = navController,
-                actions = {
-                    TextButton(onClick = { /* 완료 처리 */ }) {
-                        Text("완료", color = primaryColor)
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    Scaffold(topBar = {
+        DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
+            TextButton(onClick = { /* 완료 처리 */ }) {
+                Text("완료", color = primaryColor)
+            }
+        })
+    }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -69,7 +64,7 @@ fun EditMember(
             // 이름 입력
             DefaultTextFormField(
                 label = "이름",
-                placeholder = "이름을 입력해주세요.",
+                placeholder = "김동철", //기존에 저장한 이름 넣기
                 text = state.name,
                 onValueChange = { viewModel.onNameChange(it) },
                 modifier = Modifier.fillMaxWidth()
@@ -80,13 +75,14 @@ fun EditMember(
             // 휴대폰 번호
             DefaultTextFormField(
                 label = "휴대폰 번호",
-                placeholder = "휴대폰 번호를 입력해주세요.",
-                text = state.phone,
-                onValueChange = { viewModel.onPhoneChange(it) },
+                placeholder = "***-****-****", //기존에 저장한 핸드폰 번호 넣기
+                text = state.simplePassword,
+                onValueChange = { viewModel.onSimplePasswordChange(it) },
+                isPassword = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
-
+            
             Spacer(modifier = Modifier.height(16.dp))
 
             // 간편 비밀번호
@@ -110,9 +106,7 @@ fun EditMember(
                     .padding(bottom = 24.dp)
             ) {
                 Text(
-                    text = "프로필 삭제하기",
-                    style = button,
-                    textDecoration = TextDecoration.Underline
+                    text = "프로필 삭제하기", style = button, textDecoration = TextDecoration.Underline
                 )
             }
         }
