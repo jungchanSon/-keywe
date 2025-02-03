@@ -1,10 +1,14 @@
 package com.kiosk.server.store.domain;
 
+import java.util.Map;
+
 public interface ImageRepository {
 
-    void insertImage(Images image);
+    void insert(Images image);
 
-    Images findImageById(int imageId);
+    Images findById(long menuId);
 
-    void deleteImageById(int imageId);
+    Object findImageBytesById(Map<String,Object> params);
+
+    void deleteById(long menuId);
 }
