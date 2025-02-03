@@ -1,5 +1,7 @@
 package com.ssafy.keywe.presentation.order
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,37 +12,35 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.HorizontalDivider
 import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartMenuBox
+import com.ssafy.keywe.presentation.order.viewmodel.CartItem
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun MenuCartScreen(
     navController: NavController,
 
     ) {
 
-    val cartItems: List<CartItem> = listOf()
-    val onUpdateCart: (List<CartItem>) -> Unit = {}
-
-    fun removeItem(itemId: Int) {
-        val updatedCart = cartItems.filter { it.id != itemId }
-        onUpdateCart(updatedCart)
-    }
-
-    fun updateQuantity(itemId: Int, newQuantity: Int) {
-        val updatedCart = cartItems.map {
-            if (it.id == itemId) it.copy(quantity = newQuantity) else it
-        }
-        onUpdateCart(updatedCart)
-    }
+    val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>();
+    val viewModel = hiltViewModel<MenuViewModel>(parentBackStackEntry)
+    val cartItems by viewModel.cartItems.collectAsState()
 
     Scaffold(
         topBar = { DefaultAppBar(title = "장바구니", navController = navController) },
@@ -60,9 +60,10 @@ fun MenuCartScreen(
                     .padding(top = 24.dp, bottom = 152.dp),
             ) {
                 items(cartItems) { item ->
-                    MenuCartMenuBox(cartItem = item,
-                        onDelete = { removeItem(it) },
-                        onQuantityChange = { id, newQuantity -> updateQuantity(id, newQuantity) })
+                    MenuCartMenuBox(
+                        cartItem = item,
+                        viewModel = viewModel // ✅ ViewModel을 전달하여 관리
+                    )
 
                     Box(
                         modifier = Modifier

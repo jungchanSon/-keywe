@@ -9,14 +9,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 
 @Composable
-fun MenuImage(imageURL: String) {
-//    val imageURL = "https://img.freepik.com/free-photo/vertical-closeup-glass-ice-tea-table-lights-against-white-background_181624-22315.jpg?semt=ais_hybrid"
+fun MenuImage(
+    menuId: Int,
+    viewModel: MenuViewModel
+) {
+
+    val menu = viewModel.getMenuDataById(menuId)
+    val menuImageURL = menu?.imageURL ?: ""
 
     Image(
-        painter = rememberAsyncImagePainter(model = imageURL),
+        painter = rememberAsyncImagePainter(model = menuImageURL),
         contentDescription = "Web Image",
         modifier = Modifier
             .fillMaxWidth()

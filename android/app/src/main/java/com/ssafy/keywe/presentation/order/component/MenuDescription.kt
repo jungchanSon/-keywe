@@ -13,14 +13,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.pretendardkr
 import com.ssafy.keywe.ui.theme.titleTextColor
 
 @Composable
-fun MenuDescription(name: String, recipe: String, price: Int) {
+fun MenuDescription(
+    menuId: Int,
+    viewModel: MenuViewModel = hiltViewModel()
+) {
+    val menu = viewModel.getMenuDataById(menuId)
+
+    val menuName = menu?.name ?: ""
+    val menuRecipe = menu?.recipe ?: ""
+    val menuPrice = menu?.price ?: 0
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,9 +41,11 @@ fun MenuDescription(name: String, recipe: String, price: Int) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {
-        Column {
+        Column(
+            modifier = Modifier.weight(1f, fill = false)
+        ) {
             Text(
-                text = name, style = TextStyle(
+                text = menuName, style = TextStyle(
                     fontSize = 15.sp,
                     fontFamily = pretendardkr,
                     fontWeight = FontWeight.Bold,
@@ -39,7 +54,10 @@ fun MenuDescription(name: String, recipe: String, price: Int) {
             )
             Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = recipe, style = TextStyle(
+                text = menuRecipe,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(
                     fontSize = 13.sp,
                     fontFamily = pretendardkr,
                     fontWeight = FontWeight.Normal,
@@ -48,7 +66,7 @@ fun MenuDescription(name: String, recipe: String, price: Int) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "${price}원", style = TextStyle(
+                "${menuPrice}원", style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = pretendardkr,
                     fontWeight = FontWeight.Bold,
@@ -56,7 +74,11 @@ fun MenuDescription(name: String, recipe: String, price: Int) {
                 )
             )
         }
-        MenuPlusButton()
+        MenuPlusButton({
+            viewModel.addToCart(
+                1, "1","1", HashMap<String, Int>()
+            )
+        })
     }
 
 }

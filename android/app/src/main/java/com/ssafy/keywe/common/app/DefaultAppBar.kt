@@ -38,7 +38,8 @@ fun DefaultAppBar(
                     )
                 }
             }
-        }, actions = actions
+        },
+        actions = actions
     )
 }
 

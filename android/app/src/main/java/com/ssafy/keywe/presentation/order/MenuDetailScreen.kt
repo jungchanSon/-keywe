@@ -18,12 +18,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
 import com.ssafy.keywe.presentation.order.component.MenuExtraOption
+import com.ssafy.keywe.presentation.order.viewmodel.CartItem
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
@@ -31,10 +35,11 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 fun MenuDetailScreen(
     navController: NavController,
     menuId: Int,
+    viewModel: MenuViewModel = hiltViewModel()
 ) {
-    val menuName: String = ""
-    val menuPrice: Int = 10000
-    val menuImageURL: String = ""
+    val menu = viewModel.getMenuDataById(menuId)
+    val menuPrice = menu?.price ?: 0
+
     val cartItems: MutableList<CartItem> = mutableListOf()
     val selectedSize = remember { mutableStateOf("Tall") }
     val selectedTemperature = remember { mutableStateOf("Hot") }
@@ -55,16 +60,15 @@ fun MenuDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter),
-                menuName = menuName,
+                menuId = menuId,
                 menuPrice = totalPrice.intValue,
-                menuImageURL = menuImageURL
+                viewModel
             )
 
             // 하단 고정 영역
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .height(370.dp) // 고정 높이
                     .align(Alignment.BottomCenter) // 하단 정렬
                     .background(greyBackgroundColor)
             ) {
@@ -83,30 +87,11 @@ fun MenuDetailScreen(
                         totalPrice.intValue += priceChange
                     })
                     MenuDetailBottom(
-                        onAddToCart = {
-                            val newCartItem = CartItem(
-                                id = cartItems.size + 1,
-                                name = menuName,
-                                price = totalPrice.value,
-                                quantity = 1,
-                                imageURL = menuImageURL,
-                                size = selectedSize.value,
-                                temperature = selectedTemperature.value,
-                                extraOptions = extraOptions.toMap()
-                            )
-
-                            val existingItemIndex = cartItems.indexOfFirst {
-                                it.name == newCartItem.name && it.size == newCartItem.size && it.temperature == newCartItem.temperature && it.extraOptions == newCartItem.extraOptions
-                            }
-
-                            if (existingItemIndex != -1) {
-                                cartItems[existingItemIndex] = cartItems[existingItemIndex].copy(
-                                    quantity = cartItems[existingItemIndex].quantity + 1
-                                )
-                            } else {
-                                cartItems.add(newCartItem)
-                            }
-                        }, navController = navController
+                        menuId = menuId,
+                        selectedSize = selectedSize.value,
+                        selectedTemperature = selectedTemperature.value,
+                        extraOptions = extraOptions.toMap(),
+                        navController = navController
                     )
                 }
             }

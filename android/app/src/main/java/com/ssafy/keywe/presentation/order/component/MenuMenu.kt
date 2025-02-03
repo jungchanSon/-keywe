@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -23,16 +25,19 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
-import com.ssafy.keywe.presentation.order.MenuData
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuMenuList(
-    menuList: List<MenuData>,
     navController: NavController,
+    viewModel: MenuViewModel
 ) {
+    val menuList by viewModel.menuItems.collectAsState()
+
     Box(
         modifier = Modifier
             .background(Color.Transparent)
@@ -46,13 +51,13 @@ fun MenuMenuList(
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             items(menuList) { menu ->
-                MenuMenuScreen(menuName = menu.name,
-                    menuRecipe = menu.recipe,
-                    menuPrice = menu.price,
-                    menuImageURL = menu.imageURL,
+                MenuMenuScreen(
+                    menuId = menu.id,
                     selectItem = {
-                        navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(10))
-                    })
+                        navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(menu.id))
+                    },
+                    viewModel
+                )
             }
         }
     }
@@ -60,11 +65,9 @@ fun MenuMenuList(
 
 @Composable
 fun MenuMenuScreen(
-    menuName: String,
-    menuRecipe: String,
-    menuPrice: Int,
-    menuImageURL: String,
+    menuId: Int,
     selectItem: () -> Unit,
+    viewModel: MenuViewModel
 ) {
     Box(
         modifier = Modifier
@@ -82,8 +85,8 @@ fun MenuMenuScreen(
             verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            MenuImage(menuImageURL)
-            MenuDescription(menuName, menuRecipe, menuPrice)
+            MenuImage(menuId, viewModel)
+            MenuDescription(menuId, viewModel)
         }
 
         val density = LocalDensity.current.density // Density 가져오기
@@ -92,7 +95,6 @@ fun MenuMenuScreen(
             modifier = Modifier
                 .zIndex(-1f)
                 .fillMaxWidth()
-//                .width(160.dp)
                 .height(145.dp)
                 .shadow(
                     elevation = 10.dp,

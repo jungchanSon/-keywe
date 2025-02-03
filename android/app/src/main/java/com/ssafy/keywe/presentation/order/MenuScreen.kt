@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
@@ -30,79 +32,41 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
 import com.ssafy.keywe.presentation.order.component.MenuSubCategory
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(navController: NavController) {
-    val cartItems: List<CartItem> = listOf()
-    val totalCartQuantity by remember { derivedStateOf { cartItems.sumOf { it.quantity } } }
+fun MenuScreen(
+    navController: NavController,
+    viewModel: MenuViewModel = hiltViewModel()
+) {
 
     Scaffold(topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingCartButton(navController, totalCartQuantity)
+            FloatingCartButton(navController, viewModel)
         }) {
         Column(
             modifier = Modifier.fillMaxHeight()
-//            verticalArrangement = Arrangement.spacedBy(22.dp)
         ) {
             MenuCategoryScreen()
             MenuSubCategory("Popular Coffee")
 
-            val menuList = listOf(
-                MenuData(
-                    "아메리카노",
-                    "커피+물",
-                    2000,
-                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-                ),
-                MenuData(
-                    "카페라떼",
-                    "커피+우유",
-                    3000,
-                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-                ),
-                MenuData(
-                    "카푸치노",
-                    "커피+거품 우유",
-                    3500,
-                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-                ),
-                MenuData(
-                    "카페모카",
-                    "커피+초콜릿+우유",
-                    4000,
-                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-                ),
-                MenuData(
-                    "에스프레소",
-                    "진한 커피 샷",
-                    2500,
-                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-                ),
-                MenuData(
-                    "에스프레소",
-                    "진한 커피 샷",
-                    2500,
-                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-                ),
-                MenuData(
-                    "에스프레소",
-                    "진한 커피 샷",
-                    2500,
-                    "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-                ),
+            MenuMenuList(
+                navController = navController,
+                viewModel
             )
-
-            MenuMenuList(menuList, navController)
         }
     }
 }
 
 @Composable
-fun FloatingCartButton(navController: NavController, cartItemCount: Int) {
+fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
+    val cartItemCount by viewModel.cartItemCount.collectAsState()
+
     Box(
         contentAlignment = Alignment.TopEnd, // 오른쪽 상단 정렬
         modifier = Modifier.size(48.dp) // FloatingActionButton 크기와 동일하게 설정

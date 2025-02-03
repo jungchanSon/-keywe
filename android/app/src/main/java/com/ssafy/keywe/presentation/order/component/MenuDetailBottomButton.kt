@@ -1,9 +1,11 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonColors
@@ -11,28 +13,45 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
-fun MenuDetailBottom(navController: NavController, onAddToCart: () -> Unit) {
+fun MenuDetailBottom(
+    menuId: Int, selectedSize: String, selectedTemperature: String, extraOptions: Map<String, Int>,
+
+    navController: NavController
+) {
+    val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>();
+    val viewModel = hiltViewModel<MenuViewModel>(parentBackStackEntry)
+
+
     Box(modifier = Modifier.background(greyBackgroundColor)) {
         Row(
-            modifier = Modifier
-                .padding(horizontal = 24.dp, vertical = 30.dp),
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 30.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.weight(1f)) {
-                MenuDetailBottomBackButton("담기", onClick = {
-                    onAddToCart()
-                    navController.navigate("menu")
-                })
+                MenuDetailBottomBackButton(
+                    "담기",
+                    menuId = menuId,
+                    selectedSize = selectedSize,
+                    selectedTemperature = selectedTemperature,
+                    extraOptions = extraOptions,
+                    viewModel = viewModel,
+                    navController = navController
+                )
             }
             Box(modifier = Modifier.weight(1f)) {
                 MenuDetailBottomCartButton("주문하기", onClick = {})
@@ -44,16 +63,25 @@ fun MenuDetailBottom(navController: NavController, onAddToCart: () -> Unit) {
 @Composable
 fun MenuDetailBottomBackButton(
     content: String,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
+    menuId: Int,
+    selectedSize: String,
+    selectedTemperature: String,
+    extraOptions: Map<String, Int>,
+    viewModel: MenuViewModel,
+    navController: NavController
 ) {
     BottomButton(
-        content = content,
-        onClick = onClick,
-        enabled = enabled,
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = ButtonColors(
+        content = content, onClick = {
+            viewModel.addToCart(
+                menuId = menuId,
+                size = selectedSize,
+                temperature = selectedTemperature,
+                extraOptions = extraOptions
+            )
+            navController.popBackStack()
+//            navController.navigate(Route.MenuBaseRoute.MenuRoute)
+        }, modifier = Modifier
+            .fillMaxWidth(), colors = ButtonColors(
             containerColor = whiteBackgroundColor,
             contentColor = titleTextColor,
             disabledContentColor = polishedSteelColor,
@@ -73,6 +101,7 @@ fun MenuDetailBottomCartButton(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier
+
             .fillMaxWidth(),
         colors = ButtonColors(
             containerColor = primaryColor,

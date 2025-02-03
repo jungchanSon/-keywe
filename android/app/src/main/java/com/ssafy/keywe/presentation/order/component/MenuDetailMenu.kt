@@ -19,13 +19,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.h5
 import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.primaryColor
 
 @Composable
-fun MenuDetailMenu(modifier: Modifier = Modifier, menuName: String, menuPrice: Int, menuImageURL: String) {
+fun MenuDetailMenu(
+    modifier: Modifier = Modifier,
+    menuId: Int,
+    menuPrice: Int,
+    viewModel: MenuViewModel
+) {
+    val menu = viewModel.getMenuDataById(menuId)
+    val menuName = menu?.name ?: ""
+    val menuImageURL = menu?.imageURL ?: ""
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -59,10 +70,8 @@ fun MenuDetailImage(menuImageURL:String) {
             .padding(12.dp)
     ) {
 
-        val decodedMenuImageUrl = Uri.decode(menuImageURL)
-
         Image(
-            painter = rememberAsyncImagePainter(model = decodedMenuImageUrl),
+            painter = rememberAsyncImagePainter(model = menuImageURL),
             contentDescription = "Web Image",
             modifier = Modifier
                 .fillMaxSize()

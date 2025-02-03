@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,13 +28,17 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
-import com.ssafy.keywe.presentation.order.CartItem
+import com.ssafy.keywe.presentation.order.viewmodel.CartItem
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.subtitle2
 
 @Composable
-fun MenuCartMenuBox(cartItem: CartItem, onDelete: (Int) -> Unit, onQuantityChange: (Int, Int) -> Unit) {
+fun MenuCartMenuBox(
+    cartItem: CartItem,
+    viewModel: MenuViewModel
+) {
     val showDeleteDialog = remember { mutableStateOf(false) }
 
     Box {
@@ -64,7 +69,7 @@ fun MenuCartMenuBox(cartItem: CartItem, onDelete: (Int) -> Unit, onQuantityChang
                 }
             }
             // 이미지 + 이름 + 가격
-            MenuCartMenu(cartItem, onQuantityChange)
+            MenuCartMenu(cartItem, viewModel)
         }
 
         if (showDeleteDialog.value) {
@@ -74,24 +79,30 @@ fun MenuCartMenuBox(cartItem: CartItem, onDelete: (Int) -> Unit, onQuantityChang
                 onCancel = { showDeleteDialog.value = false },
                 onConfirm = {
                     showDeleteDialog.value = false
-                    onDelete(cartItem.id)
+                    viewModel.removeFromCart(cartItem)
                 }
             )
         }
     }
 }
 
-
-
 @Composable
-fun MenuCartMenu(cartItem: CartItem, onQuantityChange: (Int, Int) -> Unit) {
-    val quantity = remember { mutableStateOf(cartItem.quantity) }
+fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel) {
+    val quantity = remember { mutableIntStateOf(cartItem.quantity) }
 
-    Box(modifier = Modifier
-        .fillMaxWidth(),
+    val name = cartItem.name
+    val price = cartItem.price
+    val size = cartItem.size
+    val temperature = cartItem.temperature
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.Bottom
         ) {
@@ -105,65 +116,56 @@ fun MenuCartMenu(cartItem: CartItem, onQuantityChange: (Int, Int) -> Unit) {
                 contentScale = ContentScale.Crop // 이미지를 원에 맞게 잘라냄
             )
 
-            Box(modifier = Modifier.fillMaxHeight()) {
-                MenuCartMenuInfo(cartItem.name, cartItem.price, cartItem.size, cartItem.temperature)
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .width(122.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(18.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text("$name $temperature")
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(18.12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        Text(
+                            text = "${price}원",
+                            style = subtitle2.copy(fontWeight = FontWeight.Bold, letterSpacing = 0.em)
+                        )
+                        VerticalDivider()
+                        Text(
+                            text = size,
+                            style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
+                            color = polishedSteelColor
+                        )
+
+                    }
+                }
             }
 
             Box(modifier = Modifier.height(24.dp)) {
                 OptionAmount(
-                    optionAmount = quantity.value,
+                    optionAmount = quantity.intValue,
                     onDecrease = {
-                        if (quantity.value > 1) {
-                            quantity.value--
-                            onQuantityChange(cartItem.id, quantity.value) // 업데이트 로직 호출
+                        if (quantity.intValue > 1) {
+                            quantity.intValue--
+                            viewModel.updateCartQuantity(cartItem.id, quantity.intValue) // 업데이트 로직 호출
                         }
                     },
                     onIncrease = {
-                        quantity.value++
-                        onQuantityChange(cartItem.id, quantity.value) // 업데이트 로직 호출
+                        quantity.intValue++
+                        viewModel.updateCartQuantity(cartItem.id, quantity.intValue) // 업데이트 로직 호출
                     }
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun MenuCartMenuInfo(name: String, price: Int, size: String, temperature: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(122.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text("$name $temperature"   )
-//            Box(modifier = Modifier.fillMaxHeight()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(18.12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Text(
-                        text = "${price}원",
-                        style = subtitle2.copy(fontWeight = FontWeight.Bold, letterSpacing = 0.em)
-                    )
-                    VerticalDivider()
-                    Text(
-                        text = size,
-                        style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
-                        color = polishedSteelColor
-                    )
-
-                }
-//            }
         }
     }
 }
