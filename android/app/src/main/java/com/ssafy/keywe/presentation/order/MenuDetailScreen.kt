@@ -46,7 +46,7 @@ fun MenuDetailScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding())
                 .background(whiteBackgroundColor),
         ) {
             // 상단: MenuDetailMenu

@@ -63,7 +63,6 @@ fun SignUpScreen(
                         placeholder = "이메일을 입력해주세요.",
                         onValueChange = {
                             viewModel.onEmailChanged(it)
-
                         },
                     )
                     Spacer(modifier.height(12.dp))
@@ -73,7 +72,6 @@ fun SignUpScreen(
                         placeholder = "비밀번호를 입력해주세요.",
                         onValueChange = {
                             viewModel.onPasswordChanged(it)
-
                         },
                     )
                     Spacer(modifier.height(12.dp))
@@ -83,7 +81,6 @@ fun SignUpScreen(
                         placeholder = "비밀번호 확인을 입력해주세요.",
                         onValueChange = {
                             viewModel.onPasswordCheckChanged(it)
-
                         },
                     )
                 }

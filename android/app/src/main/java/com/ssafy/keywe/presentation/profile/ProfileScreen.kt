@@ -32,7 +32,7 @@ import com.ssafy.keywe.ui.theme.subtitle1
 fun ProfileScreen(navController: NavController) {
     Scaffold(
         topBar = { DefaultAppBar(title = "프로필", navController = navController) },
-        modifier = Modifier.fillMaxSize()
+//        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Column(
             modifier = Modifier
