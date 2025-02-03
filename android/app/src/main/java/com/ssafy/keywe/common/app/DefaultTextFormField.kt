@@ -72,9 +72,7 @@ fun DefaultTextFormField(
             singleLine = true,
             value = text,
             onValueChange = { newInput ->
-                // 핸드폰 번호 포맷 적용
-                val formattedInput = newInput.formatAsPhoneNumber()
-                onValueChange(formattedInput) // 부모로 전달
+                onValueChange(newInput) // 일반 텍스트의 경우 그대로 전달
             },
             visualTransformation = if (isPassword) {
                 if (isPasswordVisible) {

@@ -63,9 +63,9 @@ fun AddMemberScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(150.dp)
                     .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 24.dp)
+
             ) {
                 // 프로필 이미지
                 Image(
@@ -84,6 +84,7 @@ fun AddMemberScreen(
                         .clickable { /*프로필 이미지 수정하기 페이지*/ }
                 )
             }
+
 
             // 부모 자식 선택
             SwitchableTab(
