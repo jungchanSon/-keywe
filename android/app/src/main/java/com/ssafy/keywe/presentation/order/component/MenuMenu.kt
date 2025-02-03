@@ -1,6 +1,5 @@
 package com.ssafy.keywe.presentation.order.component
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +25,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.presentation.order.MenuData
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
@@ -47,16 +47,13 @@ fun MenuMenuList(
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             items(menuList) { menu ->
-                MenuMenuScreen(
-                    menuName = menu.name,
+                MenuMenuScreen(menuName = menu.name,
                     menuRecipe = menu.recipe,
                     menuPrice = menu.price,
                     menuImageURL = menu.imageURL,
                     selectItem = {
-                        navController.navigate("menuDetail/${menu.name}/${menu.price}/${
-                            Uri.encode(menu.imageURL)}")
-                    }
-                )
+                        navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(10))
+                    })
             }
         }
     }
@@ -97,14 +94,16 @@ fun MenuMenuScreen(
                 .zIndex(-1f)
                 .width(160.dp)
                 .height(145.dp)
-                .shadow(elevation = 10.dp, spotColor = Color(0x88696969), ambientColor = Color(0x11696969))
+                .shadow(
+                    elevation = 10.dp,
+                    spotColor = Color(0x88696969),
+                    ambientColor = Color(0x11696969)
+                )
                 .graphicsLayer(
-                    rotationX = 15f,
-                    cameraDistance = 8f * density
+                    rotationX = 15f, cameraDistance = 8f * density
                 )
                 .background(
-                    whiteBackgroundColor,
-                    shape = RoundedCornerShape(24.dp)
+                    whiteBackgroundColor, shape = RoundedCornerShape(24.dp)
                 )
         )
 

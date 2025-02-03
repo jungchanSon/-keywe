@@ -19,22 +19,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.DefaultAppBar
-import com.ssafy.keywe.presentation.order.component.MenuExtraOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
+import com.ssafy.keywe.presentation.order.component.MenuExtraOption
 import com.ssafy.keywe.presentation.order.component.Spacer
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuDetailScreen(
     navController: NavController,
-    menuName: String,
-    menuPrice: Int,
-    menuImageURL: String,
-    cartItems: MutableList<CartItem>
+    menuId: Int,
 ) {
-
+    val menuName: String = ""
+    val menuPrice: Int = 10000
+    val menuImageURL: String = ""
+    val cartItems: MutableList<CartItem> = mutableListOf()
     val selectedSize = remember { mutableStateOf("Tall") }
     val selectedTemperature = remember { mutableStateOf("Hot") }
     val extraOptions = remember { mutableStateMapOf<String, Int>() }
@@ -42,7 +42,6 @@ fun MenuDetailScreen(
 
     Scaffold(
         topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
-        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -72,20 +71,16 @@ fun MenuDetailScreen(
                     modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
                 ) {
                     Spacer(24)
-                    MenuDetailCommonOption(
-                        onSizeSelected = { size -> selectedSize.value = size },
-                        onTemperatureSelected = { temp -> selectedTemperature.value = temp }
-                    )
+                    MenuDetailCommonOption(onSizeSelected = { size -> selectedSize.value = size },
+                        onTemperatureSelected = { temp -> selectedTemperature.value = temp })
                     Spacer(12)
-                    MenuExtraOption(
-                        onOptionSelected = { name, newAmount, optionPrice ->
-                            val oldAmount = extraOptions[name] ?: 0
-                            val priceChange = (newAmount - oldAmount) * (optionPrice)
+                    MenuExtraOption(onOptionSelected = { name, newAmount, optionPrice ->
+                        val oldAmount = extraOptions[name] ?: 0
+                        val priceChange = (newAmount - oldAmount) * (optionPrice)
 
-                            extraOptions[name] = newAmount
-                            totalPrice.intValue += priceChange
-                        }
-                    )
+                        extraOptions[name] = newAmount
+                        totalPrice.intValue += priceChange
+                    })
                     MenuDetailBottom(
                         onAddToCart = {
                             val newCartItem = CartItem(
@@ -100,10 +95,7 @@ fun MenuDetailScreen(
                             )
 
                             val existingItemIndex = cartItems.indexOfFirst {
-                                it.name == newCartItem.name &&
-                                it.size == newCartItem.size &&
-                                it.temperature == newCartItem.temperature &&
-                                it.extraOptions == newCartItem.extraOptions
+                                it.name == newCartItem.name && it.size == newCartItem.size && it.temperature == newCartItem.temperature && it.extraOptions == newCartItem.extraOptions
                             }
 
                             if (existingItemIndex != -1) {
@@ -113,8 +105,7 @@ fun MenuDetailScreen(
                             } else {
                                 cartItems.add(newCartItem)
                             }
-                        },
-                        navController = navController
+                        }, navController = navController
                     )
                 }
             }

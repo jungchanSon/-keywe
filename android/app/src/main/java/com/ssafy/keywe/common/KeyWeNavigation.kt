@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
@@ -94,7 +95,10 @@ fun NavGraphBuilder.profileGraph(navController: NavHostController) {
 fun NavGraphBuilder.menuGraph(navController: NavHostController) {
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.MenuRoute) {
         composable<Route.MenuBaseRoute.MenuRoute> { MenuScreen(navController) }
-        composable<Route.MenuBaseRoute.MenuDetailRoute> { MenuDetailScreen(navController) }
+        composable<Route.MenuBaseRoute.MenuDetailRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
+            MenuDetailScreen(navController, arg.id)
+        }
         composable<Route.MenuBaseRoute.MenuCartRoute> { MenuCartScreen(navController) }
     }
 }

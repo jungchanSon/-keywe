@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
@@ -34,19 +35,17 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(navController: NavController, cartItems: List<CartItem>) {
+fun MenuScreen(navController: NavController) {
+    val cartItems: List<CartItem> = listOf()
     val totalCartQuantity by remember { derivedStateOf { cartItems.sumOf { it.quantity } } }
 
-    Scaffold(
-        topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
+    Scaffold(topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingCartButton(navController, totalCartQuantity)
-        }
-    ) {
+        }) {
         Column(
-            modifier = Modifier
-                .fillMaxHeight()
+            modifier = Modifier.fillMaxHeight()
 //            verticalArrangement = Arrangement.spacedBy(22.dp)
         ) {
             MenuCategoryScreen()
@@ -109,7 +108,7 @@ fun FloatingCartButton(navController: NavController, cartItemCount: Int) {
         modifier = Modifier.size(48.dp) // FloatingActionButton 크기와 동일하게 설정
     ) {
         FloatingActionButton(
-            onClick = { navController.navigate("menuCart") },
+            onClick = { navController.navigate(Route.MenuBaseRoute.MenuCartRoute) },
             elevation = FloatingActionButtonDefaults.elevation(Dp(4F)),
             containerColor = primaryColor,
             shape = CircleShape,
@@ -129,9 +128,7 @@ fun FloatingCartButton(navController: NavController, cartItemCount: Int) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = cartItemCount.toString(),
-                    color = whiteBackgroundColor,
-                    fontSize = 12.sp
+                    text = cartItemCount.toString(), color = whiteBackgroundColor, fontSize = 12.sp
                 )
             }
         }

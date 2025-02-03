@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +25,8 @@ fun MenuDescription(name: String, recipe: String, price: Int) {
 
     Row(
         modifier = Modifier
-            .fillMaxSize().padding(horizontal = 12.dp),
+            .width(160.dp)
+            .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {
@@ -52,8 +54,7 @@ fun MenuDescription(name: String, recipe: String, price: Int) {
                         horizontalAlignment = Alignment.Start,
                     ) {
                         Text(
-                            text = name,
-                            style = TextStyle(
+                            text = name, style = TextStyle(
                                 fontSize = 15.sp,
                                 fontFamily = pretendardkr,
                                 fontWeight = FontWeight.Bold,
@@ -61,8 +62,7 @@ fun MenuDescription(name: String, recipe: String, price: Int) {
                             )
                         )
                         Text(
-                            text = recipe,
-                            style = TextStyle(
+                            text = recipe, style = TextStyle(
                                 fontSize = 13.sp,
                                 fontFamily = pretendardkr,
                                 fontWeight = FontWeight.Normal,

@@ -2,7 +2,6 @@ package com.ssafy.keywe.presentation.order
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,8 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,9 +24,11 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @Composable
 fun MenuCartScreen(
     navController: NavController,
-    cartItems: List<CartItem>,
-    onUpdateCart: (List<CartItem>) -> Unit
-) {
+
+    ) {
+
+    val cartItems: List<CartItem> = listOf()
+    val onUpdateCart: (List<CartItem>) -> Unit = {}
 
     fun removeItem(itemId: Int) {
         val updatedCart = cartItems.filter { it.id != itemId }
@@ -61,8 +60,7 @@ fun MenuCartScreen(
                     .padding(top = 24.dp, bottom = 152.dp),
             ) {
                 items(cartItems) { item ->
-                    MenuCartMenuBox(
-                        cartItem = item,
+                    MenuCartMenuBox(cartItem = item,
                         onDelete = { removeItem(it) },
                         onQuantityChange = { id, newQuantity -> updateQuantity(id, newQuantity) })
 
@@ -85,10 +83,8 @@ fun MenuCartScreen(
                     .background(whiteBackgroundColor)
                     .fillMaxWidth(),
             ) {
-                MenuCartBottom(
-                    cartItems.sumOf { it.quantity },
-                    cartItems.sumOf { it.price * it.quantity }
-                )
+                MenuCartBottom(cartItems.sumOf { it.quantity },
+                    cartItems.sumOf { it.price * it.quantity })
             }
         }
     }
