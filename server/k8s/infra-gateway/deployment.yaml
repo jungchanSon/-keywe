@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-service-app
+  template:
+    metadata:
+      labels:
+        app: gateway-service-app
+    spec:
+      containers:
+        - name: gateway-service-container
+          image: rnrmf/kiwi-gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
