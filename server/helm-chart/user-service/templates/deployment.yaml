@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app:  {{ .Chart.Name }}-app
+  template:
+    metadata:
+      labels:
+        app:  {{ .Chart.Name }}-app
+    spec:
+      containers:
+        - name: user-service-container
+          image: "{{ .Values.image.repository}}/{{ .Values.image.name }}:{{ .Values.image.tag}}"
+          imagePullPolicy: {{ .Values.image.pullPolicy}}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: USER_MYSQL_URL
+              value: {{ .Values.springEnv.userMysqlUrl}}
