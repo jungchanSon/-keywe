@@ -76,7 +76,7 @@ fun MenuDescription(
         }
         MenuPlusButton({
             viewModel.addToCart(
-                1, "1","1", HashMap<String, Int>()
+                menuId, "tall","Hot", emptyMap(), menuPrice
             )
         })
     }

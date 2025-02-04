@@ -35,50 +35,43 @@ fun MenuCartDeleteDialog(
     onConfirm: () -> Unit
 ) {
     Dialog(onDismissRequest = { onCancel() }) {
-        Box(
+        Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.5f)), // 검은 배경 전체화면 적용
-            contentAlignment = Alignment.Center
+                .width(280.dp) // 다이얼로그 크기 조절
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp)) // 둥근 모서리 적용
+                .background(Color.White),
         ) {
-            Surface(
-                modifier = Modifier
-                    .width(280.dp) // 다이얼로그 크기 조절
-                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp)) // 둥근 모서리 적용
-                    .background(Color.White),
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Text(text = title, style = h6sb)
+                Text(text = description, style = subtitle1)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(text = title, style = h6sb)
-                    Text(text = description, style = subtitle1)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        BottomButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(52.dp),
-                            content = "뒤로가기",
-                            onClick = onCancel,
-                            colors = ButtonColors(
-                                containerColor = greyBackgroundColor,
-                                contentColor = titleTextColor,
-                                disabledContentColor = polishedSteelColor,
-                                disabledContainerColor = greyBackgroundColor
-                            )
+                    BottomButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        content = "뒤로가기",
+                        onClick = onCancel,
+                        colors = ButtonColors(
+                            containerColor = greyBackgroundColor,
+                            contentColor = titleTextColor,
+                            disabledContentColor = polishedSteelColor,
+                            disabledContainerColor = greyBackgroundColor
                         )
-                        BottomButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(52.dp),
-                            content = "확인",
-                            onClick = onConfirm
-                        )
-                    }
+                    )
+                    BottomButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        content = "확인",
+                        onClick = onConfirm
+                    )
                 }
             }
         }

@@ -29,7 +29,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @Composable
 fun MenuDetailBottom(
     menuId: Int, selectedSize: String, selectedTemperature: String, extraOptions: Map<String, Int>,
-
+    totalPrice: Int,
     navController: NavController
 ) {
     val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>();
@@ -49,6 +49,7 @@ fun MenuDetailBottom(
                     selectedSize = selectedSize,
                     selectedTemperature = selectedTemperature,
                     extraOptions = extraOptions,
+                    totalPrice = totalPrice,
                     viewModel = viewModel,
                     navController = navController
                 )
@@ -67,6 +68,7 @@ fun MenuDetailBottomBackButton(
     selectedSize: String,
     selectedTemperature: String,
     extraOptions: Map<String, Int>,
+    totalPrice: Int,
     viewModel: MenuViewModel,
     navController: NavController
 ) {
@@ -76,7 +78,8 @@ fun MenuDetailBottomBackButton(
                 menuId = menuId,
                 size = selectedSize,
                 temperature = selectedTemperature,
-                extraOptions = extraOptions
+                extraOptions = extraOptions,
+                totalPrice = totalPrice
             )
             navController.popBackStack()
 //            navController.navigate(Route.MenuBaseRoute.MenuRoute)

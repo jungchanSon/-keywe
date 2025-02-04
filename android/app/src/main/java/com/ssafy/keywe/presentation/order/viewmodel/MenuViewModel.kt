@@ -31,6 +31,11 @@ data class CartItem(
     val extraOptions: Map<String, Int>
 )
 
+data class OptionData(
+    val name: String,
+    val price: Int,
+)
+
 @HiltViewModel
 class MenuViewModel @Inject constructor()  : ViewModel() {
 
@@ -96,6 +101,22 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
     val cartItemCount: StateFlow<Int> = _cartItems.map { it.sumOf { item -> item.quantity } }
         .stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
+    private val _isDeleteDialogOpen = MutableStateFlow(false)
+    val isDeleteDialogOpen: StateFlow<Boolean> = _isDeleteDialogOpen.asStateFlow()
+
+    private val _selectedCartItem = MutableStateFlow<CartItem?>(null)
+    val selectedCartItem: StateFlow<CartItem?> = _selectedCartItem.asStateFlow()
+
+    fun openDeleteDialog(cartItem: CartItem) {
+        _selectedCartItem.value = cartItem
+        _isDeleteDialogOpen.value = true
+    }
+
+    fun closeDeleteDialog() {
+        _isDeleteDialogOpen.value = false
+        _selectedCartItem.value = null
+    }
+
     fun getMenuDataById(id: Int): MenuData? {
         return _menuItems.value.find { it.id == id }
     }
@@ -108,12 +129,14 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         menuId: Int,
         size: String,
         temperature: String,
-        extraOptions: Map<String, Int>
+        extraOptions: Map<String, Int>,
+        totalPrice: Int
     ) {
         val menuData = getMenuDataById(menuId) ?: return // 메뉴가 없으면 실행하지 않음
-        val totalPrice = menuData.price + extraOptions.values.sum() // 기본 가격 + 추가 옵션 가격 합산
+        val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
+        val sizePrice = sizePriceMap[size] ?: 0
 
-        println("장바구니 추가됨: $menuId, $size, $temperature, $extraOptions")
+        println("장바구니 추가됨: $menuId, $size, $temperature, $extraOptions, 총 가격=$totalPrice")
 
         _cartItems.update { currentCart ->
             val existingItemIndex = currentCart.indexOfFirst {
@@ -144,8 +167,13 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         println("현재 장바구니 상태: ${_cartItems.value}")
     }
 
-    fun removeFromCart(cartItem: CartItem) {
-        _cartItems.value = _cartItems.value.filter { it.id != cartItem.id }
+    fun removeFromCart() {
+        _selectedCartItem.value?.let { item ->
+            _cartItems.update { currentCart ->
+                currentCart.filter { it.id != item.id }
+            }
+        }
+        closeDeleteDialog()
     }
 
     fun updateCartQuantity(itemId: Int, newQuantity: Int) {

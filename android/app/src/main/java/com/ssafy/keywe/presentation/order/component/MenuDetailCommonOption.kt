@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.orangeColor
+import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
@@ -40,7 +41,6 @@ fun MenuDetailCommonOption(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = greyBackgroundColor)
     ) {
         Column(
             modifier = Modifier
@@ -94,7 +94,7 @@ fun MenuDetailCommonOptionButton(
             .background(whiteBackgroundColor)
             .border(
                 width = 2.dp,
-                color = if (isSelected) orangeColor else whiteBackgroundColor,
+                color = if (isSelected) orangeColor else polishedSteelColor,
                 shape = RoundedCornerShape(10.dp)
             )
     ) {

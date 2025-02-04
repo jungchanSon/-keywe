@@ -25,8 +25,7 @@ fun MenuCartBottom(amount: Int, price: Int) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(152.dp)
-            .padding(24.dp)
+            .padding(horizontal = 24.dp,)
             .background(whiteBackgroundColor)
     ) {
         Column(
