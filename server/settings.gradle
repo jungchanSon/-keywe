@@ -2,6 +2,7 @@ rootProject.name = 'kiosk'
 
 include(
         "user-service",
+        "store-service",
         "infra-gateway",
         "common"
 )
