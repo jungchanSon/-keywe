@@ -93,6 +93,19 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
             ),
         )
     )
+
+    private val extraOptions = listOf(
+        OptionData("샷 추가", 500),
+        OptionData("시럽 추가", 300),
+        OptionData("바닐라 시럽 추가", 300),
+        OptionData("샷 추가1", 500),
+        OptionData("시럽 추가1", 300),
+        OptionData("바닐라 시럽 추가1", 300),
+        OptionData("휘핑 추가1", 700)
+    )
+
+    private val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
+
     val menuItems: StateFlow<List<MenuData>> = _menuItems.asStateFlow()
 
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
@@ -125,6 +138,8 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         return _cartItems.value.find { it.id == id }
     }
 
+    fun getExtraOptions(): List<OptionData> = extraOptions
+
     fun addToCart(
         menuId: Int,
         size: String,
@@ -133,7 +148,6 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         totalPrice: Int
     ) {
         val menuData = getMenuDataById(menuId) ?: return // 메뉴가 없으면 실행하지 않음
-        val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
         val sizePrice = sizePriceMap[size] ?: 0
 
         println("장바구니 추가됨: $menuId, $size, $temperature, $extraOptions, 총 가격=$totalPrice")
@@ -167,11 +181,47 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         println("현재 장바구니 상태: ${_cartItems.value}")
     }
 
-    fun removeFromCart() {
-        _selectedCartItem.value?.let { item ->
-            _cartItems.update { currentCart ->
-                currentCart.filter { it.id != item.id }
-            }
+    fun updateCartItem(cartItemId: Int, size: String, temperature: String, extraOptions: Map<String, Int>) {
+        val existingItem = _cartItems.value.find { it.id == cartItemId } ?: return
+
+        // 기존 아이템 삭제
+        removeFromCart(cartItemId)
+
+        val menuPrice = getMenuDataById(existingItem.id)?.price ?: 0
+        val sizePrice = sizePriceMap[size] ?: 0
+        val extraOptionPrice = extraOptions.entries.sumOf { (name, quantity) ->
+            val optionPrice = getExtraOptions().find { it.name == name }?.price ?: 0
+            optionPrice * quantity
+        }
+
+        val newTotalPrice = menuPrice + sizePrice + extraOptionPrice
+
+        // 새로운 아이템 추가
+        addToCart(
+            menuId = existingItem.id, // 기존 아이템과 동일한 ID 사용
+            size = size,
+            temperature = temperature,
+            extraOptions = extraOptions,
+            totalPrice = newTotalPrice
+        )
+
+        // 선택된 아이템 업데이트
+        _selectedCartItem.value = CartItem(
+            id = existingItem.id,
+            name = existingItem.name,
+            price = newTotalPrice,
+            quantity = existingItem.quantity,
+            imageURL = existingItem.imageURL,
+            size = size,
+            temperature = temperature,
+            extraOptions = extraOptions
+        )
+    }
+
+
+    fun removeFromCart(cartItemId: Int) {
+        _cartItems.update { currentCart ->
+            currentCart.filter { it.id != cartItemId }
         }
         closeDeleteDialog()
     }

@@ -60,7 +60,11 @@ fun MenuCartScreen(
                 title = "장바구니 삭제",
                 description = "선택한 상품을 장바구니에서 삭제하시겠습니까?",
                 onCancel = { viewModel.closeDeleteDialog() },
-                onConfirm = { viewModel.removeFromCart() }
+                onConfirm = {
+                    selectedCartItem?.let { cartItem ->
+                        viewModel.removeFromCart(cartItem.id)
+                    }
+                }
             )
         }
     }

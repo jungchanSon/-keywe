@@ -74,6 +74,7 @@ fun MenuDetailScreen(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
                 ) {
                     item {
                         MenuDetailMenu(

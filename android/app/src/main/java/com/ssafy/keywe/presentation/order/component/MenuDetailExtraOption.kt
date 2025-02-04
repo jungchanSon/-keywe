@@ -47,8 +47,7 @@ fun MenuDetailExtraOption(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(bottom = 110.dp)
-            .padding(horizontal = 24.dp),
+            .padding(bottom = 110.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.Start
     ) {
