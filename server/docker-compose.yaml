@@ -1,0 +1,45 @@
+networks:
+  kiwi-service-network:
+    driver: bridge
+    external: true
+
+services:
+  kiwi-gateway:
+    build:
+      context: ./infra-gateway
+      dockerfile: Dockerfile
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "8080:8080"
+    deploy:
+      replicas: 1
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+    networks:
+      - kiwi-service-network
+
+  user-service-app:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8090/actuator/health || exit 1"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8090:8090"
+    environment:
+      - USER_MYSQL_URL=kiwi-db-user
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
