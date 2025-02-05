@@ -12,9 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
-import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
@@ -50,11 +51,11 @@ fun MenuCartMenuBox(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
                     .height(16.5.dp)
             ) {
                 Row(
                     modifier = Modifier
+                        .padding(horizontal = 24.dp)
                         .fillMaxWidth()
                         .fillMaxHeight(),
                     horizontalArrangement = Arrangement.End,
@@ -76,9 +77,13 @@ fun MenuCartMenuBox(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: NavController) {
     val quantity = remember { mutableIntStateOf(cartItem.quantity) }
+    val isOptionChangeSheetOpen = remember { mutableStateOf(false) }
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val name = cartItem.name
     val price = cartItem.price
@@ -165,7 +170,6 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
 
                         Row(
                             modifier = Modifier
-//                                .padding(end = 24.dp)
                                 .fillMaxHeight()
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -192,7 +196,7 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                                     text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
-                                    modifier = Modifier.clickable { }
+                                    modifier = Modifier.clickable { isOptionChangeSheetOpen.value = true }
                                 )
                             }
 
@@ -223,4 +227,13 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
             }
         }
     }
+
+    if (isOptionChangeSheetOpen.value) {
+        OptionChangeBottomSheet(
+            cartItem = cartItem,
+            viewModel = viewModel,
+            onDismiss = { isOptionChangeSheetOpen.value = false }
+        )
+    }
+
 }
