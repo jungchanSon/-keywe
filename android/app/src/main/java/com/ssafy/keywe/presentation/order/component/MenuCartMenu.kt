@@ -143,14 +143,7 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ){
                             Text(
-                                text = "크기: $size",
-                                style = caption.copy(
-                                    letterSpacing = 0.sp
-                                ),
-                                color = polishedSteelColor
-                            )
-                            Text(
-                                text = "온도: $temperature",
+                                text = "크기: $size, 온도: $temperature",
                                 style = caption.copy(
                                     letterSpacing = 0.sp
                                 ),

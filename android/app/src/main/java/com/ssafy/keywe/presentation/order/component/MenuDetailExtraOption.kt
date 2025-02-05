@@ -126,7 +126,8 @@ fun OptionBox(
                 color = whiteBackgroundColor,
                 shape = RoundedCornerShape(size = 8.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+//            .padding(horizontal = 16.dp)
+            .padding(vertical = 8.dp),
     ) {
         Row(
             modifier = Modifier

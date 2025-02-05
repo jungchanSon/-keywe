@@ -46,15 +46,7 @@ fun MenuDetailScreen(
     val totalPrice = remember { mutableIntStateOf(menuPrice) }
     val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
 
-    val options = listOf(
-        OptionData("샷 추가", 500),
-        OptionData("시럽 추가", 300),
-        OptionData("바닐라 시럽 추가", 300),
-        OptionData("샷 추가1", 500),
-        OptionData("시럽 추가1", 300),
-        OptionData("바닐라 시럽 추가1", 300),
-        OptionData("휘핑 추가1", 700)
-    )
+    val options = remember { viewModel.getExtraOptions() }
 
     Scaffold(
         topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
