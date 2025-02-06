@@ -1,4 +1,4 @@
-package com.kiosk.server.common.util;
+package com.kiosk.server.user.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

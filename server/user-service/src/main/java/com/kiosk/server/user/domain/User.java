@@ -1,6 +1,6 @@
 package com.kiosk.server.user.domain;
 
-import com.kiosk.server.common.util.HashUtil;
+import com.kiosk.server.user.util.HashUtil;
 import com.kiosk.server.common.util.IdUtil;
 import lombok.Getter;
 

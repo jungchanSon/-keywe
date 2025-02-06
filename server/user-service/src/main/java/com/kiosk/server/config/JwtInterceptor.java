@@ -1,4 +1,4 @@
-package com.kiosk.server.common.interceptor;
+package com.kiosk.server.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
