@@ -1,19 +1,19 @@
 spring:
   profiles:
     default: local
+gateway:
+  url:
+    user-service: ${USER-SERVICE-URL}
+    store-service: ${STORE-SERVICE-URL}
 ---
 spring:
   config:
     activate:
       on-profile: local
-GATEWAY:
-  USER_SERVICE_URL: http://localhost:8090
-
+    import: secret/application-local.yml
 ---
 spring:
   config:
     activate:
       on-profile: prod
-
-GATEWAY:
-  USER_SERVICE_URL: http://user-service-app:8090
+    import: secret/application-prod.yml
