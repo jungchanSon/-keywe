@@ -1,5 +1,6 @@
 package com.kiosk.server.config;
 
+import enums.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -7,7 +8,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
-
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -19,7 +19,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if ("TEMP".equals(tokenType)) {
+        if (TokenType.TEMP.equals(tokenType)) {
             String requestURI = request.getRequestURI();
             String method = request.getMethod();
 
@@ -38,7 +38,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if ("AUTH".equals(tokenType)) {
+        if (TokenType.AUTH.equals(tokenType)) {
 
             Long profileId = (Long) request.getAttribute("profileId");
             if (profileId == null) {

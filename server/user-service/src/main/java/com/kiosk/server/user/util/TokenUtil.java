@@ -1,5 +1,7 @@
 package com.kiosk.server.user.util;
 
+import enums.TokenClaimName;
+import enums.TokenType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,6 @@ import java.util.Date;
 @Service
 public class TokenUtil {
 
-    private static final String TOKEN_TYPE_CLAIM = "TYPE";
-    private static final String TOKEN_TYPE_TEMP = "TEMP";
-    private static final String TOKEN_TYPE_AUTH = "AUTH";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final SecretKey SECRET_KEY;
@@ -34,7 +33,7 @@ public class TokenUtil {
     public String createTemporaryToken(long userId) {
         Claims claims = Jwts.claims()
             .subject(String.valueOf(userId))
-            .add(TOKEN_TYPE_CLAIM, TOKEN_TYPE_TEMP)
+            .add(TokenClaimName.TOKEN_TYPE, TokenType.TEMP)
             .build();
 
         Date expiredAt = new Date(System.currentTimeMillis() + TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS);
@@ -44,10 +43,10 @@ public class TokenUtil {
 
     public String createAuthenticationToken(long userId, long profileId) {
         Claims claims = Jwts.claims()
-                .subject(String.valueOf(userId))
-                .add("profileId", String.valueOf(profileId))
-                .add(TOKEN_TYPE_CLAIM, TOKEN_TYPE_AUTH)
-                .build();
+            .subject(String.valueOf(userId))
+            .add(TokenClaimName.PROFILE_ID, String.valueOf(profileId))
+            .add(TokenClaimName.TOKEN_TYPE, TokenType.AUTH)
+            .build();
 
         Date expiredAt = new Date(System.currentTimeMillis() + TEMP_TOKEN_EXPIRATION_TIME_IN_MILLIS);
 
@@ -62,13 +61,4 @@ public class TokenUtil {
             .signWith(SECRET_KEY)
             .compact();
     }
-
-    public Claims extractClaims(String token) {
-        return Jwts.parser()
-            .verifyWith(SECRET_KEY)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
-    }
-
 }

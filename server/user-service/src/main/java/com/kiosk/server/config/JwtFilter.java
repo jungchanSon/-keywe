@@ -1,6 +1,7 @@
 package com.kiosk.server.config;
 
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
+import enums.TokenType;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,11 +44,11 @@ public class JwtFilter implements Filter {
         validateIdFormat(userId, "Invalid or missing userId");
 
         String tokenType = (String) request.getAttribute("tokenType");
-        if (tokenType == null || (!tokenType.equals("TEMP") && !tokenType.equals("AUTH"))) {
+        if (tokenType == null || (!tokenType.equals(TokenType.TEMP) && !tokenType.equals(TokenType.AUTH))) {
             throw new UnauthorizedException("Invalid JWT token: Invalid token type");
         }
 
-        if ("AUTH".equals(tokenType)) {
+        if (TokenType.AUTH.equals(tokenType)) {
             String profileId = (String) request.getAttribute("profileId");
             validateIdFormat(profileId, "Invalid or missing profileId");
         }
