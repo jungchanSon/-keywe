@@ -25,7 +25,7 @@ public class Route {
                 )
                 .route(
                         r -> r.path("/store/**")
-                                .uri(USER_SERVICE_URL)
+                                .uri(STORE_SERVICE_URL)
                 )
                 .build();
 
