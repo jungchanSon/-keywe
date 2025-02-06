@@ -6,15 +6,11 @@ import com.kiosk.server.user.controller.dto.UserLoginRequest;
 import com.kiosk.server.user.controller.dto.UserProfileRequest;
 import com.kiosk.server.user.service.FindUserProfileByIdService;
 import com.kiosk.server.user.service.UserLoginService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,8 +29,7 @@ public class AuthController {
 
     // 프로필 선택
     @PostMapping("/user/profile")
-    public ResponseEntity<ProfileTokenResponse> getUserProfile(HttpServletRequest servletRequest, @Validated @RequestBody UserProfileRequest request) {
-        long userId = (long) servletRequest.getAttribute("userId");
+    public ResponseEntity<ProfileTokenResponse> getUserProfile(@RequestHeader("userId") Long userId, @Validated @RequestBody UserProfileRequest request) {
         String authToken = findUserProfileByIdService.doService(userId, request.profileId());
         ProfileTokenResponse response = new ProfileTokenResponse(authToken);
         return ResponseEntity.status(HttpStatus.OK).body(response);

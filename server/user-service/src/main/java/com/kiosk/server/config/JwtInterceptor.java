@@ -11,7 +11,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        String tokenType = (String) request.getAttribute("tokenType");
+        String tokenType = request.getHeader("tokenType");
 
         if (tokenType == null || tokenType.isBlank()) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -25,7 +25,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 
 
             if (("GET".equalsIgnoreCase(method) && "/user/profile/list".equals(requestURI)) ||
-                    ("POST".equalsIgnoreCase(method) && "/user/profile".equals(requestURI))) {
+                ("POST".equalsIgnoreCase(method) && "/user/profile".equals(requestURI))) {
                 return true;
             }
 
@@ -39,8 +39,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         }
 
         if (TokenType.AUTH.equals(tokenType)) {
-
-            Long profileId = (Long) request.getAttribute("profileId");
+            String profileId = request.getHeader("profileId");
             if (profileId == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().println("profileId is required for AUTH tokenType");

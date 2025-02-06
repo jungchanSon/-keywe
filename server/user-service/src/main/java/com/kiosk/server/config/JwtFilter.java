@@ -30,7 +30,7 @@ public class JwtFilter implements Filter {
         }
 
         try {
-            validateRequestAttributes(httpRequest);
+            validateRequestHeaders(httpRequest);
 
             filterChain.doFilter(request, response);
 
@@ -39,17 +39,17 @@ public class JwtFilter implements Filter {
         }
     }
 
-    private void validateRequestAttributes(HttpServletRequest request) {
-        String userId = (String) request.getAttribute("userId");
+    private void validateRequestHeaders(HttpServletRequest request) {
+        String userId = request.getHeader("userId");
         validateIdFormat(userId, "Invalid or missing userId");
 
-        String tokenType = (String) request.getAttribute("tokenType");
+        String tokenType = request.getHeader("tokenType");
         if (tokenType == null || (!tokenType.equals(TokenType.TEMP) && !tokenType.equals(TokenType.AUTH))) {
             throw new UnauthorizedException("Invalid JWT token: Invalid token type");
         }
 
         if (TokenType.AUTH.equals(tokenType)) {
-            String profileId = (String) request.getAttribute("profileId");
+            String profileId = request.getHeader("profileId");
             validateIdFormat(profileId, "Invalid or missing profileId");
         }
     }
