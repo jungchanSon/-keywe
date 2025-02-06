@@ -17,6 +17,7 @@ data class MenuData(
     val name: String,
     val recipe: String,
     val price: Int,
+    val description: String,
     val imageURL: String
 )
 
@@ -48,6 +49,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 "아메리카노",
                 "커피+물",
                 2000,
+                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
             ),
             MenuData(
@@ -55,6 +57,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 "카페라떼",
                 "커피+우유",
                 3000,
+                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
             ),
             MenuData(
@@ -62,6 +65,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 "카푸치노",
                 "커피+거품 우유",
                 3500,
+                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
             ),
             MenuData(
@@ -69,6 +73,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 "카페모카",
                 "커피+초콜릿+우유 + 우유",
                 4000,
+                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
             ),
             MenuData(
@@ -76,6 +81,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 "에스프레소",
                 "진한 커피 샷",
                 2500,
+                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
             ),
             MenuData(
@@ -83,6 +89,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 "바닐라라떼",
                 "커피+우유+바닐라시럽",
                 3500,
+                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
             ),
             MenuData(
@@ -90,6 +97,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 "카라멜마끼아또",
                 "커피+거품 우유+카라멜",
                 4000,
+                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
             ),
         )

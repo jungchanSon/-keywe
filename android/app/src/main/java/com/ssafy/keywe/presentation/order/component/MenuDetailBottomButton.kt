@@ -20,6 +20,7 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.orangeColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
@@ -38,7 +39,7 @@ fun MenuDetailBottom(
 
     Box(modifier = Modifier.background(greyBackgroundColor)) {
         Row(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 30.dp),
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

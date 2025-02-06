@@ -2,7 +2,6 @@ package com.ssafy.keywe.presentation.order.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.R
 import com.ssafy.keywe.presentation.order.viewmodel.OptionData
+import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h6
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
@@ -44,24 +40,31 @@ fun MenuDetailExtraOption(
 
     val extraOptions = remember { mutableStateMapOf<String, Int>() }
 
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxHeight()
-            .padding(bottom = 110.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.Start
+            .fillMaxWidth()
+            .background(greyBackgroundColor)
     ) {
-        Text(text = "추가 옵션", style = h6.copy(fontSize = 16.sp))
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-        ){
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+                .fillMaxHeight()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 110.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(text = "추가 옵션", style = h6.copy(fontSize = 16.sp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                options.forEach { option ->
-                    OptionBox(option.name, option.price, extraOptions, onOptionSelected)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+                ) {
+                    options.forEach { option ->
+                        OptionBox(option.name, option.price, extraOptions, onOptionSelected)
+                    }
                 }
             }
         }
@@ -89,7 +92,7 @@ fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Un
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .clickable { onDecrease() },
+                .noRippleClickable { onDecrease() },
             painter = painterResource(R.drawable.minus_circle),
             contentDescription = "minus in circle"
         )
@@ -101,7 +104,7 @@ fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Un
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .clickable { onIncrease() },
+                .noRippleClickable { onIncrease() },
             painter = painterResource(R.drawable.plus_circle),
             contentDescription = "plus in circle"
         )
@@ -126,7 +129,7 @@ fun OptionBox(
                 color = whiteBackgroundColor,
                 shape = RoundedCornerShape(size = 8.dp)
             )
-//            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp)
             .padding(vertical = 8.dp),
     ) {
         Row(

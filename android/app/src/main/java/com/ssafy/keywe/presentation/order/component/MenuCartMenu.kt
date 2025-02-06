@@ -1,7 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,7 +31,9 @@ import com.ssafy.keywe.R
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
+import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
 
 @Composable
@@ -62,7 +62,7 @@ fun MenuCartMenuBox(
                         modifier = Modifier
                             .width(16.5.dp)
                             .height(16.5.dp)
-                            .clickable { viewModel.openDeleteDialog(cartItem) },
+                            .noRippleClickable { viewModel.openDeleteDialog(cartItem) },
                         painter = painterResource(R.drawable.x),
                         contentDescription = "x"
                     )
@@ -183,12 +183,12 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel) {
                                     text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
-                                    modifier = Modifier.clickable { isOptionChangeSheetOpen.value = true }
+                                    modifier = Modifier.noRippleClickable { isOptionChangeSheetOpen.value = true }
                                 )
                             }
 
                             Box(modifier = Modifier.height(24.dp)) {
-                                OptionAmount(
+                                CartMenuAmount(
                                     optionAmount = quantity,
                                     onDecrease = {
                                         if (quantity > 1) {
@@ -221,4 +221,36 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel) {
         )
     }
 
+}
+
+@Composable
+fun CartMenuAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .width(88.dp)
+            .fillMaxHeight(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = Modifier
+                .width(20.dp)
+                .height(20.dp)
+                .noRippleClickable { onDecrease() },
+            painter = painterResource(R.drawable.minus_circle),
+            contentDescription = "minus in circle"
+        )
+        Text(
+            text = "$optionAmount",
+            style = subtitle1
+        )
+        Image(
+            modifier = Modifier
+                .width(20.dp)
+                .height(20.dp)
+                .noRippleClickable { onIncrease() },
+            painter = painterResource(R.drawable.profileplus),
+            contentDescription = "plus in circle"
+        )
+    }
 }

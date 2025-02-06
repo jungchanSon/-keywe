@@ -1,7 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +27,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
@@ -73,7 +73,7 @@ fun MenuMenuScreen(
             .fillMaxWidth()
             .padding(bottom = 24.dp)
             .wrapContentHeight()
-            .clickable { selectItem() },
+            .noRippleClickable { selectItem() },
         contentAlignment = Alignment.BottomCenter
     ) {
         Column(
