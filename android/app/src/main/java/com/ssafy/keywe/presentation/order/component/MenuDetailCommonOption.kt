@@ -32,6 +32,8 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuDetailCommonOption(
+    selectedSize: String = "Tall",
+    selectedTemperature: String = "Hot",
     onSizeSelected: (String) -> Unit,
     onTemperatureSelected: (String) -> Unit
 ) {
@@ -48,8 +50,8 @@ fun MenuDetailCommonOption(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MenuDetailCommonOptionRow(sizeList, onSizeSelected)
-            MenuDetailCommonOptionRow(temperatureList, onTemperatureSelected)
+            MenuDetailCommonOptionRow(sizeList, selectedSize, onSizeSelected)
+            MenuDetailCommonOptionRow(temperatureList, selectedTemperature, onTemperatureSelected)
 
         }
     }
@@ -57,13 +59,12 @@ fun MenuDetailCommonOption(
 }
 
 @Composable
-fun MenuDetailCommonOptionRow(options: List<String>, onSelect: (String) -> Unit) {
-    var selectedOption by remember { mutableStateOf(options.first()) }
+fun MenuDetailCommonOptionRow(options: List<String>, selected: String, onSelect: (String) -> Unit) {
+    var selectedOption by remember { mutableStateOf(selected) }
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         options.forEach { option ->

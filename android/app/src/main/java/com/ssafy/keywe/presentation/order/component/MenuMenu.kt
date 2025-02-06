@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
@@ -72,6 +71,7 @@ fun MenuMenuScreen(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(bottom = 24.dp)
             .wrapContentHeight()
             .clickable { selectItem() },
         contentAlignment = Alignment.BottomCenter

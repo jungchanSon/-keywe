@@ -47,8 +47,7 @@ fun MenuDetailExtraOption(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(bottom = 110.dp)
-            .padding(horizontal = 24.dp),
+            .padding(bottom = 110.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.Start
     ) {
@@ -127,7 +126,8 @@ fun OptionBox(
                 color = whiteBackgroundColor,
                 shape = RoundedCornerShape(size = 8.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+//            .padding(horizontal = 16.dp)
+            .padding(vertical = 8.dp),
     ) {
         Row(
             modifier = Modifier

@@ -22,6 +22,7 @@ data class MenuData(
 
 data class CartItem(
     val id: Int,
+    val menuId: Int,
     val name: String,
     val price: Int,
     val quantity: Int,
@@ -93,6 +94,28 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
             ),
         )
     )
+
+    private val extraOptions = listOf(
+        OptionData("샷 추가", 500),
+        OptionData("시럽 추가", 300),
+        OptionData("바닐라 시럽 추가", 300),
+        OptionData("휘핑 추가", 700),
+//        OptionData("샷 추가1", 500),
+//        OptionData("시럽 추가1", 300),
+//        OptionData("바닐라 시럽 추가1", 300),
+//        OptionData("휘핑 추가1", 700),
+//        OptionData("샷 추가2", 500),
+//        OptionData("시럽 추가2", 300),
+//        OptionData("바닐라 시럽 추가2", 300),
+//        OptionData("휘핑 추가2", 700),
+//        OptionData("샷 추가3", 500),
+//        OptionData("시럽 추가3", 300),
+//        OptionData("바닐라 시럽 추가3", 300),
+//        OptionData("휘핑 추가3", 700),
+    )
+
+    val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
+
     val menuItems: StateFlow<List<MenuData>> = _menuItems.asStateFlow()
 
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
@@ -125,6 +148,8 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         return _cartItems.value.find { it.id == id }
     }
 
+    fun getExtraOptions(): List<OptionData> = extraOptions
+
     fun addToCart(
         menuId: Int,
         size: String,
@@ -132,8 +157,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         extraOptions: Map<String, Int>,
         totalPrice: Int
     ) {
-        val menuData = getMenuDataById(menuId) ?: return // 메뉴가 없으면 실행하지 않음
-        val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
+        val menuData = getMenuDataById(menuId) ?: return
         val sizePrice = sizePriceMap[size] ?: 0
 
         println("장바구니 추가됨: $menuId, $size, $temperature, $extraOptions, 총 가격=$totalPrice")
@@ -146,42 +170,103 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                         it.extraOptions == extraOptions
             }
 
+            val     updatedCart = currentCart.toMutableList()
+
             if (existingItemIndex != -1) {
-                currentCart.toMutableList().apply {
-                    this[existingItemIndex] =
-                        this[existingItemIndex].copy(quantity = this[existingItemIndex].quantity + 1)
-                }
+                updatedCart[existingItemIndex] = updatedCart[existingItemIndex].copy(
+                    quantity = updatedCart[existingItemIndex].quantity + 1
+                )
             } else {
-                currentCart + CartItem(
-                    id = currentCart.size + 1,
-                    name = menuData.name,
-                    price = totalPrice,
-                    quantity = 1,
-                    imageURL = menuData.imageURL,
-                    size = size,
-                    temperature = temperature,
-                    extraOptions = extraOptions
+                val newId = (currentCart.maxOfOrNull { it.id } ?: 0) + 1
+
+                updatedCart.add(
+                    CartItem(
+                        id = newId,
+                        menuId = menuData.id,
+                        name = menuData.name,
+                        price = totalPrice,
+                        quantity = 1,
+                        imageURL = menuData.imageURL,
+                        size = size,
+                        temperature = temperature,
+                        extraOptions = extraOptions
+                    )
                 )
             }
+
+            updatedCart // 🚀 새로운 리스트 반환 (StateFlow가 변경 감지)
         }
         println("현재 장바구니 상태: ${_cartItems.value}")
     }
 
-    fun removeFromCart() {
-        _selectedCartItem.value?.let { item ->
-            _cartItems.update { currentCart ->
-                currentCart.filter { it.id != item.id }
+
+    fun updateCartItem(cartItemId: Int, cartItemMenuId: Int, size: String, temperature: String, extraOptions: Map<String, Int>) {
+        _cartItems.update { currentCart ->
+            val menuPrice = getMenuDataById(cartItemMenuId)?.price ?: 0
+            val sizePrice = sizePriceMap[size] ?: 0
+            val extraOptionPrice = extraOptions.entries.sumOf { (name, quantity) ->
+                val optionPrice = getExtraOptions().find { it.name == name }?.price ?: 0
+                optionPrice * quantity
             }
+            val newTotalPrice = menuPrice + sizePrice + extraOptionPrice
+
+            val existingItemIndex = currentCart.indexOfFirst {
+                it.menuId == cartItemMenuId &&
+                        it.size == size &&
+                        it.temperature == temperature &&
+                        it.extraOptions == extraOptions &&
+                        it.id != cartItemId // 자신과는 다른 아이템이어야 함
+            }
+
+            val updatedCart = currentCart.toMutableList()
+
+            if (existingItemIndex != -1) {
+                // 이미 동일한 항목이 존재하면 수량을 합치고 기존 아이템 삭제
+                val existingItem = updatedCart[existingItemIndex]
+                updatedCart[existingItemIndex] = existingItem.copy(
+                    quantity = existingItem.quantity + 1
+                )
+                updatedCart.removeIf { it.id == cartItemId }
+            } else {
+                // 기존 아이템 수정 (합칠 대상이 없는 경우)
+                updatedCart.replaceAll { cartItem ->
+                    if (cartItem.id == cartItemId) {
+                        cartItem.copy(
+                            size = size,
+                            temperature = temperature,
+                            extraOptions = extraOptions,
+                            price = newTotalPrice
+                        )
+                    } else {
+                        cartItem
+                    }
+                }
+            }
+
+            updatedCart
+        }
+
+        println("현재 장바구니 상태: ${_cartItems.value}")
+    }
+
+
+
+
+    fun removeFromCart(cartItemId: Int) {
+        _cartItems.update { currentCart ->
+            currentCart.filter { it.id != cartItemId }.toList() // id, 이름, 온도, 사이즈 옵션 다 같으면 삭제
         }
         closeDeleteDialog()
     }
 
-    fun updateCartQuantity(itemId: Int, newQuantity: Int) {
-        _cartItems.value = _cartItems.value.map { cartItem ->
-            if (cartItem.id == itemId) {
-                cartItem.copy(quantity = newQuantity)
-            } else {
-                cartItem
+    fun updateCartQuantity(cartItemId: Int, newQuantity: Int) {
+        _cartItems.update { currentCart ->
+            currentCart.map { cartItem ->
+                if (cartItem.id == cartItemId) {
+                    cartItem.copy(quantity = newQuantity) // 새로운 객체 반환
+                } else {
+                    cartItem.copy() // 불필요한 참조를 방지하기 위해 copy()
+                }
             }
         }
     }

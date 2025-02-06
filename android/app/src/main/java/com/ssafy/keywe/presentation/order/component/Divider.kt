@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import androidx.compose.material3.HorizontalDivider as MaterialHorizonDivider
-import androidx.compose.material3.VerticalDivider as MatetialVerticalDivider
+import androidx.compose.material3.VerticalDivider as MaterialVerticalDivider
 
 @Composable
 fun HorizontalDivider(
@@ -31,7 +31,7 @@ fun VerticalDivider(
     thickness: Dp = 1.dp,
     color: Color = polishedSteelColor,
 ) {
-    MatetialVerticalDivider(
+    MaterialVerticalDivider(
         modifier = Modifier
             .fillMaxHeight(),
         thickness = thickness,
