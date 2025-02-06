@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonColors
@@ -14,13 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
-import com.ssafy.keywe.ui.theme.orangeColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
@@ -33,7 +30,7 @@ fun MenuDetailBottom(
     totalPrice: Int,
     navController: NavController
 ) {
-    val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>();
+    val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
     val viewModel = hiltViewModel<MenuViewModel>(parentBackStackEntry)
 
 

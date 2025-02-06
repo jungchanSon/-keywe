@@ -94,11 +94,32 @@ fun OptionChangeBottomSheet(
             }
 
             item {
-                MenuDetailCommonOption(selectedSize = selectedSize.value,
-                    selectedTemperature = selectedTemperature.value,
-                    onSizeSelected = { selectedSize.value = it },
-                    onTemperatureSelected = { selectedTemperature.value = it })
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(whiteBackgroundColor) // 원하는 배경색 적용
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        MenuDetailCommonOptionRow(
+                            listOf("Tall", "Grande", "Venti"),
+                            selectedSize.value,
+                            onSelect = { selectedSize.value = it }
+                        )
+                        MenuDetailCommonOptionRow(
+                            listOf("Hot", "Ice"),
+                            selectedTemperature.value,
+                            onSelect = { selectedTemperature.value = it }
+                        )
+                    }
+                }
             }
+
             item {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -166,6 +187,7 @@ fun OptionChangeBottomSheet(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 24.dp)
                 .padding(horizontal = 24.dp)
                 .background(whiteBackgroundColor),
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally)

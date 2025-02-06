@@ -66,7 +66,7 @@ fun MenuDetailMenu(
             Text (
                 text = menuDescription,
                 color = polishedSteelColor,
-                style = subtitle2.copy(fontSize = 16.sp, letterSpacing = 0.em),
+                style = subtitle2.copy(fontSize = 16.sp, letterSpacing = 0.em, lineHeight = 22.sp),
                 textAlign = TextAlign.Center
             )
             Text(

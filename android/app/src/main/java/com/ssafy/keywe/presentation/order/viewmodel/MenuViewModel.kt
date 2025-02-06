@@ -39,7 +39,7 @@ data class OptionData(
 )
 
 @HiltViewModel
-class MenuViewModel @Inject constructor()  : ViewModel() {
+class MenuViewModel @Inject constructor() : ViewModel() {
 
     //    private val _menuItems = MutableStateFlow<List<MenuData>>(emptyList())
     private val _menuItems = MutableStateFlow(
@@ -171,14 +171,15 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         println("장바구니 추가됨: $menuId, $size, $temperature, $extraOptions, 총 가격=$totalPrice")
 
         _cartItems.update { currentCart ->
+            val sortedExtraOptions = extraOptions.toSortedMap()
             val existingItemIndex = currentCart.indexOfFirst {
                 it.name == menuData.name &&
                         it.size == size &&
                         it.temperature == temperature &&
-                        it.extraOptions == extraOptions
+                        it.extraOptions.toSortedMap() == sortedExtraOptions
             }
 
-            val     updatedCart = currentCart.toMutableList()
+            val updatedCart = currentCart.toMutableList()
 
             if (existingItemIndex != -1) {
                 updatedCart[existingItemIndex] = updatedCart[existingItemIndex].copy(
@@ -197,22 +198,29 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                         imageURL = menuData.imageURL,
                         size = size,
                         temperature = temperature,
-                        extraOptions = extraOptions
+                        extraOptions = sortedExtraOptions
                     )
                 )
             }
 
-            updatedCart // 🚀 새로운 리스트 반환 (StateFlow가 변경 감지)
+            updatedCart.toList()
         }
         println("현재 장바구니 상태: ${_cartItems.value}")
     }
 
 
-    fun updateCartItem(cartItemId: Int, cartItemMenuId: Int, size: String, temperature: String, extraOptions: Map<String, Int>) {
+    fun updateCartItem(
+        cartItemId: Int,
+        cartItemMenuId: Int,
+        size: String,
+        temperature: String,
+        extraOptions: Map<String, Int>
+    ) {
         _cartItems.update { currentCart ->
             val menuPrice = getMenuDataById(cartItemMenuId)?.price ?: 0
             val sizePrice = sizePriceMap[size] ?: 0
-            val extraOptionPrice = extraOptions.entries.sumOf { (name, quantity) ->
+            val sortedExtraOptions = extraOptions.toSortedMap()
+            val extraOptionPrice = sortedExtraOptions.entries.sumOf { (name, quantity) ->
                 val optionPrice = getExtraOptions().find { it.name == name }?.price ?: 0
                 optionPrice * quantity
             }
@@ -230,9 +238,8 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
 
             if (existingItemIndex != -1) {
                 // 이미 동일한 항목이 존재하면 수량을 합치고 기존 아이템 삭제
-                val existingItem = updatedCart[existingItemIndex]
-                updatedCart[existingItemIndex] = existingItem.copy(
-                    quantity = existingItem.quantity + 1
+                updatedCart[existingItemIndex] = updatedCart[existingItemIndex].copy(
+                    quantity = updatedCart[existingItemIndex].quantity + 1
                 )
                 updatedCart.removeIf { it.id == cartItemId }
             } else {
@@ -242,7 +249,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                         cartItem.copy(
                             size = size,
                             temperature = temperature,
-                            extraOptions = extraOptions,
+                            extraOptions = sortedExtraOptions,
                             price = newTotalPrice
                         )
                     } else {
@@ -257,12 +264,15 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
         println("현재 장바구니 상태: ${_cartItems.value}")
     }
 
-
+    fun clearCart() {
+        _cartItems.value = emptyList()
+    }
 
 
     fun removeFromCart(cartItemId: Int) {
         _cartItems.update { currentCart ->
-            currentCart.filter { it.id != cartItemId }.toList() // id, 이름, 온도, 사이즈 옵션 다 같으면 삭제
+            val updatedCart = currentCart.filter { it.id != cartItemId }.toList() // id, 이름, 온도, 사이즈 옵션 다 같으면 삭제
+            updatedCart
         }
         closeDeleteDialog()
     }
@@ -273,7 +283,7 @@ class MenuViewModel @Inject constructor()  : ViewModel() {
                 if (cartItem.id == cartItemId) {
                     cartItem.copy(quantity = newQuantity) // 새로운 객체 반환
                 } else {
-                    cartItem.copy() // 불필요한 참조를 방지하기 위해 copy()
+                    cartItem // 불필요한 참조를 방지하기 위해 copy()
                 }
             }
         }
