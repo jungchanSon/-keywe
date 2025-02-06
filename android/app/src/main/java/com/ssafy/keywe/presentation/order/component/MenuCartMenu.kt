@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
-import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
@@ -42,7 +40,6 @@ import com.ssafy.keywe.ui.theme.subtitle2
 fun MenuCartMenuBox(
     cartItem: CartItem,
     viewModel: MenuViewModel,
-    navController: NavController
 ) {
 
     Box {
@@ -72,18 +69,17 @@ fun MenuCartMenuBox(
                 }
             }
             // 이미지 + 이름 + 가격
-            MenuCartMenu(cartItem, viewModel, navController)
+            MenuCartMenu(cartItem, viewModel)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: NavController) {
-    val quantity = remember { mutableIntStateOf(cartItem.quantity) }
+fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel) {
+    val cartItems by viewModel.cartItems.collectAsState()
+    val updatedCartItem = cartItems.find { it.id == cartItem.id }
+    val quantity = updatedCartItem?.quantity ?: cartItem.quantity
     val isOptionChangeSheetOpen = remember { mutableStateOf(false) }
-
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val name = cartItem.name
     val price = cartItem.price
@@ -98,8 +94,6 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-//                .height(60.dp)
-//                .fillMaxHeight(),
                 .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
@@ -195,21 +189,19 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
 
                             Box(modifier = Modifier.height(24.dp)) {
                                 OptionAmount(
-                                    optionAmount = quantity.intValue,
+                                    optionAmount = quantity,
                                     onDecrease = {
-                                        if (quantity.intValue > 1) {
-                                            quantity.intValue--
+                                        if (quantity > 1) {
                                             viewModel.updateCartQuantity(
                                                 cartItem.id,
-                                                quantity.intValue
+                                                quantity - 1
                                             ) // 업데이트 로직 호출
                                         }
                                     },
                                     onIncrease = {
-                                        quantity.intValue++
                                         viewModel.updateCartQuantity(
                                             cartItem.id,
-                                            quantity.intValue
+                                            quantity + 1
                                         ) // 업데이트 로직 호출
                                     }
                                 )

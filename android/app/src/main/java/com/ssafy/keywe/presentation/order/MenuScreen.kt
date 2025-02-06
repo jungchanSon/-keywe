@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Scaffold
@@ -49,7 +50,8 @@ fun MenuScreen(
             FloatingCartButton(navController, viewModel)
         }) {
         Column(
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
         ) {
             MenuCategoryScreen()
             MenuSubCategory("Popular Coffee")
@@ -64,6 +66,8 @@ fun MenuScreen(
 @Composable
 fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
     val cartItemCount by viewModel.cartItemCount.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
+    val cartItemsCount = cartItems.sumOf { it.quantity }
 
     Box(
         contentAlignment = Alignment.TopEnd, // 오른쪽 상단 정렬
@@ -89,7 +93,7 @@ fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
         }
     }
 
-    if (cartItemCount > 0) {
+    if (cartItemsCount > 0) {
         Box(
             modifier = Modifier
                 .size(17.dp) // 뱃지 크기 조정
@@ -98,9 +102,9 @@ fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (cartItemCount < 100) cartItemCount.toString() else "99+",
+                text = if (cartItemsCount < 100) cartItemsCount.toString() else "99+",
                 color = whiteBackgroundColor,
-                fontSize = if (cartItemCount < 100) 12.sp else 9.sp
+                fontSize = if (cartItemsCount < 100) 12.sp else 9.sp
             )
         }
     }

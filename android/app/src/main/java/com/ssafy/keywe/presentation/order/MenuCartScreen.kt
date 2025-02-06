@@ -91,11 +91,11 @@ fun MenuCartScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.TopCenter)
-                        .padding(top = 24.dp, bottom = 152.dp),
+                        .padding(top = 24.dp, bottom = 130.dp),
                 ) {
-                    items(cartItems) { item ->
+                    items(cartItems, key = { it.id }) { item ->
                         MenuCartMenuBox(
-                            cartItem = item, viewModel = viewModel, navController = navController
+                            cartItem = item, viewModel = viewModel
                         )
 
                         Box(

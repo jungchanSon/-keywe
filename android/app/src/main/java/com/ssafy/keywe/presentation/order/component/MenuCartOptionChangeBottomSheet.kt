@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -18,10 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,10 +32,14 @@ import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
+import com.ssafy.keywe.ui.theme.subtitle1
+import com.ssafy.keywe.ui.theme.subtitle2
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +55,7 @@ fun OptionChangeBottomSheet(
 
     val totalPrice = remember {
         derivedStateOf {
-            val menuPrice = cartItem.price // 기존 상품 가격
+            val menuPrice = viewModel.getMenuDataById(cartItem.menuId)?.price ?: 0
             val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
             val extraOptionPrice = extraOptions.entries.sumOf { (name, count) ->
                 val optionPrice = options.find { it.name == name }?.price ?: 0
@@ -60,10 +65,14 @@ fun OptionChangeBottomSheet(
         }
     }
 
+    val coroutineScope = rememberCoroutineScope() // CoroutineScope 추가
+
     LaunchedEffect(viewModel.selectedCartItem.collectAsState().value) {
         viewModel.selectedCartItem.value?.let { cartItem ->
             selectedSize.value = cartItem.size
             selectedTemperature.value = cartItem.temperature
+            extraOptions.clear()
+            extraOptions.putAll(cartItem.extraOptions)
         }
     }
 
@@ -116,20 +125,44 @@ fun OptionChangeBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(whiteBackgroundColor)
-                .padding(top = 16.dp, bottom = 16.dp),
+                .padding(horizontal = 24.dp)
+                .padding(top = 16.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .height(36.dp)
+                    .background(
+                        color = greyBackgroundColor,
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Text(text = "총 가격", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Text(text = "${totalPrice.value}원", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "가격",
+                        style = subtitle1,
+                        color = contentTextColor
+                    )
+                    Text(
+                        text = "${totalPrice.value}원",
+                        style = subtitle2,
+                        color = contentTextColor
+                    )
+                }
             }
         }
-    }, onDismissRequest = onDismiss, sheetState = sheetState, buttons = {
+    }, onDismissRequest = {
+        coroutineScope.launch {
+            sheetState.hide() // 슬라이딩 애니메이션으로 닫기
+            onDismiss()
+        }
+    }, sheetState = sheetState, buttons = {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -140,7 +173,12 @@ fun OptionChangeBottomSheet(
             BottomButton(
                 modifier = Modifier.weight(1f),
                 content = "취소",
-                onClick = onDismiss,
+                onClick = {
+                    coroutineScope.launch {
+                        sheetState.hide()
+                        onDismiss()
+                    }
+                },
                 colors = ButtonColors(
                     containerColor = greyBackgroundColor,
                     contentColor = titleTextColor,
@@ -149,10 +187,17 @@ fun OptionChangeBottomSheet(
                 ),
             )
             BottomButton(modifier = Modifier.weight(1f), content = "수정", onClick = {
-                viewModel.updateCartItem(
-                    cartItem.id, selectedSize.value, selectedTemperature.value, extraOptions
-                )
-                onDismiss()
+                coroutineScope.launch {
+                    viewModel.updateCartItem(
+                        cartItem.id,
+                        cartItem.menuId,
+                        selectedSize.value,
+                        selectedTemperature.value,
+                        extraOptions
+                    )
+                    sheetState.hide()
+                    onDismiss()
+                }
             })
         }
     })
