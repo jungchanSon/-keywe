@@ -15,10 +15,15 @@ services:
       retries: 10
     ports:
       - "8080:8080"
+    depends_on:
+      config-service-app:
+        condition: service_healthy
     deploy:
       replicas: 1
     environment:
-      - "SPRING_PROFILES_ACTIVE=prod"
+      - USER_SERVICE_URL=user-service-app
+      - STORE_SERVICE_URL=store-service-app
+      - CONFIG_SERVICE_URL=config-service-app
     networks:
       - kiwi-service-network
 
@@ -37,7 +42,24 @@ services:
     ports:
       - "8090:8090"
     environment:
-      - USER_MYSQL_URL=kiwi-db-user
+      - USER_MYSQL_URL=kiwi-db-user:3306
+      - CONFIG_SERVICE_URL=config-service-app
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+
+  config-service-app:
+    build:
+      context: ./infra-config
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8888/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "8888:8888"
     deploy:
       replicas: 1
     networks:
@@ -59,6 +81,7 @@ services:
       - "8095:8090"
     environment:
       - STORE_MYSQL_URL=kiwi-db-store
+      - CONFIG_SERVICE_URL=config-service-app
     deploy:
       replicas: 1
     networks:

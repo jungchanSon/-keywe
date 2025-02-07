@@ -4,6 +4,7 @@ include(
         "user-service",
         "store-service",
         "infra-gateway",
+        "infra-config",
         "common",
         "common-token",
         "common-http"
