@@ -14,11 +14,17 @@ import javax.inject.Inject
 
 data class MenuData(
     val id: Int,
+    val category: String,
     val name: String,
     val recipe: String,
     val price: Int,
     val description: String,
     val imageURL: String
+)
+
+data class MenuCategory(
+    val id: Int,
+    val name: String
 )
 
 data class CartItem(
@@ -39,67 +45,153 @@ data class OptionData(
 )
 
 @HiltViewModel
-class MenuViewModel @Inject constructor() : ViewModel() {
+class OrderViewModel @Inject constructor() : ViewModel() {
 
     //    private val _menuItems = MutableStateFlow<List<MenuData>>(emptyList())
     private val _menuItems = MutableStateFlow(
         listOf(
+            // 커피
             MenuData(
                 1,
+                "커피",
                 "아메리카노",
                 "커피+물",
                 2000,
-                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
-                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
+                "에스프레소에 물을 혼합한 커피 싸피COFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 대표 음료",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/americano.png?raw=true"
             ),
             MenuData(
                 2,
+                "커피",
                 "카페라떼",
                 "커피+우유",
                 3000,
-                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
-                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
+                "에스프레소에 우유를 더한 부드러운 라떼",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/cafe_latte.png?raw=true"
             ),
             MenuData(
                 3,
-                "카푸치노",
-                "커피+거품 우유",
-                3500,
-                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
-                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
+                "커피",
+                "카페모카",
+                "커피+초콜릿+우유",
+                4000,
+                "초콜릿과 에스프레소가 어우러진 달콤한 음료",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/cafe_mocha.png?raw=true"
             ),
             MenuData(
                 4,
-                "카페모카",
-                "커피+초콜릿+우유 + 우유",
-                4000,
-                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
-                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
-            ),
-            MenuData(
-                5,
+                "커피",
                 "에스프레소",
                 "진한 커피 샷",
                 2500,
-                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
-                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
+                "고농축의 진한 커피 한 잔",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/espresso.png?raw=true"
             ),
             MenuData(
-                6,
-                "바닐라라떼",
-                "커피+우유+바닐라시럽",
+                5,
+                "커피",
+                "바닐라 라떼",
+                "커피+우유+바닐라 시럽",
                 3500,
-                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
-                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
+                "달콤한 바닐라 향이 더해진 부드러운 라떼",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/vanilla_latte.png?raw=true"
+            ),
+
+            // 차
+            MenuData(
+                6,
+                "차",
+                "캐모마일 티",
+                "캐모마일 차",
+                3500,
+                "부드럽고 향긋한 캐모마일 티",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/chamomile_tea.png?raw=true"
             ),
             MenuData(
                 7,
-                "카라멜마끼아또",
-                "커피+거품 우유+카라멜",
-                4000,
-                "에스프레소에 물을 혼합한 커피 SSAFYCOFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 SSAFYCOFFEE 대표 음료",
-                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/cafemocha.png?raw=true"
+                "차",
+                "얼그레이 티",
+                "얼그레이 차",
+                3500,
+                "홍차의 깊은 풍미와 베르가못 향이 어우러진 얼그레이 티",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/earl_grey_tea.png?raw=true"
             ),
+            MenuData(
+                8,
+                "차",
+                "그린티 라떼",
+                "녹차+우유",
+                4000,
+                "진한 녹차와 우유가 어우러진 부드러운 라떼",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/greentea_latte.png?raw=true"
+            ),
+            MenuData(
+                9,
+                "차",
+                "자스민 티",
+                "자스민 차",
+                3500,
+                "향긋한 자스민 꽃 향이 가득한 차",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/jasmine_tea.png?raw=true"
+            ),
+            MenuData(
+                10,
+                "차",
+                "페퍼민트 티",
+                "페퍼민트 차",
+                3500,
+                "시원하고 개운한 페퍼민트 티",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/peppermint_tea.png?raw=true"
+            ),
+
+            // 에이드
+            MenuData(
+                11,
+                "에이드",
+                "자몽 에이드",
+                "자몽+탄산수",
+                4500,
+                "상큼한 자몽과 탄산이 어우러진 시원한 음료",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/grapefruit_ade.png?raw=true"
+            ),
+            MenuData(
+                12,
+                "에이드",
+                "레몬 에이드",
+                "레몬+탄산수",
+                4500,
+                "상큼한 레몬과 탄산이 어우러진 청량한 음료",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/lemon_ade.png?raw=true"
+            ),
+
+            // 스무디
+            MenuData(
+                13,
+                "스무디",
+                "아이스 초콜릿",
+                "초콜릿+우유+얼음",
+                4000,
+                "달콤한 초콜릿과 우유가 어우러진 시원한 음료",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/iced_chocolate.png?raw=true"
+            ),
+            MenuData(
+                14,
+                "스무디",
+                "망고 스무디",
+                "망고+우유+얼음",
+                5000,
+                "달콤하고 진한 망고가 가득한 스무디",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/mango_smoothie.png?raw=true"
+            ),
+            MenuData(
+                15,
+                "스무디",
+                "요거트 스무디",
+                "요거트+우유+얼음",
+                5000,
+                "진한 요거트 맛이 매력적인 스무디",
+                "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/yogurt_smoothie.png?raw=true"
+            )
         )
     )
 
@@ -122,9 +214,28 @@ class MenuViewModel @Inject constructor() : ViewModel() {
 //        OptionData("휘핑 추가3", 700),
     )
 
-    val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
+    private val categories = listOf(
+        MenuCategory(1, "전체"),
+        MenuCategory(2, "커피"),
+        MenuCategory(3, "에이드"),
+        MenuCategory(4, "스무디"),
+    )
 
-    val menuItems: StateFlow<List<MenuData>> = _menuItems.asStateFlow()
+    private val _selectedCategory = MutableStateFlow("전체")
+    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
+    fun setSelectedCategory(category: String) {
+        _selectedCategory.value = category
+    }
+
+    val filteredMenuItems: StateFlow<List<MenuData>> = selectedCategory
+        .map { category ->
+            if (category == "전체") _menuItems.value
+            else _menuItems.value.filter { it.category == category }
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
 
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     val cartItems: StateFlow<List<CartItem>> = _cartItems.asStateFlow()
@@ -152,11 +263,9 @@ class MenuViewModel @Inject constructor() : ViewModel() {
         return _menuItems.value.find { it.id == id }
     }
 
-    fun getCartMenuById(id: Int): CartItem? {
-        return _cartItems.value.find { it.id == id }
-    }
-
     fun getExtraOptions(): List<OptionData> = extraOptions
+
+    fun getMenuCategories(): List<MenuCategory> = categories
 
     fun addToCart(
         menuId: Int,
@@ -166,7 +275,6 @@ class MenuViewModel @Inject constructor() : ViewModel() {
         totalPrice: Int
     ) {
         val menuData = getMenuDataById(menuId) ?: return
-        val sizePrice = sizePriceMap[size] ?: 0
 
         println("장바구니 추가됨: $menuId, $size, $temperature, $extraOptions, 총 가격=$totalPrice")
 

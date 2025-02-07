@@ -42,7 +42,7 @@ import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
 import com.ssafy.keywe.presentation.order.component.MenuCartMenuBox
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.noRippleClickable
@@ -59,7 +59,7 @@ fun MenuCartScreen(
     ) {
 
     val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>();
-    val viewModel = hiltViewModel<MenuViewModel>(parentBackStackEntry)
+    val viewModel = hiltViewModel<OrderViewModel>(parentBackStackEntry)
     val cartItems by viewModel.cartItems.collectAsState()
     val isDeleteDialogOpen by viewModel.isDeleteDialogOpen.collectAsState()
     val selectedCartItem by viewModel.selectedCartItem.collectAsState()

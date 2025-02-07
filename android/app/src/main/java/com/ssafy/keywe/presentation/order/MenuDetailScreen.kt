@@ -26,7 +26,7 @@ import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailExtraOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OptionData
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.orangeColor
@@ -36,7 +36,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 fun MenuDetailScreen(
     navController: NavController,
     menuId: Int,
-    viewModel: MenuViewModel = hiltViewModel()
+    viewModel: OrderViewModel = hiltViewModel()
 ) {
     val menu = viewModel.getMenuDataById(menuId)
     val menuPrice = menu?.price ?: 0

@@ -14,7 +14,7 @@ interface AuthService {
     @POST(LOGIN_PATH)
     suspend fun login(
         @Body loginRequest: LoginRequest,
-//        @Header("Authorization") authorization: Boolean = false,
+//        @Header("Authorization") authorization: Boole3an = false,
     ): Response<LoginResponse>
 
     @POST(SIGNUP_PATH)

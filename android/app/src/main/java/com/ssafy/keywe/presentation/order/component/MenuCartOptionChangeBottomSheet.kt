@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OptionChangeBottomSheet(
-    cartItem: CartItem, viewModel: MenuViewModel, onDismiss: () -> Unit
+    cartItem: CartItem, viewModel: OrderViewModel, onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val selectedSize = remember { mutableStateOf(cartItem.size) }

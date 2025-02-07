@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.h5
 import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -37,7 +37,7 @@ fun MenuDetailMenu(
     modifier: Modifier = Modifier,
     menuId: Int,
     menuPrice: Int,
-    viewModel: MenuViewModel
+    viewModel: OrderViewModel
 ) {
     val menu = viewModel.getMenuDataById(menuId)
     val menuName = menu?.name ?: ""
@@ -92,7 +92,7 @@ fun MenuDetailImage(menuImageURL:String) {
             modifier = Modifier
                 .fillMaxSize()
                 .clip(CircleShape),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.FillHeight
         )
     }
 }

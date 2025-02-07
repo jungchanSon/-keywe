@@ -16,7 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -31,7 +31,7 @@ fun MenuDetailBottom(
     navController: NavController
 ) {
     val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
-    val viewModel = hiltViewModel<MenuViewModel>(parentBackStackEntry)
+    val viewModel = hiltViewModel<OrderViewModel>(parentBackStackEntry)
 
 
     Box(modifier = Modifier.background(greyBackgroundColor)) {
@@ -67,7 +67,7 @@ fun MenuDetailBottomBackButton(
     selectedTemperature: String,
     extraOptions: Map<String, Int>,
     totalPrice: Int,
-    viewModel: MenuViewModel,
+    viewModel: OrderViewModel,
     navController: NavController
 ) {
     BottomButton(

@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -26,16 +29,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun MenuMenuList(
     navController: NavController,
-    viewModel: MenuViewModel
+    viewModel: OrderViewModel
 ) {
-    val menuList by viewModel.menuItems.collectAsState()
+    val filteredMenuList by viewModel.filteredMenuItems.collectAsState()
+    val listState = rememberLazyGridState() // 스크롤 상태 관리
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(viewModel.selectedCategory.collectAsState().value) {
+        coroutineScope.launch {
+            listState.scrollToItem(0) // 카테고리가 변경될 때 첫 번째 아이템으로 스크롤
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -47,9 +59,10 @@ fun MenuMenuList(
             columns = GridCells.Fixed(2), // 2열 그리드
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp)
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            state = listState
         ) {
-            items(menuList) { menu ->
+            items(filteredMenuList) { menu ->
                 MenuMenuScreen(
                     menuId = menu.id,
                     selectItem = {
@@ -66,7 +79,7 @@ fun MenuMenuList(
 fun MenuMenuScreen(
     menuId: Int,
     selectItem: () -> Unit,
-    viewModel: MenuViewModel
+    viewModel: OrderViewModel
 ) {
     Box(
         modifier = Modifier
