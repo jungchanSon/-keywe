@@ -13,7 +13,7 @@
 # Docker-Compose 명령어
 - 전체 서비스 컨테이너 실행
     ```shell
-    docker-compose up -d 
+    docker-compose up -d --build
     ```
 - 전체 DB 컨테이너 실행
     ```shell
