@@ -1,12 +1,7 @@
+server:
+  port: 8095
 spring:
   application:
-    name: server
-  profiles:
-    active: local
-
----
-spring:
+    name: store
   config:
-    activate:
-      on-profile: local
-    import: secret/application-local.yml
+    import: optional:configserver:http://${CONFIG_SERVICE_URL:localhost}:8888

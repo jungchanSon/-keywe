@@ -1,7 +1,7 @@
 server:
-  port: 8090
+  port: 8080
 spring:
   application:
-    name: user
+    name: gateway
   config:
     import: optional:configserver:http://${CONFIG_SERVICE_URL:localhost}:8888
