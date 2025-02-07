@@ -1,6 +1,7 @@
 package com.ssafy.keywe.core.di.module
 
 import com.ssafy.keywe.data.auth.AuthService
+import com.ssafy.keywe.data.order.OrderService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,4 +16,9 @@ object RetrofitModule {
     @Provides
     fun provideAuthService(retrofit: Retrofit): AuthService =
         retrofit.create(AuthService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideOrderService(retrofit: Retrofit): OrderService =
+        retrofit.create(OrderService::class.java)
 }

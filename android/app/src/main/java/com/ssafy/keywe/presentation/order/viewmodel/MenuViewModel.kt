@@ -2,6 +2,9 @@ package com.ssafy.keywe.presentation.order.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.data.ResponseResult
+import com.ssafy.keywe.domain.order.CategoryModel
+import com.ssafy.keywe.domain.order.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MenuData(
@@ -45,7 +49,11 @@ data class OptionData(
 )
 
 @HiltViewModel
-class OrderViewModel @Inject constructor() : ViewModel() {
+class OrderViewModel @Inject constructor(private val repository: OrderRepository) : ViewModel() {
+
+    suspend fun getCategory(): ResponseResult<List<CategoryModel>> {
+        return repository.getCategory()
+    }
 
     //    private val _menuItems = MutableStateFlow<List<MenuData>>(emptyList())
     private val _menuItems = MutableStateFlow(
@@ -57,7 +65,7 @@ class OrderViewModel @Inject constructor() : ViewModel() {
                 "아메리카노",
                 "커피+물",
                 2000,
-                "에스프레소에 물을 혼합한 커피 싸피COFFEE의 부드럽고 풍부한 바디감을 느낄 수 있는 대표 음료",
+                "에스프레소에 물을 혼합한 커피 COFFEE 부드럽고 풍부한 바디감을 느낄 수 있는 대표 음료",
                 "https://github.com/Bheinarl/Android-Studio-Study/blob/master/images/americano.png?raw=true"
             ),
             MenuData(
@@ -214,15 +222,39 @@ class OrderViewModel @Inject constructor() : ViewModel() {
 //        OptionData("휘핑 추가3", 700),
     )
 
-    private val categories = listOf(
-        MenuCategory(1, "전체"),
-        MenuCategory(2, "커피"),
-        MenuCategory(3, "에이드"),
-        MenuCategory(4, "스무디"),
-    )
+//    private val categories = listOf(
+//        MenuCategory(1, "전체"),
+//        MenuCategory(2, "커피"),
+//        MenuCategory(3, "에이드"),
+//        MenuCategory(4, "스무디"),
+//        MenuCategory(5, "차"),
+//    )
+    private val _categories = MutableStateFlow<List<CategoryModel>>(listOf(CategoryModel(0, "전체")))
+    val categories: StateFlow<List<CategoryModel>> = _categories.asStateFlow()
 
     private val _selectedCategory = MutableStateFlow("전체")
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
+    init {
+        fetchCategories()
+    }
+
+    private fun fetchCategories() {
+        viewModelScope.launch {
+            when (val result = repository.getCategory()) {
+                is ResponseResult.Success -> {
+                    val categoriesWithAll = listOf(CategoryModel(0, "전체")) + result.data
+                    _categories.value = categoriesWithAll
+                }
+                is ResponseResult.ServerError -> {
+                    println("서버 에러: ${result.status}")  // 서버 오류 로그
+                }
+                is ResponseResult.Exception -> {
+                    println("예외 발생: ${result.e.message}")  // 예외 로그
+                }
+            }
+        }
+    }
 
     fun setSelectedCategory(category: String) {
         _selectedCategory.value = category
@@ -265,7 +297,7 @@ class OrderViewModel @Inject constructor() : ViewModel() {
 
     fun getExtraOptions(): List<OptionData> = extraOptions
 
-    fun getMenuCategories(): List<MenuCategory> = categories
+    fun getMenuCategories(): List<CategoryModel> = _categories.value
 
     fun addToCart(
         menuId: Int,

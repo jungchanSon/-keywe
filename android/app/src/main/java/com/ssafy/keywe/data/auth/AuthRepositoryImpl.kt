@@ -7,7 +7,13 @@ import com.ssafy.keywe.data.dto.mapper.toDomain
 import com.ssafy.keywe.domain.auth.AuthRepository
 import com.ssafy.keywe.domain.auth.LoginModel
 import com.ssafy.keywe.domain.auth.SignUpModel
+import com.ssafy.keywe.domain.order.CategoryModel
 import javax.inject.Inject
+
+interface AuthRepository {
+    suspend fun login(loginRequest: LoginRequest): ResponseResult<LoginModel>
+    suspend fun signUp(signUpRequest: SignUpRequest): ResponseResult<SignUpModel>
+}
 
 class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource,

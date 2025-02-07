@@ -15,24 +15,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ssafy.keywe.presentation.order.viewmodel.MenuCategory
 import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 
 @Composable
 fun MenuCategoryScreen(viewModel: OrderViewModel) {
 
-    val menuCategoryList = viewModel.getMenuCategories()
+    val menuCategoryList = viewModel.categories.collectAsState().value
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
         ScrollableTabRow(
-            selectedTabIndex = menuCategoryList.indexOfFirst { it.name == selectedCategory },
+            selectedTabIndex = menuCategoryList.indexOfFirst { it.categoryName == selectedCategory },
             containerColor = Color.Transparent,
             contentColor = primaryColor,
             edgePadding = 16.dp,
             indicator = { tabPositions ->
-                val index = menuCategoryList.indexOfFirst { it.name == selectedCategory }
+                val index = menuCategoryList.indexOfFirst { it.categoryName == selectedCategory }
 
                 if (index != -1) {
                     Box(
@@ -46,12 +45,12 @@ fun MenuCategoryScreen(viewModel: OrderViewModel) {
         ) {
             menuCategoryList.forEach { category ->
                 Tab(
-                    selected = selectedCategory == category.name,
-                    onClick = { viewModel.setSelectedCategory(category.name) },
+                    selected = selectedCategory == category.categoryName,
+                    onClick = { viewModel.setSelectedCategory(category.categoryName) },
                     text = {
                         Text(
-                            text = category.name,
-                            color = if (selectedCategory == category.name) primaryColor else Color.Gray
+                            text = category.categoryName,
+                            color = if (selectedCategory == category.categoryName) primaryColor else Color.Gray
                         )
                     }
                 )
