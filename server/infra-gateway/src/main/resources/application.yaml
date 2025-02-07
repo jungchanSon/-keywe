@@ -20,4 +20,4 @@ spring:
 
 GATEWAY:
   USER_SERVICE_URL: http://user-service-app.user.svc.cluster.local:8090
-  STORE_SERVICE_URL: http://store-service-app.store.svc.cluster.local:8095
+  STORE_SERVICE_URL: http://store-service-app.store.svc.cluster.local:8090
