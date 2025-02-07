@@ -1,6 +1,5 @@
-package com.kiosk.server.common.config;
+package com.kiosk.server.config;
 
-import com.kiosk.server.common.filter.JwtFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

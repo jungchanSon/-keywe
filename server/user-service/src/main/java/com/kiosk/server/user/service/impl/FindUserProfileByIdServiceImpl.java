@@ -1,6 +1,6 @@
 package com.kiosk.server.user.service.impl;
 
-import com.kiosk.server.common.util.TokenUtil;
+import com.kiosk.server.user.util.TokenUtil;
 import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.service.FindUserProfileByIdService;
 import com.kiosk.server.user.util.UserProfileUtil;

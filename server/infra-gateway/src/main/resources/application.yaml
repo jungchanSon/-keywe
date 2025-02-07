@@ -1,6 +1,8 @@
 spring:
   profiles:
     default: local
+  config:
+    import: secret/token.yml
 ---
 spring:
   config:
@@ -8,7 +10,7 @@ spring:
       on-profile: local
 GATEWAY:
   USER_SERVICE_URL: http://localhost:8090
-  STORE_SERVICE_URL: http://localhost:8090
+  STORE_SERVICE_URL: http://localhost:8095
 
 ---
 spring:

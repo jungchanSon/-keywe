@@ -1,6 +1,5 @@
-package com.kiosk.server.common.config;
+package com.kiosk.server.config;
 
-import com.kiosk.server.common.interceptor.JwtInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

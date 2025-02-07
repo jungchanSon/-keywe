@@ -1,4 +1,4 @@
-package com.kiosk.server.common.exception;
+package exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.kiosk.server.common.exception;
+package exception;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.ConflictException;
