@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CEOLoginRequest(
-    @SerialName("id")
-    val id: String,
-    @SerialName("password")
-    val password: String,
+    @SerialName("id") val id: String,
+    @SerialName("password") val password: String,
 )

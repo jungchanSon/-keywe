@@ -5,7 +5,19 @@ import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.dto.order.CategoryRequest
 import com.ssafy.keywe.data.dto.order.CategoryResponse
+import com.ssafy.keywe.data.dto.order.MenuPostRequest
+import okhttp3.MultipartBody
 import javax.inject.Inject
+import com.google.gson.Gson
+import com.ssafy.keywe.data.dto.order.MenuDetailResponse
+import com.ssafy.keywe.data.dto.order.MenuOptionResponse
+import com.ssafy.keywe.data.dto.order.MenuPatchRequest
+import com.ssafy.keywe.data.dto.order.MenuPostResponse
+import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
+import com.ssafy.keywe.data.dto.order.OptionPost
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class OrderRemoteDataSource @Inject constructor(
     private val orderService: OrderService, private val tokenManager: TokenManager
@@ -39,4 +51,58 @@ class OrderRemoteDataSource @Inject constructor(
                 categoryId
             )
         }
+
+    override suspend fun postMenu(menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<MenuPostResponse> {
+        return handleApiResponse {
+            orderService.postMenu(menu, menuImage)
+        }
+    }
+
+    override suspend fun updateMenu(menuId: Long, menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<Unit> {
+        return handleApiResponse {
+            orderService.updateMenu(menuId, menu, menuImage)
+        }
+    }
+
+    override suspend fun getAllMenu(): ResponseResult<List<MenuSimpleResponse>> =
+        handleApiResponse {
+            orderService.getMenuAll()
+        }
+
+
+    override suspend fun getDetailMenu(menuId: Long): ResponseResult<MenuDetailResponse> =
+        handleApiResponse {
+            orderService.getDetailMenu(menuId)
+        }
+
+    override suspend fun getCategoryMenu(categoryId: Long): ResponseResult<List<MenuSimpleResponse>> =
+        handleApiResponse {
+            orderService.getCategoryMenu(categoryId)
+        }
+
+    override suspend fun deleteMenu(menuId: Long): ResponseResult<Unit> =
+        handleApiResponse {
+            orderService.deleteMenu(menuId)
+        }
+
+    override suspend fun postOption(menuId: Long, optionRequest: OptionPost): ResponseResult<MenuOptionResponse> =
+        handleApiResponse {
+            orderService.postOption(
+                menuId,
+                optionRequest
+            )
+        }
+
+    override suspend fun updateOption(menuId: Long, optionValueId: Long, optionRequest: OptionPost): ResponseResult<MenuOptionResponse> =
+        handleApiResponse {
+            orderService.updateOption(menuId, optionValueId, optionRequest)
+        }
+
+    override suspend fun deleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit> =
+        handleApiResponse {
+            orderService.deleteOption(menuId, optionValueId)
+        }
+
+
 }
+

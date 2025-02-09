@@ -52,6 +52,8 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx.v1120)  // ✅ Parcelable 확장 함수 포함
 
+    implementation (libs.gson)
+
     // Firebase FCM
     implementation(platform(libs.firebase.bom))
 
