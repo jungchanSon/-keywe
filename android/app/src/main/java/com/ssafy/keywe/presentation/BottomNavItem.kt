@@ -14,9 +14,19 @@ sealed class BottomNavItem(
     val icon: ImageVector,
     val screenRoute: BottomRoute,
 ) {
-    data object Home : BottomNavItem(R.string.home, Icons.Default.Home, BottomRoute.HomeRoute)
-    data object Profile :
-        BottomNavItem(R.string.profile, Icons.Default.PersonOutline, BottomRoute.ProfileRoute)
+    abstract val name: String
 
-    data object Login : BottomNavItem(R.string.app_name, Icons.Default.Apps, BottomRoute.LoginRoute)
+    data object Home : BottomNavItem(R.string.home, Icons.Default.Home, BottomRoute.HomeRoute) {
+        override val name: String = "홈"
+    }
+
+    data object Profile :
+        BottomNavItem(R.string.profile, Icons.Default.PersonOutline, BottomRoute.ProfileRoute) {
+        override val name: String = "프로필"
+    }
+
+    data object Login :
+        BottomNavItem(R.string.app_name, Icons.Default.Apps, BottomRoute.LoginRoute) {
+        override val name: String = "로그인"
+    }
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +37,7 @@ fun Profile(
                 .build(),
             contentDescription = "ExampleImage",
             contentScale = ContentScale.Fit,
-            modifier = Modifier
+            modifier = Modifier.size(120.dp)
         )
         Text(
             text = name,
