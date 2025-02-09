@@ -19,5 +19,7 @@ spec:
           ports:
             - containerPort: {{ .Values.containerPort }}
           env:
+            - name: CONFIG_SERVICE_URL
+              value: config-server-app-service.config.svc.cluster.local
             - name: USER_MYSQL_URL
               value: {{ .Values.springEnv.userMysqlUrl}}
