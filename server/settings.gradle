@@ -7,5 +7,6 @@ include(
         "infra-config",
         "common",
         "common-token",
-        "common-http"
+        "common-http",
+        "swagger"
 )
