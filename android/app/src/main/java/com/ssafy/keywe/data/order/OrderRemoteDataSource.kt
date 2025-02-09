@@ -25,9 +25,10 @@ class OrderRemoteDataSource @Inject constructor(
         }
 
 
-    override suspend fun updateCategory(categoryRequest: CategoryRequest): ResponseResult<Unit> =
+    override suspend fun updateCategory(categoryId: Long, categoryRequest: CategoryRequest): ResponseResult<Unit> =
         handleApiResponse {
             orderService.updateCategory(
+                categoryId,
                 categoryRequest
             )
         }

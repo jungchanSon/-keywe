@@ -12,7 +12,7 @@ class AuthRemoteDataSource @Inject constructor(private val authService: AuthServ
     AuthDataSource {
     override suspend fun requestLogin(loginRequest: LoginRequest): ResponseResult<LoginResponse> =
         handleApiResponse {
-            authService.login(loginRequest)
+            authService.userLogin(loginRequest)
         }
 
     override suspend fun requestSignUp(signUpRequest: SignUpRequest): ResponseResult<SignUpResponse> =

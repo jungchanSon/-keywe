@@ -1,11 +1,9 @@
 package com.ssafy.keywe.data.order
 
 import com.ssafy.keywe.data.ResponseResult
-import com.ssafy.keywe.data.auth.AuthRepositoryImpl
-import com.ssafy.keywe.data.auth.AuthRepositoryImpl.Companion
 import com.ssafy.keywe.data.dto.mapper.toDomain
+import com.ssafy.keywe.data.dto.mapper.toRequest
 import com.ssafy.keywe.data.dto.order.CategoryRequest
-import com.ssafy.keywe.data.dto.order.CategoryResponse
 import com.ssafy.keywe.domain.order.OrderRepository
 import com.ssafy.keywe.domain.order.CategoryModel
 import javax.inject.Inject
@@ -13,7 +11,7 @@ import javax.inject.Inject
 interface OrderRepository {
     suspend fun postCategory(category: CategoryModel): ResponseResult<Unit>
     suspend fun getCategory(): ResponseResult<List<CategoryModel>>
-    suspend fun updateCategory(category: CategoryModel): ResponseResult<Unit>
+    suspend fun updateCategory(categoryId: Long, categoryName: String): ResponseResult<Unit>
     suspend fun deleteCategory(categoryId: Long): ResponseResult<Unit>
 }
 
@@ -23,33 +21,51 @@ class OrderRepositoryImpl @Inject constructor(
 ) : OrderRepository {
 
     override suspend fun postCategory(category: CategoryModel): ResponseResult<Unit> {
-        val categoryRequest =
-            CategoryRequest(category.categoryName)  // 🔹 CategoryModel → CategoryRequest 변환
+        val categoryRequest = category.toRequest()
         return runCatching {
-            orderDataSource.postCategory(categoryRequest)
+            when (val result = orderDataSource.postCategory(categoryRequest)) {
+                is ResponseResult.Success -> result
+                is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e,
+                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
+            }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
         }
     }
 
     override suspend fun getCategory(): ResponseResult<List<CategoryModel>> {
-        return when (val result = orderDataSource.getCategory()) {
-            is ResponseResult.Exception -> ResponseResult.Exception(
-                result.e,
-                EXCEPTION_NETWORK_ERROR_MESSAGE
-            )
-
-            is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-            is ResponseResult.Success -> ResponseResult.Success(result.data!!.map { it.toDomain() })
+        return runCatching {
+            when (val result = orderDataSource.getCategory()) {
+                is ResponseResult.Success -> ResponseResult.Success(result.data.map { it.toDomain() })
+                is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e,
+                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
+            }
+        }.getOrElse {
+            ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
         }
-
     }
 
-    override suspend fun updateCategory(category: CategoryModel): ResponseResult<Unit> {
-        val categoryRequest =
-            CategoryRequest(category.categoryName)  // 🔹 CategoryModel → CategoryRequest 변환
+    override suspend fun updateCategory(
+        categoryId: Long,
+        categoryName: String
+    ): ResponseResult<Unit> {
+        val categoryRequest = CategoryRequest(categoryName)
+
         return runCatching {
-            orderDataSource.updateCategory(categoryRequest)
+            when (val result = orderDataSource.updateCategory(categoryId, categoryRequest)) {
+                is ResponseResult.Success -> result
+                is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e,
+                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
+            }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
         }
@@ -57,11 +73,19 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun deleteCategory(categoryId: Long): ResponseResult<Unit> {  // 🔹 categoryId 추가
         return runCatching {
-            orderDataSource.deleteCategory(categoryId)
+            when (val result = orderDataSource.deleteCategory(categoryId)) {
+                is ResponseResult.Success -> result
+                is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e,
+                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
+            }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
         }
     }
+
 
     companion object {
         private const val EXCEPTION_NETWORK_ERROR_MESSAGE =

@@ -7,6 +7,6 @@ import com.ssafy.keywe.data.dto.order.CategoryResponse
 interface OrderDataSource {
     suspend fun postCategory(categoryRequest: CategoryRequest): ResponseResult<Unit>
     suspend fun getCategory(): ResponseResult<List<CategoryResponse>>
-    suspend fun updateCategory(categoryRequest: CategoryRequest): ResponseResult<Unit>
+    suspend fun updateCategory(categoryId: Long, categoryRequest: CategoryRequest): ResponseResult<Unit>
     suspend fun deleteCategory(categoryId: Long): ResponseResult<Unit>
 }

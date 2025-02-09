@@ -94,7 +94,7 @@ class AuthAuthenticator @Inject constructor(
 
         runBlocking {
             val response =
-                authService.login(loginRequest = LoginRequest("ssafy1@ssafy.com", "Ssafy1234!"))
+                authService.userLogin(loginRequest = LoginRequest("ssafy1@ssafy.com", "Ssafy1234!"))
             // Access Token 토큰 재발급 성공
             if (response.isSuccessful) {
                 val body = response.body()
