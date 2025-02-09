@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GatewayConfig {
 
-    @Value("${GATEWAY.USER_SERVICE_URL}")
+    @Value("${url.user_service}")
     String USER_SERVICE_URL;
 
-    @Value("${GATEWAY.STORE_SERVICE_URL}")
+    @Value("${url.store_service}")
     String STORE_SERVICE_URL;
 
 
