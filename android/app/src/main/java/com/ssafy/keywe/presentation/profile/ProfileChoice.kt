@@ -201,7 +201,7 @@ fun ProfileGrid(
             ) {
                 Profile(
                     name = profile.name,
-                    profileImage = profile.profileImage,
+                    profileImage = "",
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable { onProfileClick(profile) }

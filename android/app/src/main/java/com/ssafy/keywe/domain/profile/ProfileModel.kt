@@ -1,5 +1,6 @@
 package com.ssafy.keywe.domain.profile
 
+// 바꿔
 data class GetAllProfileModel(
     val id: Long,
     val name: String,

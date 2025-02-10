@@ -185,9 +185,9 @@ class AddMemberViewModel @Inject constructor() : ViewModel() {
                     userId = "temp_id",
                     name = state.value.name,
                     phone = state.value.phone,
-                    profileImage = profileImageUri.value?.toString(),
                     role = if (state.value.selectedTab == 0) "PARENT" else "CHILD",
-                    simplePassword = state.value.simplePassword
+                    simplePassword = state.value.simplePassword,
+                    profile = ""
                 )
                 viewModel.addProfile(newProfile)
 

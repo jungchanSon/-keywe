@@ -23,7 +23,7 @@ interface ProfileService {
     suspend fun getAllProfile(
     ): Response<GetAllProfileResponse>
 
-    @GET(PROFILE_GET_PATCH_DELETE_PATH)
+    @GET(PROFILE_PATH)
     suspend fun getProfileDetail(
         @Path("profileId") profileId: Long
     ): Response<GetProfileDetailResponse>
@@ -38,13 +38,13 @@ interface ProfileService {
         @Body postProfileRequest: PostProfileRequest
     ): Response<PostProfileResponse>
 
-    @PATCH(PROFILE_GET_PATCH_DELETE_PATH)
+    @PATCH(PROFILE_PATH)
     suspend fun patchProfile(
         @Path("profileId") profileId: Long,
         @Body patchProfileRequest: PatchProfileRequest
     ): Response<PatchProfileResponse>
 
-    @DELETE(PROFILE_GET_PATCH_DELETE_PATH)
+    @DELETE(PROFILE_PATH)
     suspend fun deleteProfile(
         @Path("profileId") profileId: Long,
     ): Response<Unit>
@@ -52,7 +52,7 @@ interface ProfileService {
     companion object {
         private const val PROFILE_LIST_PATH = "/user/profile/list"
         private const val PROFILE_POST_PATH = "/user/profile"
-        private const val PROFILE_GET_PATCH_DELETE_PATH = "/user/profile/{profileId}"
+        private const val PROFILE_PATH = "/user/profile/{profileId}"
     }
 
 

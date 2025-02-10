@@ -10,15 +10,17 @@ import kotlinx.serialization.Serializable
 //    @SerialName("data") val data: ProfileData
 //)
 //
-//@Serializable
-//data class ProfileData(
-//    @SerialName("userId") val userId: String,
-//    @SerialName("name") val name: String,
-//    @SerialName("phone") val phone: String,
-//    @SerialName("profileImage") val profile: String?,
-//    @SerialName("role") val role: String,
-//    @SerialName("simplePassword") val simplePassword: String
-//)
+
+
+@Serializable
+data class ProfileData(
+    @SerialName("userId") val userId: String,
+    @SerialName("name") val name: String,
+    @SerialName("phone") val phone: String,
+    @SerialName("profileImage") val profile: String?,
+    @SerialName("role") val role: String,
+    @SerialName("simplePassword") val simplePassword: String
+)
 
 @Serializable
 data class GetAllProfileResponse(
@@ -44,7 +46,7 @@ data class PostProfileResponse(
 data class PatchProfileResponse(
     @SerialName("name") val name: String,
     @SerialName("phone") val phone: String,
-    @SerialName("profileImage") val profileImage: String?,
+//    @SerialName("profileImage") val profileImage: String?,
     @SerialName("role") val role: String,
     @SerialName("simplePassword") val simplePassword: String
 )
