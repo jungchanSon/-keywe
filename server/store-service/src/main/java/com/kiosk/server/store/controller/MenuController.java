@@ -30,9 +30,9 @@ public class MenuController {
     // 메뉴 등록
     @PostMapping
     public ResponseEntity<CreateMenuResponse> insertMenu(
-        @RequestHeader("userId") Long userId,
-        @RequestPart("menu") String json,
-        @RequestPart(required = false) MultipartFile image
+            @RequestHeader("userId") Long userId,
+            @RequestPart("menu") String json,
+            @RequestPart(required = false) MultipartFile image
     ) throws IOException {
         // JSON 문자열 DTO로 반환
         ObjectMapper mapper = new ObjectMapper();
@@ -60,10 +60,10 @@ public class MenuController {
     // 메뉴 수정
     @PatchMapping("/{menuId}")
     public ResponseEntity<Void> updateMenu(
-        @RequestHeader("userId") Long userId,
-        @RequestPart("menu") String json,
-        @RequestPart(required = false) MultipartFile image,
-        @PathVariable long menuId
+            @RequestHeader("userId") Long userId,
+            @RequestPart("menu") String json,
+            @RequestPart(required = false) MultipartFile image,
+            @PathVariable long menuId
     ) throws IOException {
         // JSON 문자열 DTO로 반환
         ObjectMapper mapper = new ObjectMapper();
@@ -82,9 +82,9 @@ public class MenuController {
     // 옵션 추가
     @PostMapping("/{menuId}/options")
     public ResponseEntity<CreateMenuResponse> addOption(
-        @RequestHeader("userId") Long userId,
-        @PathVariable long menuId,
-        @RequestBody MenuOptionRequest menuRequest
+            @RequestHeader("userId") Long userId,
+            @PathVariable long menuId,
+            @RequestBody MenuOptionRequest menuRequest
     ) {
         CreateMenuResponse response = addOptionService.doService(userId, menuId, menuRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -93,10 +93,10 @@ public class MenuController {
     // 옵션 수정
     @PatchMapping("/{menuId}/options/{optionId}")
     public ResponseEntity<CreateMenuResponse> updateOption(
-        @RequestHeader("userId") Long userId,
-        @PathVariable long menuId,
-        @PathVariable long optionId,
-        @RequestBody MenuOptionRequest menuRequest
+            @RequestHeader("userId") Long userId,
+            @PathVariable long menuId,
+            @PathVariable long optionId,
+            @RequestBody MenuOptionRequest menuRequest
     ) {
         CreateMenuResponse response = updateOptionService.doService(userId, menuId, optionId, menuRequest);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -105,10 +105,10 @@ public class MenuController {
     // 옵션 삭제
     @DeleteMapping("/{menuId}/options/{optionId}")
     public ResponseEntity<Void> deleteOption(
-        @RequestHeader("userId") Long userId,
-        @PathVariable long menuId,
-        @PathVariable long optionId,
-        @RequestBody MenuOptionRequest menuRequest
+            @RequestHeader("userId") Long userId,
+            @PathVariable long menuId,
+            @PathVariable long optionId,
+            @RequestBody MenuOptionRequest menuRequest
     ) {
         deleteOptionService.doService(userId, menuId, optionId, menuRequest);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

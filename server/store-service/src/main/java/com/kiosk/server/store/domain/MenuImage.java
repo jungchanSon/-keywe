@@ -33,7 +33,7 @@ public class MenuImage {
         if (imageBytes == null) {
             throw new BadRequestException("Invalid image");
         }
-        if(menuId <= 0) {
+        if (menuId <= 0) {
             throw new BadRequestException("Invalid menu id");
         }
     }

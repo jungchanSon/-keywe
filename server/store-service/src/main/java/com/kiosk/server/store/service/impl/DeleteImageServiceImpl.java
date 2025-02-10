@@ -1,8 +1,8 @@
 package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
-import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuImage;
+import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.service.DeleteImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

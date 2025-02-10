@@ -17,13 +17,13 @@ public interface MenuRepository {
     void update(Map<String, Object> updateParams);
 
     // 메뉴 단건 상세조회
-    StoreMenu findById(@Param("userId")long userId, @Param("menuId") long menuId);
+    StoreMenu findById(@Param("userId") long userId, @Param("menuId") long menuId);
 
     // 모든 메뉴 조회
     List<StoreMenu> findAll(long userId);
 
     // 특정 카테고리 메뉴 조회
-    List<StoreMenu> findByCategory(@Param("userId")long userId, @Param("categoryId")long categoryId);
+    List<StoreMenu> findByCategory(@Param("userId") long userId, @Param("categoryId") long categoryId);
 
     // 메뉴 삭제
     void deleteById(long menuId);

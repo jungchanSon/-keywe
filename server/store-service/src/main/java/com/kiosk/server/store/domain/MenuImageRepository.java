@@ -8,7 +8,7 @@ public interface MenuImageRepository {
 
     MenuImage findByMenuId(long menuId);
 
-    Object findImageBytesById(Map<String,Object> params);
+    Object findImageBytesById(Map<String, Object> params);
 
     void deleteById(long menuId);
 }

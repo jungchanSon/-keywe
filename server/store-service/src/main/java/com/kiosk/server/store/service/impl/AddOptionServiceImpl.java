@@ -6,10 +6,8 @@ import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.MenuOptionRequest;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
 import com.kiosk.server.store.domain.MenuOptionRepository;
-import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenuOption;
 import com.kiosk.server.store.service.AddOptionService;
-import com.kiosk.server.store.util.OptionServiceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ import java.util.List;
 public class AddOptionServiceImpl implements AddOptionService {
 
     private final MenuOptionRepository optionRepository;
-    private final OptionServiceUtil optionServiceUtil;
+    private final OptionServiceImpl optionService;
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -32,7 +30,7 @@ public class AddOptionServiceImpl implements AddOptionService {
             throw new EntityNotFoundException("No option data provided");
         }
 
-        optionServiceUtil.validateMenuAndOption(userId, menuId, null);
+        optionService.validateMenuAndOption(userId, menuId, null);
 
         // 기존 옵션 그룹 확인
         Long optionGroupId = determineOptionGroupId(menuId, request.optionGroupId());
@@ -50,7 +48,7 @@ public class AddOptionServiceImpl implements AddOptionService {
         validateOptionUniqueness(option);
 
         // 옵션 저장 및 응답 생성
-        List<OptionGroupResponse> optionGroups = optionServiceUtil.addOptionAndGetResponse(option);
+        List<OptionGroupResponse> optionGroups = optionService.addOptionAndGetResponse(option);
 
         return new CreateMenuResponse(menuId, optionGroups);
     }
