@@ -7,7 +7,6 @@ import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.FindMenuDetailService;
-import com.kiosk.server.store.util.OptionServiceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
 
     private final MenuRepository menuRepository;
     private final MenuImageRepository menuImageRepository;
-    private final OptionServiceUtil optionServiceUtil;
+    private final OptionServiceImpl optionService;
 
     @Override
     public MenuDetailResponse doService(long userId, long menuId) {
@@ -43,16 +42,9 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
                 : null;
 
         // 메뉴 옵션 조회 및 그룹화
-        List<OptionGroupResponse> optionGroups = optionServiceUtil.getUpdatedOptionGroups(menuId);
+        List<OptionGroupResponse> optionGroups = optionService.getUpdatedOptionGroups(menuId);
 
         // DTO 변환 후 반환
-        return new MenuDetailResponse(
-                menu.getMenuId(),
-                menu.getMenuName(),
-                menu.getMenuDescription(),
-                menu.getMenuPrice(),
-                imageBase64,
-                optionGroups
-        );
+        return MenuDetailResponse.of(menu, imageBase64, optionGroups);
     }
 }

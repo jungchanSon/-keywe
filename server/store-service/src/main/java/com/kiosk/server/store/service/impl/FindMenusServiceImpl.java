@@ -42,14 +42,7 @@ public class FindMenusServiceImpl implements FindMenusService {
         for (StoreMenu menu : menuList) {
             String imageBase64 = imageMap.get(menu.getMenuId());
 
-            menuResponse.add(new MenuDetailResponse(
-                    menu.getMenuId(),
-                    menu.getMenuName(),
-                    menu.getMenuDescription(),
-                    menu.getMenuPrice(),
-                    imageBase64,
-                    null
-            ));
+            menuResponse.add(MenuDetailResponse.of(menu, imageBase64, null));
         }
 
         return menuResponse;
