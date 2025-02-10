@@ -20,7 +20,7 @@ public interface MenuOptionRepository {
     StoreMenuOption findByOptionId(@Param("menuId")long menuId, @Param("optionId") long optionId);
 
     // 개별 옵션 삭제
-    void deleteOptionById(long optionId);
+    void deleteByOptionId(long optionId);
 
     // 옵션 그룹 삭제
     void deleteOptionGroupById(long optionGroupId);

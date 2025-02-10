@@ -41,7 +41,7 @@
     </select>
 
     <!-- 개별 옵션 삭제 -->
-    <delete id="deleteOptionById" parameterType="java.lang.Long">
+    <delete id="deleteByOptionId" parameterType="java.lang.Long">
         DELETE FROM menu_option WHERE option_id = #{optionId};
     </delete>
 

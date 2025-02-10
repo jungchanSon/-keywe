@@ -46,7 +46,7 @@ public class DeleteOptionServiceImpl implements DeleteOptionService {
         }
 
         if(request.optionGroupId() == null){
-            optionRepository.deleteOptionById(optionId); // 개별 옵션 삭제
+            optionRepository.deleteByOptionId(optionId); // 개별 옵션 삭제
         } else {
             optionRepository.deleteOptionGroupById(request.optionGroupId());
         }
