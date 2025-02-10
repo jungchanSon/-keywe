@@ -14,7 +14,7 @@ public interface MenuOptionRepository {
     void update(Map<String, Object> updateOption);
 
     // 특정 메뉴 옵션 리스트 조회
-    List<StoreMenuOption> findDetailOptionsById(long menuId);
+    List<StoreMenuOption> findOptionsByMenuId(long menuId);
 
     // 개별 옵션 조회
     StoreMenuOption findOptionById(@Param("menuId")long menuId, @Param("optionId") long optionId);

@@ -55,7 +55,7 @@ public class OptionServiceUtil {
 
     // 최신 옵션 목록을 조회하고 옵션 그룹 응답을 생성
     public List<OptionGroupResponse> getUpdatedOptionGroups(long menuId) {
-        List<StoreMenuOption> updatedOptions = optionRepository.findDetailOptionsById(menuId);
+        List<StoreMenuOption> updatedOptions = optionRepository.findOptionsByMenuId(menuId);
         return createOptionGroupResponse(updatedOptions);
     }
 

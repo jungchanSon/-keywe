@@ -26,7 +26,7 @@
     </update>
 
     <!-- 특정 메뉴 옵션 리스트 조회 -->
-    <select id="findDetailOptionsById" parameterType="java.lang.Long" resultType="StoreMenuOption">
+    <select id="findOptionsByMenuId" parameterType="java.lang.Long" resultType="StoreMenuOption">
         SELECT option_id, option_group_id, menu_id, option_type, option_name, option_value, created_at
         FROM menu_option
         WHERE menu_id = #{menuId};
