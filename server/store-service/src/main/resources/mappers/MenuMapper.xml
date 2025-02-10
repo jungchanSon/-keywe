@@ -72,7 +72,7 @@
     </select>
 
     <!-- 전체 메뉴 조회 -->
-    <select id="findList" parameterType="java.lang.Long" resultType="StoreMenu">
+    <select id="findAll" parameterType="java.lang.Long" resultType="StoreMenu">
         SELECT menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at FROM menu
         WHERE user_id = #{userId};
     </select>

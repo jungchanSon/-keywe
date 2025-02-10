@@ -21,7 +21,7 @@ public class FindMenusServiceImpl implements FindMenusService {
     public List<MenuDetailResponse> doService(long userId, Long categoryId) {
         // 메뉴 리스트 가져오기 (카테고리 ID가 없으면 전체 조회)
         List<StoreMenu> menuList = (categoryId == null)
-                ? menuRepository.findList(userId)
+                ? menuRepository.findAll(userId)
                 : menuRepository.findByCategory(userId, categoryId);
 
         if (menuList.isEmpty()) {

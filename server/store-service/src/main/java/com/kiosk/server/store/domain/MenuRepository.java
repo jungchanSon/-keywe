@@ -31,7 +31,7 @@ public interface MenuRepository {
     StoreMenuOption findOptionById(@Param("menuId")long menuId, @Param("optionId") long optionId);
 
     // 모든 메뉴 조회
-    List<StoreMenu> findList(long userId);
+    List<StoreMenu> findAll(long userId);
 
     // 특정 카테고리 메뉴 조회
     List<StoreMenu> findByCategory(@Param("userId")long userId, @Param("categoryId")long categoryId);
