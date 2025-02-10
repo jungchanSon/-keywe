@@ -1,8 +1,8 @@
 package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
-import com.kiosk.server.store.domain.ImageRepository;
-import com.kiosk.server.store.domain.Images;
+import com.kiosk.server.store.domain.MenuImageRepository;
+import com.kiosk.server.store.domain.MenuImage;
 import com.kiosk.server.store.service.UploadImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UploadImageServiceImpl implements UploadImageService {
 
-    private final ImageRepository imageRepository;
+    private final MenuImageRepository menuImageRepository;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png");
 
     @Override
@@ -34,8 +34,8 @@ public class UploadImageServiceImpl implements UploadImageService {
             byte[] imageBytes = file.getBytes();
 
             // 이미지 정보 DB 저장
-            Images image = Images.create(userId, menuId, imageBytes);
-            imageRepository.insert(image);
+            MenuImage image = MenuImage.create(userId, menuId, imageBytes);
+            menuImageRepository.insert(image);
 
         } catch (IOException e) {
             throw new RuntimeException("Failed to process the image file");

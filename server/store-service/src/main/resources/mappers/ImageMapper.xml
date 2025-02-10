@@ -2,16 +2,16 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kiosk.server.store.domain.ImageRepository">
+<mapper namespace="com.kiosk.server.store.domain.MenuImageRepository">
 
     <!-- 이미지 생성 -->
-    <insert id="insert" parameterType="Images">
+    <insert id="insert" parameterType="MenuImage">
         INSERT INTO menu_image (user_id, menu_id, image_id, image_bytes, created_at)
         VALUES (#{userId}, #{menuId}, #{imageId}, #{imageBytes}, #{createdAt});
     </insert>
     
     <!-- ID로 이미지 찾기 -->
-    <select id="findById" parameterType="java.lang.Long" resultType="Images">
+    <select id="findByMenuId" parameterType="java.lang.Long" resultType="MenuImage">
         SELECT * FROM menu_image
         WHERE menu_id = #{menuId};
     </select>

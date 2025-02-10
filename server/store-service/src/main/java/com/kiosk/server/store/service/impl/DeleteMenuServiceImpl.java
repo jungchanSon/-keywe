@@ -17,7 +17,7 @@ public class DeleteMenuServiceImpl implements DeleteMenuService {
     @Override
     public void doService(long userId, long menuId) {
         // 메뉴 존재 여부 확인
-        StoreMenu menu = menuRepository.findDetailById(userId, menuId);
+        StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
             throw new EntityNotFoundException("Menu Not found");
         }

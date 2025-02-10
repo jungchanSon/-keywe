@@ -18,19 +18,8 @@
         VALUES (#{menuId}, #{userId}, #{categoryId}, #{menuName}, #{menuDesc}, #{menuPrice}, #{createdAt});
     </insert>
 
-    <!-- 옵션 저장 -->
-    <insert id="insertOptions" parameterType="list">
-        INSERT INTO menu_option (option_id, option_group_id, menu_id, option_type, option_name, option_value,
-        created_at)
-        VALUES
-        <foreach collection="list" item="option" separator=",">
-            (#{option.optionId}, #{option.optionGroupId}, #{option.menuId},
-            #{option.optionType}, #{option.optionName}, #{option.optionValue}, #{option.createdAt})
-        </foreach>
-    </insert>
-
     <!-- 메뉴 수정 -->
-    <update id="updateMenu" parameterType="map">
+    <update id="update" parameterType="map">
         UPDATE menu
         SET
         menu_name = #{menuName}, menu_desc = #{menuDesc}, menu_price = #{menuPrice}, category_id = #{categoryId}
@@ -38,41 +27,16 @@
         AND user_id = #{userId};
     </update>
 
-    <!-- 옵션 수정 -->
-    <update id="updateOption" parameterType="map">
-        UPDATE menu_option
-        SET
-        option_type = #{optionType},
-        option_name = #{optionName},
-        option_value = #{optionValue}
-        WHERE option_id = #{optionId};
-    </update>
-
     <!-- 메뉴 단건 조회 -->
-    <select id="findDetailById" parameterType="map" resultType="StoreMenu">
+    <select id="findById" parameterType="map" resultType="StoreMenu">
         SELECT menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at FROM menu
         WHERE user_id = #{userId}
         AND menu_id = #{menuId}
         LIMIT 1;
     </select>
 
-    <!-- 특정 메뉴 옵션 리스트 조회 -->
-    <select id="findDetailOptionsById" parameterType="java.lang.Long" resultType="StoreMenuOption">
-        SELECT option_id, option_group_id, menu_id, option_type, option_name, option_value, created_at
-        FROM menu_option
-        WHERE menu_id = #{menuId};
-    </select>
-
-    <!-- 개별 옵션 조회 -->
-    <select id="findOptionById" parameterType="map" resultType="StoreMenuOption" useCache="false">
-        SELECT option_id, option_group_id, menu_id, option_type, option_name, option_value, created_at
-        FROM menu_option
-        WHERE menu_id = #{menuId}
-        AND option_id = #{optionId};
-    </select>
-
     <!-- 전체 메뉴 조회 -->
-    <select id="findList" parameterType="java.lang.Long" resultType="StoreMenu">
+    <select id="findAll" parameterType="java.lang.Long" resultType="StoreMenu">
         SELECT menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at FROM menu
         WHERE user_id = #{userId};
     </select>
@@ -88,30 +52,5 @@
     <delete id="deleteById" parameterType="java.lang.Long">
         DELETE FROM menu WHERE menu_id = #{menuId};
     </delete>
-
-    <!-- 개별 옵션 삭제 -->
-    <delete id="deleteOptionById" parameterType="java.lang.Long">
-        DELETE FROM menu_option WHERE option_id = #{optionId};
-    </delete>
-
-    <!-- 옵션 그룹 삭제 -->
-    <delete id="deleteOptionGroupById" parameterType="java.lang.Long">
-        DELETE FROM menu_option WHERE option_group_id = #{optionGroupId};
-    </delete>
-
-    <select id="existsOptionById" parameterType="java.lang.Long" resultType="boolean">
-        SELECT COUNT(*) FROM menu_option WHERE option_id = #{optionId};
-    </select>
-
-    <!-- 옵션 그룹 ID 존재 여부 확인 -->
-    <select id="existsOptionGroupId" resultType="boolean">
-        SELECT EXISTS (
-        SELECT 1
-        FROM menu_option
-        WHERE menu_id = #{menuId}
-        AND option_group_id = #{optionGroupId}
-        LIMIT 1
-        )
-    </select>
 
 </mapper>

@@ -1,7 +1,7 @@
 package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.store.controller.dto.MenuDetailResponse;
-import com.kiosk.server.store.domain.ImageRepository;
+import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.FindMenusService;
@@ -15,13 +15,13 @@ import java.util.*;
 public class FindMenusServiceImpl implements FindMenusService {
 
     private final MenuRepository menuRepository;
-    private final ImageRepository imageRepository;
+    private final MenuImageRepository menuImageRepository;
 
     @Override
     public List<MenuDetailResponse> doService(long userId, Long categoryId) {
         // 메뉴 리스트 가져오기 (카테고리 ID가 없으면 전체 조회)
         List<StoreMenu> menuList = (categoryId == null)
-                ? menuRepository.findList(userId)
+                ? menuRepository.findAll(userId)
                 : menuRepository.findByCategory(userId, categoryId);
 
         if (menuList.isEmpty()) {
@@ -42,14 +42,7 @@ public class FindMenusServiceImpl implements FindMenusService {
         for (StoreMenu menu : menuList) {
             String imageBase64 = imageMap.get(menu.getMenuId());
 
-            menuResponse.add(new MenuDetailResponse(
-                    menu.getMenuId(),
-                    menu.getMenuName(),
-                    menu.getMenuDesc(),
-                    menu.getMenuPrice(),
-                    imageBase64,
-                    null
-            ));
+            menuResponse.add(MenuDetailResponse.of(menu, imageBase64, null));
         }
 
         return menuResponse;
@@ -62,7 +55,7 @@ public class FindMenusServiceImpl implements FindMenusService {
             params.put("userId", userId);
             params.put("menuId", menuId);
 
-            byte[] imageBytes = (byte[]) imageRepository.findImageBytesById(params);
+            byte[] imageBytes = (byte[]) menuImageRepository.findImageBytesById(params);
 
             if (imageBytes != null && imageBytes.length > 0) {
                 imageMap.put(menuId, Base64.getEncoder().encodeToString(imageBytes));
