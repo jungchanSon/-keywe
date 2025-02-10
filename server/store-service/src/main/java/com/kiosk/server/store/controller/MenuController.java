@@ -28,7 +28,7 @@ public class MenuController {
     private final DeleteImageService deleteImageService;
 
     // 메뉴 등록
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<CreateMenuResponse> insertMenu(
             @RequestHeader("userId") Long userId,
             @RequestPart("menu") String json,
@@ -58,7 +58,7 @@ public class MenuController {
     }
 
     // 메뉴 수정
-    @PatchMapping("/{menuId}")
+    @PatchMapping(path = "/{menuId}", consumes = "multipart/form-data")
     public ResponseEntity<Void> updateMenu(
             @RequestHeader("userId") Long userId,
             @RequestPart("menu") String json,
