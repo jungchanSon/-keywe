@@ -13,7 +13,7 @@ import java.util.Set;
 @Component
 public class JwtFilter implements Filter {
 
-    private final Set<String> excludedPaths = Set.of("/auth/user/login", "/user");
+    private final Set<String> excludedPaths = Set.of("/auth/user/login", "/user", "/user/swagger-ui/**", "/user/v3/api-docs");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {

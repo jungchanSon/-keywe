@@ -24,4 +24,5 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     api project(":common-http")
     api project(":common-token")
+    api project(":swagger")
 }
