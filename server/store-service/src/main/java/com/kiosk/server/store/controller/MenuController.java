@@ -43,10 +43,10 @@ public class MenuController {
 
     // 전체 메뉴, 카테고리 메뉴 조회
     @GetMapping
-    public ResponseEntity<List<MenuDetailResponse>> findMenus(
+    public ResponseEntity<List<MenuResponse>> findMenus(
             @RequestHeader("userId") Long userId,
             @RequestParam(value = "cid", required = false) Long categoryId) {
-        List<MenuDetailResponse> responses = findMenusService.doService(userId, categoryId);
+        List<MenuResponse> responses = findMenusService.doService(userId, categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
