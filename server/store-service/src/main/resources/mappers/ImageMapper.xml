@@ -11,7 +11,7 @@
     </insert>
     
     <!-- ID로 이미지 찾기 -->
-    <select id="findById" parameterType="java.lang.Long" resultType="MenuImage">
+    <select id="findByMenuId" parameterType="java.lang.Long" resultType="MenuImage">
         SELECT * FROM menu_image
         WHERE menu_id = #{menuId};
     </select>

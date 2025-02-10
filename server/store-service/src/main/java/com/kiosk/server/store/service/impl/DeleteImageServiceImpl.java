@@ -17,7 +17,7 @@ public class DeleteImageServiceImpl implements DeleteImageService {
     public void doService(long userId, long menuId) {
 
         // 기존 이미지 정보 조회
-        MenuImage exImage = menuImageRepository.findById(menuId);
+        MenuImage exImage = menuImageRepository.findByMenuId(menuId);
         if (exImage == null) {
             return;
         }

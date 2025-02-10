@@ -6,7 +6,7 @@ public interface MenuImageRepository {
 
     void insert(MenuImage image);
 
-    MenuImage findById(long menuId);
+    MenuImage findByMenuId(long menuId);
 
     Object findImageBytesById(Map<String,Object> params);
 
