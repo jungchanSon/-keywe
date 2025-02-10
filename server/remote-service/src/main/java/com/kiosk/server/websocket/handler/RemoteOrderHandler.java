@@ -110,10 +110,6 @@ public class RemoteOrderHandler {
             ? session.getHelperUserId()
             : session.getKioskUserId();
 
-        messagingTemplate.convertAndSendToUser(
-            targetUserId,
-            "/remote-order",
-            endMessage
-        );
+        messagingTemplate.convertAndSend("/topic/" + targetUserId, endMessage);
     }
 }
