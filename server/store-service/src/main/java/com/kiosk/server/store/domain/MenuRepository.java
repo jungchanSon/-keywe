@@ -23,7 +23,7 @@ public interface MenuRepository {
     void updateOption(Map<String, Object> updateOption);
 
     // 메뉴 단건 상세조회
-    StoreMenu findDetailById(@Param("userId")long userId, @Param("menuId") long menuId);
+    StoreMenu findById(@Param("userId")long userId, @Param("menuId") long menuId);
 
     // 특정 메뉴 옵션 리스트 조회
     List<StoreMenuOption> findDetailOptionsById(long menuId);

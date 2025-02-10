@@ -27,7 +27,7 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
     @Override
     public MenuDetailResponse doService(long userId, long menuId) {
         // 메뉴 기본 정보 조회
-        StoreMenu menu = menuRepository.findDetailById(userId, menuId);
+        StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
             throw new EntityNotFoundException("Menu not found");
         }

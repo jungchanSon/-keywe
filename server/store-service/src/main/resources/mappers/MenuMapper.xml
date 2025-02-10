@@ -49,7 +49,7 @@
     </update>
 
     <!-- 메뉴 단건 조회 -->
-    <select id="findDetailById" parameterType="map" resultType="StoreMenu">
+    <select id="findById" parameterType="map" resultType="StoreMenu">
         SELECT menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at FROM menu
         WHERE user_id = #{userId}
         AND menu_id = #{menuId}

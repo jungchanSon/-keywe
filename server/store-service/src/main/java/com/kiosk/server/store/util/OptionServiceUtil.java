@@ -22,7 +22,7 @@ public class OptionServiceUtil {
 
     // 메뉴와 옵션 존재 여부 검증
     public void validateMenuAndOption(long userId, long menuId, Long optionId) {
-        StoreMenu menu = menuRepository.findDetailById(userId, menuId);
+        StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
             throw new EntityNotFoundException("Menu not found");
         }

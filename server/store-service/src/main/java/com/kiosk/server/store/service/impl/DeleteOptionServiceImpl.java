@@ -33,7 +33,7 @@ public class DeleteOptionServiceImpl implements DeleteOptionService {
         }
 
         // 메뉴 존재 여부 확인
-        StoreMenu menu = menuRepository.findDetailById(userId, menuId);
+        StoreMenu menu = menuRepository.findById(userId, menuId);
         if(menu == null) {
             throw new EntityNotFoundException("Invalid menu");
         }

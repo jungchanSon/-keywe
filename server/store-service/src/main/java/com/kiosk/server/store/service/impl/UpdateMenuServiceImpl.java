@@ -62,7 +62,7 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
     }
 
     private StoreMenu getStoreMenu(long userId, long menuId) {
-        StoreMenu exMenu = menuRepository.findDetailById(userId, menuId);
+        StoreMenu exMenu = menuRepository.findById(userId, menuId);
         if (exMenu == null) {
             throw new EntityNotFoundException("Menu not found");
         }
