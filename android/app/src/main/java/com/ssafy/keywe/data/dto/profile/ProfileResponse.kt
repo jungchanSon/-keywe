@@ -43,6 +43,8 @@ data class PostProfileResponse(
 @Serializable
 data class PatchProfileResponse(
     @SerialName("name") val name: String,
-    @SerialName("phone") val phone: String?,
-    @SerialName("password") val password: String?
+    @SerialName("phone") val phone: String,
+    @SerialName("profileImage") val profileImage: String?,
+    @SerialName("role") val role: String,
+    @SerialName("simplePassword") val simplePassword: String
 )
