@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.profile
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,22 +60,25 @@ import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
-import com.ssafy.keywe.data.state.VerificationStatus
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
-import com.ssafy.keywe.ui.theme.overline
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.viewmodel.AddMemberViewModel
 
 
+@SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun AddMemberScreen(
     navController: NavController,
     viewModel: AddMemberViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+//    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val backStackEntry =
+        navController.getBackStackEntry<Route.ProfileBaseRoute.ProfileChoiceRoute>()
+    val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
+
     val state = viewModel.state.collectAsState().value
     val focusManager = LocalFocusManager.current
 
@@ -82,11 +86,9 @@ fun AddMemberScreen(
         topBar = { DefaultAppBar(title = "구성원 추가", navController = navController) },
         modifier = Modifier
             .fillMaxSize()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+            .clickable(interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = { focusManager.clearFocus() }
-            )
+                onClick = { focusManager.clearFocus() })
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -96,8 +98,7 @@ fun AddMemberScreen(
         ) {
             // 프로필 이미지 피커로 교체
             ProfileImagePicker(
-                viewModel = viewModel,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                viewModel = viewModel, modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -138,14 +139,10 @@ fun AddMemberScreen(
                             style = button,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        if (state.verificationStatus != VerificationStatus.NONE) {
+                        if (state.isVerificationSent) {
                             Text(
-                                text = when (state.verificationStatus) {
-                                    VerificationStatus.SUCCESS -> "인증 성공"
-                                    VerificationStatus.FAILURE -> "인증 실패"
-                                    else -> "인증번호 전송"
-                                },
-                                style = overline,
+                                text = viewModel.verificationMessage.collectAsState().value,
+                                style = body2,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
@@ -165,11 +162,7 @@ fun AddMemberScreen(
                         ) {
                             BasicTextField(
                                 value = state.verificationCode,
-                                onValueChange = {
-                                    if (it.length <= 6 && it.all { char -> char.isDigit() }) {
-                                        viewModel.onVerificationCodeChange(it)
-                                    }
-                                },
+                                onValueChange = { viewModel.onVerificationCodeChange(it) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -191,14 +184,24 @@ fun AddMemberScreen(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Button(
-                            onClick = { viewModel.sendVerification() },
+                            onClick = {
+                                if (state.isVerificationSent) {
+                                    viewModel.verifyCode()
+                                } else {
+                                    viewModel.sendVerification()
+                                }
+                            },
                             modifier = Modifier
                                 .height(52.dp)
                                 .width(120.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                            enabled = state.isPhoneValid && !state.isVerificationSent
+                            enabled = if (state.isVerificationSent) {
+                                viewModel.isVerificationButtonEnabled.collectAsState().value
+                            } else {
+                                state.isPhoneValid && !state.isVerificationSent
+                            }
                         ) {
-                            Text(text = "확인")
+                            Text(text = if (state.isVerificationSent) "인증확인" else "확인")
                         }
                     }
                 }
@@ -222,23 +225,14 @@ fun AddMemberScreen(
             // 추가하기 버튼
             Button(
                 onClick = {
-                    viewModel.addMember()
-                    navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute) {
-                        popUpTo(Route.ProfileBaseRoute.ProfileChoiceRoute) { inclusive = true }
-                    }
+                    viewModel.addMember(profileViewModel)
+                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-                enabled = if (state.selectedTab == 0) {
-                    state.name.isNotEmpty() &&
-                            state.isPhoneValid &&
-                            state.isVerificationValid &&
-                            state.simplePassword.length == 4
-                } else {
-                    state.name.isNotEmpty()
-                }
+                enabled = viewModel.isAddButtonEnabled.collectAsState().value
             ) {
                 Text("추가하기")
             }
@@ -455,13 +449,10 @@ fun AddMemberScreen(
 // 부모, 자녀 토글
 @Composable
 fun ParentChildToggle(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    selectedTab: Int, onTabSelected: (Int) -> Unit, modifier: Modifier = Modifier
 ) {
     val offsetXState = animateFloatAsState(
-        targetValue = if (selectedTab == 0) 0f else 1f,
-        label = "Toggle Animation"
+        targetValue = if (selectedTab == 0) 0f else 1f, label = "Toggle Animation"
     )
 
     Box(
@@ -472,28 +463,23 @@ fun ParentChildToggle(
     ) {
         var width by remember { mutableStateOf(0) }
 
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(0.5f)
-                .onSizeChanged { width = it.width }
-                .offset {
-                    IntOffset(
-                        x = (offsetXState.value * width).toInt(),
-                        y = 0
-                    )
-                }
-                .background(primaryColor, shape = RoundedCornerShape(25.dp))
-        )
+        Box(modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(0.5f)
+            .onSizeChanged { width = it.width }
+            .offset {
+                IntOffset(
+                    x = (offsetXState.value * width).toInt(), y = 0
+                )
+            }
+            .background(primaryColor, shape = RoundedCornerShape(25.dp)))
 
         Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             listOf("부모님", "자녀").forEachIndexed { index, option ->
                 TextButton(
-                    onClick = { onTabSelected(index) },
-                    modifier = Modifier.weight(1f)
+                    onClick = { onTabSelected(index) }, modifier = Modifier.weight(1f)
                 ) {
                     Text(
                         text = option,
@@ -569,8 +555,7 @@ fun PhoneNumberInput(viewModel: AddMemberViewModel) {
 
 @Composable
 fun ProfileImagePicker(
-    viewModel: AddMemberViewModel,
-    modifier: Modifier = Modifier
+    viewModel: AddMemberViewModel, modifier: Modifier = Modifier
 ) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
@@ -591,16 +576,12 @@ fun ProfileImagePicker(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clickable { imagePicker.launch("image/*") }
-        ) {
+        Box(modifier = Modifier
+            .size(120.dp)
+            .clickable { imagePicker.launch("image/*") }) {
             AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(imageUri ?: R.drawable.humanimage)
-                    .crossfade(true)
-                    .build(),
+                model = ImageRequest.Builder(context).data(imageUri ?: R.drawable.humanimage)
+                    .crossfade(true).build(),
                 contentDescription = "프로필 이미지",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
