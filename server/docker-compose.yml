@@ -23,6 +23,7 @@ services:
     environment:
       - USER_SERVICE_URL=user-service-app
       - STORE_SERVICE_URL=store-service-app
+      - REMOTE_SERVICE_URL=remote-service-app
       - CONFIG_SERVICE_URL=config-service-app
     networks:
       - kiwi-service-network
@@ -78,10 +79,33 @@ services:
       kiwi-gateway:
         condition: service_healthy
     ports:
-      - "8095:8090"
+      - "8095:8095"
     environment:
       - STORE_MYSQL_URL=kiwi-db-store
       - CONFIG_SERVICE_URL=config-service-app
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+
+  remote-service-app:
+    build:
+      context: ./remote-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8097/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8097:8097"
+    environment:
+      - USER_SERVICE_URL=user-service-app
+      - CONFIG_SERVICE_URL=config-service-app
+      - REMOTE_SERVICE_REDIS=kiwi-redis-remote-order
     deploy:
       replicas: 1
     networks:
