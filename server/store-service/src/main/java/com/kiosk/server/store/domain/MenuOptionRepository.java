@@ -11,7 +11,7 @@ public interface MenuOptionRepository {
     void insert(List<StoreMenuOption> optionParams);
 
     // 옵션 수정
-    void updateOption(Map<String, Object> updateOption);
+    void update(Map<String, Object> updateOption);
 
     // 특정 메뉴 옵션 리스트 조회
     List<StoreMenuOption> findDetailOptionsById(long menuId);

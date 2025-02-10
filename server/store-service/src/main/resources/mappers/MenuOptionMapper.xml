@@ -16,7 +16,7 @@
     </insert>
 
     <!-- 옵션 수정 -->
-    <update id="updateOption" parameterType="map">
+    <update id="update" parameterType="map">
         UPDATE menu_option
         SET
         option_type = #{optionType},

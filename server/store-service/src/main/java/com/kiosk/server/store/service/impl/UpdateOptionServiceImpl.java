@@ -6,7 +6,6 @@ import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.MenuOptionRequest;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
 import com.kiosk.server.store.domain.MenuOptionRepository;
-import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.service.UpdateOptionService;
 import com.kiosk.server.store.util.OptionServiceUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UpdateOptionServiceImpl implements UpdateOptionService {
 
-    private final MenuRepository menuRepository;
     private final MenuOptionRepository optionRepository;
     private final OptionServiceUtil optionServiceUtil;
 
@@ -39,7 +37,7 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
             throw new EntityNotFoundException("optionId is missing in update map");
         }
 
-        optionRepository.updateOption(updateMap);
+        optionRepository.update(updateMap);
 
         // 최신 옵션 목록 조회 후 응답 반환
         List<OptionGroupResponse> optionGroups = optionServiceUtil.getUpdatedOptionGroups(menuId);
