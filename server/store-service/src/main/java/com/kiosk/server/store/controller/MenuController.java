@@ -41,18 +41,13 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // 메뉴 전체 조회
+    // 전체 메뉴, 카테고리 메뉴 조회
     @GetMapping
-    public ResponseEntity<List<MenuDetailResponse>> findAllMenu(@RequestHeader("userId") Long userId) {
-        List<MenuDetailResponse> response = findMenusService.doService(userId, null);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    // 특정 카테고리 메뉴 조회
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<MenuDetailResponse>> findByCategory(@RequestHeader("userId") Long userId, @PathVariable long categoryId) {
-        List<MenuDetailResponse> response = findMenusService.doService(userId, categoryId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<List<MenuDetailResponse>> findMenus(
+            @RequestHeader("userId") Long userId,
+            @RequestParam(value = "cid", required = false) Long categoryId) {
+        List<MenuDetailResponse> responses = findMenusService.doService(userId, categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
     // 메뉴 단건 상세조회
