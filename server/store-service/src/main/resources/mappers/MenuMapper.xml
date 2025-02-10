@@ -14,22 +14,22 @@
 
     <!-- 메뉴 등록 -->
     <insert id="insert" parameterType="StoreMenu">
-        INSERT INTO menu (menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at)
-        VALUES (#{menuId}, #{userId}, #{categoryId}, #{menuName}, #{menuDesc}, #{menuPrice}, #{createdAt});
+        INSERT INTO menu (menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at)
+        VALUES (#{menuId}, #{userId}, #{categoryId}, #{menuName}, #{menuDescription}, #{menuRecipe}, #{menuPrice}, #{createdAt});
     </insert>
 
     <!-- 메뉴 수정 -->
     <update id="update" parameterType="map">
         UPDATE menu
         SET
-        menu_name = #{menuName}, menu_desc = #{menuDesc}, menu_price = #{menuPrice}, category_id = #{categoryId}
+        menu_name = #{menuName}, menu_description = #{menuDescription}, menu_recipe = #{menuRecipe}, menu_price = #{menuPrice}, category_id = #{categoryId}
         WHERE menu_id = #{menuId}
         AND user_id = #{userId};
     </update>
 
     <!-- 메뉴 단건 조회 -->
     <select id="findById" parameterType="map" resultType="StoreMenu">
-        SELECT menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at FROM menu
+        SELECT menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at FROM menu
         WHERE user_id = #{userId}
         AND menu_id = #{menuId}
         LIMIT 1;
@@ -37,13 +37,13 @@
 
     <!-- 전체 메뉴 조회 -->
     <select id="findAll" parameterType="java.lang.Long" resultType="StoreMenu">
-        SELECT menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at FROM menu
+        SELECT menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at FROM menu
         WHERE user_id = #{userId};
     </select>
 
     <!-- 특정 카테고리 메뉴 조회 -->
     <select id="findByCategory" parameterType="map" resultType="StoreMenu">
-        SELECT menu_id, user_id, category_id, menu_name, menu_desc, menu_price, created_at FROM menu
+        SELECT menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at FROM menu
         WHERE user_id = #{userId}
         AND category_id = #{categoryId};
     </select>
