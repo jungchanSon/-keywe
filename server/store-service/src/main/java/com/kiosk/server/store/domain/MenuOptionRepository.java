@@ -8,7 +8,7 @@ import java.util.Map;
 public interface MenuOptionRepository {
 
     // 옵션 저장
-    void insertOptions(List<StoreMenuOption> optionParams);
+    void insert(List<StoreMenuOption> optionParams);
 
     // 옵션 수정
     void updateOption(Map<String, Object> updateOption);

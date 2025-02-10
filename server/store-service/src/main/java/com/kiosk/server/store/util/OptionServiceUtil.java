@@ -42,13 +42,13 @@ public class OptionServiceUtil {
         if (options == null || options.isEmpty()) {
             return new ArrayList<>();
         }
-        optionRepository.insertOptions(options);
+        optionRepository.insert(options);
         return createOptionGroupResponse(options);
     }
 
     // 단일 옵션 추가 시 사용
     public List<OptionGroupResponse> addOptionAndGetResponse(StoreMenuOption option) {
-        optionRepository.insertOptions(List.of(option));
+        optionRepository.insert(List.of(option));
         return getUpdatedOptionGroups(option.getMenuId());
     }
 

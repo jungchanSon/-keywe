@@ -5,7 +5,7 @@
 <mapper namespace="com.kiosk.server.store.domain.MenuOptionRepository">
 
     <!-- 옵션 저장 -->
-    <insert id="insertOptions" parameterType="list">
+    <insert id="insert" parameterType="list">
         INSERT INTO menu_option (option_id, option_group_id, menu_id, option_type, option_name, option_value,
         created_at)
         VALUES
