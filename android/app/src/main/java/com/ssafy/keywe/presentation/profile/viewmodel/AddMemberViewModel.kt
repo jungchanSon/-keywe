@@ -2,23 +2,43 @@ package com.ssafy.keywe.viewmodel
 
 //import com.ssafy.keywe.presentation.profile.state.AddMemberState
 //import com.ssafy.keywe.presentation.profile.state.VerificationStatus
+import android.net.Uri
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.R
+import com.ssafy.keywe.data.dto.profile.ProfileData
 import com.ssafy.keywe.data.state.AddMemberState
 import com.ssafy.keywe.data.state.VerificationStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddMemberViewModel @Inject constructor() : ViewModel() {
+class AddMemberViewModel @Inject constructor() :
+    ViewModel() {
     private val _state = MutableStateFlow(AddMemberState())
     val state = _state.asStateFlow()
+
+    // 프로필 추가 이벤트를 위한 SharedFlow
+    private val _profileAddedEvent = MutableSharedFlow<ProfileData>()
+    val profileAddedEvent = _profileAddedEvent.asSharedFlow()
+
+    // 이미지 처리
+    private val _profileImage = MutableStateFlow<Uri?>(null)
+    val profileImage = _profileImage.asStateFlow()
+
+    fun updateProfileImage(uri: Uri?) {
+        viewModelScope.launch {
+            _profileImage.value = uri
+        }
+    }
 
     fun onNameChange(name: String) {
         _state.update { it.copy(name = name) }
@@ -130,8 +150,20 @@ class AddMemberViewModel @Inject constructor() : ViewModel() {
     fun addMember() {
         viewModelScope.launch {
             try {
-                // API 호출하여 멤버 추가
-                // 성공 시 ProfileChoice 화면으로 이동
+                val defaultProfileImage = R.drawable.humanimage
+                val newProfile = ProfileData(
+                    userId = "temp_id",
+                    name = state.value.name,
+                    phone = state.value.phone,
+                    profileImage = null,
+                    role = if (state.value.selectedTab == 0) "PARENT" else "CHILD",
+                    simplePassword = state.value.simplePassword
+                )
+
+                // 이벤트 발생
+                _profileAddedEvent.emit(newProfile)
+
+                // 상태 초기화
                 _state.update {
                     it.copy(
                         name = "",
@@ -147,8 +179,7 @@ class AddMemberViewModel @Inject constructor() : ViewModel() {
         }
     }
 }
-
-//// 프로필 목록 상태관리
+//// `프로필 목록 상태관리
 //@HiltViewModel
 //class ProfileViewModel @Inject constructor() : ViewModel() {
 //    private val _profiles = MutableStateFlow<List<Profile>>(emptyList())

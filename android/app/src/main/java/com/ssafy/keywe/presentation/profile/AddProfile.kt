@@ -1,5 +1,8 @@
 package com.ssafy.keywe.presentation.profile
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,18 +43,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
 import com.ssafy.keywe.data.state.VerificationStatus
+import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
@@ -59,10 +68,12 @@ import com.ssafy.keywe.ui.theme.overline
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.viewmodel.AddMemberViewModel
 
+
 @Composable
 fun AddMemberScreen(
     navController: NavController,
-    viewModel: AddMemberViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: AddMemberViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsState().value
     val focusManager = LocalFocusManager.current
@@ -74,9 +85,7 @@ fun AddMemberScreen(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = {
-                    focusManager.clearFocus()
-                }
+                onClick = { focusManager.clearFocus() }
             )
     ) { innerPadding ->
         Column(
@@ -85,28 +94,11 @@ fun AddMemberScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp)
         ) {
-            // 프로필 이미지
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.humanimage),
-                    contentDescription = "프로필 이미지",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable { /*프로필 이미지 확대*/ }
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.edit),
-                    contentDescription = "프로필 수정하기 버튼",
-                    modifier = Modifier
-                        .size(13.dp)
-                        .align(Alignment.BottomEnd)
-                        .clickable { /*프로필 이미지 수정*/ }
-                )
-            }
+            // 프로필 이미지 피커로 교체
+            ProfileImagePicker(
+                viewModel = viewModel,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -119,7 +111,7 @@ fun AddMemberScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 이름 입력 (항상 표시)
+            // 이름 입력
             DefaultTextFormField(
                 label = "이름",
                 placeholder = "이름을 입력해주세요.",
@@ -128,16 +120,13 @@ fun AddMemberScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // 부모님일 경우에만 추가 필드들 표시
             if (state.selectedTab == 0) {
                 Spacer(modifier = Modifier.height(16.dp))
-
                 PhoneNumberInput(viewModel)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-
-                // 인증번호 필드
+                // 인증번호 입력
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -214,7 +203,6 @@ fun AddMemberScreen(
                     }
                 }
 
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 간편 비밀번호
@@ -259,6 +247,209 @@ fun AddMemberScreen(
         }
     }
 }
+
+//@Composable
+//fun AddMemberScreen(
+//    navController: NavController,
+//    viewModel: AddMemberViewModel = hiltViewModel(),
+//    profileViewModel: ProfileViewModel = hiltViewModel()
+////    viewModel: AddMemberViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+//) {
+//    val state = viewModel.state.collectAsState().value
+//    val focusManager = LocalFocusManager.current
+//
+//    Scaffold(
+//        topBar = { DefaultAppBar(title = "구성원 추가", navController = navController) },
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .clickable(
+//                interactionSource = remember { MutableInteractionSource() },
+//                indication = null,
+//                onClick = {
+//                    focusManager.clearFocus()
+//                }
+//            )
+//    ) { innerPadding ->
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(innerPadding)
+//                .padding(horizontal = 24.dp)
+//        ) {
+//            // 프로필 이미지
+//            Box(
+//                modifier = Modifier
+//                    .size(150.dp)
+//                    .align(Alignment.CenterHorizontally)
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.humanimage),
+//                    contentDescription = "프로필 이미지",
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .clickable { /*프로필 이미지 확대*/ }
+//                )
+//                Image(
+//                    painter = painterResource(id = R.drawable.edit),
+//                    contentDescription = "프로필 수정하기 버튼",
+//                    modifier = Modifier
+//                        .size(13.dp)
+//                        .align(Alignment.BottomEnd)
+//                        .clickable { /*프로필 이미지 수정*/ }
+//                )
+//            }
+//
+//            Spacer(modifier = Modifier.height(24.dp))
+//
+//            // 부모/자녀 토글
+//            ParentChildToggle(
+//                selectedTab = state.selectedTab,
+//                onTabSelected = { viewModel.onTabSelect(it) },
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//
+//            Spacer(modifier = Modifier.height(24.dp))
+//
+//            // 이름 입력 (항상 표시)
+//            DefaultTextFormField(
+//                label = "이름",
+//                placeholder = "이름을 입력해주세요.",
+//                text = state.name,
+//                onValueChange = { viewModel.onNameChange(it) },
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//
+//            // 부모님일 경우에만 추가 필드들 표시
+//            if (state.selectedTab == 0) {
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                PhoneNumberInput(viewModel)
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//
+//                // 인증번호 필드
+//                Column(modifier = Modifier.fillMaxWidth()) {
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Text(
+//                            text = "인증번호",
+//                            style = button,
+//                            modifier = Modifier.padding(bottom = 8.dp)
+//                        )
+//                        if (state.verificationStatus != VerificationStatus.NONE) {
+//                            Text(
+//                                text = when (state.verificationStatus) {
+//                                    VerificationStatus.SUCCESS -> "인증 성공"
+//                                    VerificationStatus.FAILURE -> "인증 실패"
+//                                    else -> "인증번호 전송"
+//                                },
+//                                style = overline,
+//                                modifier = Modifier.padding(bottom = 8.dp)
+//                            )
+//                        }
+//                    }
+//
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Box(
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .height(52.dp)
+//                                .background(greyBackgroundColor, shape = RoundedCornerShape(8.dp)),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            BasicTextField(
+//                                value = state.verificationCode,
+//                                onValueChange = {
+//                                    if (it.length <= 6 && it.all { char -> char.isDigit() }) {
+//                                        viewModel.onVerificationCodeChange(it)
+//                                    }
+//                                },
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+//                                textStyle = body2,
+//                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                                singleLine = true
+//                            )
+//                            if (state.verificationCode.isEmpty()) {
+//                                Text(
+//                                    text = "인증번호를 입력해주세요",
+//                                    style = body2.copy(color = Color.Gray),
+//                                    modifier = Modifier
+//                                        .padding(horizontal = 16.dp)
+//                                        .align(Alignment.CenterStart)
+//                                )
+//                            }
+//                        }
+//
+//                        Spacer(modifier = Modifier.width(8.dp))
+//
+//                        Button(
+//                            onClick = { viewModel.sendVerification() },
+//                            modifier = Modifier
+//                                .height(52.dp)
+//                                .width(120.dp),
+//                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+//                            enabled = state.isPhoneValid && !state.isVerificationSent
+//                        ) {
+//                            Text(text = "확인")
+//                        }
+//                    }
+//                }
+//
+//
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                // 간편 비밀번호
+//                DefaultTextFormField(
+//                    label = "간편 비밀번호",
+//                    placeholder = "간편 비밀번호 숫자자리를 입력해주세요.",
+//                    text = state.simplePassword,
+//                    onValueChange = { viewModel.onSimplePasswordChange(it) },
+//                    isPassword = true,
+//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                    modifier = Modifier.fillMaxWidth()
+//                )
+//            }
+//
+//            Spacer(modifier = Modifier.weight(1f))
+//
+//            // 추가하기 버튼
+//            Button(
+//                onClick = {
+//                    viewModel.addMember()
+//                    navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute) {
+//                        popUpTo(Route.ProfileBaseRoute.ProfileChoiceRoute) { inclusive = true }
+//                    }
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(48.dp),
+//                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+//                enabled = if (state.selectedTab == 0) {
+//                    state.name.isNotEmpty() &&
+//                            state.isPhoneValid &&
+//                            state.isVerificationValid &&
+//                            state.simplePassword.length == 4
+//                } else {
+//                    state.name.isNotEmpty()
+//                }
+//            ) {
+//                Text("추가하기")
+//            }
+//
+//            Spacer(modifier = Modifier.height(32.dp))
+//        }
+//    }
+//}
 
 
 // 부모, 자녀 토글
@@ -360,6 +551,70 @@ fun PhoneNumberInput(viewModel: AddMemberViewModel) {
             textStyle = body2,
             singleLine = true
         )
+    }
+}
+
+//@Composable
+//fun rememberImagePicker(
+//    viewModel: AddMemberViewModel
+//): ActivityResultLauncher<String> {
+//    val launcher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri: Uri? ->
+//        uri?.let { viewModel.updateProfileImage(it) }
+//    }
+//
+//    return launcher
+//}
+
+@Composable
+fun ProfileImagePicker(
+    viewModel: AddMemberViewModel,
+    modifier: Modifier = Modifier
+) {
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            imageUri = it
+            viewModel.updateProfileImage(it)
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clickable { imagePicker.launch("image/*") }
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(imageUri ?: R.drawable.humanimage)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "프로필 이미지",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.edit),
+                contentDescription = "이미지 수정",
+                modifier = Modifier
+                    .size(25.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(4.dp)
+            )
+        }
     }
 }
 
