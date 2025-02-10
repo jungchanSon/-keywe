@@ -35,9 +35,9 @@ public class AuthController {
     }
 
     @PostMapping("/user/kiosk-login")
-    public ResponseEntity<LoginResponse> loginParent(@RequestBody KioskUserLoginRequest request) {
-        String authToken = kioskUserLoginService.doService(request.phone(), request.password());
-        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(authToken));
+    public ResponseEntity<KioskUserLoginResult> loginParent(@RequestBody KioskUserLoginRequest request) {
+        KioskUserLoginResult loginResult = kioskUserLoginService.doService(request.phone(), request.password());
+        return ResponseEntity.status(HttpStatus.OK).body(loginResult);
     }
 
 }
