@@ -1,0 +1,26 @@
+tasks.named("bootJar") {
+    enabled = true
+}
+
+ext {
+    springCloudVersion = "2024.0.0"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+    implementation 'io.agora:authentication:1.6.1'
+
+    api project(":common-token")
+    api project(":common")
+}

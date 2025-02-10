@@ -24,7 +24,7 @@ public class JwtFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
 
         // 필터에서 제외할 경로 처리
-        if (excludedPaths.contains(requestURI)) {
+        if (excludedPaths.contains(requestURI) || requestURI.startsWith("/internal")) {
             filterChain.doFilter(request, response);
             return;
         }
