@@ -1,4 +1,4 @@
-package com.kiosk.server.store.util;
+package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
@@ -7,17 +7,18 @@ import com.kiosk.server.store.domain.MenuOptionRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.domain.StoreMenuOption;
+import com.kiosk.server.store.service.OptionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class OptionServiceUtil {
+public class OptionServiceImpl implements OptionService {
 
     private final MenuRepository menuRepository;
     private final MenuOptionRepository optionRepository;
