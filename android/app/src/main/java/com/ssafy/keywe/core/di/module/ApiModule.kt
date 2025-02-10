@@ -17,7 +17,9 @@ import javax.inject.Singleton
 object ApiModule {
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+    fun provideRetrofit(
+        @RestApiClientQualifier okHttpClient: OkHttpClient,
+    ): Retrofit {
         return Retrofit.Builder().baseUrl(NetworkUtil.BASE_URL).client(okHttpClient)
             .addConverterFactory(
                 jsonBuilder.asConverterFactory("application/json".toMediaType())

@@ -5,6 +5,9 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Surface
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
@@ -23,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -31,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -38,10 +44,12 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.keywe.common.BottomRoute
+import com.ssafy.keywe.common.HelperRoute
 import com.ssafy.keywe.common.MyBottomNavigation
 import com.ssafy.keywe.common.PermissionDialog
 import com.ssafy.keywe.common.RationaleDialog
 import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.SplashRoute
 import com.ssafy.keywe.common.app.DefaultAppBar
@@ -53,6 +61,8 @@ import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.HelperScreen
+import com.ssafy.keywe.webrtc.ScreenSharing
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -69,6 +79,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var tokenManager: TokenManager
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -170,13 +182,24 @@ class MainActivity : ComponentActivity() {
 
 }
 
-
-@OptIn(ExperimentalMaterialApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyApp(
     navController: NavHostController,
     tokenManager: TokenManager,
 ) {
+
+//    val client = StreamVideoBuilder(
+//        context = context,
+//        apiKey = "pqyd87b8sraa",
+//        geo = GEO.GlobalEdgeNetwork,
+//        user = user,
+//        token = token,
+//    ).build()
+//
+//    val call = client.call("default", "123")
+//    val joinResult = call.join(create = true)
+
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         RequestNotificationPermissionDialog()
@@ -187,9 +210,7 @@ fun MyApp(
     val isShowTopAppBar: Boolean = state?.destination?.route?.let {
         it != "splash" && it != "login"
     } ?: false
-
-    Scaffold(
-        modifier = Modifier.background(whiteBackgroundColor),
+    Scaffold(modifier = Modifier.background(whiteBackgroundColor),
 //        topBar = {
 //            if (isShowTopAppBar) DefaultAppBar("title", navController = navController)
 //        },
@@ -209,12 +230,27 @@ fun MyApp(
             composable<BottomRoute.HomeRoute> {
                 HomeScreen(navController, tokenManager)
             }
-            composable<BottomRoute.LoginRoute> { LoginScreen(navController) }
+            composable<BottomRoute.LoginRoute> {
+                LoginScreen(
+                    navController,
+                )
+            }
             composable<SignUpRoute> {
                 SignUpScreen(navController)
             }
             profileGraph(navController)
             menuGraph(navController)
+            composable<SharingRoute> {
+                ScreenSharing()
+            }
+            composable<HelperRoute> {
+                val arg = it.toRoute<HelperRoute>()
+                val channelName = arg.channelName
+
+//                val context = LocalContext.current
+//                val viewModel: KeyWeViewModel = hiltViewModel()
+                HelperScreen(channelName, navController)
+            }
         }
 
     }
@@ -227,8 +263,11 @@ fun MyApp(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestNotificationPermissionDialog() {
+
+
     val permissionState =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
 
     if (!permissionState.status.isGranted) {
         if (permissionState.status.shouldShowRationale) RationaleDialog()
@@ -255,6 +294,30 @@ fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
             }
         }
     }
+}
+
+
+@Composable
+fun ScreenCaptureView(onSurfaceReady: (Surface) -> Unit) {
+    AndroidView(modifier = Modifier.fillMaxSize(), factory = { context ->
+        SurfaceView(context).apply {
+            holder.addCallback(object : SurfaceHolder.Callback {
+                override fun surfaceCreated(holder: SurfaceHolder) {
+                    onSurfaceReady(holder.surface) // Surface 준비되면 콜백 호출
+                }
+
+                override fun surfaceChanged(
+                    holder: SurfaceHolder,
+                    format: Int,
+                    width: Int,
+                    height: Int,
+                ) {
+                }
+
+                override fun surfaceDestroyed(holder: SurfaceHolder) {}
+            })
+        }
+    })
 }
 
 //@OptIn(ExperimentalMaterial3Api::class)

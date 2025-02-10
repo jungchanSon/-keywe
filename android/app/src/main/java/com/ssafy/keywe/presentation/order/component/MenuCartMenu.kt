@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
-import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
@@ -42,7 +41,7 @@ import com.ssafy.keywe.ui.theme.subtitle2
 fun MenuCartMenuBox(
     cartItem: CartItem,
     viewModel: MenuViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
 
     Box {
@@ -92,8 +91,7 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
     val extraOptions = cartItem.extraOptions
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
@@ -132,38 +130,30 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = name,
-                            style = subtitle2.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.sp
+                            text = name, style = subtitle2.copy(
+                                fontWeight = FontWeight.Bold, letterSpacing = 0.sp
                             )
                         )
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ){
+                        ) {
                             Text(
-                                text = "크기: $size",
-                                style = caption.copy(
+                                text = "크기: $size", style = caption.copy(
                                     letterSpacing = 0.sp
-                                ),
-                                color = polishedSteelColor
+                                ), color = polishedSteelColor
                             )
                             Text(
-                                text = "온도: $temperature",
-                                style = caption.copy(
+                                text = "온도: $temperature", style = caption.copy(
                                     letterSpacing = 0.sp
-                                ),
-                                color = polishedSteelColor
+                                ), color = polishedSteelColor
                             )
 
                             extraOptions.forEach { (optionName, count) ->
                                 Text(
-                                    text = "$optionName: $count",
-                                    style = caption.copy(
+                                    text = "$optionName: $count", style = caption.copy(
                                         letterSpacing = 0.sp
-                                    ),
-                                    color = polishedSteelColor
+                                    ), color = polishedSteelColor
                                 )
                             }
                         }
@@ -176,50 +166,40 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                             verticalAlignment = Alignment.Bottom
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .height(18.12.dp),
+                                modifier = Modifier.height(18.12.dp),
                                 horizontalArrangement = Arrangement.spacedBy(
-                                    14.dp,
-                                    Alignment.CenterHorizontally
+                                    14.dp, Alignment.CenterHorizontally
                                 ),
                                 verticalAlignment = Alignment.Bottom
                             ) {
                                 Text(
-                                    text = "${price}원",
-                                    style = subtitle2.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        letterSpacing = 0.em
+                                    text = "${price}원", style = subtitle2.copy(
+                                        fontWeight = FontWeight.Bold, letterSpacing = 0.em
                                     )
                                 )
                                 VerticalDivider()
-                                Text(
-                                    text = "옵션 변경",
+                                Text(text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
-                                    modifier = Modifier.clickable { isOptionChangeSheetOpen.value = true }
-                                )
+                                    modifier = Modifier.clickable {
+                                        isOptionChangeSheetOpen.value = true
+                                    })
                             }
 
                             Box(modifier = Modifier.height(24.dp)) {
-                                OptionAmount(
-                                    optionAmount = quantity.intValue,
-                                    onDecrease = {
-                                        if (quantity.intValue > 1) {
-                                            quantity.intValue--
-                                            viewModel.updateCartQuantity(
-                                                cartItem.id,
-                                                quantity.intValue
-                                            ) // 업데이트 로직 호출
-                                        }
-                                    },
-                                    onIncrease = {
-                                        quantity.intValue++
+                                OptionAmount(optionAmount = quantity.intValue, onDecrease = {
+                                    if (quantity.intValue > 1) {
+                                        quantity.intValue--
                                         viewModel.updateCartQuantity(
-                                            cartItem.id,
-                                            quantity.intValue
+                                            cartItem.id, quantity.intValue
                                         ) // 업데이트 로직 호출
                                     }
-                                )
+                                }, onIncrease = {
+                                    quantity.intValue++
+                                    viewModel.updateCartQuantity(
+                                        cartItem.id, quantity.intValue
+                                    ) // 업데이트 로직 호출
+                                })
                             }
                         }
                     }
@@ -229,11 +209,9 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
     }
 
     if (isOptionChangeSheetOpen.value) {
-        OptionChangeBottomSheet(
-            cartItem = cartItem,
+        OptionChangeBottomSheet(cartItem = cartItem,
             viewModel = viewModel,
-            onDismiss = { isOptionChangeSheetOpen.value = false }
-        )
+            onDismiss = { isOptionChangeSheetOpen.value = false })
     }
 
 }

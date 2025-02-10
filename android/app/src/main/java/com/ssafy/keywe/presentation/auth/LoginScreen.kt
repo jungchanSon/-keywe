@@ -1,5 +1,12 @@
 package com.ssafy.keywe.presentation.auth
 
+import android.content.Context
+import android.os.Build
+import android.view.Surface
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +17,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -24,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.ssafy.keywe.common.HelperRoute
+import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -34,6 +47,7 @@ import com.ssafy.keywe.ui.theme.logo
 import com.ssafy.keywe.ui.theme.primaryColor
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -50,12 +64,16 @@ fun LoginScreen(
 
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
     val validForm by viewModel.validForm.collectAsStateWithLifecycle()
+    val surface = rememberSaveable { mutableStateOf<Surface?>(null) }
 
     val onSearchExplicitlyTriggered = {
 //        keyboardController?.hide()
         focusManager.clearFocus()
 //        onSearchTriggered(searchQuery)
     }
+
+
+    val context: Context = LocalContext.current
 
 
     LaunchedEffect(isLoggedIn) {
@@ -132,7 +150,86 @@ fun LoginScreen(
                 style = caption,
                 textDecoration = TextDecoration.Underline
             )
+            ScreenCaptureButton(context, surface.value, navController)
+//            BottomButton(content = "미디어 권한 요청", onClick = {
+//
+//            })
+//            BottomButton(content = "화면 공유", onClick = {
+//                context.startForegroundService(
+//                    Intent(context, MediaService::class.java)
+//                )
+//            })
+//            ScreenCaptureView { newSurface ->
+//                surface.value = newSurface
+//            }
         }
     }
 
+}
+
+
+@Composable
+fun ScreenCaptureButton(context: Context, surface: Surface?, navController: NavHostController) {
+//    val mediaProjectionManager = remember {
+//        context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+//    }
+//
+//    val launcher =
+//        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+//            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+//                // permission 성공 후 서비스 실행
+//                val serviceIntent = Intent(context, MediaService::class.java).apply {
+//                    putExtra("RESULT_CODE", result.resultCode)
+//                    putExtra("DATA", result.data)
+//                    putExtra("SURFACE", surface)
+//                }
+//                ContextCompat.startForegroundService(context, serviceIntent)
+//            }
+//        }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions()) { grantedMap ->
+            val allGranted = grantedMap.values.all { it }
+            if (allGranted) {
+                // Permission is granted
+                Toast.makeText(context, "Permission Granted", Toast.LENGTH_LONG).show()
+//
+//                rtcEngine.startScreenCapture(screenCaptureParameters)
+//                val mediaOptions = ChannelMediaOptions()
+//                mediaOptions.channelProfile = Constants.CHANNEL_PROFILE_LIVE_BROADCASTING
+//                mediaOptions.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER
+//                mediaOptions.autoSubscribeAudio = true
+//                mediaOptions.autoSubscribeVideo = true
+//                mediaOptions.publishCameraTrack = false
+//                mediaOptions.publishMicrophoneTrack = false
+//                mediaOptions.publishScreenCaptureAudio = true
+//                mediaOptions.publishScreenCaptureVideo = true
+//                TokenUtils.gen(channelName, 0) {
+//                    rtcEngine.joinChannel(it, channelName, 0, mediaOptions)
+//                }
+                navController.navigate(SharingRoute)
+            } else {
+                // Permission is denied
+                Toast.makeText(context, "Permission Denied", Toast.LENGTH_LONG).show()
+            }
+        }
+    Button(onClick = {
+//        val intent = mediaProjectionManager.createScreenCaptureIntent()
+//        launcher.launch(intent)
+        permissionLauncher.launch(
+            arrayOf(
+                android.Manifest.permission.RECORD_AUDIO,
+                android.Manifest.permission.CAMERA,
+            )
+        )
+    }) {
+        Text("화면 공유 시작")
+    }
+
+    Button(onClick = {
+//        val intent = mediaProjectionManager.createScreenCaptureIntent()
+//        launcher.launch(intent)
+        navController.navigate(HelperRoute(false, "test"))
+    }) {
+        Text("채널 입장")
+    }
 }

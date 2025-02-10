@@ -10,11 +10,35 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class RestApiClientQualifier
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class WebSocketClientQualifier
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun provideWebSocketListener(): SignalWebSocketListener {
+        return SignalWebSocketListener()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignalWebSocket(
+        webSocketListener: SignalWebSocketListener,
+        @WebSocketClientQualifier okHttpClient: OkHttpClient,
+    ): SignalWebSocket {
+        return SignalWebSocket(webSocketListener, okHttpClient)
+    }
 
     @Provides
     @Singleton
@@ -32,6 +56,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @RestApiClientQualifier
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
         authAuthenticator: AuthAuthenticator,
@@ -39,12 +64,25 @@ object NetworkModule {
         val provideLoggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
-        return OkHttpClient.Builder()
-            .addInterceptor(authInterceptor) // Add AuthInterceptor
+
+        return OkHttpClient.Builder().addInterceptor(authInterceptor) // Add AuthInterceptor
             .authenticator(authAuthenticator) // Add AuthAuthenticator
             .addInterceptor(provideLoggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS) // 연결 타임아웃 설정
             .readTimeout(30, TimeUnit.SECONDS) // 읽기 타임아웃 설정
             .writeTimeout(30, TimeUnit.SECONDS).build()
     }
+
+    @Provides
+    @Singleton
+    @WebSocketClientQualifier
+    fun provideWebSocketClient(): OkHttpClient {
+        val provideLoggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        return OkHttpClient.Builder()
+            // 웹 소켓 연결 유지
+            .pingInterval(30, TimeUnit.SECONDS).addInterceptor(provideLoggingInterceptor).build()
+    }
+
 }

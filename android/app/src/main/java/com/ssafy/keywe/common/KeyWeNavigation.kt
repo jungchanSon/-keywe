@@ -77,6 +77,11 @@ sealed interface BottomRoute {
     data object LoginRoute : BottomRoute
 }
 
+@Serializable
+object SharingRoute
+
+@Serializable
+data class HelperRoute(val isKiosk: Boolean = false, val channelName: String)
 
 @Serializable
 object SignUpRoute

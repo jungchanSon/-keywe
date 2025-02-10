@@ -1,15 +1,24 @@
+import java.util.Properties
+
+val sdkVersionFile = file("../gradle.properties")
+val properties = Properties()
+properties.load(sdkVersionFile.inputStream())
+val agoraSdkVersion = properties.getProperty("rtc_sdk_version")
+println("${rootProject.project.name}   agoraSdkVersion: ${agoraSdkVersion}")
+val localSdkPath = "${rootProject.projectDir.absolutePath}/../../sdk"
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlinSerialization)
-    id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.protobuf") version "0.9.4"
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
 
     id("kotlin-parcelize") // add
+    id("kotlin-kapt")
 }
 
 val protobufVersion = "3.21.7"
@@ -26,8 +35,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties()
+        properties.load(rootProject.file("local.properties").inputStream())
+        val AGORA_APP_ID = properties.getProperty("AGORA_APP_ID", "")
+        if (AGORA_APP_ID == "") {
+            throw GradleException("local.properties：AGORA_APP_ID=<AppId>")
+        }
+        val AGORA_APP_CERT = properties.getProperty("AGORA_APP_CERT", "")
+        buildConfigField("String", "AGORA_APP_ID", "\"$AGORA_APP_ID\"")
+        buildConfigField("String", "AGORA_APP_CERT", "\"$AGORA_APP_CERT\"")
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -48,8 +70,18 @@ android {
         compose = true
     }
 }
-
+/*
+agora:
+  app-id: 2a649e9d060a46849cd443c41382f60a
+  app-certificate: 4e60af7c172b4a10957eac6b3ac9211e
+ */
 dependencies {
+// https://mvnrepository.com/artifact/io.getstream/stream-webrtc-android
+//    implementation("org.webrtc:google-webrtc:1.0.30039@aar")
+//    implementation("io.getstream:stream-webrtc-android:1.3.7")
+//    implementation("io.agora.rtc:voice-sdk:4.")
+//    implementation(libs.webrtc)
+
     implementation(libs.androidx.core.ktx.v1120)  // ✅ Parcelable 확장 함수 포함
 
     // Firebase FCM
@@ -79,10 +111,7 @@ dependencies {
     // Lifecycle
     implementation(libs.lifecycle.viewmodel)
 
-    //hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    implementation(libs.firebase.messaging.ktx)
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+
 //    implementation(libs.hilt.android)
 //    kapt(libs.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -118,7 +147,20 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Web RTC
+    if (File(localSdkPath).exists()) {
+        implementation(fileTree(localSdkPath).include("*.jar", "*.aar"))
+    } else {
+        implementation("io.agora.rtc:full-sdk:${agoraSdkVersion}")
+        implementation("io.agora.rtc:full-screen-sharing:${agoraSdkVersion}")
+//        implementation(libs.agora.full.sdk)
+//        implementation(libs.agora.full.screen.sharing)
+    }
 
+    //hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation(libs.firebase.messaging.ktx)
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 }
 
 
