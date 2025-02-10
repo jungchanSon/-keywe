@@ -81,7 +81,7 @@ services:
     ports:
       - "8095:8095"
     environment:
-      - STORE_MYSQL_URL=kiwi-db-store
+      - STORE_MYSQL_URL=kiwi-db-store:3306
       - CONFIG_SERVICE_URL=config-service-app
     deploy:
       replicas: 1
