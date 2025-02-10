@@ -50,4 +50,18 @@
         WHERE user_id = #{userId} AND profile_id = #{profileId};
     </delete>
 
+    <!-- 프로필 조회 -->
+    <select id="findByProfileId" parameterType="long" resultType="UserProfile">
+        SELECT * FROM user_profile
+        WHERE profile_id = #{profileId}
+    </select>
+
+    <!-- 핸드폰번호 및 비밀번호로 조회 -->
+    <select id="findByPhoneAndPassword" parameterType="map" resultType="UserProfile">
+        SELECT * FROM user_profile
+        WHERE profile_role = 'PARENT'
+        AND phone_number = #{phone}
+        AND profile_pass = #{password}
+    </select>
+
 </mapper>

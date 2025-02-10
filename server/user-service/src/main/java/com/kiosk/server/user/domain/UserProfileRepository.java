@@ -28,4 +28,8 @@ public interface UserProfileRepository {
 
     // 프로필 삭제
     void deleteUserProfileById(Map<String, Object> idParams);
+
+    UserProfile findByProfileId(long profileId);
+
+    UserProfile findByPhoneAndPassword(@Param("phone") String phone, @Param("password") String password);
 }

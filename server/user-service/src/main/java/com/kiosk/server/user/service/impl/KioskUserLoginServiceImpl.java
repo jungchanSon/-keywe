@@ -1,0 +1,46 @@
+package com.kiosk.server.user.service.impl;
+
+import com.kiosk.server.common.exception.custom.BadRequestException;
+import com.kiosk.server.common.exception.custom.UnauthorizedException;
+import com.kiosk.server.user.domain.UserProfile;
+import com.kiosk.server.user.domain.UserProfileRepository;
+import com.kiosk.server.user.service.KioskUserLoginService;
+import com.kiosk.server.user.util.TokenUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.regex.Pattern;
+
+@Service
+@RequiredArgsConstructor
+public class KioskUserLoginServiceImpl implements KioskUserLoginService {
+
+    private final TokenUtil tokenUtil;
+    private final UserProfileRepository userProfileRepository;
+
+    @Override
+    public String doService(String phone, String password) {
+        validatePhoneNumber(phone);
+        validatePassword(password);
+
+        UserProfile profile = userProfileRepository.findByPhoneAndPassword(phone, password);
+        if (profile == null) {
+            throw new UnauthorizedException("Invalid Credentials");
+        }
+        return tokenUtil.createAuthenticationToken(profile.getUserId(), profile.getProfileId());
+    }
+
+    private void validatePhoneNumber(String phone) {
+        String regex = "^01(?:0|1|[6-9])-?(?:\\d{3}|\\d{4})-?\\d{4}$";
+        if (!Pattern.matches(regex, phone)) {
+            throw new BadRequestException("Invalid phone number format");
+        }
+    }
+
+    private void validatePassword(String password) {
+        String regex = "^\\d{4}$";
+        if (!Pattern.matches(regex, password)) {
+            throw new BadRequestException("Password must be 4 digits");
+        }
+    }
+}
