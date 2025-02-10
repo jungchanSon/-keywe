@@ -30,7 +30,7 @@ public class OptionServiceUtil {
         }
 
         if (optionId != null) {
-            StoreMenuOption existingOption = optionRepository.findOptionById(menuId, optionId);
+            StoreMenuOption existingOption = optionRepository.findByOptionId(menuId, optionId);
             if (existingOption == null) {
                 throw new EntityNotFoundException("Option not found");
             }

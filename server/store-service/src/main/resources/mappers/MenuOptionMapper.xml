@@ -33,7 +33,7 @@
     </select>
 
     <!-- 개별 옵션 조회 -->
-    <select id="findOptionById" parameterType="map" resultType="StoreMenuOption" useCache="false">
+    <select id="findByOptionId" parameterType="map" resultType="StoreMenuOption" useCache="false">
         SELECT option_id, option_group_id, menu_id, option_type, option_name, option_value, created_at
         FROM menu_option
         WHERE menu_id = #{menuId}

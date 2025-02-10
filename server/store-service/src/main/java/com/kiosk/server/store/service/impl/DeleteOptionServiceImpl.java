@@ -24,7 +24,7 @@ public class DeleteOptionServiceImpl implements DeleteOptionService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void doService(long userId, long menuId, long optionId, MenuOptionRequest request) {
         // 옵션 존재 여부 확인
-        StoreMenuOption option = optionRepository.findOptionById(menuId, optionId);
+        StoreMenuOption option = optionRepository.findByOptionId(menuId, optionId);
         if (option == null) {
             throw new EntityNotFoundException("Invalid option");
         }

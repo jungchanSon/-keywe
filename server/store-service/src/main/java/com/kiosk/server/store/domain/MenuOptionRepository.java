@@ -17,7 +17,7 @@ public interface MenuOptionRepository {
     List<StoreMenuOption> findOptionsByMenuId(long menuId);
 
     // 개별 옵션 조회
-    StoreMenuOption findOptionById(@Param("menuId")long menuId, @Param("optionId") long optionId);
+    StoreMenuOption findByOptionId(@Param("menuId")long menuId, @Param("optionId") long optionId);
 
     // 개별 옵션 삭제
     void deleteOptionById(long optionId);
