@@ -4,9 +4,9 @@ import java.util.Map;
 
 public interface ImageRepository {
 
-    void insert(Images image);
+    void insert(MenuImage image);
 
-    Images findById(long menuId);
+    MenuImage findById(long menuId);
 
     Object findImageBytesById(Map<String,Object> params);
 
