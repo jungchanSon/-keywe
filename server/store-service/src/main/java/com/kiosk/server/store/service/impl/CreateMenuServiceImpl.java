@@ -33,7 +33,15 @@ public class CreateMenuServiceImpl implements CreateMenuService {
             throw new BadRequestException("No such category");
         }
         // 메뉴 생성
-        StoreMenu menu = StoreMenu.create(userId, categoryId, request.menuName(), request.menuDescription(), request.menuPrice(), request.options());
+        StoreMenu menu = StoreMenu.create(
+                userId,
+                categoryId,
+                request.menuName(),
+                request.menuDescription(),
+                request.menuRecipe(),
+                request.menuPrice(),
+                request.options());
+
         menuRepository.insert(menu);
         long menuId = menu.getMenuId();
 
@@ -45,6 +53,6 @@ public class CreateMenuServiceImpl implements CreateMenuService {
             uploadImageService.doService(userId, menuId, image);
         }
 
-        return new CreateMenuResponse(menuId, optionGroups);
+        return new CreateMenuResponse(menuId, menu.getMenuName(), menu.getMenuPrice(), optionGroups);
     }
 }

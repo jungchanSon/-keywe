@@ -6,6 +6,7 @@ import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.MenuOptionRequest;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
 import com.kiosk.server.store.domain.MenuOptionRepository;
+import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.domain.StoreMenuOption;
 import com.kiosk.server.store.service.AddOptionService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class AddOptionServiceImpl implements AddOptionService {
             throw new EntityNotFoundException("No option data provided");
         }
 
-        optionService.validateMenuAndOption(userId, menuId, null);
+        StoreMenu menu = optionService.validateMenuAndOption(userId, menuId, null);
 
         // 기존 옵션 그룹 확인
         Long optionGroupId = determineOptionGroupId(menuId, request.optionGroupId());
@@ -39,8 +40,9 @@ public class AddOptionServiceImpl implements AddOptionService {
         StoreMenuOption option = StoreMenuOption.create(
                 menuId,
                 request.optionType(),
-                request.name(),
-                request.value(),
+                request.optionName(),
+                request.optionValue(),
+                request.optionPrice(),
                 optionGroupId
         );
 
@@ -50,7 +52,7 @@ public class AddOptionServiceImpl implements AddOptionService {
         // 옵션 저장 및 응답 생성
         List<OptionGroupResponse> optionGroups = optionService.addOptionAndGetResponse(option);
 
-        return new CreateMenuResponse(menuId, optionGroups);
+        return new CreateMenuResponse(menuId, menu.getMenuName(), menu.getMenuPrice(), optionGroups);
     }
 
     private Long determineOptionGroupId(long menuId, Long requestedGroupId) {

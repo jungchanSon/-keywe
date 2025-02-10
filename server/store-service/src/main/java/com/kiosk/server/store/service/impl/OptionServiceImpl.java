@@ -24,7 +24,7 @@ public class OptionServiceImpl implements OptionService {
     private final MenuOptionRepository optionRepository;
 
     // 메뉴와 옵션 존재 여부 검증
-    public void validateMenuAndOption(long userId, long menuId, Long optionId) {
+    public StoreMenu validateMenuAndOption(long userId, long menuId, Long optionId) {
         StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
             throw new EntityNotFoundException("Menu not found");
@@ -36,6 +36,8 @@ public class OptionServiceImpl implements OptionService {
                 throw new EntityNotFoundException("Option not found");
             }
         }
+
+        return menu;
     }
 
     // 옵션 리스트 저장하고 옵션 그룹 응답 생성
@@ -62,20 +64,20 @@ public class OptionServiceImpl implements OptionService {
 
     // 옵션 그룹 응답을 생성하는 메서드
     private List<OptionGroupResponse> createOptionGroupResponse(List<StoreMenuOption> options) {
-        List<OptionGroupResponse> optionGroups = new ArrayList<>();
         Map<Long, OptionGroupResponse> groupedOptions = new HashMap<>();
 
-        for (StoreMenuOption opt : options) {
-            // 옵션 그룹이 없으면 새로 생성
-            if (!groupedOptions.containsKey(opt.getOptionGroupId())) {
-                groupedOptions.put(opt.getOptionGroupId(),
-                        new OptionGroupResponse(opt.getOptionGroupId(), opt.getOptionName(), opt.getOptionType(), new ArrayList<>()));
-            }
-            // 해당 그룹의 옵션 리스트에 옵션 추가
-            groupedOptions.get(opt.getOptionGroupId()).options().add(new OptionResponse(opt.getOptionId(), opt.getOptionValue()));
+        for (StoreMenuOption option : options) {
+            groupedOptions.computeIfAbsent(
+                    option.getOptionGroupId(),
+                    groupId -> new OptionGroupResponse(
+                            option.getOptionGroupId(),
+                            option.getOptionName(),
+                            option.getOptionType(),
+                            option.getOptionPrice(),
+                            new ArrayList<>()
+                    )
+            ).optionsValueGroup().add(new OptionResponse(option.getOptionId(), option.getOptionValue()));
         }
-
-        optionGroups.addAll(groupedOptions.values());
-        return optionGroups;
+        return new ArrayList<>(groupedOptions.values());
     }
 }
