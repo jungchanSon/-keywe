@@ -2,7 +2,7 @@ package com.kiosk.server.store.domain;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.util.IdUtil;
-import com.kiosk.server.store.controller.dto.CreateMenuRequest;
+import com.kiosk.server.store.controller.dto.MenuOptionData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,22 +18,22 @@ public class StoreMenu {
     private long userId;
     private long categoryId;
     private String menuName;
-    private String menuDesc;
+    private String menuDescription;
     private int menuPrice;
     private List<StoreMenuOption> options;
     private LocalDateTime createdAt;
 
-    public static StoreMenu create(long userId, long categoryId, CreateMenuRequest dto) {
-        validateInputData(userId, categoryId, dto.menuName(), dto.menuPrice());
+    public static StoreMenu create(long userId, long categoryId, String menuName, String menuDescription, int menuPrice, List<MenuOptionData> optionList) {
+        validateInputData(userId, categoryId, menuName, menuPrice);
         long menuId = IdUtil.create();
-        List<StoreMenuOption> options = StoreMenuOption.createFromList(dto.options(), menuId);
+        List<StoreMenuOption> options = StoreMenuOption.createFromList(optionList, menuId);
         StoreMenu menu = new StoreMenu();
         menu.menuId = menuId;
         menu.userId = userId;
         menu.categoryId = categoryId;
-        menu.menuName = dto.menuName();
-        menu.menuDesc = dto.menuDescription();
-        menu.menuPrice = dto.menuPrice();
+        menu.menuName = menuName;
+        menu.menuDescription = menuDescription;
+        menu.menuPrice = menuPrice;
         menu.options = options;
         menu.createdAt = LocalDateTime.now();
         return menu;
@@ -43,7 +43,7 @@ public class StoreMenu {
         if (userId <= 0) {
             throw new BadRequestException("Invalid user id");
         }
-        if(categoryId <= 0) {
+        if (categoryId <= 0) {
             throw new BadRequestException("Invalid category id");
         }
         if (!StringUtils.hasLength(name)) {

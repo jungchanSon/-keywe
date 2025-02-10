@@ -45,7 +45,7 @@ public class FindMenusServiceImpl implements FindMenusService {
             menuResponse.add(new MenuDetailResponse(
                     menu.getMenuId(),
                     menu.getMenuName(),
-                    menu.getMenuDesc(),
+                    menu.getMenuDescription(),
                     menu.getMenuPrice(),
                     imageBase64,
                     null

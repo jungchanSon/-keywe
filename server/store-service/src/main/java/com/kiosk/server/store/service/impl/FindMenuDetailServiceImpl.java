@@ -49,7 +49,7 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
         return new MenuDetailResponse(
                 menu.getMenuId(),
                 menu.getMenuName(),
-                menu.getMenuDesc(),
+                menu.getMenuDescription(),
                 menu.getMenuPrice(),
                 imageBase64,
                 optionGroups

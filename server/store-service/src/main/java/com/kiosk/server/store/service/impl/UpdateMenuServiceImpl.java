@@ -5,8 +5,8 @@ import com.kiosk.server.store.controller.dto.UpdateMenuRequest;
 import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
-import com.kiosk.server.store.service.UploadImageService;
 import com.kiosk.server.store.service.UpdateMenuService;
+import com.kiosk.server.store.service.UploadImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +42,7 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
 
         // 메뉴명, 설명 설정 (새로운 값이 없으면 기존 값 반환)
         updateParams.put("menuName", getUpdatedValue(updateMenu.menuName(), exMenu.getMenuName()));
-        updateParams.put("menuDesc", getUpdatedValue(updateMenu.menuDescription(), exMenu.getMenuDesc()));
+        updateParams.put("menuDesc", getUpdatedValue(updateMenu.menuDescription(), exMenu.getMenuDescription()));
 
         // 메뉴 가격 설정
         int menuPrice = updateMenu.menuPrice();

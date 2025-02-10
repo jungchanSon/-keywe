@@ -4,7 +4,6 @@ import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.store.controller.dto.CreateMenuRequest;
 import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
-import com.kiosk.server.store.domain.MenuOptionRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.CreateMenuService;
@@ -35,7 +34,7 @@ public class CreateMenuServiceImpl implements CreateMenuService {
             throw new BadRequestException("No such category");
         }
         // 메뉴 생성
-        StoreMenu menu = StoreMenu.create(userId, categoryId, request);
+        StoreMenu menu = StoreMenu.create(userId, categoryId, request.menuName(), request.menuDescription(), request.menuPrice(), request.options());
         menuRepository.insert(menu);
         long menuId = menu.getMenuId();
 
@@ -43,8 +42,8 @@ public class CreateMenuServiceImpl implements CreateMenuService {
         List<OptionGroupResponse> optionGroups = optionServiceUtil.saveOptionsAndGetResponse(menu.getOptions());
 
         // 이미지 존재하면 이미지 저장
-        if(image != null && !image.isEmpty()) {
-           uploadImageService.doService(userId, menuId, image);
+        if (image != null && !image.isEmpty()) {
+            uploadImageService.doService(userId, menuId, image);
         }
 
         return new CreateMenuResponse(menuId, optionGroups);
