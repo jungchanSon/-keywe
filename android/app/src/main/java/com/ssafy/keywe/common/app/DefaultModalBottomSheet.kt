@@ -1,5 +1,6 @@
 package com.ssafy.keywe.common.app
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,10 +34,10 @@ fun DefaultModalBottomSheet(
     ) {
 
         Column(
+            modifier = Modifier.background(whiteBackgroundColor),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 40.dp)
-
+//            modifier = Modifier.padding(horizontal = 24.dp, vertical = 40.dp)
         ) {
             content()
             Row(content = buttons)

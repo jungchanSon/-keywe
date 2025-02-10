@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.pretendardkr
@@ -76,7 +75,7 @@ fun MenuDescription(
         }
         MenuPlusButton({
             viewModel.addToCart(
-                menuId, "tall","Hot", emptyMap(), menuPrice
+                menuId, "Tall","Hot", emptyMap(), menuPrice
             )
         })
     }

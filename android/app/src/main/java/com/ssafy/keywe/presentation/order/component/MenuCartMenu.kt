@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,10 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
-import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
@@ -41,7 +40,6 @@ import com.ssafy.keywe.ui.theme.subtitle2
 fun MenuCartMenuBox(
     cartItem: CartItem,
     viewModel: MenuViewModel,
-    navController: NavController
 ) {
 
     Box {
@@ -50,11 +48,11 @@ fun MenuCartMenuBox(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
                     .height(16.5.dp)
             ) {
                 Row(
                     modifier = Modifier
+                        .padding(horizontal = 24.dp)
                         .fillMaxWidth()
                         .fillMaxHeight(),
                     horizontalArrangement = Arrangement.End,
@@ -71,14 +69,17 @@ fun MenuCartMenuBox(
                 }
             }
             // 이미지 + 이름 + 가격
-            MenuCartMenu(cartItem, viewModel, navController)
+            MenuCartMenu(cartItem, viewModel)
         }
     }
 }
 
 @Composable
-fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: NavController) {
-    val quantity = remember { mutableIntStateOf(cartItem.quantity) }
+fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel) {
+    val cartItems by viewModel.cartItems.collectAsState()
+    val updatedCartItem = cartItems.find { it.id == cartItem.id }
+    val quantity = updatedCartItem?.quantity ?: cartItem.quantity
+    val isOptionChangeSheetOpen = remember { mutableStateOf(false) }
 
     val name = cartItem.name
     val price = cartItem.price
@@ -93,8 +94,6 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-//                .height(60.dp)
-//                .fillMaxHeight(),
                 .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
@@ -138,14 +137,7 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ){
                             Text(
-                                text = "크기: $size",
-                                style = caption.copy(
-                                    letterSpacing = 0.sp
-                                ),
-                                color = polishedSteelColor
-                            )
-                            Text(
-                                text = "온도: $temperature",
+                                text = "크기: $size, 온도: $temperature",
                                 style = caption.copy(
                                     letterSpacing = 0.sp
                                 ),
@@ -165,7 +157,6 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
 
                         Row(
                             modifier = Modifier
-//                                .padding(end = 24.dp)
                                 .fillMaxHeight()
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -192,27 +183,25 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                                     text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
-                                    modifier = Modifier.clickable { }
+                                    modifier = Modifier.clickable { isOptionChangeSheetOpen.value = true }
                                 )
                             }
 
                             Box(modifier = Modifier.height(24.dp)) {
                                 OptionAmount(
-                                    optionAmount = quantity.intValue,
+                                    optionAmount = quantity,
                                     onDecrease = {
-                                        if (quantity.intValue > 1) {
-                                            quantity.intValue--
+                                        if (quantity > 1) {
                                             viewModel.updateCartQuantity(
                                                 cartItem.id,
-                                                quantity.intValue
+                                                quantity - 1
                                             ) // 업데이트 로직 호출
                                         }
                                     },
                                     onIncrease = {
-                                        quantity.intValue++
                                         viewModel.updateCartQuantity(
                                             cartItem.id,
-                                            quantity.intValue
+                                            quantity + 1
                                         ) // 업데이트 로직 호출
                                     }
                                 )
@@ -223,4 +212,13 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
             }
         }
     }
+
+    if (isOptionChangeSheetOpen.value) {
+        OptionChangeBottomSheet(
+            cartItem = cartItem,
+            viewModel = viewModel,
+            onDismiss = { isOptionChangeSheetOpen.value = false }
+        )
+    }
+
 }
