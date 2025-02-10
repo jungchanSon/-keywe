@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name}}
 spec:
-  replicas: {{ .Values.replicaCount}}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Chart.Name}}
@@ -19,11 +19,10 @@ spec:
           ports:
             - containerPort: {{.Values.containerPort}}
           env:
-            - name: CONFIG_SERVICE_URL
-              value: config-server-app-service.config.svc.cluster.local
             - name: USER_SERVICE_URL
               value: user-service-app.user.svc.cluster.local
-            - name: STORE_SERVICE_URL
-              value: store-service-app.store.svc.cluster.local
-            - name: REMOTE_SERVICE_URL
-              value: remote-server-app.remote.svc.cluster.local
+            - name: CONFIG_SERVICE_URL
+              value: config-server-app-service.config.svc.cluster.local
+            - name: REMOTE_SERVICE_REDIS
+              value: redis-0.redis.remote.svc.cluster.local
+
