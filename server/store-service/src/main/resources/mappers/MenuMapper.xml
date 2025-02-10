@@ -30,7 +30,7 @@
     </insert>
 
     <!-- 메뉴 수정 -->
-    <update id="updateMenu" parameterType="map">
+    <update id="update" parameterType="map">
         UPDATE menu
         SET
         menu_name = #{menuName}, menu_desc = #{menuDesc}, menu_price = #{menuPrice}, category_id = #{categoryId}

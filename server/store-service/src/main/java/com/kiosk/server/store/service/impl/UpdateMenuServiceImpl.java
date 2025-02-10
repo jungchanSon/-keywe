@@ -52,7 +52,7 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
         updateParams.put("menuPrice", menuPrice);
 
         // 메뉴 업데이트 실행
-        menuRepository.updateMenu(updateParams);
+        menuRepository.update(updateParams);
 
         // 이미지 존재하면 이미지 저장
         if (image != null && !image.isEmpty()) {

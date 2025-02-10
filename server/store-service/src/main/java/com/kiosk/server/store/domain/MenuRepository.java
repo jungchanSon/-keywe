@@ -17,7 +17,7 @@ public interface MenuRepository {
     void insertOptions(List<StoreMenuOption> optionParams);
 
     // 메뉴 수정
-    void updateMenu(Map<String, Object> updateParams);
+    void update(Map<String, Object> updateParams);
 
     // 옵션 수정
     void updateOption(Map<String, Object> updateOption);
