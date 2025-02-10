@@ -6,4 +6,4 @@ COPY ${JAR_FILE} infra-gateway-app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/infra-gateway-app.jar", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-jar", "/infra-gateway-app.jar"]
