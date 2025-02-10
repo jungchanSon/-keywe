@@ -6,6 +6,8 @@ import com.ssafy.keywe.data.dto.auth.CEOLoginRequest
 import com.ssafy.keywe.data.dto.auth.CEOLoginResponse
 import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.data.dto.auth.LoginResponse
+import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
+import com.ssafy.keywe.data.dto.auth.SelectProfileResponse
 import com.ssafy.keywe.data.dto.auth.SignUpRequest
 import com.ssafy.keywe.data.dto.auth.SignUpResponse
 import javax.inject.Inject
@@ -25,5 +27,10 @@ class AuthRemoteDataSource @Inject constructor(private val authService: AuthServ
     override suspend fun requestSignUp(signUpRequest: SignUpRequest): ResponseResult<SignUpResponse> =
         handleApiResponse {
             authService.signup(signUpRequest)
+        }
+
+    override suspend fun requestSelectProfile(selectProfileRequest: SelectProfileRequest): ResponseResult<SelectProfileResponse> =
+        handleApiResponse {
+            authService.selectProfile(selectProfileRequest)
         }
 }

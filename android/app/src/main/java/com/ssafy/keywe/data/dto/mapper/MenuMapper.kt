@@ -3,15 +3,15 @@ package com.ssafy.keywe.data.dto.mapper
 import com.google.gson.Gson
 import com.ssafy.keywe.data.dto.order.MenuDetailResponse
 import com.ssafy.keywe.data.dto.order.MenuOptionResponse
-import com.ssafy.keywe.data.dto.order.MenuPatchItem
+import com.ssafy.keywe.data.dto.order.MenuPatchItemRequest
 import com.ssafy.keywe.data.dto.order.MenuPatchRequest
-import com.ssafy.keywe.data.dto.order.MenuPostItem
+import com.ssafy.keywe.data.dto.order.MenuPostItemRequest
 import com.ssafy.keywe.data.dto.order.MenuPostRequest
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
-import com.ssafy.keywe.data.dto.order.OptionPost
-import com.ssafy.keywe.data.dto.order.OptionValueGroup
-import com.ssafy.keywe.data.dto.order.Options
+import com.ssafy.keywe.data.dto.order.OptionPostRequest
+import com.ssafy.keywe.data.dto.order.OptionValueGroupResponse
+import com.ssafy.keywe.data.dto.order.OptionsResponse
 import com.ssafy.keywe.domain.order.MenuDetailModel
 import com.ssafy.keywe.domain.order.MenuModel
 import com.ssafy.keywe.domain.order.MenuOptionModel
@@ -43,7 +43,7 @@ fun MenuModel.toRequest(): MenuPostRequest {
 
     return MenuPostRequest(
         menu = listOf(
-            MenuPostItem(
+            MenuPostItemRequest(
                 menuName = this.menuName,
                 menuCategoryName = this.menuCategory,
                 menuDescription = this.menuDescription,
@@ -57,8 +57,8 @@ fun MenuModel.toRequest(): MenuPostRequest {
 }
 
 
-fun OptionsModel.toRequest(): OptionPost {
-    return OptionPost(
+fun OptionsModel.toRequest(): OptionPostRequest {
+    return OptionPostRequest(
         optionType = this.optionType,
         optionName = this.optionName,
         optionPrice = this.optionPrice,
@@ -66,8 +66,8 @@ fun OptionsModel.toRequest(): OptionPost {
     )
 }
 
-fun OptionValueGroupModel.toRequest(): OptionValueGroup {
-    return OptionValueGroup(
+fun OptionValueGroupModel.toRequest(): OptionValueGroupResponse {
+    return OptionValueGroupResponse(
         optionValueId = this.optionValueId,
         optionValue = this.optionValue
     )
@@ -86,7 +86,7 @@ fun MenuPostResponse.toDomain(): MenuModel {
     )
 }
 
-fun Options.toDomain(): OptionsModel {
+fun OptionsResponse.toDomain(): OptionsModel {
     return OptionsModel(
         optionType = this.optionType,
         optionName = this.optionName,
@@ -95,7 +95,7 @@ fun Options.toDomain(): OptionsModel {
     )
 }
 
-fun OptionValueGroup.toDomain(): OptionValueGroupModel {
+fun OptionValueGroupResponse.toDomain(): OptionValueGroupModel {
     return OptionValueGroupModel(
         optionValueId = this.optionValueId,
         optionValue = this.optionValue
@@ -113,7 +113,7 @@ fun MenuModel.toPatchRequest(): MenuPatchRequest {
 
     return MenuPatchRequest(
         menu = listOf(
-            MenuPatchItem(
+            MenuPatchItemRequest(
                 menuName = this.menuName,
                 menuCategoryName = this.menuCategory,
                 menuDescription = this.menuDescription,
@@ -156,8 +156,8 @@ fun MenuOptionResponse.toDomain(): MenuOptionModel {
     )
 }
 
-fun OptionPostModel.toRequest(): OptionPost {
-    return OptionPost(
+fun OptionPostModel.toRequest(): OptionPostRequest {
+    return OptionPostRequest(
         optionType = this.optionType,
         optionName = this.optionName,
         optionPrice = this.optionPrice,

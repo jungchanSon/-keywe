@@ -8,3 +8,8 @@ data class CEOLoginModel(
     val accessToken: String,
     val refreshToken: String
 )
+
+data class SelectProfileModel(
+    val accessToken: String,
+    val refreshToken: String
+)

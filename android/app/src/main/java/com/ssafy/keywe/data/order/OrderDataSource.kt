@@ -9,26 +9,26 @@ import com.ssafy.keywe.data.dto.order.MenuPatchRequest
 import com.ssafy.keywe.data.dto.order.MenuPostRequest
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
-import com.ssafy.keywe.data.dto.order.OptionPost
+import com.ssafy.keywe.data.dto.order.OptionPostRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 
 interface OrderDataSource {
-    suspend fun postCategory(categoryRequest: CategoryRequest): ResponseResult<Unit>
-    suspend fun getCategory(): ResponseResult<List<CategoryResponse>>
-    suspend fun updateCategory(categoryId: Long, categoryRequest: CategoryRequest): ResponseResult<Unit>
-    suspend fun deleteCategory(categoryId: Long): ResponseResult<Unit>
+    suspend fun requestPostCategory(categoryRequest: CategoryRequest): ResponseResult<Unit>
+    suspend fun requestGetCategory(): ResponseResult<List<CategoryResponse>>
+    suspend fun requestUpdateCategory(categoryId: Long, categoryRequest: CategoryRequest): ResponseResult<Unit>
+    suspend fun requestDeleteCategory(categoryId: Long): ResponseResult<Unit>
 
-    suspend fun postMenu(menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<MenuPostResponse>
-    suspend fun updateMenu(menuId: Long, menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<Unit>
-    suspend fun getAllMenu(): ResponseResult<List<MenuSimpleResponse>>
-    suspend fun getDetailMenu(menuId: Long): ResponseResult<MenuDetailResponse>
-    suspend fun getCategoryMenu(categoryId: Long): ResponseResult<List<MenuSimpleResponse>>
-    suspend fun deleteMenu(menuId: Long): ResponseResult<Unit>
+    suspend fun requestPostMenu(menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<MenuPostResponse>
+    suspend fun requestUpdateMenu(menuId: Long, menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<Unit>
+    suspend fun requestGetAllMenu(): ResponseResult<List<MenuSimpleResponse>>
+    suspend fun requestGetDetailMenu(menuId: Long): ResponseResult<MenuDetailResponse>
+    suspend fun requestGetCategoryMenu(categoryId: Long): ResponseResult<List<MenuSimpleResponse>>
+    suspend fun requestDeleteMenu(menuId: Long): ResponseResult<Unit>
 
-    suspend fun postOption(menuId: Long, optionRequest: OptionPost): ResponseResult<MenuOptionResponse>
-    suspend fun updateOption(menuId: Long, optionValueId: Long, optionRequest: OptionPost): ResponseResult<MenuOptionResponse>
-    suspend fun deleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit>
+    suspend fun requestPostOption(menuId: Long, optionRequest: OptionPostRequest): ResponseResult<MenuOptionResponse>
+    suspend fun requestUpdateOption(menuId: Long, optionValueId: Long, optionRequest: OptionPostRequest): ResponseResult<MenuOptionResponse>
+    suspend fun requestDeleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit>
 
 }

@@ -51,10 +51,6 @@ data class OptionData(
 @HiltViewModel
 class OrderViewModel @Inject constructor(private val repository: OrderRepository) : ViewModel() {
 
-    suspend fun getCategory(): ResponseResult<List<CategoryModel>> {
-        return repository.getCategory()
-    }
-
     //    private val _menuItems = MutableStateFlow<List<MenuData>>(emptyList())
     private val _menuItems = MutableStateFlow(
         listOf(
@@ -222,13 +218,18 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
 //        OptionData("휘핑 추가3", 700),
     )
 
-//    private val categories = listOf(
+    //    private val categories = listOf(
 //        MenuCategory(1, "전체"),
 //        MenuCategory(2, "커피"),
 //        MenuCategory(3, "에이드"),
 //        MenuCategory(4, "스무디"),
 //        MenuCategory(5, "차"),
 //    )
+
+    suspend fun getCategory(): ResponseResult<List<CategoryModel>> {
+        return repository.getCategory()
+    }
+
     private val _categories = MutableStateFlow<List<CategoryModel>>(listOf(CategoryModel(0, "전체")))
     val categories: StateFlow<List<CategoryModel>> = _categories.asStateFlow()
 
@@ -262,8 +263,8 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
 
     val filteredMenuItems: StateFlow<List<MenuData>> = selectedCategory
         .map { category ->
-            if (category == "전체") _menuItems.value
-            else _menuItems.value.filter { it.category == category }
+            if (category == "전체") { _menuItems.value }
+            else { _menuItems.value.filter { it.category == category } }
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 

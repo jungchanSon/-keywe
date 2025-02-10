@@ -5,18 +5,18 @@ data class MenuPostResponse(
     val menuName: String,
     val menuRecipe: String,
     val menuPrice: Int,
-    val options: List<Options>
+    val options: List<OptionsResponse>
 )
 
-data class Options(
+data class OptionsResponse(
     val optionId: Long,
     val optionType: String,
     val optionName: String,
     val optionPrice: Int,
-    val optionValueGroup: List<OptionValueGroup>
+    val optionValueGroup: List<OptionValueGroupResponse>
 )
 
-data class OptionValueGroup(
+data class OptionValueGroupResponse(
     val optionValueId: Long,
     val optionValue: String
 )
@@ -36,12 +36,12 @@ data class MenuDetailResponse(
     val menuRecipe: String,
     val menuPrice: Int,
     val image: String?,
-    val options: List<Options>
+    val options: List<OptionsResponse>
 )
 
 data class MenuOptionResponse(
     val menuId: Long,
     val menuName: String,
     val menuPrice: Int,
-    val options: List<Options>
+    val options: List<OptionsResponse>
 )

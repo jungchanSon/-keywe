@@ -7,7 +7,6 @@ import com.ssafy.keywe.data.dto.mapper.toPatchRequest
 import com.ssafy.keywe.data.dto.mapper.toRequest
 import com.ssafy.keywe.data.dto.mapper.toSimpleDomain
 import com.ssafy.keywe.data.dto.order.CategoryRequest
-import com.ssafy.keywe.data.dto.order.MenuPostRequest
 import com.ssafy.keywe.domain.order.OrderRepository
 import com.ssafy.keywe.domain.order.CategoryModel
 import com.ssafy.keywe.domain.order.MenuDetailModel
@@ -15,13 +14,8 @@ import com.ssafy.keywe.domain.order.MenuModel
 import com.ssafy.keywe.domain.order.MenuOptionModel
 import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OptionPostModel
-import com.ssafy.keywe.domain.order.OptionsModel
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
 import javax.inject.Inject
 
 //interface OrderRepository {
@@ -42,7 +36,7 @@ class OrderRepositoryImpl @Inject constructor(
     override suspend fun postCategory(category: CategoryModel): ResponseResult<Unit> {
         val categoryRequest = category.toRequest()
         return runCatching {
-            when (val result = orderDataSource.postCategory(categoryRequest)) {
+            when (val result = orderDataSource.requestPostCategory(categoryRequest)) {
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -57,7 +51,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun getCategory(): ResponseResult<List<CategoryModel>> {
         return runCatching {
-            when (val result = orderDataSource.getCategory()) {
+            when (val result = orderDataSource.requestGetCategory()) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.map { it.toDomain() })
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -77,7 +71,7 @@ class OrderRepositoryImpl @Inject constructor(
         val categoryRequest = CategoryRequest(categoryName)
 
         return runCatching {
-            when (val result = orderDataSource.updateCategory(categoryId, categoryRequest)) {
+            when (val result = orderDataSource.requestUpdateCategory(categoryId, categoryRequest)) {
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -92,7 +86,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun deleteCategory(categoryId: Long): ResponseResult<Unit> {  // 🔹 categoryId 추가
         return runCatching {
-            when (val result = orderDataSource.deleteCategory(categoryId)) {
+            when (val result = orderDataSource.requestDeleteCategory(categoryId)) {
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -113,7 +107,7 @@ class OrderRepositoryImpl @Inject constructor(
         val menuRequestBody = menuJson.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 
         return runCatching {
-            when (val result = orderDataSource.postMenu(menuRequestBody, menuRequest.menuImage)) {
+            when (val result = orderDataSource.requestPostMenu(menuRequestBody, menuRequest.menuImage)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())  // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -131,7 +125,7 @@ class OrderRepositoryImpl @Inject constructor(
         val menuRequestBody = menuJson.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 
         return runCatching {
-            when (val result = orderDataSource.updateMenu(menuId, menuRequestBody, menuRequest.menuImage)) {
+            when (val result = orderDataSource.requestUpdateMenu(menuId, menuRequestBody, menuRequest.menuImage)) {
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -143,7 +137,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun getAllMenu(): ResponseResult<List<MenuSimpleModel>> {
         return runCatching {
-            when (val result = orderDataSource.getAllMenu()) {
+            when (val result = orderDataSource.requestGetAllMenu()) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.map { it.toSimpleDomain() })
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -158,7 +152,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun getDetailMenu(menuId: Long): ResponseResult<MenuDetailModel> {
         return runCatching {
-            when (val result = orderDataSource.getDetailMenu(menuId)) {
+            when (val result = orderDataSource.requestGetDetailMenu(menuId)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain()) // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -173,7 +167,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun getCategoryMenu(categoryId: Long): ResponseResult<List<MenuSimpleModel>> {
         return runCatching {
-            when (val result = orderDataSource.getCategoryMenu(categoryId)) {
+            when (val result = orderDataSource.requestGetCategoryMenu(categoryId)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.map { it.toSimpleDomain() })
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -185,7 +179,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun deleteMenu(menuId: Long): ResponseResult<Unit> {
         return runCatching {
-            when (val result = orderDataSource.deleteMenu(menuId)) {
+            when (val result = orderDataSource.requestDeleteMenu(menuId)) {
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -201,7 +195,7 @@ class OrderRepositoryImpl @Inject constructor(
         val optionRequest = option.toRequest()
 
         return runCatching {
-            when (val result = orderDataSource.postOption(menuId, optionRequest)) {
+            when (val result = orderDataSource.requestPostOption(menuId, optionRequest)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -215,7 +209,7 @@ class OrderRepositoryImpl @Inject constructor(
         val optionRequest = option.toRequest()
 
         return runCatching {
-            when (val result = orderDataSource.updateOption(menuId, optionValueId, optionRequest)) {
+            when (val result = orderDataSource.requestUpdateOption(menuId, optionValueId, optionRequest)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -227,7 +221,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun deleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit> {
         return runCatching {
-            when (val result = orderDataSource.deleteOption(menuId, optionValueId)) {
+            when (val result = orderDataSource.requestDeleteOption(menuId, optionValueId)) {
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(

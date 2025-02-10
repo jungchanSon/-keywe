@@ -6,7 +6,7 @@ import com.ssafy.keywe.data.dto.order.MenuDetailResponse
 import com.ssafy.keywe.data.dto.order.MenuOptionResponse
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
-import com.ssafy.keywe.data.dto.order.OptionPost
+import com.ssafy.keywe.data.dto.order.OptionPostRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -79,14 +79,14 @@ interface OrderService {
     @POST(OPTION_POST_PATH)
     suspend fun postOption(
         @Path("menuId") menuId: Long,
-        @Body optionRequest: OptionPost
+        @Body optionRequest: OptionPostRequest
     ): Response<MenuOptionResponse>
 
     @PATCH(OPTION_PATCH_DELETE_PATH)
     suspend fun updateOption(
         @Path("menuId") menuId: Long,
         @Path("optionValueId") optionValueId: Long,
-        @Body optionRequest: OptionPost
+        @Body optionRequest: OptionPostRequest
     ): Response<MenuOptionResponse>
 
     @DELETE(OPTION_PATCH_DELETE_PATH)

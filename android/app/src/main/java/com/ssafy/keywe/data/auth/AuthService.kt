@@ -4,6 +4,8 @@ import com.ssafy.keywe.data.dto.auth.CEOLoginRequest
 import com.ssafy.keywe.data.dto.auth.CEOLoginResponse
 import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.data.dto.auth.LoginResponse
+import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
+import com.ssafy.keywe.data.dto.auth.SelectProfileResponse
 import com.ssafy.keywe.data.dto.auth.SignUpRequest
 import com.ssafy.keywe.data.dto.auth.SignUpResponse
 import retrofit2.Response
@@ -23,6 +25,11 @@ interface AuthService {
     suspend fun ceoLogin(
         @Body ceoLoginRequest: CEOLoginRequest
     ): Response<CEOLoginResponse>
+
+    @POST(PROFILE_SELECT_PATH)
+    suspend fun selectProfile(
+        @Body selectProfileRequest: SelectProfileRequest
+    ): Response<SelectProfileResponse>
 
 
     @POST(SIGNUP_PATH)
