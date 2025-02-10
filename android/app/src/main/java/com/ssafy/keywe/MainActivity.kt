@@ -45,11 +45,13 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.SplashRoute
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.kioskGraph
 import com.ssafy.keywe.common.menuGraph
 import com.ssafy.keywe.common.profileGraph
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
+import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
@@ -208,6 +210,7 @@ fun MyApp(
             }
             composable<BottomRoute.HomeRoute> {
                 HomeScreen(navController, tokenManager)
+//                InputPhoneNumberScreen(navController)
             }
             composable<BottomRoute.LoginRoute> { LoginScreen(navController) }
             composable<SignUpRoute> {
@@ -215,6 +218,7 @@ fun MyApp(
             }
             profileGraph(navController)
             menuGraph(navController)
+//            kioskGraph(navController)
         }
 
     }
@@ -250,6 +254,7 @@ fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
             Text(text = "토큰 초기화")
             Button(onClick = {
                 navController.navigate(Route.MenuBaseRoute.MenuRoute)
+//                navController.navigate(Route.KioskBaseRoute.KioskPhoneNumberRoute)
             }) {
                 Text("메뉴 라우팅")
             }

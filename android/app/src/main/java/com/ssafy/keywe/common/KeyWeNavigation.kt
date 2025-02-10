@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
@@ -64,6 +65,16 @@ sealed interface Route {
         @Serializable
         data object ProfileEmailVerifyRoute : Route
     }
+
+    @Serializable
+    data object KioskBaseRoute : Route {
+
+        @Serializable
+        data object KioskPhoneNumberRoute : Route
+
+        @Serializable
+        data object KioskPasswordRoute : Route
+    }
 }
 
 sealed interface BottomRoute {
@@ -103,3 +114,8 @@ fun NavGraphBuilder.menuGraph(navController: NavHostController) {
     }
 }
 
+fun NavGraphBuilder.kioskGraph(navController: NavHostController) {
+    navigation<Route.KioskBaseRoute>(startDestination = Route.KioskBaseRoute.KioskPhoneNumberRoute) {
+        composable<Route.KioskBaseRoute.KioskPhoneNumberRoute> { InputPhoneNumberScreen(navController) }
+    }
+}
