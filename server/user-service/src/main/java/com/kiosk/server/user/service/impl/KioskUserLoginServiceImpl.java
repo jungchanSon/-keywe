@@ -2,6 +2,7 @@ package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
+import com.kiosk.server.user.controller.dto.KioskUserLoginResult;
 import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.domain.UserProfileRepository;
 import com.kiosk.server.user.service.KioskUserLoginService;
@@ -19,7 +20,7 @@ public class KioskUserLoginServiceImpl implements KioskUserLoginService {
     private final UserProfileRepository userProfileRepository;
 
     @Override
-    public String doService(String phone, String password) {
+    public KioskUserLoginResult doService(String phone, String password) {
         validatePhoneNumber(phone);
         validatePassword(password);
 
@@ -27,7 +28,8 @@ public class KioskUserLoginServiceImpl implements KioskUserLoginService {
         if (profile == null) {
             throw new UnauthorizedException("Invalid Credentials");
         }
-        return tokenUtil.createAuthenticationToken(profile.getUserId(), profile.getProfileId());
+        String accessToken = tokenUtil.createAuthenticationToken(profile.getUserId(), profile.getProfileId());
+        return new KioskUserLoginResult(accessToken, String.valueOf(profile.getUserId()));
     }
 
     private void validatePhoneNumber(String phone) {
