@@ -1,48 +1,67 @@
+drop database store;
 CREATE SCHEMA IF NOT EXISTS `store` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `store` ;
+USE `store`;
 
-CREATE TABLE `menu` (
-                        `menu_id` bigint NOT NULL,
-                        `user_id` bigint NOT NULL,
-                        `category_id` bigint NOT NULL,
-                        `menu_name` varchar(255) NOT NULL,
-                        `menu_desc` varchar(255) DEFAULT NULL,
-                        `menu_price` int NOT NULL,
-                        `created_at` datetime NOT NULL,
-                        PRIMARY KEY (`menu_id`),
-                        KEY `menu_menu_category_category_id_fk` (`category_id`),
-                        KEY `menu_store_store_id_fk` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+create table menu
+(
+    menu_id          bigint       not null
+        primary key,
+    user_id          bigint       not null,
+    category_id      bigint       not null,
+    menu_name        varchar(255) not null,
+    menu_description varchar(255) null,
+    menu_recipe      varchar(255) null,
+    menu_price       int          not null,
+    created_at       datetime     not null
+)
+    charset = utf8mb4;
 
-CREATE TABLE `menu_category` (
-                                 `category_id` bigint NOT NULL,
-                                 `user_id` bigint NOT NULL,
-                                 `category_name` varchar(100) NOT NULL,
-                                 `created_at` datetime NOT NULL,
-                                 PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+create index  menu_menu_category_category_id_fk
+    on menu (category_id);
 
-CREATE TABLE `menu_image` (
-                              `image_id` bigint NOT NULL,
-                              `menu_id` bigint NOT NULL,
-                              `user_id` bigint NOT NULL,
-                              `image_bytes` blob NOT NULL,
-                              `created_at` datetime NOT NULL,
-                              PRIMARY KEY (`user_id`),
-                              KEY `menu_image_menu_menu_id_fk` (`image_id`),
-                              KEY `fk_menu_image_menu` (`menu_id`),
-                              CONSTRAINT `fk_menu_image_menu` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`menu_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+create index menu_store_store_id_fk
+    on menu (user_id);
 
-CREATE TABLE `menu_option` (
-                               `option_id` bigint NOT NULL,
-                               `option_group_id` bigint NOT NULL,
-                               `menu_id` bigint NOT NULL,
-                               `option_type` enum('RADIO','CHECKBOX') NOT NULL,
-                               `option_name` varchar(255) NOT NULL,
-                               `option_value` varchar(255) NOT NULL,
-                               `created_at` datetime NOT NULL,
-                               PRIMARY KEY (`option_id`),
-                               KEY `fk_menu_option_menu` (`menu_id`),
-                               CONSTRAINT `fk_menu_option_menu` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`menu_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+create table if NOT EXISTS menu_category
+(
+    category_id   bigint       not null
+        primary key,
+    user_id       bigint       not null,
+    category_name varchar(100) not null,
+    created_at    datetime     not null
+)
+    charset = utf8mb4;
+
+create table if NOT EXISTS menu_image
+(
+    image_id    bigint   not null,
+    menu_id     bigint   not null,
+    user_id     bigint   not null
+        primary key,
+    image_bytes blob     not null,
+    created_at  datetime not null,
+    constraint fk_menu_image_menu
+        foreign key (menu_id) references menu (menu_id)
+            on delete cascade
+)
+    charset = utf8mb4;
+
+create index menu_image_menu_menu_id_fk
+    on menu_image (image_id);
+
+create table if NOT EXISTS menu_option
+(
+    option_id       bigint                   not null
+        primary key,
+    option_group_id bigint                   not null,
+    menu_id         bigint                   not null,
+    option_type     enum ('Common', 'Extra') not null,
+    option_name     varchar(255)             not null,
+    option_value    varchar(255)             not null,
+    option_price    int                      not null,
+    created_at      datetime                 not null,
+    constraint fk_menu_option_menu
+        foreign key (menu_id) references menu (menu_id)
+            on delete cascade
+)
+    charset = utf8mb4;
