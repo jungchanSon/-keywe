@@ -14,8 +14,8 @@ import java.util.Set;
 @Component
 public class JwtFilter implements Filter {
 
-    private final Set<String> excludedPaths = Set.of("/auth/user/login", "/user");
-    private final List<String> excludedPathPrefixes = List.of("/internal", "/user/swagger-ui", "/user/v3/api-docs");
+    private final Set<String> EXCLUDED_EXACT_PATHS = Set.of("/auth/user/login", "/auth/user/kiosk-login", "/user");
+    private final List<String> EXCLUDED_PATH_PREFIXES = List.of("/internal", "/user/swagger-ui", "/user/v3/api-docs");
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -26,7 +26,7 @@ public class JwtFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
 
         // 필터에서 제외할 경로 처리
-        if (excludedPaths.contains(requestURI) || excludedPathPrefixes.stream().anyMatch(requestURI::startsWith)) {
+        if (EXCLUDED_EXACT_PATHS.contains(requestURI) || EXCLUDED_PATH_PREFIXES.stream().anyMatch(requestURI::startsWith)) {
             filterChain.doFilter(request, response);
             return;
         }
