@@ -61,7 +61,7 @@ public class AddOptionServiceImpl implements AddOptionService {
         }
 
         // 요청된 그룹 ID가 존재하는지 확인
-        if (!optionRepository.existsOptionGroupId(menuId, requestedGroupId)) {
+        if (!optionRepository.existsOptionGroupById(menuId, requestedGroupId)) {
             throw new EntityNotFoundException("Option group not found: " + requestedGroupId);
         }
 

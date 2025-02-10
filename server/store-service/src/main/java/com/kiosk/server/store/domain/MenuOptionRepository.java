@@ -29,6 +29,6 @@ public interface MenuOptionRepository {
     boolean existsOptionById(long optionId);
 
     // 요청된 그룹 ID가 존재하는지 확인
-    boolean existsOptionGroupId(long menuId, long optionGroupId);
+    boolean existsOptionGroupById(long menuId, long optionGroupId);
 
 }

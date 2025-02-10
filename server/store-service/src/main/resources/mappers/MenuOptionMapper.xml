@@ -56,7 +56,7 @@
     </select>
 
     <!-- 옵션 그룹 ID 존재 여부 확인 -->
-    <select id="existsOptionGroupId" resultType="boolean">
+    <select id="existsOptionGroupById" resultType="boolean">
         SELECT EXISTS (
         SELECT 1
         FROM menu_option
