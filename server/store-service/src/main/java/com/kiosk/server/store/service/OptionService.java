@@ -1,6 +1,7 @@
 package com.kiosk.server.store.service;
 
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
+import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.domain.StoreMenuOption;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 public interface OptionService {
 
     // 메뉴와 옵션 존재 여부 검증
-    void validateMenuAndOption(long userId, long menuId, Long optionId);
+    StoreMenu validateMenuAndOption(long userId, long menuId, Long optionId);
     // 옵션 리스트 저장하고 옵션 그룹 응답 생성
     List<OptionGroupResponse> saveOptionsAndGetResponse(List<StoreMenuOption> options);
 

@@ -1,10 +1,10 @@
 package com.kiosk.server.store.service;
 
-import com.kiosk.server.store.controller.dto.MenuDetailResponse;
+import com.kiosk.server.store.controller.dto.MenuResponse;
 
 import java.util.List;
 
 public interface FindMenusService {
 
-    List<MenuDetailResponse> doService(long userId, Long categoryId);
+    List<MenuResponse> doService(long userId, Long categoryId);
 }

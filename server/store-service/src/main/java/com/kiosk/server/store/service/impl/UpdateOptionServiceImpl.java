@@ -6,6 +6,7 @@ import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.MenuOptionRequest;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
 import com.kiosk.server.store.domain.MenuOptionRepository;
+import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.UpdateOptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
             throw new BadRequestException("Option ID is required for update");
         }
 
-        optionService.validateMenuAndOption(userId, menuId, optionId);
+        StoreMenu menu = optionService.validateMenuAndOption(userId, menuId, optionId);
 
         Map<String, Object> updateMap = getUpdateMap(optionId, request);
 
@@ -36,15 +37,15 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
         // 최신 옵션 목록 조회 후 응답 반환
         List<OptionGroupResponse> optionGroups = optionService.getUpdatedOptionGroups(menuId);
 
-        return new CreateMenuResponse(menuId, optionGroups);
+        return new CreateMenuResponse(menuId, menu.getMenuName(), menu.getMenuPrice(), optionGroups);
     }
 
     private static Map<String, Object> getUpdateMap(long optionId, MenuOptionRequest request) {
         Map<String, Object> updateMap = new HashMap<>();
         updateMap.put("optionId", optionId);
         updateMap.put("optionType", request.optionType());
-        updateMap.put("optionName", request.name());
-        updateMap.put("optionValue", request.value());
+        updateMap.put("optionName", request.optionName());
+        updateMap.put("optionValue", request.optionValue());
         updateMap.put("optionGroupId", request.optionGroupId());
 
         // optionId가 제대로 포함되어 있는지 확인

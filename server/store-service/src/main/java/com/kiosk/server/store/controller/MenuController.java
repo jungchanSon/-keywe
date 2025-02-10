@@ -28,7 +28,7 @@ public class MenuController {
     private final DeleteImageService deleteImageService;
 
     // 메뉴 등록
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<CreateMenuResponse> insertMenu(
             @RequestHeader("userId") Long userId,
             @RequestPart("menu") String json,
@@ -43,10 +43,10 @@ public class MenuController {
 
     // 전체 메뉴, 카테고리 메뉴 조회
     @GetMapping
-    public ResponseEntity<List<MenuDetailResponse>> findMenus(
+    public ResponseEntity<List<MenuResponse>> findMenus(
             @RequestHeader("userId") Long userId,
             @RequestParam(value = "cid", required = false) Long categoryId) {
-        List<MenuDetailResponse> responses = findMenusService.doService(userId, categoryId);
+        List<MenuResponse> responses = findMenusService.doService(userId, categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
@@ -58,7 +58,7 @@ public class MenuController {
     }
 
     // 메뉴 수정
-    @PatchMapping("/{menuId}")
+    @PatchMapping(path = "/{menuId}", consumes = "multipart/form-data")
     public ResponseEntity<Void> updateMenu(
             @RequestHeader("userId") Long userId,
             @RequestPart("menu") String json,
