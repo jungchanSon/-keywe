@@ -2,7 +2,7 @@ package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
 import com.kiosk.server.store.controller.dto.UpdateMenuRequest;
-import com.kiosk.server.store.domain.ImageRepository;
+import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.UploadImageService;
@@ -23,7 +23,7 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
 
     private final MenuRepository menuRepository;
     private final UploadImageService uploadImageService;
-    private final ImageRepository imageRepository;
+    private final MenuImageRepository menuImageRepository;
 
     @Override
     public void doService(long userId, long menuId, UpdateMenuRequest updateMenu, MultipartFile image) {
@@ -56,7 +56,7 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
 
         // 이미지 존재하면 이미지 저장
         if (image != null && !image.isEmpty()) {
-            imageRepository.deleteById(menuId);
+            menuImageRepository.deleteById(menuId);
             uploadImageService.doService(userId, menuId, image);
         }
     }

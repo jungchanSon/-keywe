@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kiosk.server.store.domain.ImageRepository">
+<mapper namespace="com.kiosk.server.store.domain.MenuImageRepository">
 
     <!-- 이미지 생성 -->
     <insert id="insert" parameterType="MenuImage">

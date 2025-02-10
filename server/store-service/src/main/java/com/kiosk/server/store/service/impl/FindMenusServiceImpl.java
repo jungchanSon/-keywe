@@ -1,7 +1,7 @@
 package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.store.controller.dto.MenuDetailResponse;
-import com.kiosk.server.store.domain.ImageRepository;
+import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.FindMenusService;
@@ -15,7 +15,7 @@ import java.util.*;
 public class FindMenusServiceImpl implements FindMenusService {
 
     private final MenuRepository menuRepository;
-    private final ImageRepository imageRepository;
+    private final MenuImageRepository menuImageRepository;
 
     @Override
     public List<MenuDetailResponse> doService(long userId, Long categoryId) {
@@ -62,7 +62,7 @@ public class FindMenusServiceImpl implements FindMenusService {
             params.put("userId", userId);
             params.put("menuId", menuId);
 
-            byte[] imageBytes = (byte[]) imageRepository.findImageBytesById(params);
+            byte[] imageBytes = (byte[]) menuImageRepository.findImageBytesById(params);
 
             if (imageBytes != null && imageBytes.length > 0) {
                 imageMap.put(menuId, Base64.getEncoder().encodeToString(imageBytes));

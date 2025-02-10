@@ -2,7 +2,7 @@ package com.kiosk.server.store.domain;
 
 import java.util.Map;
 
-public interface ImageRepository {
+public interface MenuImageRepository {
 
     void insert(MenuImage image);
 
