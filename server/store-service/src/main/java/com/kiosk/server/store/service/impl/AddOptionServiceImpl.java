@@ -5,6 +5,7 @@ import com.kiosk.server.common.util.IdUtil;
 import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.MenuOptionRequest;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
+import com.kiosk.server.store.domain.MenuOptionRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenuOption;
 import com.kiosk.server.store.service.AddOptionService;
@@ -21,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddOptionServiceImpl implements AddOptionService {
 
-    private final MenuRepository menuRepository;
+    private final MenuOptionRepository optionRepository;
     private final OptionServiceUtil optionServiceUtil;
 
     @Override
@@ -60,7 +61,7 @@ public class AddOptionServiceImpl implements AddOptionService {
         }
 
         // 요청된 그룹 ID가 존재하는지 확인
-        if (!menuRepository.existsOptionGroupId(menuId, requestedGroupId)) {
+        if (!optionRepository.existsOptionGroupId(menuId, requestedGroupId)) {
             throw new EntityNotFoundException("Option group not found: " + requestedGroupId);
         }
 
@@ -68,7 +69,7 @@ public class AddOptionServiceImpl implements AddOptionService {
     }
 
     private void validateOptionUniqueness(StoreMenuOption newOption) {
-        if (menuRepository.existsOptionById(newOption.getOptionId())) {
+        if (optionRepository.existsOptionById(newOption.getOptionId())) {
             throw new DuplicateKeyException("Duplicate option id");
         }
     }

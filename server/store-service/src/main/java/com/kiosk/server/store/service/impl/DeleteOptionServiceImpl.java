@@ -3,6 +3,7 @@ package com.kiosk.server.store.service.impl;
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
 import com.kiosk.server.store.controller.dto.MenuOptionRequest;
+import com.kiosk.server.store.domain.MenuOptionRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.domain.StoreMenuOption;
@@ -17,12 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeleteOptionServiceImpl implements DeleteOptionService {
 
     private final MenuRepository menuRepository;
+    private final MenuOptionRepository optionRepository;
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void doService(long userId, long menuId, long optionId, MenuOptionRequest request) {
         // 옵션 존재 여부 확인
-        StoreMenuOption option = menuRepository.findOptionById(menuId, optionId);
+        StoreMenuOption option = optionRepository.findOptionById(menuId, optionId);
         if (option == null) {
             throw new EntityNotFoundException("Invalid option");
         }
@@ -44,9 +46,9 @@ public class DeleteOptionServiceImpl implements DeleteOptionService {
         }
 
         if(request.optionGroupId() == null){
-            menuRepository.deleteOptionById(optionId); // 개별 옵션 삭제
+            optionRepository.deleteOptionById(optionId); // 개별 옵션 삭제
         } else {
-            menuRepository.deleteOptionGroupById(request.optionGroupId());
+            optionRepository.deleteOptionGroupById(request.optionGroupId());
         }
 
     }

@@ -3,6 +3,7 @@ package com.kiosk.server.store.util;
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
 import com.kiosk.server.store.controller.dto.OptionResponse;
+import com.kiosk.server.store.domain.MenuOptionRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.domain.StoreMenuOption;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class OptionServiceUtil {
 
     private final MenuRepository menuRepository;
+    private final MenuOptionRepository optionRepository;
 
     // 메뉴와 옵션 존재 여부 검증
     public void validateMenuAndOption(long userId, long menuId, Long optionId) {
@@ -28,7 +30,7 @@ public class OptionServiceUtil {
         }
 
         if (optionId != null) {
-            StoreMenuOption existingOption = menuRepository.findOptionById(menuId, optionId);
+            StoreMenuOption existingOption = optionRepository.findOptionById(menuId, optionId);
             if (existingOption == null) {
                 throw new EntityNotFoundException("Option not found");
             }
@@ -40,20 +42,20 @@ public class OptionServiceUtil {
         if (options == null || options.isEmpty()) {
             return new ArrayList<>();
         }
-        menuRepository.insertOptions(options);
+        optionRepository.insertOptions(options);
         return createOptionGroupResponse(options);
     }
 
     // 단일 옵션 추가 시 사용
     public List<OptionGroupResponse> addOptionAndGetResponse(StoreMenuOption option) {
-        menuRepository.insertOptions(List.of(option));
+        optionRepository.insertOptions(List.of(option));
         return getUpdatedOptionGroups(option.getMenuId());
     }
 
 
     // 최신 옵션 목록을 조회하고 옵션 그룹 응답을 생성
     public List<OptionGroupResponse> getUpdatedOptionGroups(long menuId) {
-        List<StoreMenuOption> updatedOptions = menuRepository.findDetailOptionsById(menuId);
+        List<StoreMenuOption> updatedOptions = optionRepository.findDetailOptionsById(menuId);
         return createOptionGroupResponse(updatedOptions);
     }
 

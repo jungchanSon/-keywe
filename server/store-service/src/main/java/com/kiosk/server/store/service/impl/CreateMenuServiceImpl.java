@@ -4,6 +4,7 @@ import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.store.controller.dto.CreateMenuRequest;
 import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
+import com.kiosk.server.store.domain.MenuOptionRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.CreateMenuService;
