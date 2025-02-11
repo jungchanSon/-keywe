@@ -21,7 +21,6 @@ public class CreateUserProfileServiceImpl implements CreateUserProfileService {
 
         // null 혹은 빈 값 유효성 검사
         userValidateUtil.validateName(userId, profileName);
-        userValidateUtil.validatePhoneNumber(phoneNumber);
 
         // profileRole로 전환
         ProfileRole role = convertToProfileRole(profileRole);
@@ -31,6 +30,7 @@ public class CreateUserProfileServiceImpl implements CreateUserProfileService {
         if (role == ProfileRole.CHILD) {
             newProfile = UserProfile.createChild(userId, profileName, role, phoneNumber);
         } else if (role == ProfileRole.PARENT) {
+            userValidateUtil.validatePhoneNumber(phoneNumber);
             userValidateUtil.validateProfilePass(profilePass);
             newProfile = UserProfile.createParent(userId, profileName, role, phoneNumber, profilePass);
         } else {
