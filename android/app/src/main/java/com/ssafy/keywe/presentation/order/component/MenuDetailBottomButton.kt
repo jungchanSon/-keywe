@@ -30,7 +30,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 fun MenuDetailBottom(
     menuId: Long, selectedSize: String, selectedTemperature: String, extraOptions: Map<String, Int>,
     totalPrice: Int,
-    navController: NavController
+    navController: NavController, menuCartViewModel: MenuCartViewModel
 ) {
     val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
     val viewModel = hiltViewModel<MenuDetailViewModel>(parentBackStackEntry)
@@ -50,7 +50,8 @@ fun MenuDetailBottom(
                     selectedTemperature = selectedTemperature,
                     extraOptions = extraOptions,
                     totalPrice = totalPrice,
-                    navController = navController
+                    navController = navController,
+                    menuCartViewModel = menuCartViewModel
                 )
             }
             Box(modifier = Modifier.weight(1f)) {
@@ -68,10 +69,9 @@ fun MenuDetailBottomBackButton(
     selectedTemperature: String,
     extraOptions: Map<String, Int>,
     totalPrice: Int,
-    navController: NavController
+    navController: NavController,
+    menuCartViewModel: MenuCartViewModel
 ) {
-    val menuCartViewModel: MenuCartViewModel = hiltViewModel()
-
     BottomButton(
         content = content, onClick = {
             menuCartViewModel.addToCart(

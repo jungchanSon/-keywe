@@ -27,10 +27,9 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 @Composable
 fun MenuDescription(
     menuId: Long,
-    viewModel: MenuViewModel = hiltViewModel()
+    viewModel: MenuViewModel = hiltViewModel(),
+    menuCartViewModel: MenuCartViewModel
 ) {
-    val menuCartViewModel: MenuCartViewModel = hiltViewModel()
-
     val menu = viewModel.getMenuSimpleModelById(menuId)
 
     Log.d("Menu Description", ":$menu")
@@ -81,7 +80,7 @@ fun MenuDescription(
         }
         MenuPlusButton({
             menuCartViewModel.addToCart(
-                menuId, "Tall","Hot", emptyMap(), menuPrice
+                menuId, "Tall", "Hot", emptyMap(), menuPrice
             )
         })
     }

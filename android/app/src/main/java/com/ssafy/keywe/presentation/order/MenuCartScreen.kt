@@ -1,6 +1,7 @@
 package com.ssafy.keywe.presentation.order
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -55,11 +56,12 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @Composable
 fun MenuCartScreen(
     navController: NavController,
-    viewModel: MenuCartViewModel
+    menuDetailViewModel: MenuCartViewModel
     ) {
-    val cartItems by viewModel.cartItems.collectAsState()
-    val isDeleteDialogOpen by viewModel.isDeleteDialogOpen.collectAsState()
-    val selectedCartItem by viewModel.selectedCartItem.collectAsState()
+    val cartItems by menuDetailViewModel.cartItems.collectAsState()
+    Log.d("MenuCartScreen", "cartItems: $cartItems")
+    val isDeleteDialogOpen by menuDetailViewModel.isDeleteDialogOpen.collectAsState()
+    val selectedCartItem by menuDetailViewModel.selectedCartItem.collectAsState()
 
     val isAllDeleteDialogOpen = remember { mutableStateOf(false) }
 
@@ -78,10 +80,10 @@ fun MenuCartScreen(
             MenuCartDeleteDialog(
                 title = "장바구니 삭제",
                 description = "선택한 상품을 장바구니에서 삭제하시겠습니까?",
-                onCancel = { viewModel.closeDeleteDialog() },
+                onCancel = { menuDetailViewModel.closeDeleteDialog() },
                 onConfirm = {
                     selectedCartItem?.let { cartItem ->
-                        viewModel.removeFromCart(cartItem.id)
+                        menuDetailViewModel.removeFromCart(cartItem.id)
                     }
                 })
         }
@@ -93,7 +95,7 @@ fun MenuCartScreen(
                 description = "장바구니에 담긴 모든 메뉴를 삭제하시겠습니까?",
                 onCancel = { isAllDeleteDialogOpen.value = false },
                 onConfirm = {
-                    viewModel.clearCart()
+                    menuDetailViewModel.clearCart()
                     isAllDeleteDialogOpen.value = false
                 }
             )
@@ -137,7 +139,7 @@ fun MenuCartScreen(
                 ) {
                     items(cartItems, key = { it.id }) { item ->
                         MenuCartMenuBox(
-                            cartItem = item, viewModel = viewModel
+                            cartItem = item, viewModel = menuDetailViewModel
                         )
 
                         Box(

@@ -47,10 +47,10 @@ data class MenuCategory(
 //    val extraOptions: Map<String, Int>
 //)
 
-data class OptionData(
-    val name: String,
-    val price: Int,
-)
+//data class OptionData(
+//    val name: String,
+//    val price: Int,
+//)
 
 @HiltViewModel
 class MenuViewModel @Inject constructor(

@@ -20,29 +20,29 @@ class MenuDetailViewModel @Inject constructor(
     private val repository: OrderRepository,
 ) : ViewModel() {
 
-    private val extraOptions = listOf(
-        OptionData("샷 추가", 500),
-        OptionData("시럽 추가", 300),
-        OptionData("바닐라 시럽 추가", 300),
-        OptionData("휘핑 추가", 700),
-        OptionData("샷 추가1", 500),
-        OptionData("시럽 추가1", 300),
-        OptionData("바닐라 시럽 추가1", 300),
-        OptionData("휘핑 추가1", 700),
-        OptionData("샷 추가2", 500),
-        OptionData("시럽 추가2", 300),
-        OptionData("바닐라 시럽 추가2", 300),
-        OptionData("휘핑 추가2", 700),
-        OptionData("샷 추가3", 500),
-        OptionData("시럽 추가3", 300),
-        OptionData("바닐라 시럽 추가3", 300),
-        OptionData("휘핑 추가3", 700),
-    )
+//    private val extraOptions = listOf(
+//        OptionData("샷 추가", 500),
+//        OptionData("시럽 추가", 300),
+//        OptionData("바닐라 시럽 추가", 300),
+//        OptionData("휘핑 추가", 700),
+//        OptionData("샷 추가1", 500),
+//        OptionData("시럽 추가1", 300),
+//        OptionData("바닐라 시럽 추가1", 300),
+//        OptionData("휘핑 추가1", 700),
+//        OptionData("샷 추가2", 500),
+//        OptionData("시럽 추가2", 300),
+//        OptionData("바닐라 시럽 추가2", 300),
+//        OptionData("휘핑 추가2", 700),
+//        OptionData("샷 추가3", 500),
+//        OptionData("시럽 추가3", 300),
+//        OptionData("바닐라 시럽 추가3", 300),
+//        OptionData("휘핑 추가3", 700),
+//    )
 
     private val _selectedDetailMenu = MutableStateFlow<MenuDetailModel?>(null)
     val selectedDetailMenu: StateFlow<MenuDetailModel?> = _selectedDetailMenu.asStateFlow()
 
-    fun fetchMenuDetailById(id: Long): MenuDetailModel? {
+    fun     fetchMenuDetailById(id: Long): MenuDetailModel? {
         Log.d("Fetch Menu", ":$id")
 
         viewModelScope.launch {
@@ -65,7 +65,7 @@ class MenuDetailViewModel @Inject constructor(
         return selectedDetailMenu.value
     }
 
-    fun getExtraOptions(): List<OptionData> = extraOptions
+//    fun getExtraOptions(): List<OptionData> = extraOptions
 
     private val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
 

@@ -10,21 +10,24 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.R
-import com.ssafy.keywe.presentation.order.viewmodel.OptionData
+import com.ssafy.keywe.domain.order.OptionsModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.noRippleClickable
@@ -34,7 +37,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuDetailExtraOption(
-    options: List<OptionData>,
+    options: List<OptionsModel>,
     onOptionSelected: (String, Int, Int) -> Unit
 ) {
 
@@ -43,6 +46,7 @@ fun MenuDetailExtraOption(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(min = 205.dp)
             .background(greyBackgroundColor)
     ) {
         Column(
@@ -63,7 +67,8 @@ fun MenuDetailExtraOption(
                     verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
                 ) {
                     options.forEach { option ->
-                        OptionBox(option.name, option.price, extraOptions, onOptionSelected)
+                        val optionName = option.optionsValueGroup.firstOrNull()?.optionValue ?: option.optionName
+                        OptionBox(optionName, option.optionPrice, extraOptions, onOptionSelected)
                     }
                 }
             }
@@ -119,7 +124,7 @@ fun OptionBox(
     onOptionSelected: (String, Int, Int) -> Unit
 ) {
 
-    val optionAmount = remember { mutableIntStateOf(extraOptions[name] ?: 0) }
+    val optionAmount by rememberUpdatedState(extraOptions[name] ?: 0)
 
     Box(
         modifier = Modifier
@@ -141,18 +146,16 @@ fun OptionBox(
         ) {
             Option(name, optionPrice)
             OptionAmount(
-                optionAmount.intValue,
+                optionAmount,
                 onDecrease = {
-                    if (optionAmount.intValue > 0) {
-                        optionAmount.intValue--
-                        extraOptions[name] = optionAmount.intValue
-                        onOptionSelected(name, optionAmount.intValue, optionPrice)
+                    if (optionAmount > 0) {
+                        extraOptions[name] = optionAmount - 1
+                        onOptionSelected(name, optionAmount - 1, optionPrice)
                     }
                 }, onIncrease = {
-                    if (optionAmount.intValue < 9) {
-                        optionAmount.intValue++
-                        extraOptions[name] = optionAmount.intValue
-                        onOptionSelected(name, optionAmount.intValue, optionPrice)
+                    if (optionAmount < 9) {
+                        extraOptions[name] = optionAmount + 1
+                        onOptionSelected(name, optionAmount + 1, optionPrice)
                     }
                 })
         }

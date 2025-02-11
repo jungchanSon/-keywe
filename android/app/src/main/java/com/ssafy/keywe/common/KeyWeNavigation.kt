@@ -110,20 +110,19 @@ fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager:
     }
 }
 
-fun NavGraphBuilder.menuGraph(navController: NavHostController) {
+fun NavGraphBuilder.menuGraph(navController: NavHostController, menuCartViewModel: MenuCartViewModel) {
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.MenuRoute) {
         composable<Route.MenuBaseRoute.MenuRoute> {
             val menuScreenViewModel: MenuViewModel = hiltViewModel()
-            MenuScreen(navController, menuScreenViewModel)
+            MenuScreen(navController, menuScreenViewModel, menuCartViewModel)
         }
         composable<Route.MenuBaseRoute.MenuDetailRoute> {
             val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
             val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
             Log.d("Detail Navigator", ":$arg.id")
-            MenuDetailScreen(navController, menuDetailViewModel, arg.id)
+            MenuDetailScreen(navController, menuDetailViewModel, menuCartViewModel, arg.id)
         }
         composable<Route.MenuBaseRoute.MenuCartRoute> {
-            val menuCartViewModel: MenuCartViewModel = hiltViewModel()
             MenuCartScreen(navController, menuCartViewModel)
         }
     }

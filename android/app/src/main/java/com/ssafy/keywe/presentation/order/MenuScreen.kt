@@ -41,33 +41,33 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(
-    navController: NavController, viewModel: MenuViewModel = hiltViewModel()
+    navController: NavController, menuViewModel: MenuViewModel = hiltViewModel(), menuCartViewModel: MenuCartViewModel
 ) {
-    val cartViewModel: MenuCartViewModel = hiltViewModel()
+//    val cartViewModel: MenuCartViewModel = hiltViewModel()
 
     Scaffold(topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingCartButton(navController, cartViewModel)
+            FloatingCartButton(navController, menuCartViewModel)
         }) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
         ) {
-            MenuCategoryScreen(viewModel)
+            MenuCategoryScreen(menuViewModel)
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
-                navController = navController, viewModel
+                navController = navController, menuViewModel, menuCartViewModel
             )
         }
     }
 }
 
 @Composable
-fun FloatingCartButton(navController: NavController, viewModel: MenuCartViewModel = hiltViewModel()) {
+fun FloatingCartButton(navController: NavController, menuCartViewModel: MenuCartViewModel = hiltViewModel()) {
 //    val cartItemCount by viewModel.cartItemCount.collectAsState()
-    val cartItems by viewModel.cartItems.collectAsState()
+    val cartItems by menuCartViewModel.cartItems.collectAsState()
     val cartItemsCount = cartItems.sumOf { it.quantity }
 
     Box(
