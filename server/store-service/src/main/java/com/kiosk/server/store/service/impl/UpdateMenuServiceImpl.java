@@ -31,14 +31,15 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
         // 기존 메뉴 조회
         StoreMenu exMenu = getStoreMenu(userId, menuId);
 
-        // 카테고리 ID로 변환
-        Long categoryId = getCategoryId(userId, updateMenu);
+        if (updateMenu.menuCategoryId() == null) {
+            throw new EntityNotFoundException("No such category");
+        }
 
         // 업데이트할 데이터 매핑
         Map<String, Object> updateParams = new HashMap<>();
         updateParams.put("menuId", menuId);
         updateParams.put("userId", userId);
-        updateParams.put("categoryId", categoryId);
+        updateParams.put("categoryId", updateMenu.menuCategoryId());
 
         // 메뉴명, 설명 설정 (새로운 값이 없으면 기존 값 반환)
         updateParams.put("menuName", getUpdatedValue(updateMenu.menuName(), exMenu.getMenuName()));
@@ -68,14 +69,6 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
             throw new EntityNotFoundException("Menu not found");
         }
         return exMenu;
-    }
-
-    private Long getCategoryId(long userId, UpdateMenuRequest updateMenu) {
-        Long categoryId = menuRepository.findCategoryIdByName(userId, updateMenu.menuCategoryName());
-        if (categoryId == null) {
-            throw new EntityNotFoundException("No such category");
-        }
-        return categoryId;
     }
 
     private String getUpdatedValue(String newValue, String existingValue) {
