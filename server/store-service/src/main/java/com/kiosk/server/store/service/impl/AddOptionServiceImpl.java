@@ -34,7 +34,7 @@ public class AddOptionServiceImpl implements AddOptionService {
         StoreMenu menu = optionService.validateMenuAndOption(userId, menuId, null);
 
         // 기존 옵션 그룹 확인
-        Long optionGroupId = determineOptionGroupId(menuId, request.optionGroupId());
+        Long optionId = determineOptionId(menuId, request.optionId());
 
         // 옵션 객체 생성
         StoreMenuOption option = StoreMenuOption.create(
@@ -43,7 +43,7 @@ public class AddOptionServiceImpl implements AddOptionService {
                 request.optionName(),
                 request.optionValue(),
                 request.optionPrice(),
-                optionGroupId
+                optionId
         );
 
         // 중복 검증
@@ -55,17 +55,17 @@ public class AddOptionServiceImpl implements AddOptionService {
         return new CreateMenuResponse(menuId, menu.getMenuName(), menu.getMenuPrice(), optionGroups);
     }
 
-    private Long determineOptionGroupId(long menuId, Long requestedGroupId) {
-        if (requestedGroupId == null || requestedGroupId == -1) {
+    private Long determineOptionId(long menuId, Long requestedpId) {
+        if (requestedpId == null || requestedpId == -1) {
             return IdUtil.create();
         }
 
         // 요청된 그룹 ID가 존재하는지 확인
-        if (!optionRepository.existsOptionGroupById(menuId, requestedGroupId)) {
-            throw new EntityNotFoundException("Option group not found: " + requestedGroupId);
+        if (!optionRepository.existsOptionGroupById(menuId, requestedpId)) {
+            throw new EntityNotFoundException("Option group not found: " + requestedpId);
         }
 
-        return requestedGroupId;
+        return requestedpId;
     }
 
     private void validateOptionUniqueness(StoreMenuOption newOption) {
