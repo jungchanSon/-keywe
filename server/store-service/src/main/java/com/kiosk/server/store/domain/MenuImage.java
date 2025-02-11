@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class Images {
+public class MenuImage {
 
     private long imageId;
     private long menuId;
@@ -15,15 +15,15 @@ public class Images {
     private byte[] imageBytes;
     private LocalDateTime createdAt;
 
-    public static Images create(long userId, long menuId, byte[] imageBytes) {
+    public static MenuImage create(long userId, long menuId, byte[] imageBytes) {
         validateInputData(userId, menuId, imageBytes);
-        Images images = new Images();
-        images.imageId = IdUtil.create();
-        images.userId = userId;
-        images.menuId = menuId;
-        images.imageBytes = imageBytes;
-        images.createdAt = LocalDateTime.now();
-        return images;
+        MenuImage menuImage = new MenuImage();
+        menuImage.imageId = IdUtil.create();
+        menuImage.userId = userId;
+        menuImage.menuId = menuId;
+        menuImage.imageBytes = imageBytes;
+        menuImage.createdAt = LocalDateTime.now();
+        return menuImage;
     }
 
     private static void validateInputData(long userId, long menuId, byte[] imageBytes) {
@@ -33,7 +33,7 @@ public class Images {
         if (imageBytes == null) {
             throw new BadRequestException("Invalid image");
         }
-        if(menuId <= 0) {
+        if (menuId <= 0) {
             throw new BadRequestException("Invalid menu id");
         }
     }

@@ -19,4 +19,5 @@ dependencies {
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
     runtimeOnly 'com.mysql:mysql-connector-j'
     api project(":common-http")
+    api project(":swagger")
 }

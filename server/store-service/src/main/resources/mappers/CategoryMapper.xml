@@ -40,5 +40,10 @@
         DELETE FROM menu_category WHERE category_id = #{categoryId};
     </delete>
 
+    <select id="existsById" parameterType="java.lang.Long" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM menu_category
+        WHERE category_id = #{categoryId}
+    </select>
 
 </mapper>

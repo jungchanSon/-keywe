@@ -1,9 +1,10 @@
-package exception;
+package com.kiosk.server.config;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.ConflictException;
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
+import exception.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

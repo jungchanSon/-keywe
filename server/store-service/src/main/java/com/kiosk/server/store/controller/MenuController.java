@@ -28,31 +28,24 @@ public class MenuController {
     private final DeleteImageService deleteImageService;
 
     // 메뉴 등록
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<CreateMenuResponse> insertMenu(
         @RequestHeader("userId") Long userId,
-        @RequestPart("menu") String json,
+        @RequestPart("menu") CreateMenuRequest request,
         @RequestPart(required = false) MultipartFile image
-    ) throws IOException {
-        // JSON 문자열 DTO로 반환
-        ObjectMapper mapper = new ObjectMapper();
-        CreateMenuRequest dto = mapper.readValue(json, CreateMenuRequest.class);
-        CreateMenuResponse response = createMenuService.doService(userId, dto, image);
+    ) {
+        CreateMenuResponse response = createMenuService.doService(userId, request, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // 메뉴 전체 조회
+    // 전체 메뉴, 카테고리 메뉴 조회
     @GetMapping
-    public ResponseEntity<List<MenuDetailResponse>> findAllMenu(@RequestHeader("userId") Long userId) {
-        List<MenuDetailResponse> response = findMenusService.doService(userId, null);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    // 특정 카테고리 메뉴 조회
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<MenuDetailResponse>> findByCategory(@RequestHeader("userId") Long userId, @PathVariable long categoryId) {
-        List<MenuDetailResponse> response = findMenusService.doService(userId, categoryId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<List<MenuResponse>> findMenus(
+        @RequestHeader("userId") Long userId,
+        @RequestParam(value = "cid", required = false) Long categoryId
+    ) {
+        List<MenuResponse> responses = findMenusService.doService(userId, categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
     // 메뉴 단건 상세조회
@@ -63,7 +56,7 @@ public class MenuController {
     }
 
     // 메뉴 수정
-    @PatchMapping("/{menuId}")
+    @PatchMapping(path = "/{menuId}", consumes = "multipart/form-data")
     public ResponseEntity<Void> updateMenu(
         @RequestHeader("userId") Long userId,
         @RequestPart("menu") String json,

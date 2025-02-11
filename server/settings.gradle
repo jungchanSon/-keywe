@@ -4,9 +4,11 @@ include(
         "user-service",
         "store-service",
         "order-service",
+        "remote-service",
         "infra-gateway",
         "infra-config",
         "common",
         "common-token",
-        "common-http"
+        "common-http",
+        "swagger"
 )

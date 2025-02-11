@@ -21,36 +21,38 @@ public class StoreMenuOption {
     private String optionType;
     private String optionName;   // 옵션 그룹명
     private String optionValue;  // 개별 옵션 값
+    private int optionPrice;
     private LocalDateTime createdAt;
 
-    private StoreMenuOption(long optionId, long menuId, String optionType, String optionName, String optionValue, long optionGroupId) {
+    private StoreMenuOption(long optionId, long menuId, String optionType, String optionName, String optionValue, int optionPrice, long optionGroupId) {
         this.optionId = optionId;
         this.optionGroupId = optionGroupId;
         this.menuId = menuId;
         this.optionType = optionType;
         this.optionName = validateInput(optionName, "optionName");
         this.optionValue = validateInput(optionValue, "optionValue");
+        this.optionPrice = optionPrice;
         this.createdAt = LocalDateTime.now();
     }
 
-    public static StoreMenuOption create(long menuId, String optionType, String optionName, String optionValue, Long optionGroupId) {
+    public static StoreMenuOption create(long menuId, String optionType, String optionName, String optionValue, int optionPrice, Long optionGroupId) {
         long newOptionId = IdUtil.create();
-        return new StoreMenuOption(newOptionId, menuId, optionType, optionName, optionValue, optionGroupId);
+        return new StoreMenuOption(newOptionId, menuId, optionType, optionName, optionValue, optionPrice, optionGroupId);
     }
 
     public static List<StoreMenuOption> createFromList(List<MenuOptionData> dtoList, long menuId) {
         List<StoreMenuOption> list = new ArrayList<>();
         if (dtoList != null) {
             for (MenuOptionData dto : dtoList) {
-                List<String> values = dto.value();
+                List<String> values = dto.optionValue();
                 if (values == null || values.isEmpty()) {
-                    throw new EntityNotFoundException("No MenuOptionData for '" + dto.name() + "'");
+                    throw new EntityNotFoundException("No MenuOptionData for '" + dto.optionName() + "'");
                 }
                 // 새 그룹 ID 생성
                 long groupId = IdUtil.create();
 
                 for (String optionValue : values) {
-                    StoreMenuOption option = StoreMenuOption.create(menuId, dto.optionType(), dto.name(), optionValue, groupId);
+                    StoreMenuOption option = StoreMenuOption.create(menuId, dto.optionType(), dto.optionName(), optionValue, dto.optionPrice(), groupId);
                     list.add(option);
                 }
             }

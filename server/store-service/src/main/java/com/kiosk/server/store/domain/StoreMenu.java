@@ -2,7 +2,7 @@ package com.kiosk.server.store.domain;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.util.IdUtil;
-import com.kiosk.server.store.controller.dto.CreateMenuRequest;
+import com.kiosk.server.store.controller.dto.MenuOptionData;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,28 +18,30 @@ public class StoreMenu {
     private long userId;
     private long categoryId;
     private String menuName;
-    private String menuDesc;
+    private String menuDescription;
+    private String menuRecipe;
     private int menuPrice;
     private List<StoreMenuOption> options;
     private LocalDateTime createdAt;
 
-    public static StoreMenu create(long userId, long categoryId, CreateMenuRequest dto) {
-        validateInputData(userId, categoryId, dto.menuName(), dto.menuPrice());
+    public static StoreMenu create(long userId, long categoryId, String menuName, String menuDescription, String menuRecipe, int menuPrice, List<MenuOptionData> menuOptions) {
+        validateInputData(userId, categoryId, menuName, menuRecipe, menuPrice);
         long menuId = IdUtil.create();
-        List<StoreMenuOption> options = StoreMenuOption.createFromList(dto.options(), menuId);
+        List<StoreMenuOption> options = StoreMenuOption.createFromList(menuOptions, menuId);
         StoreMenu menu = new StoreMenu();
         menu.menuId = menuId;
         menu.userId = userId;
         menu.categoryId = categoryId;
-        menu.menuName = dto.menuName();
-        menu.menuDesc = dto.menuDescription();
-        menu.menuPrice = dto.menuPrice();
+        menu.menuName = menuName;
+        menu.menuDescription = menuDescription;
+        menu.menuRecipe = menuRecipe;
+        menu.menuPrice = menuPrice;
         menu.options = options;
         menu.createdAt = LocalDateTime.now();
         return menu;
     }
 
-    private static void validateInputData(long userId, long categoryId, String name, int price) {
+    private static void validateInputData(long userId, long categoryId, String name, String recipe, int price) {
         if (userId <= 0) {
             throw new BadRequestException("Invalid user id");
         }
@@ -48,6 +50,9 @@ public class StoreMenu {
         }
         if (!StringUtils.hasLength(name)) {
             throw new BadRequestException("Name cannot be empty");
+        }
+        if(!StringUtils.hasLength(recipe)) {
+            throw new BadRequestException("Recipe cannot be empty");
         }
         if (price < 0) {
             throw new BadRequestException("Invalid menu price");

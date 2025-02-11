@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kiosk.server.store.domain.MenuOptionRepository">
+
+    <!-- 옵션 저장 -->
+    <insert id="insert" parameterType="list">
+        INSERT INTO menu_option (option_id, option_group_id, menu_id, option_type, option_name, option_value, option_price,
+        created_at)
+        VALUES
+        <foreach collection="list" item="option" separator=",">
+            (#{option.optionId}, #{option.optionGroupId}, #{option.menuId},
+            #{option.optionType}, #{option.optionName}, #{option.optionValue}, #{option.optionPrice}, #{option.createdAt})
+        </foreach>
+    </insert>
+
+    <!-- 옵션 수정 -->
+    <update id="update" parameterType="map">
+        UPDATE menu_option
+        SET
+        option_type = #{optionType},
+        option_name = #{optionName},
+        option_value = #{optionValue},
+        option_price = #{optionPrice}
+        WHERE option_id = #{optionId};
+    </update>
+
+    <!-- 특정 메뉴 옵션 리스트 조회 -->
+    <select id="findOptionsByMenuId" parameterType="java.lang.Long" resultType="StoreMenuOption">
+        SELECT option_id, option_group_id, menu_id, option_type, option_name, option_value, option_price, created_at
+        FROM menu_option
+        WHERE menu_id = #{menuId};
+    </select>
+
+    <!-- 개별 옵션 조회 -->
+    <select id="findByOptionId" parameterType="map" resultType="StoreMenuOption" useCache="false">
+        SELECT option_id, option_group_id, menu_id, option_type, option_name, option_value, option_price, created_at
+        FROM menu_option
+        WHERE menu_id = #{menuId}
+        AND option_id = #{optionId};
+    </select>
+
+    <!-- 개별 옵션 삭제 -->
+    <delete id="deleteByOptionId" parameterType="java.lang.Long">
+        DELETE FROM menu_option WHERE option_id = #{optionId};
+    </delete>
+
+    <!-- 옵션 그룹 삭제 -->
+    <delete id="deleteOptionGroupById" parameterType="java.lang.Long">
+        DELETE FROM menu_option WHERE option_group_id = #{optionGroupId};
+    </delete>
+
+    <!-- 요청된 옵션 ID가 존재하는지 확인 -->
+    <select id="existsOptionById" parameterType="java.lang.Long" resultType="boolean">
+        SELECT COUNT(*) FROM menu_option WHERE option_id = #{optionId};
+    </select>
+
+    <!-- 옵션 그룹 ID 존재 여부 확인 -->
+    <select id="existsOptionGroupById" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM menu_option
+        WHERE menu_id = #{menuId}
+        AND option_group_id = #{optionGroupId}
+        LIMIT 1
+        )
+    </select>
+
+</mapper>

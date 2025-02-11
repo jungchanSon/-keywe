@@ -1,10 +1,8 @@
 package com.kiosk.server.user.controller;
 
-import com.kiosk.server.user.controller.dto.LoginResponse;
-import com.kiosk.server.user.controller.dto.ProfileTokenResponse;
-import com.kiosk.server.user.controller.dto.UserLoginRequest;
-import com.kiosk.server.user.controller.dto.UserProfileRequest;
+import com.kiosk.server.user.controller.dto.*;
 import com.kiosk.server.user.service.FindUserProfileByIdService;
+import com.kiosk.server.user.service.KioskUserLoginService;
 import com.kiosk.server.user.service.UserLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserLoginService userLoginService;
+    private final KioskUserLoginService kioskUserLoginService;
     private final FindUserProfileByIdService findUserProfileByIdService;
 
     @PostMapping("/user/login")
@@ -29,10 +28,16 @@ public class AuthController {
 
     // 프로필 선택
     @PostMapping("/user/profile")
-    public ResponseEntity<ProfileTokenResponse> getUserProfile(@RequestHeader("userId") Long userId, @Validated @RequestBody UserProfileRequest request) {
+    public ResponseEntity<ProfileLoginResponse> getUserProfile(@RequestHeader("userId") Long userId, @Validated @RequestBody UserProfileRequest request) {
         String authToken = findUserProfileByIdService.doService(userId, request.profileId());
-        ProfileTokenResponse response = new ProfileTokenResponse(authToken);
+        ProfileLoginResponse response = new ProfileLoginResponse(authToken, String.valueOf(userId));
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/user/kiosk-login")
+    public ResponseEntity<KioskUserLoginResult> loginParent(@RequestBody KioskUserLoginRequest request) {
+        KioskUserLoginResult loginResult = kioskUserLoginService.doService(request.phone(), request.password());
+        return ResponseEntity.status(HttpStatus.OK).body(loginResult);
     }
 
 }

@@ -1,26 +1,23 @@
 package com.kiosk.server.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class GatewayConfig {
 
-    @Value("${url.user_service}")
-    String USER_SERVICE_URL;
-
-    @Value("${url.store_service}")
-    String STORE_SERVICE_URL;
-
+    private final ServiceUrlProperties serviceUrlProperties;
 
     @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-            .route(r -> r.path("/user/**", "/auth/**").uri(USER_SERVICE_URL))
-            .route(r -> r.path("/store/**", "/menu/**", "/category/**").uri(STORE_SERVICE_URL))
+            .route(r -> r.path("/user/**", "/auth/**", "/user/swagger-ui/**", "/user/v3/api-docs").uri(serviceUrlProperties.userService()))
+            .route(r -> r.path("/store/**", "/menu/**", "/category/**", "/store/swagger-ui/**", "/store/v3/api-docs").uri(serviceUrlProperties.storeService()))
+            .route(r -> r.path("/remote/**").uri(serviceUrlProperties.remoteService()))
             .build();
     }
 }

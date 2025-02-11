@@ -1,0 +1,7 @@
+server:
+  port: 8097
+spring:
+  application:
+    name: remote
+  config:
+    import: optional:configserver:http://${CONFIG_SERVICE_URL:localhost}:8888
