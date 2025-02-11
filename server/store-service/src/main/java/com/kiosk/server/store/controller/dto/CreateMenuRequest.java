@@ -7,7 +7,7 @@ import java.util.List;
 
 public record CreateMenuRequest(
         String menuName,
-        String menuCategoryName,
+        Long menuCategoryId,
         String menuDescription,
         String menuRecipe,
         int menuPrice,

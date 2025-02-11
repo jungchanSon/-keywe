@@ -4,6 +4,7 @@ import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.store.controller.dto.CreateMenuRequest;
 import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
+import com.kiosk.server.store.domain.CategoryRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.CreateMenuService;
@@ -22,25 +23,23 @@ public class CreateMenuServiceImpl implements CreateMenuService {
 
     private final MenuRepository menuRepository;
     private final OptionServiceImpl optionService;
+    private final CategoryRepository categoryRepository;
     private final UploadImageService uploadImageService;
 
     @Override
     public CreateMenuResponse doService(long userId, CreateMenuRequest request, MultipartFile image) {
-
-        // 카테고리 ID로 변환
-        Long categoryId = menuRepository.findCategoryIdByName(userId, request.menuCategoryName());
-        if (categoryId == null) {
-            throw new BadRequestException("No such category");
+        if (!categoryRepository.existsById(request.menuCategoryId())) {
+            throw new BadRequestException("존재하지 않는 카테고리입니다.");
         }
         // 메뉴 생성
         StoreMenu menu = StoreMenu.create(
-                userId,
-                categoryId,
-                request.menuName(),
-                request.menuDescription(),
-                request.menuRecipe(),
-                request.menuPrice(),
-                request.options());
+            userId,
+            request.menuCategoryId(),
+            request.menuName(),
+            request.menuDescription(),
+            request.menuRecipe(),
+            request.menuPrice(),
+            request.options());
 
         menuRepository.insert(menu);
         long menuId = menu.getMenuId();

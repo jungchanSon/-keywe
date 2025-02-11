@@ -31,13 +31,10 @@ public class MenuController {
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<CreateMenuResponse> insertMenu(
         @RequestHeader("userId") Long userId,
-        @RequestPart("menu") String json,
+        @RequestPart("menu") CreateMenuRequest request,
         @RequestPart(required = false) MultipartFile image
-    ) throws IOException {
-        // JSON 문자열 DTO로 반환
-        ObjectMapper mapper = new ObjectMapper();
-        CreateMenuRequest dto = mapper.readValue(json, CreateMenuRequest.class);
-        CreateMenuResponse response = createMenuService.doService(userId, dto, image);
+    ) {
+        CreateMenuResponse response = createMenuService.doService(userId, request, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -45,7 +42,8 @@ public class MenuController {
     @GetMapping
     public ResponseEntity<List<MenuResponse>> findMenus(
         @RequestHeader("userId") Long userId,
-        @RequestParam(value = "cid", required = false) Long categoryId) {
+        @RequestParam(value = "cid", required = false) Long categoryId
+    ) {
         List<MenuResponse> responses = findMenusService.doService(userId, categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
