@@ -7,6 +7,7 @@ import com.ssafy.keywe.viewmodel.AddMemberViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,5 +37,22 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    // 프로필 수정
+    fun updateProfile(updatedProfile: ProfileData) {
+        _profiles.update { currentList ->
+            currentList.map {
+                if (it.userId == updatedProfile.userId) updatedProfile else it
+            }
+        }
+    }
+
+    // 프로필 삭제
+    fun deleteProfile(profileId: String) {
+        _profiles.update { currentList ->
+            currentList.filter { it.userId != profileId }
+        }
+    }
 }
+
+
 

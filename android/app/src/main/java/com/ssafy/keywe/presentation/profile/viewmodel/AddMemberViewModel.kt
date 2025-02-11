@@ -127,19 +127,6 @@ class AddMemberViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    //    fun sendVerification() {
-//        viewModelScope.launch {
-//            if (state.value.isPhoneValid) {
-//                // 인증번호 전송 로직
-//                _state.update {
-//                    it.copy(
-//                        isVerificationSent = true,
-//                        verificationStatus = VerificationStatus.NONE
-//                    )
-//                }
-//            }
-//        }
-//    }
     fun sendVerification() {
         viewModelScope.launch {
             _state.update {

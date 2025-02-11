@@ -73,7 +73,6 @@ import com.ssafy.keywe.viewmodel.AddMemberViewModel
 fun AddMemberScreen(
     navController: NavController,
     viewModel: AddMemberViewModel = hiltViewModel(),
-//    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val backStackEntry =
         navController.getBackStackEntry<Route.ProfileBaseRoute.ProfileChoiceRoute>()
