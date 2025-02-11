@@ -30,7 +30,7 @@ public class UserValidateUtil {
     public void validatePhoneNumber(String phoneNumber) {
 
         if (phoneNumber == null || phoneNumber.isBlank()) {
-            throw new IllegalArgumentException("PhoneNumber cannot be null or empty.");
+            throw new BadRequestException("PhoneNumber cannot be null or empty.");
         }
 
         String phoneRegex = "^01[016789]\\d{7,8}$";
