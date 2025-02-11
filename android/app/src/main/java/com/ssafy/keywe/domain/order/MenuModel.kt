@@ -7,7 +7,7 @@ data class MenuModel(
     val menuDescription: String,
     val menuRecipe: String,
     val menuPrice: Int,
-    val imageUrl: String? = null,
+    val imageBase64: String? = null,
     val options: List<OptionsModel>
 )
 
@@ -28,7 +28,7 @@ data class MenuSimpleModel(
     val menuName: String,
     val menuRecipe: String,
     val menuPrice: Int,
-    val imageUrl: String? = null
+    val image: String? = null
 )
 
 data class MenuDetailModel(

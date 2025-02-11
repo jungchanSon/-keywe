@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,14 +25,15 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 
 @Composable
 fun MenuDescription(
-    menuId: Int,
+    menuId: Long,
     viewModel: OrderViewModel = hiltViewModel()
 ) {
     val menu = viewModel.getMenuDataById(menuId)
+    Log.d("Menu Description", ":$menu")
 
-    val menuName = menu?.name ?: ""
-    val menuRecipe = menu?.recipe ?: ""
-    val menuPrice = menu?.price ?: 0
+    val menuName = menu?.menuName ?: ""
+    val menuRecipe = menu?.menuRecipe ?: ""
+    val menuPrice = menu?.menuPrice ?: 0
 
     Row(
         modifier = Modifier

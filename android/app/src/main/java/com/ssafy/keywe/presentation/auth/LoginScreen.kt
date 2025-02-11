@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -60,7 +61,7 @@ fun LoginScreen(
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            navController.navigate("home")
+            navController.navigate(BottomRoute.HomeRoute   )
         }
     }
 

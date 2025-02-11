@@ -64,7 +64,7 @@ fun MenuScreen(
 
 @Composable
 fun FloatingCartButton(navController: NavController, viewModel: OrderViewModel) {
-    val cartItemCount by viewModel.cartItemCount.collectAsState()
+//    val cartItemCount by viewModel.cartItemCount.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
     val cartItemsCount = cartItems.sumOf { it.quantity }
 

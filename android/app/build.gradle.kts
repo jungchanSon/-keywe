@@ -54,6 +54,9 @@ dependencies {
 
     implementation (libs.gson)
 
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // ✅ Gson Converter 추가
+
+
     // Firebase FCM
     implementation(platform(libs.firebase.bom))
 

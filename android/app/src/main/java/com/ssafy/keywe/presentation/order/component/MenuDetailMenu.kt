@@ -35,14 +35,14 @@ import com.ssafy.keywe.ui.theme.subtitle2
 @Composable
 fun MenuDetailMenu(
     modifier: Modifier = Modifier,
-    menuId: Int,
+    menuId: Long,
     menuPrice: Int,
     viewModel: OrderViewModel
 ) {
     val menu = viewModel.getMenuDataById(menuId)
-    val menuName = menu?.name ?: ""
-    val menuImageURL = menu?.imageURL ?: ""
-    val menuDescription = menu?.description ?: ""
+    val menuName = menu?.menuName ?: ""
+    val menuImageURL = menu?.image ?: ""
+    val menuDescription = menu?.menuName ?: ""
 
     Box(
         modifier = modifier

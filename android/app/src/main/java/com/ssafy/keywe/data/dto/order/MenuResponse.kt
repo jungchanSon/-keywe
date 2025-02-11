@@ -1,5 +1,8 @@
 package com.ssafy.keywe.data.dto.order
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 data class MenuPostResponse(
     val menuId: Long,
     val menuName: String,
@@ -21,12 +24,13 @@ data class OptionValueGroupResponse(
     val optionValue: String
 )
 
+
 data class MenuSimpleResponse(
-    val menuId: Long,
-    val menuName: String,
-    val menuRecipe: String,
-    val menuPrice: Int,
-    val image: String?
+    @SerialName("menuId") val menuId: Long,
+    @SerialName("menuName") val menuName: String,
+    @SerialName("menuRecipe") val menuRecipe: String,
+    @SerialName("menuPrice") val menuPrice: Int,
+    @SerialName("image") val image: String?
 )
 
 data class MenuDetailResponse(

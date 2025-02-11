@@ -15,12 +15,12 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 
 @Composable
 fun MenuImage(
-    menuId: Int,
+    menuId: Long,
     viewModel: OrderViewModel
 ) {
 
     val menu = viewModel.getMenuDataById(menuId)
-    val menuImageURL = menu?.imageURL ?: ""
+    val menuImageURL = menu?.image ?: ""
 
     Image(
         painter = rememberAsyncImagePainter(model = menuImageURL),

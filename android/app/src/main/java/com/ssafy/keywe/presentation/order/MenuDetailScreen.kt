@@ -35,11 +35,11 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @Composable
 fun MenuDetailScreen(
     navController: NavController,
-    menuId: Int,
+    menuId: Long,
     viewModel: OrderViewModel = hiltViewModel()
 ) {
     val menu = viewModel.getMenuDataById(menuId)
-    val menuPrice = menu?.price ?: 0
+    val menuPrice = menu?.menuPrice ?: 0
 
     val selectedSize = remember { mutableStateOf("Tall") }
     val selectedTemperature = remember { mutableStateOf("Hot") }

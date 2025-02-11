@@ -23,6 +23,7 @@ fun MenuCategoryScreen(viewModel: OrderViewModel) {
 
     val menuCategoryList = viewModel.categories.collectAsState().value
     val selectedCategory by viewModel.selectedCategory.collectAsState()
+    val filteredMenuItems by viewModel.filteredMenuItems.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
         ScrollableTabRow(

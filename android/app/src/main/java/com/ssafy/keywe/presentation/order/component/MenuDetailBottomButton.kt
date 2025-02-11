@@ -26,7 +26,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun MenuDetailBottom(
-    menuId: Int, selectedSize: String, selectedTemperature: String, extraOptions: Map<String, Int>,
+    menuId: Long, selectedSize: String, selectedTemperature: String, extraOptions: Map<String, Int>,
     totalPrice: Int,
     navController: NavController
 ) {
@@ -62,7 +62,7 @@ fun MenuDetailBottom(
 @Composable
 fun MenuDetailBottomBackButton(
     content: String,
-    menuId: Int,
+    menuId: Long,
     selectedSize: String,
     selectedTemperature: String,
     extraOptions: Map<String, Int>,
