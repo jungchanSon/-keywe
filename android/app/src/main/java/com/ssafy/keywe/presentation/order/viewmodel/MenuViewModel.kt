@@ -1,9 +1,16 @@
 package com.ssafy.keywe.presentation.order.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.data.ApiResponseHandler.onException
+import com.ssafy.keywe.data.ApiResponseHandler.onServerError
+import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.ResponseResult
+import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.domain.order.CategoryModel
+import com.ssafy.keywe.domain.order.MenuDetailModel
+import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +24,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MenuData(
-    val id: Int,
+    val id: Long,
     val category: String,
     val name: String,
     val recipe: String,
@@ -27,17 +34,17 @@ data class MenuData(
 )
 
 data class MenuCategory(
-    val id: Int,
+    val id: Long,
     val name: String
 )
 
 data class CartItem(
-    val id: Int,
-    val menuId: Int,
+    val id: Long,
+    val menuId: Long,
     val name: String,
     val price: Int,
     val quantity: Int,
-    val imageURL: String,
+    val imageURL: String?,
     val size: String,
     val temperature: String,
     val extraOptions: Map<String, Int>
@@ -230,26 +237,33 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
         return repository.getCategory()
     }
 
-    private val _categories = MutableStateFlow<List<CategoryModel>>(listOf(CategoryModel(0, "전체")))
+    private val _categories = MutableStateFlow(listOf(CategoryModel(0, "전체")))
     val categories: StateFlow<List<CategoryModel>> = _categories.asStateFlow()
 
     private val _selectedCategory = MutableStateFlow("전체")
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
 
+    private val _filteredMenuItems = MutableStateFlow<List<MenuSimpleModel>>(emptyList())
+    val filteredMenuItems: StateFlow<List<MenuSimpleModel>> = _filteredMenuItems.asStateFlow()
+
     init {
-        fetchCategories()
+        getAllCategories()
+        getMenuByCategory("전체")
     }
 
-    private fun fetchCategories() {
+    private fun getAllCategories() {
         viewModelScope.launch {
             when (val result = repository.getCategory()) {
                 is ResponseResult.Success -> {
                     val categoriesWithAll = listOf(CategoryModel(0, "전체")) + result.data
                     _categories.value = categoriesWithAll
+                    println("getCategory 결과: ${result.data}")
                 }
+
                 is ResponseResult.ServerError -> {
                     println("서버 에러: ${result.status}")  // 서버 오류 로그
                 }
+
                 is ResponseResult.Exception -> {
                     println("예외 발생: ${result.e.message}")  // 예외 로그
                 }
@@ -257,16 +271,70 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
         }
     }
 
+
+//    fun login() {
+//        val loginRequest = LoginRequest(
+//            email = _email.value, password = password.value
+//        )
+//        viewModelScope.launch {
+//            repository.login(loginRequest).onSuccess(::saveUserToken).onServerError(::handleError)
+//                .onException(::handleException)
+//        }
+//    }
+
     fun setSelectedCategory(category: String) {
         _selectedCategory.value = category
+        getMenuByCategory(category)
     }
 
-    val filteredMenuItems: StateFlow<List<MenuData>> = selectedCategory
-        .map { category ->
-            if (category == "전체") { _menuItems.value }
-            else { _menuItems.value.filter { it.category == category } }
+    private fun getMenuByCategory(category: String) {
+        viewModelScope.launch {
+            if (category == "전체") {
+                // 전체 카테고리 선택 시 모든 메뉴 가져오기
+                when (val result = repository.getAllMenu()) {
+                    is ResponseResult.Success -> {
+                        _filteredMenuItems.value = result.data
+                        println("getAllMenu 결과: ${result.data}")
+                    }
+
+                    is ResponseResult.ServerError -> {
+                        println("서버 에러: ${result.status}")
+                    }
+
+                    is ResponseResult.Exception -> {
+                        println("예외 발생: ${result.e.message}")
+                    }
+                }
+            } else {
+                Log.d("Category Selected Screen", "HI")
+                val categoryId =
+                    _categories.value.find { it.categoryName == category }?.categoryId ?: 0
+                Log.d("Category Selected Screen", "$categoryId")
+
+                when (val result = repository.getCategoryMenu(categoryId)) {
+                    is ResponseResult.Success -> {
+                        _filteredMenuItems.value = result.data
+                        println("getCategoryMenu 결과: ${result.data}")
+                    }
+
+                    is ResponseResult.ServerError -> {
+                        println("서버 에러: ${result.status}")
+                    }
+
+                    is ResponseResult.Exception -> {
+                        println("예외 발생: ${result.e.message}")
+                    }
+                }
+            }
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    }
+
+//    val filteredMenuItems: StateFlow<List<MenuData>> = selectedCategory
+//        .map { category ->
+//            if (category == "전체") { _menuItems.value }
+//            else { _menuItems.value.filter { it.category == category } }
+//        }
+//        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
 
@@ -292,8 +360,8 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
         _selectedCartItem.value = null
     }
 
-    fun getMenuDataById(id: Int): MenuData? {
-        return _menuItems.value.find { it.id == id }
+    fun getMenuDataById(id: Long): MenuSimpleModel? {
+        return filteredMenuItems.value.find { it.menuId == id }
     }
 
     fun getExtraOptions(): List<OptionData> = extraOptions
@@ -301,7 +369,7 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
     fun getMenuCategories(): List<CategoryModel> = _categories.value
 
     fun addToCart(
-        menuId: Int,
+        menuId: Long,
         size: String,
         temperature: String,
         extraOptions: Map<String, Int>,
@@ -314,7 +382,7 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
         _cartItems.update { currentCart ->
             val sortedExtraOptions = extraOptions.toSortedMap()
             val existingItemIndex = currentCart.indexOfFirst {
-                it.name == menuData.name &&
+                it.name == menuData.menuName &&
                         it.size == size &&
                         it.temperature == temperature &&
                         it.extraOptions.toSortedMap() == sortedExtraOptions
@@ -332,11 +400,11 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
                 updatedCart.add(
                     CartItem(
                         id = newId,
-                        menuId = menuData.id,
-                        name = menuData.name,
+                        menuId = menuData.menuId,
+                        name = menuData.menuName,
                         price = totalPrice,
                         quantity = 1,
-                        imageURL = menuData.imageURL,
+                        imageURL = menuData.image,
                         size = size,
                         temperature = temperature,
                         extraOptions = sortedExtraOptions
@@ -351,14 +419,14 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
 
 
     fun updateCartItem(
-        cartItemId: Int,
-        cartItemMenuId: Int,
+        cartItemId: Long,
+        cartItemMenuId: Long,
         size: String,
         temperature: String,
         extraOptions: Map<String, Int>
     ) {
         _cartItems.update { currentCart ->
-            val menuPrice = getMenuDataById(cartItemMenuId)?.price ?: 0
+            val menuPrice = getMenuDataById(cartItemMenuId)?.menuPrice ?: 0
             val sizePrice = sizePriceMap[size] ?: 0
             val sortedExtraOptions = extraOptions.toSortedMap()
             val extraOptionPrice = sortedExtraOptions.entries.sumOf { (name, quantity) ->
@@ -410,15 +478,16 @@ class OrderViewModel @Inject constructor(private val repository: OrderRepository
     }
 
 
-    fun removeFromCart(cartItemId: Int) {
+    fun removeFromCart(cartItemId: Long) {
         _cartItems.update { currentCart ->
-            val updatedCart = currentCart.filter { it.id != cartItemId }.toList() // id, 이름, 온도, 사이즈 옵션 다 같으면 삭제
+            val updatedCart = currentCart.filter { it.id != cartItemId }
+                .toList() // id, 이름, 온도, 사이즈 옵션 다 같으면 삭제
             updatedCart
         }
         closeDeleteDialog()
     }
 
-    fun updateCartQuantity(cartItemId: Int, newQuantity: Int) {
+    fun updateCartQuantity(cartItemId: Long, newQuantity: Int) {
         _cartItems.update { currentCart ->
             currentCart.map { cartItem ->
                 if (cartItem.id == cartItemId) {

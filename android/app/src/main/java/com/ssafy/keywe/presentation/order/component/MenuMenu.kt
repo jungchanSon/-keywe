@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,10 +64,11 @@ fun MenuMenuList(
             state = listState
         ) {
             items(filteredMenuList) { menu ->
+                Log.d("menu data", "$menu")
                 MenuMenuScreen(
-                    menuId = menu.id,
+                    menuId = menu.menuId,
                     selectItem = {
-                        navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(menu.id))
+                        navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(menu.menuId))
                     },
                     viewModel
                 )
@@ -77,10 +79,12 @@ fun MenuMenuList(
 
 @Composable
 fun MenuMenuScreen(
-    menuId: Int,
+    menuId: Long,
     selectItem: () -> Unit,
     viewModel: OrderViewModel
 ) {
+    Log.d("Menu ID", "$menuId")
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,7 +102,9 @@ fun MenuMenuScreen(
             verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Log.d("menu Column", "$menuId")
             MenuImage(menuId, viewModel)
+
             MenuDescription(menuId, viewModel)
         }
 

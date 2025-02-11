@@ -33,8 +33,8 @@ fun MenuModel.toRequest(): MenuPostRequest {
     val optionsRequestBody = optionsJson.toRequestBody("application/json".toMediaTypeOrNull())
 
     // 이미지 변환
-    val imagePart: MultipartBody.Part? = if (!this.imageUrl.isNullOrEmpty()) {
-        val file = File(this.imageUrl)
+    val imagePart: MultipartBody.Part? = if (!this.imageBase64.isNullOrEmpty()) {
+        val file = File(this.imageBase64)
         val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
         MultipartBody.Part.createFormData("menuImage", file.name, requestBody)
     } else {
@@ -81,7 +81,7 @@ fun MenuPostResponse.toDomain(): MenuModel {
         menuDescription = "",
         menuRecipe = "",
         menuPrice = this.menuPrice,
-        imageUrl = "",
+        imageBase64 = "",
         options = this.options.map { it.toDomain() }
     )
 }
@@ -103,8 +103,8 @@ fun OptionValueGroupResponse.toDomain(): OptionValueGroupModel {
 }
 
 fun MenuModel.toPatchRequest(): MenuPatchRequest {
-    val imagePart: MultipartBody.Part? = if (!this.imageUrl.isNullOrEmpty()) {
-        val file = File(this.imageUrl)
+    val imagePart: MultipartBody.Part? = if (!this.imageBase64.isNullOrEmpty()) {
+        val file = File(this.imageBase64)
         val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
         MultipartBody.Part.createFormData("menuImage", file.name, requestBody)
     } else {
@@ -131,7 +131,7 @@ fun MenuSimpleResponse.toSimpleDomain(): MenuSimpleModel {
         menuName = this.menuName,
         menuRecipe = this.menuRecipe,
         menuPrice = this.menuPrice,
-        imageUrl = this.image
+        image = this.image
     )
 }
 

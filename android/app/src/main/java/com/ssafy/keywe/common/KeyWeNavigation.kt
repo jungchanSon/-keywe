@@ -44,7 +44,7 @@ sealed interface Route {
         data object MenuRoute : Route
 
         @Serializable
-        data class MenuDetailRoute(val id: Int) : Route
+        data class MenuDetailRoute(val id: Long) : Route
 
         @Serializable
         data object MenuCartRoute : Route
