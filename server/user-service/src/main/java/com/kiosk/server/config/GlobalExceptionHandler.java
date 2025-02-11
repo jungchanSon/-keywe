@@ -91,7 +91,8 @@ public class GlobalExceptionHandler {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
         log.error(errors.toString());
-        ErrorResponse errorResponse = new ErrorResponse("Unexpected Error");
+//        ErrorResponse errorResponse = new ErrorResponse("Unexpected Error");
+        ErrorResponse errorResponse = new ErrorResponse(errors.toString());
         return ResponseEntity.internalServerError().body(errorResponse);
     }
 
