@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: order
+  config:
+    import: optional:configserver:http://${CONFIG_SERVICE_URL:localhost}:8888
