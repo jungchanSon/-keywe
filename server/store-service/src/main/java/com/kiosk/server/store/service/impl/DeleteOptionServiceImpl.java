@@ -45,10 +45,10 @@ public class DeleteOptionServiceImpl implements DeleteOptionService {
             throw new UnauthorizedException("You do not have permission to delete this option");
         }
 
-        if (request.optionGroupId() == null) {
+        if (request.optionId() == null) {
             optionRepository.deleteByOptionId(optionId); // 개별 옵션 삭제
         } else {
-            optionRepository.deleteOptionGroupById(request.optionGroupId());
+            optionRepository.deleteOptionGroupById(request.optionId());
         }
 
     }
