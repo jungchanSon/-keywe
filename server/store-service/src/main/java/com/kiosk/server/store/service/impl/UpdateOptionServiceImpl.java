@@ -46,6 +46,7 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
         updateMap.put("optionType", request.optionType());
         updateMap.put("optionName", request.optionName());
         updateMap.put("optionValue", request.optionValue());
+        updateMap.put("optionPrice", request.optionPrice());
         updateMap.put("optionGroupId", request.optionGroupId());
 
         // optionId가 제대로 포함되어 있는지 확인
