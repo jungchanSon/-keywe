@@ -40,14 +40,14 @@ public class FindMenusServiceImpl implements FindMenusService {
         // DTO 변환
         List<MenuResponse> menuResponse = new ArrayList<>();
         for (StoreMenu menu : menuList) {
-            String imageBase64 = imageMap.get(menu.getMenuId());
+            String image = imageMap.get(menu.getMenuId());
 
             menuResponse.add(new MenuResponse(
                     menu.getMenuId(),
                     menu.getMenuName(),
                     menu.getMenuRecipe(),
                     menu.getMenuPrice(),
-                    imageBase64
+                    image
             ));
         }
 
