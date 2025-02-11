@@ -42,7 +42,8 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
 
         // 메뉴명, 설명 설정 (새로운 값이 없으면 기존 값 반환)
         updateParams.put("menuName", getUpdatedValue(updateMenu.menuName(), exMenu.getMenuName()));
-        updateParams.put("menuDesc", getUpdatedValue(updateMenu.menuDescription(), exMenu.getMenuDescription()));
+        updateParams.put("menuDescription", getUpdatedValue(updateMenu.menuDescription(), exMenu.getMenuDescription()));
+        updateParams.put("menuRecipe", getUpdatedValue(updateMenu.menuRecipe(), exMenu.getMenuRecipe()));
 
         // 메뉴 가격 설정
         int menuPrice = updateMenu.menuPrice();
