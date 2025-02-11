@@ -107,7 +107,7 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
                     userId = state.value.profileId,
                     name = state.value.name,
                     phone = state.value.phone,
-                    profileImage = profileImageUri.value?.toString(),
+                    profile = profileImageUri.value?.toString(),
                     role = state.value.role,
                     simplePassword = state.value.simplePassword
                 )

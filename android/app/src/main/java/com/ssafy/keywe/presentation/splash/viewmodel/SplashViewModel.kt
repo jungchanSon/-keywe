@@ -1,12 +1,12 @@
 package com.ssafy.keywe.presentation.splash.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.TokenManager
-import com.ssafy.keywe.util.JWTUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -36,13 +36,17 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             runBlocking {
                 val token = tokenManager.getToken()
-                token?.let {
-                    if (JWTUtil.isTempToken(it.split(" ")[1])) {
+                Log.d("Token Route", "token = $token")
+                if (token == null) {
+                    _splashRouteType.value = SplashRouteType.LOGIN
+                } else {
+                    if (token.startsWith("Bearer")) {
                         _splashRouteType.value = SplashRouteType.PROFILE
                     } else {
                         _splashRouteType.value = SplashRouteType.HOME
                     }
                 }
+
                 _isLoading.value = false
             }
         }

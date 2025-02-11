@@ -27,7 +27,7 @@ data class GetAllProfileResponse(
     @SerialName("id") val id: Long,
     @SerialName("name") val name: String,
     @SerialName("phone") val phone: String?,
-    @SerialName("type") val type: String
+    @SerialName("type") val type: RoleType
 )
 
 @Serializable
@@ -44,9 +44,7 @@ data class PostProfileResponse(
 
 @Serializable
 data class PatchProfileResponse(
-    @SerialName("name") val name: String,
-    @SerialName("phone") val phone: String,
+    @SerialName("name") val name: String, @SerialName("phone") val phone: String,
 //    @SerialName("profileImage") val profileImage: String?,
-    @SerialName("role") val role: String,
-    @SerialName("simplePassword") val simplePassword: String
+    @SerialName("role") val role: String, @SerialName("simplePassword") val simplePassword: String
 )

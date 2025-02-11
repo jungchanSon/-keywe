@@ -13,7 +13,7 @@ import javax.inject.Inject
 class ProfileRemoteDataSource @Inject constructor(private val profileService: ProfileService) :
     ProfileDataSource {
 
-    override suspend fun requestGetAllProfile(): ResponseResult<GetAllProfileResponse> =
+    override suspend fun requestGetAllProfile(): ResponseResult<List<GetAllProfileResponse>> =
         handleApiResponse {
             profileService.getAllProfile()
         }
@@ -28,10 +28,11 @@ class ProfileRemoteDataSource @Inject constructor(private val profileService: Pr
             profileService.postProfile(postProfileRequest)
         }
 
-    override suspend fun requestPatchProfile(profileId: Long, patchProfileRequest: PatchProfileRequest): ResponseResult<PatchProfileResponse> =
-        handleApiResponse {
-            profileService.patchProfile(profileId, patchProfileRequest)
-        }
+    override suspend fun requestPatchProfile(
+        profileId: Long, patchProfileRequest: PatchProfileRequest
+    ): ResponseResult<PatchProfileResponse> = handleApiResponse {
+        profileService.patchProfile(profileId, patchProfileRequest)
+    }
 
     override suspend fun requestDeleteProfile(profileId: Long): ResponseResult<Unit> =
         handleApiResponse {

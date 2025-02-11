@@ -11,6 +11,7 @@ import com.ssafy.keywe.R
 import com.ssafy.keywe.data.dto.profile.ProfileData
 import com.ssafy.keywe.data.state.AddMemberState
 import com.ssafy.keywe.data.state.VerificationStatus
+import com.ssafy.keywe.domain.profile.ProfileRepository
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +23,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddMemberViewModel @Inject constructor() : ViewModel() {
+class AddMemberViewModel @Inject constructor(
+    private val repository: ProfileRepository
+) : ViewModel() {
     private val _state = MutableStateFlow(AddMemberState())
     val state = _state.asStateFlow()
 

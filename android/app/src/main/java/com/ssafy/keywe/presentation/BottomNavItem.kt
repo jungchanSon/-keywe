@@ -2,7 +2,6 @@ package com.ssafy.keywe.presentation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,8 +24,4 @@ sealed class BottomNavItem(
         override val name: String = "프로필"
     }
 
-    data object Login :
-        BottomNavItem(R.string.app_name, Icons.Default.Apps, BottomRoute.LoginRoute) {
-        override val name: String = "로그인"
-    }
 }

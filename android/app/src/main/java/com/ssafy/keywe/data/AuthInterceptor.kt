@@ -29,15 +29,15 @@ class AuthInterceptor @Inject constructor(
          */
         val request = chain.request()
 
-        if (isRequestWithToken(request.url.toUri().path)) {
-            val token = runBlocking {
-                tokenManager.getToken()
-            }
-            val newRequest = request.newBuilder().header("Authorization", "$token").build()
-            return chain.proceed(newRequest)
+//        if (isRequestWithToken(request.url.toUri().path)) {
+        val token = runBlocking {
+            tokenManager.getToken()
         }
+        val newRequest = request.newBuilder().header("Authorization", "$token").build()
+        return chain.proceed(newRequest)
+//        }
 
-        return chain.proceed(request)
+//        return chain.proceed(request)
     }
 
 

@@ -43,7 +43,7 @@ fun MyBottomNavigation(
     val currentDestination = navBackStackEntry?.destination
 
     val items = listOf(
-        BottomNavItem.Home, BottomNavItem.Profile, BottomNavItem.Login
+        BottomNavItem.Home, BottomNavItem.Profile
     )
 
     val currentRoute = currentBottomRoute(navController)

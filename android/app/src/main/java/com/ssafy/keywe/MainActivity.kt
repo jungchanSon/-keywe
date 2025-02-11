@@ -38,6 +38,7 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.keywe.common.BottomRoute
+import com.ssafy.keywe.common.LoginRoute
 import com.ssafy.keywe.common.MyBottomNavigation
 import com.ssafy.keywe.common.PermissionDialog
 import com.ssafy.keywe.common.RationaleDialog
@@ -45,13 +46,11 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.SplashRoute
 import com.ssafy.keywe.common.app.DefaultAppBar
-import com.ssafy.keywe.common.kioskGraph
 import com.ssafy.keywe.common.menuGraph
 import com.ssafy.keywe.common.profileGraph
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
-import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
@@ -85,7 +84,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 tokenManager.tokenClearedEvent.collect {
                     // 로그인 화면으로 이동
-                    navController.navigate(BottomRoute.LoginRoute) {
+                    navController.navigate(LoginRoute) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
@@ -190,8 +189,7 @@ fun MyApp(
         it != "splash" && it != "login"
     } ?: false
 
-    Scaffold(
-        modifier = Modifier.background(whiteBackgroundColor),
+    Scaffold(modifier = Modifier.background(whiteBackgroundColor),
 //        topBar = {
 //            if (isShowTopAppBar) DefaultAppBar("title", navController = navController)
 //        },
@@ -212,11 +210,11 @@ fun MyApp(
                 HomeScreen(navController, tokenManager)
 //                InputPhoneNumberScreen(navController)
             }
-            composable<BottomRoute.LoginRoute> { LoginScreen(navController) }
+            composable<LoginRoute> { LoginScreen(navController) }
             composable<SignUpRoute> {
                 SignUpScreen(navController)
             }
-            profileGraph(navController)
+            profileGraph(navController, tokenManager)
             menuGraph(navController)
 //            kioskGraph(navController)
         }

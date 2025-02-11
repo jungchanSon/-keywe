@@ -6,22 +6,18 @@ import com.ssafy.keywe.data.dto.profile.PatchProfileRequest
 import com.ssafy.keywe.data.dto.profile.PatchProfileResponse
 import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
-import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ProfileService {
     @GET(PROFILE_LIST_PATH)
     suspend fun getAllProfile(
-    ): Response<GetAllProfileResponse>
+    ): Response<List<GetAllProfileResponse>>
 
     @GET(PROFILE_PATH)
     suspend fun getProfileDetail(
@@ -40,8 +36,7 @@ interface ProfileService {
 
     @PATCH(PROFILE_PATH)
     suspend fun patchProfile(
-        @Path("profileId") profileId: Long,
-        @Body patchProfileRequest: PatchProfileRequest
+        @Path("profileId") profileId: Long, @Body patchProfileRequest: PatchProfileRequest
     ): Response<PatchProfileResponse>
 
     @DELETE(PROFILE_PATH)

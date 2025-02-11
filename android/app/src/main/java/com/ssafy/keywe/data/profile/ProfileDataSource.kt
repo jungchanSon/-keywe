@@ -9,9 +9,12 @@ import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
 
 interface ProfileDataSource {
-    suspend fun requestGetAllProfile(): ResponseResult<GetAllProfileResponse>
+    suspend fun requestGetAllProfile(): ResponseResult<List<GetAllProfileResponse>>
     suspend fun requestGetProfileDetail(profileId: Long): ResponseResult<GetProfileDetailResponse>
     suspend fun requestPostProfile(postProfileRequest: PostProfileRequest): ResponseResult<PostProfileResponse>
-    suspend fun requestPatchProfile(profileId: Long, patchProfileRequest: PatchProfileRequest): ResponseResult<PatchProfileResponse>
+    suspend fun requestPatchProfile(
+        profileId: Long, patchProfileRequest: PatchProfileRequest
+    ): ResponseResult<PatchProfileResponse>
+
     suspend fun requestDeleteProfile(profileId: Long): ResponseResult<Unit>
 }

@@ -28,9 +28,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
+import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
-import com.ssafy.keywe.data.dto.profile.ProfileData
+import com.ssafy.keywe.data.dto.profile.RoleType
+import com.ssafy.keywe.domain.profile.GetAllProfileModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
@@ -39,13 +41,15 @@ import com.ssafy.keywe.ui.theme.subtitle2
 
 
 @Composable
-fun ProfileChoice(
+fun ProfileChoiceScreen(
     navController: NavController,
+    isJoinApp: Boolean,
     profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val profiles by profileViewModel.profiles.collectAsStateWithLifecycle()
-    val parentProfiles = profiles.filter { it.role == "PARENT" }
-    val childProfiles = profiles.filter { it.role == "CHILD" }
+    val parentProfiles = profiles.filter { it.type == RoleType.PARENT }
+    val childProfiles = profiles.filter { it.type == RoleType.CHILD }
+
 
 
     Scaffold(
@@ -67,8 +71,7 @@ fun ProfileChoice(
                         .background(color = greyBackgroundColor)
                         .clickable {
                             navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
-                        },
-                    contentAlignment = Alignment.Center
+                        }, contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.profileplus),
@@ -80,8 +83,7 @@ fun ProfileChoice(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "계정 추가",
-                    style = subtitle2
+                    text = "계정 추가", style = subtitle2
                 )
             }
         } else {
@@ -99,13 +101,20 @@ fun ProfileChoice(
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                     ProfileGrid(
-                        profiles = parentProfiles,
-                        onProfileClick = { profile ->
-                            navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
+                        profiles = parentProfiles, onProfileClick = { profile ->
+                            // 처음
+                            if (isJoinApp) {
+                                profileViewModel.selectAccount(profile)
+                                navController.navigate(BottomRoute.HomeRoute)
+                            } else {
+                                navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
+                            }
+
                         },
-                        onAddClick = {
-                            navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
-                        },
+//                        , onAddClick = {
+//                        navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
+//                    },
+
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -118,30 +127,35 @@ fun ProfileChoice(
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                     ProfileGrid(
-                        profiles = childProfiles,
-                        onProfileClick = { profile ->
-                            navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
-                        },
-                        onAddClick = {
-                            if (childProfiles.size < 4) {
-                                navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
+                        profiles = childProfiles, onProfileClick = { profile ->
+                            // 처음
+                            if (isJoinApp) {
+                                profileViewModel.selectAccount(profile)
+                                navController.navigate(BottomRoute.HomeRoute)
+                            } else {
+                                navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
                         },
+
+//                        onAddClick = {
+//                        if (childProfiles.size < 4) {
+//                            navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
+//                        }
+//                    },
+
                         modifier = Modifier.weight(1f)
                     )
                 }
 
                 // 프로필 추가 버튼 (조건부 표시)
                 if (parentProfiles.isEmpty() || childProfiles.size < 4) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
                             }
-                            .padding(vertical = 16.dp)
-                    ) {
+                            .padding(vertical = 16.dp)) {
                         Box(
                             modifier = Modifier
                                 .size(120.dp)
@@ -158,8 +172,7 @@ fun ProfileChoice(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "계정 추가",
-                            style = subtitle2
+                            text = "계정 추가", style = subtitle2
                         )
                     }
                 }
@@ -171,9 +184,8 @@ fun ProfileChoice(
 
 @Composable
 fun ProfileGrid(
-    profiles: List<ProfileData>,
-    onProfileClick: (ProfileData) -> Unit,
-    onAddClick: () -> Unit,
+    profiles: List<GetAllProfileModel>, onProfileClick: (GetAllProfileModel) -> Unit,
+//    onAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -184,16 +196,13 @@ fun ProfileGrid(
         modifier = modifier.fillMaxWidth()
     ) {
         items(profiles) { profile ->
-            Profile(
-                name = profile.name,
-                profileImage = profile.profileImage,
+            Profile(name = profile.name,
+                profileImage = "",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onProfileClick(profile) }
-            )
+                    .clickable { onProfileClick(profile) })
         }
 
-        item {
-        }
+        item {}
     }
 }

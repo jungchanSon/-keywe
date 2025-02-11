@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,14 +24,20 @@ import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.component.OrderStaticsBox
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.subtitle1
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController,
+    tokenManager: TokenManager,
+
+    ) {
     Scaffold(
         topBar = { DefaultAppBar(title = "프로필", navController = navController) },
 //        modifier = Modifier.fillMaxSize()
@@ -94,14 +101,15 @@ fun ProfileScreen(navController: NavController) {
                 .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically) {}
-            MenuButtonComponent(navController)
+            MenuButtonComponent(navController, tokenManager)
         }
     }
 }
 
 
 @Composable
-fun MenuButtonComponent(navController: NavController) {
+fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager) {
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -109,15 +117,17 @@ fun MenuButtonComponent(navController: NavController) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         MenuButton(text = "본인정보", onClick = {})
-        MenuButton(text = "계정 관리",
-            onClick = {
-                navController.navigate(
-                    Route.ProfileBaseRoute.ProfileChoiceRoute
-                )
-            }
-        )
+        MenuButton(text = "계정 관리", onClick = {
+            navController.navigate(
+                Route.ProfileBaseRoute.ProfileChoiceRoute(false)
+            )
+        })
         MenuButton(text = "도움말", onClick = {})
-        MenuButton(text = "로그아웃", onClick = {})
+        MenuButton(text = "로그아웃", onClick = {
+            scope.launch {
+                tokenManager.clearTokens()
+            }
+        })
         MenuButton(text = "회원탈퇴", onClick = {})
     }
 }

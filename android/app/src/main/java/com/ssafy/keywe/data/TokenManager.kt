@@ -98,11 +98,18 @@ class TokenManager @Inject constructor(
         dataStore.updateData {
             it.toBuilder().clear().build()
         }
+        cachedAccessToken = null
+        cachedRefreshToken = null
+        cachedTempToken = null
         // 이벤트 발생
         _tokenClearedEvent.emit(Unit)
     }
 
     suspend fun hasValidToken(): Boolean {
         return !getToken().isNullOrEmpty()
+    }
+
+    fun saveCacheAccessToken(token: String) {
+        cachedAccessToken = token
     }
 }
