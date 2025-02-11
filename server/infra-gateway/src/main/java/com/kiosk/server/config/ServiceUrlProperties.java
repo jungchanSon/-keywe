@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record ServiceUrlProperties(
     String userService,
     String storeService,
-    String remoteService
+    String remoteService,
+    String orderService
 ) {
 }
