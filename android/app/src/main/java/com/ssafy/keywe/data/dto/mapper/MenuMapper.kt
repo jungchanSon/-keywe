@@ -10,14 +10,14 @@ import com.ssafy.keywe.data.dto.order.MenuPostRequest
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
-import com.ssafy.keywe.data.dto.order.OptionValueGroupResponse
+import com.ssafy.keywe.data.dto.order.OptionsValueGroupResponse
 import com.ssafy.keywe.data.dto.order.OptionsResponse
 import com.ssafy.keywe.domain.order.MenuDetailModel
 import com.ssafy.keywe.domain.order.MenuModel
 import com.ssafy.keywe.domain.order.MenuOptionModel
 import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OptionPostModel
-import com.ssafy.keywe.domain.order.OptionValueGroupModel
+import com.ssafy.keywe.domain.order.OptionsValueGroupModel
 import com.ssafy.keywe.domain.order.OptionsModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -33,8 +33,8 @@ fun MenuModel.toRequest(): MenuPostRequest {
     val optionsRequestBody = optionsJson.toRequestBody("application/json".toMediaTypeOrNull())
 
     // 이미지 변환
-    val imagePart: MultipartBody.Part? = if (!this.imageBase64.isNullOrEmpty()) {
-        val file = File(this.imageBase64)
+    val imagePart: MultipartBody.Part? = if (!this.image.isNullOrEmpty()) {
+        val file = File(this.image)
         val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
         MultipartBody.Part.createFormData("menuImage", file.name, requestBody)
     } else {
@@ -62,12 +62,12 @@ fun OptionsModel.toRequest(): OptionPostRequest {
         optionType = this.optionType,
         optionName = this.optionName,
         optionPrice = this.optionPrice,
-        optionValueGroup  = this.optionValueGroup.map { it.toRequest() }
+        optionsValueGroup  = this.optionsValueGroup.map { it.toRequest() }
     )
 }
 
-fun OptionValueGroupModel.toRequest(): OptionValueGroupResponse {
-    return OptionValueGroupResponse(
+fun OptionsValueGroupModel.toRequest(): OptionsValueGroupResponse {
+    return OptionsValueGroupResponse(
         optionValueId = this.optionValueId,
         optionValue = this.optionValue
     )
@@ -81,30 +81,31 @@ fun MenuPostResponse.toDomain(): MenuModel {
         menuDescription = "",
         menuRecipe = "",
         menuPrice = this.menuPrice,
-        imageBase64 = "",
+        image = "",
         options = this.options.map { it.toDomain() }
     )
 }
 
 fun OptionsResponse.toDomain(): OptionsModel {
     return OptionsModel(
+        optionId = this.optionId,
         optionType = this.optionType,
         optionName = this.optionName,
         optionPrice = this.optionPrice,
-        optionValueGroup = this.optionValueGroup.map { it.toDomain() }
+        optionsValueGroup = this.optionsValueGroup.map { it.toDomain() }
     )
 }
 
-fun OptionValueGroupResponse.toDomain(): OptionValueGroupModel {
-    return OptionValueGroupModel(
+fun OptionsValueGroupResponse.toDomain(): OptionsValueGroupModel {
+    return OptionsValueGroupModel(
         optionValueId = this.optionValueId,
         optionValue = this.optionValue
     )
 }
 
 fun MenuModel.toPatchRequest(): MenuPatchRequest {
-    val imagePart: MultipartBody.Part? = if (!this.imageBase64.isNullOrEmpty()) {
-        val file = File(this.imageBase64)
+    val imagePart: MultipartBody.Part? = if (!this.image.isNullOrEmpty()) {
+        val file = File(this.image)
         val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
         MultipartBody.Part.createFormData("menuImage", file.name, requestBody)
     } else {
@@ -142,7 +143,7 @@ fun MenuDetailResponse.toDomain(): MenuDetailModel {
         menuDescription = this.menuDescription,
         menuRecipe = this.menuRecipe,
         menuPrice = this.menuPrice,
-        imageUrl = this.image,
+        image = this.image,
         options = this.options.map { it.toDomain() }
     )
 }
@@ -161,7 +162,6 @@ fun OptionPostModel.toRequest(): OptionPostRequest {
         optionType = this.optionType,
         optionName = this.optionName,
         optionPrice = this.optionPrice,
-        optionValueGroup = this.optionValueGroup.map { it.toRequest() }
+        optionsValueGroup = this.optionsValueGroup.map { it.toRequest() }
     )
 }
-

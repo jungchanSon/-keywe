@@ -33,20 +33,22 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
 import com.ssafy.keywe.presentation.order.component.MenuSubCategory
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(
-    navController: NavController, viewModel: OrderViewModel = hiltViewModel()
+    navController: NavController, viewModel: MenuViewModel = hiltViewModel()
 ) {
+    val cartViewModel: MenuCartViewModel = hiltViewModel()
 
     Scaffold(topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingCartButton(navController, viewModel)
+            FloatingCartButton(navController, cartViewModel)
         }) {
         Column(
             modifier = Modifier
@@ -63,7 +65,7 @@ fun MenuScreen(
 }
 
 @Composable
-fun FloatingCartButton(navController: NavController, viewModel: OrderViewModel) {
+fun FloatingCartButton(navController: NavController, viewModel: MenuCartViewModel = hiltViewModel()) {
 //    val cartItemCount by viewModel.cartItemCount.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
     val cartItemsCount = cartItems.sumOf { it.quantity }

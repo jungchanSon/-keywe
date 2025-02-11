@@ -20,7 +20,7 @@ data class OptionPostRequest(
     val optionType: String,
     val optionName: String,
     val optionPrice: Int,
-    val optionValueGroup: List<OptionValueGroupResponse>
+    val optionsValueGroup: List<OptionsValueGroupResponse>
 )
 
 data class MenuPatchRequest(

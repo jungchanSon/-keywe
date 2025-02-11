@@ -1,7 +1,9 @@
 package com.ssafy.keywe.common
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -13,6 +15,9 @@ import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.presentation.profile.AddMemberScreen
 import com.ssafy.keywe.presentation.profile.EditMember
 import com.ssafy.keywe.presentation.profile.EmailVerification
@@ -107,12 +112,20 @@ fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager:
 
 fun NavGraphBuilder.menuGraph(navController: NavHostController) {
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.MenuRoute) {
-        composable<Route.MenuBaseRoute.MenuRoute> { MenuScreen(navController) }
-        composable<Route.MenuBaseRoute.MenuDetailRoute> {
-            val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
-            MenuDetailScreen(navController, arg.id)
+        composable<Route.MenuBaseRoute.MenuRoute> {
+            val menuScreenViewModel: MenuViewModel = hiltViewModel()
+            MenuScreen(navController, menuScreenViewModel)
         }
-        composable<Route.MenuBaseRoute.MenuCartRoute> { MenuCartScreen(navController) }
+        composable<Route.MenuBaseRoute.MenuDetailRoute> {
+            val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
+            val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
+            Log.d("Detail Navigator", ":$arg.id")
+            MenuDetailScreen(navController, menuDetailViewModel, arg.id)
+        }
+        composable<Route.MenuBaseRoute.MenuCartRoute> {
+            val menuCartViewModel: MenuCartViewModel = hiltViewModel()
+            MenuCartScreen(navController, menuCartViewModel)
+        }
     }
 }
 

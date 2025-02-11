@@ -15,13 +15,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
-fun MenuCategoryScreen(viewModel: OrderViewModel) {
+fun MenuCategoryScreen(
+    viewModel: MenuViewModel = hiltViewModel()
+//    viewModel: HiltViewModel
+) {
 
     val menuCategoryList = viewModel.categories.collectAsState().value
+//    val menuCategoryList = viewModel.getAllCategories()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val filteredMenuItems by viewModel.filteredMenuItems.collectAsState()
 

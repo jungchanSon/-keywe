@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
-import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OptionChangeBottomSheet(
-    cartItem: CartItem, viewModel: OrderViewModel, onDismiss: () -> Unit
+    cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewModel, onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val selectedSize = remember { mutableStateOf(cartItem.size) }
@@ -55,7 +55,7 @@ fun OptionChangeBottomSheet(
 
     val totalPrice = remember {
         derivedStateOf {
-            val menuPrice = viewModel.getMenuDataById(cartItem.menuId)?.menuPrice ?: 0
+            val menuPrice = viewModel.fetchMenuDetailById(cartItem.menuId)?.menuPrice ?: 0
             val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
             val extraOptionPrice = extraOptions.entries.sumOf { (name, count) ->
                 val optionPrice = options.find { it.name == name }?.price ?: 0

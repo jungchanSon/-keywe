@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
-import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -38,8 +38,8 @@ import com.ssafy.keywe.ui.theme.subtitle2
 
 @Composable
 fun MenuCartMenuBox(
-    cartItem: CartItem,
-    viewModel: OrderViewModel,
+    cartItem: MenuCartViewModel.CartItem,
+    viewModel: MenuCartViewModel,
 ) {
     Box {
         Column {
@@ -74,7 +74,7 @@ fun MenuCartMenuBox(
 }
 
 @Composable
-fun MenuCartMenu(cartItem: CartItem, viewModel: OrderViewModel) {
+fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewModel) {
     val cartItems by viewModel.cartItems.collectAsState()
     val updatedCartItem = cartItems.find { it.id == cartItem.id }
     val quantity = updatedCartItem?.quantity ?: cartItem.quantity
@@ -98,7 +98,7 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: OrderViewModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = cartItem.imageURL),
+                painter = rememberAsyncImagePainter(model = cartItem.image),
                 contentDescription = "Menu Image",
                 modifier = Modifier
                     .height(60.dp)

@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,20 +26,21 @@ import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailExtraOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
-import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.OptionData
+import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
-import com.ssafy.keywe.ui.theme.orangeColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuDetailScreen(
     navController: NavController,
-    menuId: Long,
-    viewModel: OrderViewModel = hiltViewModel()
+    viewModel: MenuDetailViewModel = hiltViewModel(),
+    menuId: Long
 ) {
-    val menu = viewModel.getMenuDataById(menuId)
+    Log.d("Menu Detail", ":$menuId")
+
+    val menu = viewModel.fetchMenuDetailById(menuId)
+    Log.d("MenuDetail Menu:", "$menu")
     val menuPrice = menu?.menuPrice ?: 0
 
     val selectedSize = remember { mutableStateOf("Tall") }

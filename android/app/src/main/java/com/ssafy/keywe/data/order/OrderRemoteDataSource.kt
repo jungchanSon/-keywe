@@ -1,5 +1,6 @@
 package com.ssafy.keywe.data.order
 
+import android.util.Log
 import com.ssafy.keywe.data.ApiResponseHandler.handleApiResponse
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.TokenManager
@@ -77,7 +78,9 @@ class OrderRemoteDataSource @Inject constructor(
 
     override suspend fun requestGetDetailMenu(menuId: Long): ResponseResult<MenuDetailResponse> =
         handleApiResponse {
-            orderService.getDetailMenu(menuId)
+            val result = orderService.getDetailMenu(menuId)
+            Log.d("Test", result.body().toString())
+            result
         }
 
     override suspend fun requestGetCategoryMenu(categoryId: Long): ResponseResult<List<MenuSimpleResponse>> =

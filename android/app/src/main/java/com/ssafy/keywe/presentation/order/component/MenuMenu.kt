@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import kotlinx.coroutines.launch
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MenuMenuList(
     navController: NavController,
-    viewModel: OrderViewModel
+    viewModel: MenuViewModel
 ) {
     val filteredMenuList by viewModel.filteredMenuItems.collectAsState()
     val listState = rememberLazyGridState() // 스크롤 상태 관리
@@ -81,7 +81,7 @@ fun MenuMenuList(
 fun MenuMenuScreen(
     menuId: Long,
     selectItem: () -> Unit,
-    viewModel: OrderViewModel
+    viewModel: MenuViewModel
 ) {
     Log.d("Menu ID", "$menuId")
 

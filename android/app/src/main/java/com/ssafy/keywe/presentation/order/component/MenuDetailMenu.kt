@@ -1,6 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
-import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +23,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.h5
 import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -37,12 +38,14 @@ fun MenuDetailMenu(
     modifier: Modifier = Modifier,
     menuId: Long,
     menuPrice: Int,
-    viewModel: OrderViewModel
+    viewModel: MenuDetailViewModel
 ) {
-    val menu = viewModel.getMenuDataById(menuId)
+    Log.d("MenuDetailMenu", ":$menuId")
+    val menu = viewModel.fetchMenuDetailById(menuId)
+    Log.d("MenuDetailMenu", ":$menu")
     val menuName = menu?.menuName ?: ""
-    val menuImageURL = menu?.image ?: ""
-    val menuDescription = menu?.menuName ?: ""
+    val menuImage = menu?.image ?: ""
+    val menuDescription = menu?.menuDescription ?: ""
 
     Box(
         modifier = modifier
@@ -57,7 +60,7 @@ fun MenuDetailMenu(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            MenuDetailImage(menuImageURL)
+            MenuDetailImage(menuImage)
             Text(
                 text = menuName,
                 color = primaryColor,
@@ -78,7 +81,7 @@ fun MenuDetailMenu(
 }
 
 @Composable
-fun MenuDetailImage(menuImageURL:String) {
+fun MenuDetailImage(menuImage:String) {
     Box(
         modifier = Modifier
             .size(200.dp)
@@ -87,7 +90,7 @@ fun MenuDetailImage(menuImageURL:String) {
     ) {
 
         Image(
-            painter = rememberAsyncImagePainter(model = menuImageURL),
+            painter = rememberAsyncImagePainter(model = menuImage),
             contentDescription = "Web Image",
             modifier = Modifier
                 .fillMaxSize()
