@@ -27,3 +27,5 @@ spec:
               value: store-service-app.store.svc.cluster.local
             - name: REMOTE_SERVICE_URL
               value: remote-server-app.remote.svc.cluster.local
+            - name: ORDER_SERVICE_URL
+              value: order-server-app.order.svc.cluster.local
