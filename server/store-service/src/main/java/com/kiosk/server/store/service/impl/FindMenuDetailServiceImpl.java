@@ -37,7 +37,7 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
         params.put("userId", userId);
 
         byte[] imageBytes = (byte[]) menuImageRepository.findImageBytesById(params);
-        String imageBase64 = (imageBytes != null && imageBytes.length > 0)
+        String image = (imageBytes != null && imageBytes.length > 0)
                 ? "data:image/png;base64," + Base64.getUrlEncoder().withoutPadding().encodeToString(imageBytes)
                 : null;
 
@@ -45,6 +45,6 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
         List<OptionGroupResponse> optionGroups = optionService.getUpdatedOptionGroups(menuId);
 
         // DTO 변환 후 반환
-        return MenuDetailResponse.of(menu, imageBase64, optionGroups);
+        return MenuDetailResponse.of(menu, image, optionGroups);
     }
 }
