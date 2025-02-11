@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OptionChangeBottomSheet(
-    cartItem: CartItem, viewModel: MenuViewModel, onDismiss: () -> Unit
+    cartItem: CartItem, viewModel: OrderViewModel, onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val selectedSize = remember { mutableStateOf(cartItem.size) }
@@ -94,11 +94,32 @@ fun OptionChangeBottomSheet(
             }
 
             item {
-                MenuDetailCommonOption(selectedSize = selectedSize.value,
-                    selectedTemperature = selectedTemperature.value,
-                    onSizeSelected = { selectedSize.value = it },
-                    onTemperatureSelected = { selectedTemperature.value = it })
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(whiteBackgroundColor) // 원하는 배경색 적용
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        MenuDetailCommonOptionRow(
+                            listOf("Tall", "Grande", "Venti"),
+                            selectedSize.value,
+                            onSelect = { selectedSize.value = it }
+                        )
+                        MenuDetailCommonOptionRow(
+                            listOf("Hot", "Ice"),
+                            selectedTemperature.value,
+                            onSelect = { selectedTemperature.value = it }
+                        )
+                    }
+                }
             }
+
             item {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -166,6 +187,7 @@ fun OptionChangeBottomSheet(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 24.dp)
                 .padding(horizontal = 24.dp)
                 .background(whiteBackgroundColor),
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally)

@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,11 +20,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -37,8 +42,11 @@ import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
 import com.ssafy.keywe.presentation.order.component.MenuCartMenuBox
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.h6sb
+import com.ssafy.keywe.ui.theme.noRippleClickable
+import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
@@ -51,20 +59,27 @@ fun MenuCartScreen(
     ) {
 
     val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>();
-    val viewModel = hiltViewModel<MenuViewModel>(parentBackStackEntry)
+    val viewModel = hiltViewModel<OrderViewModel>(parentBackStackEntry)
     val cartItems by viewModel.cartItems.collectAsState()
     val isDeleteDialogOpen by viewModel.isDeleteDialogOpen.collectAsState()
     val selectedCartItem by viewModel.selectedCartItem.collectAsState()
+
+    val isAllDeleteDialogOpen = remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .zIndex(1f)
             .fillMaxSize()
-            .background(color = if (isDeleteDialogOpen) titleTextColor.copy(alpha = 0.5f) else Color.Transparent)
+            .background(
+                color = if (isDeleteDialogOpen || isAllDeleteDialogOpen.value) titleTextColor.copy(
+                    alpha = 0.5f
+                ) else Color.Transparent
+            )
     ) {
-        // ✅ Scaffold 외부에서 다이얼로그 호출
+        // 개별 삭제 다이얼로그
         if (isDeleteDialogOpen && selectedCartItem != null) {
-            MenuCartDeleteDialog(title = "장바구니 삭제",
+            MenuCartDeleteDialog(
+                title = "장바구니 삭제",
                 description = "선택한 상품을 장바구니에서 삭제하시겠습니까?",
                 onCancel = { viewModel.closeDeleteDialog() },
                 onConfirm = {
@@ -73,6 +88,20 @@ fun MenuCartScreen(
                     }
                 })
         }
+
+        // 전체 삭제 다이얼로그
+        if (isAllDeleteDialogOpen.value) {
+            MenuCartDeleteDialog(
+                title = "전체 메뉴 삭제",
+                description = "장바구니에 담긴 모든 메뉴를 삭제하시겠습니까?",
+                onCancel = { isAllDeleteDialogOpen.value = false },
+                onConfirm = {
+                    viewModel.clearCart()
+                    isAllDeleteDialogOpen.value = false
+                }
+            )
+        }
+
     }
     Scaffold(
         topBar = { DefaultAppBar(title = "장바구니", navController = navController) },
@@ -85,6 +114,22 @@ fun MenuCartScreen(
                 .background(whiteBackgroundColor),
         ) {
             if (cartItems.isNotEmpty()) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.End // 텍스트를 오른쪽 정렬
+                ) {
+                    Text(
+                        text = "전체 삭제",
+                        style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
+                        color = polishedSteelColor,
+                        modifier = Modifier
+                            .noRippleClickable { isAllDeleteDialogOpen.value = true }
+                    )
+                }
+
 
                 // 상단 - 스크롤이 가능한 장바구니 항목 리스트
                 LazyColumn(
@@ -110,7 +155,7 @@ fun MenuCartScreen(
                 }
 
             } else {
-                Column (
+                Column(
                     modifier = Modifier.fillMaxWidth().fillMaxHeight()
                         .padding(bottom = 104.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),

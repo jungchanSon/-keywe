@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Scaffold
@@ -34,14 +33,14 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
 import com.ssafy.keywe.presentation.order.component.MenuSubCategory
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(
-    navController: NavController, viewModel: MenuViewModel = hiltViewModel()
+    navController: NavController, viewModel: OrderViewModel = hiltViewModel()
 ) {
 
     Scaffold(topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
@@ -53,7 +52,7 @@ fun MenuScreen(
             modifier = Modifier
                 .fillMaxHeight()
         ) {
-            MenuCategoryScreen()
+            MenuCategoryScreen(viewModel)
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
@@ -64,7 +63,7 @@ fun MenuScreen(
 }
 
 @Composable
-fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
+fun FloatingCartButton(navController: NavController, viewModel: OrderViewModel) {
     val cartItemCount by viewModel.cartItemCount.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
     val cartItemsCount = cartItems.sumOf { it.quantity }

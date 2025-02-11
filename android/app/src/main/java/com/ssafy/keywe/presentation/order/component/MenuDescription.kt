@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.pretendardkr
 import com.ssafy.keywe.ui.theme.titleTextColor
@@ -25,7 +25,7 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 @Composable
 fun MenuDescription(
     menuId: Int,
-    viewModel: MenuViewModel = hiltViewModel()
+    viewModel: OrderViewModel = hiltViewModel()
 ) {
     val menu = viewModel.getMenuDataById(menuId)
 

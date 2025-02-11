@@ -26,16 +26,17 @@ import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailExtraOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OptionData
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.orangeColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuDetailScreen(
     navController: NavController,
     menuId: Int,
-    viewModel: MenuViewModel = hiltViewModel()
+    viewModel: OrderViewModel = hiltViewModel()
 ) {
     val menu = viewModel.getMenuDataById(menuId)
     val menuPrice = menu?.price ?: 0
@@ -66,7 +67,6 @@ fun MenuDetailScreen(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
                 ) {
                     item {
                         MenuDetailMenu(
@@ -75,7 +75,10 @@ fun MenuDetailScreen(
                             menuPrice = totalPrice.intValue,
                             viewModel
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier
+                            .height(12.dp)
+                            .background(greyBackgroundColor)
+                        )
                     }
 
                     item {
@@ -93,7 +96,11 @@ fun MenuDetailScreen(
                             },
                             onTemperatureSelected = { temp -> selectedTemperature.value = temp }
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier
+                            .height(12.dp)
+                            .fillMaxWidth()
+                            .background(greyBackgroundColor)
+                        )
                     }
 
                     item {
@@ -116,7 +123,6 @@ fun MenuDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter) // 하단 정렬
-                    .background(greyBackgroundColor)
             ) {
                 MenuDetailBottom(
                     menuId = menuId,
