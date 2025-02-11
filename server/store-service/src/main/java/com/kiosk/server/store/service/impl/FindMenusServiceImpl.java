@@ -1,6 +1,8 @@
 package com.kiosk.server.store.service.impl;
 
+import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.store.controller.dto.MenuResponse;
+import com.kiosk.server.store.domain.CategoryRepository;
 import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
@@ -16,9 +18,14 @@ public class FindMenusServiceImpl implements FindMenusService {
 
     private final MenuRepository menuRepository;
     private final MenuImageRepository imageRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<MenuResponse> doService(long userId, Long categoryId) {
+        if (categoryId != null && !categoryRepository.existsById(categoryId)) {
+            throw new BadRequestException("존재하지 않는 카테고리입니다.");
+        }
+
         // 메뉴 리스트 가져오기 (카테고리 ID가 없으면 전체 조회)
         List<StoreMenu> menuList = (categoryId == null)
                 ? menuRepository.findAll(userId)
