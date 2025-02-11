@@ -1,31 +1,44 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: redis
+  name: mysql
 spec:
   selector:
     matchLabels:
-      app: redis
-  serviceName: redis
+      app: mysql
+  serviceName: mysql
   template:
     metadata:
       labels:
-        app: redis
+        app: mysql
     spec:
       containers:
-        - image: redis
-          name: redis
+        - image: mysql:8.0
+          name: mysql
+          env:
+            - name: MYSQL_USER
+              value: test
+            - name: MYSQL_PASSWORD
+              value: test
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_ROOT_HOST
+              value: '%'
           ports:
-            - containerPort: 6379
+            - containerPort: 3306
               name: mysql
           volumeMounts:
-            - name: volume-redis
-              mountPath: /var/lib/redis
+            - name: volume-mysql
+              mountPath: /var/lib/mysql
+            - name: init-table
+              mountPath: /docker-entrypoint-initdb.d/
+              readOnly: true
   volumeClaimTemplates:
     - metadata:
-        name: volume-redis
+        name: volume-mysql
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 2Gi
+            storage: 10Gi
+

@@ -1,44 +1,25 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: mysql
+  name: {{ .Chart.Name }}
 spec:
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: mysql
-  serviceName: mysql
+      app:  {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: mysql
+        app:  {{ .Chart.Name }}
     spec:
       containers:
-        - image: mysql:8.0
-          name: mysql
-          env:
-            - name: MYSQL_USER
-              value: test
-            - name: MYSQL_PASSWORD
-              value: test
-            - name: MYSQL_ROOT_PASSWORD
-              value: root
-            - name: MYSQL_ROOT_HOST
-              value: '%'
+        - name: order-service-container
+          image: "{{ .Values.image.repository}}/{{ .Values.image.name }}:{{ .Values.image.tag}}"
+          imagePullPolicy: {{ .Values.image.pullPolicy}}
           ports:
-            - containerPort: 3306
-              name: mysql
-          volumeMounts:
-            - name: volume-mysql
-              mountPath: /var/lib/mysql
-            - name: init-table
-              mountPath: /docker-entrypoint-initdb.d/
-              readOnly: true
-  volumeClaimTemplates:
-    - metadata:
-        name: volume-mysql
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 10Gi
-
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: CONFIG_SERVICE_URL
+              value: config-server-app-service.config.svc.cluster.local
+            - name: ORDER_MYSQL_URL
+              value: {{ .Values.order_mysql_url}}
