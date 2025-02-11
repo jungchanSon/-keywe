@@ -11,13 +11,7 @@ import com.ssafy.keywe.domain.auth.CEOLoginModel
 import com.ssafy.keywe.domain.auth.LoginModel
 import com.ssafy.keywe.domain.auth.SelectProfileModel
 import com.ssafy.keywe.domain.auth.SignUpModel
-import com.ssafy.keywe.domain.order.CategoryModel
 import javax.inject.Inject
-
-interface AuthRepository {
-    suspend fun login(loginRequest: LoginRequest): ResponseResult<LoginModel>
-    suspend fun signUp(signUpRequest: SignUpRequest): ResponseResult<SignUpModel>
-}
 
 class AuthRepositoryImpl @Inject constructor(
     private val authDataSource: AuthDataSource,
@@ -39,6 +33,7 @@ class AuthRepositoryImpl @Inject constructor(
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
             )
+
             is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
             is ResponseResult.Success -> ResponseResult.Success(result.data!!.toDomain())
         }

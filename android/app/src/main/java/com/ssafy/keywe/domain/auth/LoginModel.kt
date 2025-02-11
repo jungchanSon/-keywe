@@ -11,5 +11,5 @@ data class CEOLoginModel(
 
 data class SelectProfileModel(
     val accessToken: String,
-    val refreshToken: String
+//    val refreshToken: String
 )

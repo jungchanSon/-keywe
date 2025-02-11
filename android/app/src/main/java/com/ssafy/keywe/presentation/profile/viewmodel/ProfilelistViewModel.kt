@@ -3,10 +3,15 @@ package com.ssafy.keywe.presentation.profile.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.data.ApiResponseHandler.onException
+import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.dto.Status
+import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
 import com.ssafy.keywe.data.dto.profile.ProfileData
+import com.ssafy.keywe.domain.auth.AuthRepository
+import com.ssafy.keywe.domain.auth.SelectProfileModel
 import com.ssafy.keywe.domain.profile.GetAllProfileModel
 import com.ssafy.keywe.domain.profile.ProfileRepository
 import com.ssafy.keywe.viewmodel.AddMemberViewModel
@@ -19,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: ProfileRepository, private val tokenManager: TokenManager
+    private val profileRepository: ProfileRepository, private val tokenManager: TokenManager,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     private val _profilesUi = MutableStateFlow<List<ProfileData>>(emptyList())
     val profilesUi = _profilesUi.asStateFlow()
@@ -29,17 +35,30 @@ class ProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.getAllProfile().onSuccess(::handleSuccess)
+            profileRepository.getAllProfile().onSuccess(::handleSuccess)
         }
     }
 
     fun selectAccount(model: GetAllProfileModel) {
-        val accessToken = _profiles.value.first {
-            it.id == model.id
-        }.id.toString()
-        tokenManager.saveCacheAccessToken(accessToken)
         viewModelScope.launch {
-            tokenManager.saveAccessToken(accessToken)
+            val request = SelectProfileRequest(
+                model.id
+            )
+            authRepository.selectProfile(request).onSuccess(::saveToken).onException { e, message ->
+                Log.d("Select User onException", "SelectError $message")
+            }.onServerError { status ->
+                Log.d("Select User onServerError", "SelectError $status")
+            }
+
+        }
+
+    }
+
+    private fun saveToken(model: SelectProfileModel) {
+        tokenManager.saveCacheAccessToken(model.accessToken)
+        viewModelScope.launch {
+            tokenManager.saveAccessToken(model.accessToken)
+//            tokenManager.saveRefreshToken(model.refreshToken)
         }
     }
 

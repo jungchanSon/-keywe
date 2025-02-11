@@ -13,4 +13,5 @@ interface ProfileRepository {
     ): ResponseResult<PatchProfileModel>
 
     suspend fun deleteProfile(profileId: Long): ResponseResult<Unit>
+
 }

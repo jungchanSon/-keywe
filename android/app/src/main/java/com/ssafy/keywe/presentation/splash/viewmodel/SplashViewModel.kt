@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.util.JWTUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -40,7 +41,7 @@ class SplashViewModel @Inject constructor(
                 if (token == null) {
                     _splashRouteType.value = SplashRouteType.LOGIN
                 } else {
-                    if (token.startsWith("Bearer")) {
+                    if (JWTUtil.isTempToken(token.split(" ")[1])) {
                         _splashRouteType.value = SplashRouteType.PROFILE
                     } else {
                         _splashRouteType.value = SplashRouteType.HOME

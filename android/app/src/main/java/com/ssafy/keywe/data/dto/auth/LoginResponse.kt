@@ -41,7 +41,8 @@ data class CEOLoginResponse(
 @Serializable
 data class SelectProfileResponse(
     @SerialName("accessToken") val accessToken: String,
-    @SerialName("refreshToken") val refreshToken: String
+    // todo familyId 추가
+//    @SerialName("refreshToken") val refreshToken: String
 )
 
 @Serializable
