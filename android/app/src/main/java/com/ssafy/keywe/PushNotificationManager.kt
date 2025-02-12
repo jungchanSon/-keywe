@@ -6,8 +6,10 @@ import kotlinx.coroutines.flow.update
 
 object PushNotificationManager {
     private var countReceived: Int = 0
-    val _token = MutableStateFlow<String?>(null)
+    private val _token = MutableStateFlow<String?>(null)
     var token = _token.asStateFlow()
+    private val _deviceId = MutableStateFlow<String?>(null)
+    var deviceId = _deviceId.asStateFlow()
 
     fun setDataReceived(count: Int) {
         this.countReceived = count
@@ -21,5 +23,9 @@ object PushNotificationManager {
         this._token.update {
             token
         }
+    }
+
+    fun updateDeviceId(deviceId: String) {
+        _deviceId.update { deviceId }
     }
 }

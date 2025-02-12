@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.fcm.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.PushNotificationManager
 import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
@@ -24,7 +25,8 @@ class FCMViewModel @Inject constructor(
     val token = _token.asStateFlow()
 
     private fun registToken(token: String) {
-        val request = FCMRequest(token)
+        val deviceId = PushNotificationManager.deviceId.value
+        val request = FCMRequest(token, deviceId!!)
         viewModelScope.launch {
             repository.registFCM(request).onSuccess(::handleSuccess).onServerError(::handleError)
                 .onException(::handleException)

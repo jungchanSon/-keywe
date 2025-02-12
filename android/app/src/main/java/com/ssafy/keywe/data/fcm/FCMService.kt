@@ -16,6 +16,6 @@ interface FCMService {
 
 
     companion object {
-        private const val FCM_PATH = "/remote/fcm"
+        private const val FCM_PATH = "/notification/android/tokens"
     }
 }

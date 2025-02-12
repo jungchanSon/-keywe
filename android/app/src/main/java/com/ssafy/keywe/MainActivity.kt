@@ -112,6 +112,8 @@ class MainActivity : ComponentActivity() {
                 Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
 
 
+            PushNotificationManager.updateDeviceId(deviceId)
+            Log.d("push notification device id", deviceId)
             screenSizeManager.updateScreenSize(this, density)
 
             val navController = rememberNavController()
