@@ -2,25 +2,25 @@ package com.ssafy.keywe.data.profile
 
 import com.ssafy.keywe.data.ApiResponseHandler.handleApiResponse
 import com.ssafy.keywe.data.ResponseResult
-import com.ssafy.keywe.data.dto.profile.GetAllProfileResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
-import com.ssafy.keywe.data.dto.profile.PatchProfileRequest
-import com.ssafy.keywe.data.dto.profile.PatchProfileResponse
+import com.ssafy.keywe.data.dto.profile.GetProfileListResponse
 import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
+import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
+import com.ssafy.keywe.data.dto.profile.UpdateProfileResponse
 import javax.inject.Inject
 
 class ProfileRemoteDataSource @Inject constructor(private val profileService: ProfileService) :
     ProfileDataSource {
 
-    override suspend fun requestGetAllProfile(): ResponseResult<List<GetAllProfileResponse>> =
+    override suspend fun requestGetProfileList(): ResponseResult<List<GetProfileListResponse>> =
         handleApiResponse {
-            profileService.getAllProfile()
+            profileService.getProfileList()
         }
 
-    override suspend fun requestGetProfileDetail(profileId: Long): ResponseResult<GetProfileDetailResponse> =
+    override suspend fun requestGetProfileDetail(): ResponseResult<GetProfileDetailResponse> =
         handleApiResponse {
-            profileService.getProfileDetail(profileId)
+            profileService.getProfileDetail()
         }
 
     override suspend fun requestPostProfile(postProfileRequest: PostProfileRequest): ResponseResult<PostProfileResponse> =
@@ -28,15 +28,14 @@ class ProfileRemoteDataSource @Inject constructor(private val profileService: Pr
             profileService.postProfile(postProfileRequest)
         }
 
-    override suspend fun requestPatchProfile(
-        profileId: Long, patchProfileRequest: PatchProfileRequest
-    ): ResponseResult<PatchProfileResponse> = handleApiResponse {
-        profileService.patchProfile(profileId, patchProfileRequest)
-    }
+    override suspend fun requestUpdateProfile(updateProfileRequest: UpdateProfileRequest): ResponseResult<UpdateProfileResponse> =
+        handleApiResponse {
+            profileService.updateProfile(updateProfileRequest)
+        }
 
     override suspend fun requestDeleteProfile(profileId: Long): ResponseResult<Unit> =
         handleApiResponse {
-            profileService.deleteProfile((profileId))
+            profileService.deleteProfile(profileId)
         }
 
 }

@@ -31,13 +31,15 @@ import com.ssafy.keywe.R
 import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
-import com.ssafy.keywe.data.dto.profile.RoleType
-import com.ssafy.keywe.domain.profile.GetAllProfileModel
+import com.ssafy.keywe.domain.profile.GetProfileListModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
+
+const val PARENT = "PARENT"
+const val CHILD = "CHILD"
 
 
 @Composable
@@ -47,9 +49,8 @@ fun ProfileChoiceScreen(
     profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val profiles by profileViewModel.profiles.collectAsStateWithLifecycle()
-    val parentProfiles = profiles.filter { it.type == RoleType.PARENT }
-    val childProfiles = profiles.filter { it.type == RoleType.CHILD }
-
+    val parentProfiles = profiles.filter { it.role == PARENT }
+    val childProfiles = profiles.filter { it.role == CHILD }
 
 
     Scaffold(
@@ -184,7 +185,7 @@ fun ProfileChoiceScreen(
 
 @Composable
 fun ProfileGrid(
-    profiles: List<GetAllProfileModel>, onProfileClick: (GetAllProfileModel) -> Unit,
+    profiles: List<GetProfileListModel>, onProfileClick: (GetProfileListModel) -> Unit,
 //    onAddClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

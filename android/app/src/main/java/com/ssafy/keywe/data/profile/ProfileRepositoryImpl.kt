@@ -2,13 +2,13 @@ package com.ssafy.keywe.data.profile
 
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.dto.mapper.toDomain
-import com.ssafy.keywe.data.dto.profile.PatchProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileRequest
-import com.ssafy.keywe.domain.profile.GetAllProfileModel
+import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
 import com.ssafy.keywe.domain.profile.GetProfileDetailModel
-import com.ssafy.keywe.domain.profile.PatchProfileModel
+import com.ssafy.keywe.domain.profile.GetProfileListModel
 import com.ssafy.keywe.domain.profile.PostProfileModel
 import com.ssafy.keywe.domain.profile.ProfileRepository
+import com.ssafy.keywe.domain.profile.UpdateProfileModel
 import javax.inject.Inject
 
 
@@ -27,8 +27,8 @@ class ProfileRepositoryImpl @Inject constructor(
 //            is ResponseResult.Success -> ResponseResult.Success(result.data!!.toDomain())
 //        }
 //    }
-    override suspend fun getAllProfile(): ResponseResult<List<GetAllProfileModel>> {
-        return when (val result = profileDataSource.requestGetAllProfile()) {
+    override suspend fun getProfileList(): ResponseResult<List<GetProfileListModel>> {
+        return when (val result = profileDataSource.requestGetProfileList()) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
             )
@@ -38,8 +38,8 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getProfileDetail(profileId: Long): ResponseResult<GetProfileDetailModel> {
-        return when (val result = profileDataSource.requestGetProfileDetail(profileId)) {
+    override suspend fun getProfileDetail(): ResponseResult<GetProfileDetailModel> {
+        return when (val result = profileDataSource.requestGetProfileDetail()) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
             )
@@ -60,11 +60,8 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchProfile(
-        profileId: Long, patchProfileRequest: PatchProfileRequest
-    ): ResponseResult<PatchProfileModel> {
-        return when (val result =
-            profileDataSource.requestPatchProfile(profileId, patchProfileRequest)) {
+    override suspend fun updateProfile(updateProfileRequest: UpdateProfileRequest): ResponseResult<UpdateProfileModel> {
+        return when (val result = profileDataSource.requestUpdateProfile(updateProfileRequest)) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
             )

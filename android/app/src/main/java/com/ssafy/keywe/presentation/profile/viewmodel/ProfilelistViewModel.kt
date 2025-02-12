@@ -6,15 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
+import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.dto.Status
 import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
-import com.ssafy.keywe.data.dto.profile.ProfileData
 import com.ssafy.keywe.domain.auth.AuthRepository
 import com.ssafy.keywe.domain.auth.SelectProfileModel
-import com.ssafy.keywe.domain.profile.GetAllProfileModel
+import com.ssafy.keywe.domain.profile.GetProfileListModel
 import com.ssafy.keywe.domain.profile.ProfileRepository
-import com.ssafy.keywe.viewmodel.AddMemberViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,22 +26,42 @@ class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository, private val tokenManager: TokenManager,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
-    private val _profilesUi = MutableStateFlow<List<ProfileData>>(emptyList())
+    private val _profilesUi =
+        MutableStateFlow<List<GetProfileListModel>>(emptyList()) //프로필 목록을 보여주는 상태관리
     val profilesUi = _profilesUi.asStateFlow()
 
-    private val _profiles = MutableStateFlow<List<GetAllProfileModel>>(emptyList())
+    private val _profiles = MutableStateFlow<List<GetProfileListModel>>(emptyList())
     val profiles = _profiles.asStateFlow()
 
     init {
+        getProfileList()
+    }
+
+    private fun getProfileList() {
         viewModelScope.launch {
-            profileRepository.getAllProfile().onSuccess(::handleSuccess)
+            when (val result = profileRepository.getProfileList()) {
+                is ResponseResult.Success -> {
+                    _profiles.value = result.data
+                    Log.d("getProfileList", "성공함 결과값: ${result.data}")
+                }
+
+                is ResponseResult.ServerError -> {
+                    println("서버 에러: ${result.status}")
+                    Log.d("getProfileList", "서버 에러: ${result.status}")
+                }
+
+                is ResponseResult.Exception -> {
+                    println("예외 발생: ${result.e.message}")
+                    Log.d("getProfileList", "예외 발생: ${result.e.message}")
+                }
+            }
         }
     }
 
-    fun selectAccount(model: GetAllProfileModel) {
+    fun selectAccount(model: GetProfileListModel) {
         viewModelScope.launch {
             val request = SelectProfileRequest(
-                model.id
+                model.id.toLong()
             )
             authRepository.selectProfile(request).onSuccess(::saveToken).onException { e, message ->
                 Log.d("Select User onException", "SelectError $message")
@@ -62,13 +81,13 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun addProfile(profile: ProfileData) {
-        viewModelScope.launch {
-            val currentProfiles = _profilesUi.value.toMutableList()
-            currentProfiles.add(profile)
-            _profilesUi.value = currentProfiles
-        }
-    }
+//    private fun postProfile(profile: GetProfileRequest) {
+//        viewModelScope.launch {
+//            val currentProfiles = _profilesUi.value.toMutableList()
+//            currentProfiles.add(profile)
+//            _profilesUi.value = currentProfiles
+//        }
+//    }
 
 
 //    fun addProfile(profile: ProfileData) {
@@ -77,33 +96,33 @@ class ProfileViewModel @Inject constructor(
 //        }
 //    }
 
-    fun observeProfileAddedEvent(addMemberViewModel: AddMemberViewModel) {
-        viewModelScope.launch {
-            addMemberViewModel.profileAddedEvent.collect { newProfile ->
-                addProfile(newProfile) // ✅ 프로필 추가
-            }
-        }
-    }
+//    fun observeProfileAddedEvent(addMemberViewModel: AddMemberViewModel) {
+//        viewModelScope.launch {
+//            addMemberViewModel.profileAddedEvent.collect { newProfile ->
+//                postProfile(newProfile) // ✅ 프로필 추가
+//            }
+//        }
+//    }
 
-    // 프로필 수정
-    fun updateProfile(updatedProfile: ProfileData) {
-        _profilesUi.update { currentList ->
-            currentList.map {
-                if (it.userId == updatedProfile.userId) updatedProfile else it
-            }
-        }
-    }
+//    // 프로필 수정
+//    fun updateProfile(updatedProfile: UpdateProfileRequest) {
+//        _profilesUi.update { currentList ->
+//            currentList.map {
+//                if (it.name == updatedProfile.name) updatedProfile else it
+//            }
+//        }
+//    }
 
-    // 프로필 삭제
-    fun deleteProfile(profileId: String) {
-        _profilesUi.update { currentList ->
-            currentList.filter { it.userId != profileId }
-        }
-    }
+//    // 프로필 삭제
+//    fun deleteProfile(profileId: String) {
+//        _profilesUi.update { currentList ->
+//            currentList.filter { it.phone != profileId }
+//        }
+//    }
 
 
     private fun handleSuccess(
-        model: List<GetAllProfileModel>,
+        model: List<GetProfileListModel>,
     ) {
         Log.d("model", "model = $model")
         _profiles.update {

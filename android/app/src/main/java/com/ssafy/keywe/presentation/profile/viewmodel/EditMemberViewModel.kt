@@ -5,7 +5,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssafy.keywe.data.dto.profile.ProfileData
 import com.ssafy.keywe.presentation.profile.state.EditMemberState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,13 +80,14 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
         if (password.length <= 4 && password.all { it.isDigit() }) {
             _state.update {
                 it.copy(
-                    simplePassword = password,
+                    password = password,
                     isModified = true
                 )
             }
         }
     }
 
+    // API 연동
     fun deleteProfile() {
         viewModelScope.launch {
             try {
@@ -99,34 +99,46 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    // API 연동
+//    fun updateProfile() {
+//        viewModelScope.launch {
+//            try {
+//                val updatedProfile = UpdateProfileRequest( // ✅ PostProfileRequest로 변경
+//                    name = state.value.name,
+//                    phone = state.value.phone,
+//                    password = state.value.password
+//                )
+//
+//                profileViewModel.updateProfile(updatedProfile) // ✅ 매개변수 전달
+//            } catch (e: Exception) {
+//                // 에러 처리
+//            }
+//        }
 
-    fun updateProfile(profileViewModel: ProfileViewModel) {
-        viewModelScope.launch {
-            try {
-                val updatedProfile = ProfileData(
-                    userId = state.value.profileId,
-                    name = state.value.name,
-                    phone = state.value.phone,
-                    profile = profileImageUri.value?.toString(),
-                    role = state.value.role,
-                    simplePassword = state.value.simplePassword
-                )
-                profileViewModel.updateProfile(updatedProfile)
-            } catch (e: Exception) {
-                // 에러 처리
-            }
-        }
-    }
+//    fun updateProfile(profileViewModel: ProfileViewModel) {
+//        viewModelScope.launch {
+//            try {
+//                val updatedProfile = PostProfileModel(
+//                    id = state.value.id,
+//                    role = state.value.role,
+//                    createAt = state.value.id
+//                )
+//                profileViewModel.updateProfile()
+//            } catch (e: Exception) {
+//                // 에러 처리
+//            }
+//        }
+//    }
 
-    fun loadMemberData(profileId: String) {
-        viewModelScope.launch {
-            // 기존 회원 정보 로드 로직 구현
-            _state.update {
-                it.copy(
-                    profileId = profileId
-                    // 다른 데이터 로드
-                )
-            }
-        }
-    }
+//    fun loadMemberData(profileId: String) {
+//        viewModelScope.launch {
+//            // 기존 회원 정보 로드 로직 구현
+//            _state.update {
+//                it.copy(
+//                    profileId = profileId
+//                    // 다른 데이터 로드
+//                )
+//            }
+//        }
 }
+

@@ -75,7 +75,7 @@ fun EditMember(
         topBar = {
             DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
                 TextButton(onClick = {
-                    viewModel.updateProfile(profileViewModel)
+//                    viewModel.updateProfile(profileViewModel)
                     navController.popBackStack()
                 }
                 ) {
@@ -152,7 +152,7 @@ fun EditMember(
             DefaultTextFormField(
                 label = "간편 비밀번호",
                 placeholder = "간편 비밀번호 숫자 4자리를 입력해주세요.",
-                text = state.simplePassword,
+                text = state.password,
                 onValueChange = { viewModel.onSimplePasswordChange(it) },
                 isPassword = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
