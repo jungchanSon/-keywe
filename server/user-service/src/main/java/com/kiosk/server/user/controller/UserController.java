@@ -46,7 +46,7 @@ public class UserController {
     // 프로필 생성
     @PostMapping("/profile")
     public ResponseEntity<CreateProfileResponse> createProfile(@RequestHeader("userId") Long userId, @RequestBody CreateProfileRequest request) {
-        CreateProfileResponse response = createUserProfileService.doService(userId, request.name(), request.type(), request.phone(), request.password());
+        CreateProfileResponse response = createUserProfileService.doService(userId, request.name(), request.role(), request.phone(), request.password());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
