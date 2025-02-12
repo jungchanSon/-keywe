@@ -37,8 +37,8 @@ public class UserController {
     }
 
     // 프로필 상세조회
-    @GetMapping("/profile/{profileId}")
-    public ResponseEntity<UserProfileDetailResponse> getUserProfile(@RequestHeader("userId") Long userId, @PathVariable long profileId) {
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileDetailResponse> getUserProfile(@RequestHeader("userId") Long userId, @RequestHeader("profileId") Long profileId) {
         UserProfileDetailResponse response = profileDetailService.doService(userId, profileId);
         return ResponseEntity.ok(response);
     }
