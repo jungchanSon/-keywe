@@ -29,15 +29,15 @@ class AuthInterceptor @Inject constructor(
          */
         val request = chain.request()
 
-        if (isRequestWithToken(request.url.toUri().path)) {
-            val token = runBlocking {
-                tokenManager.getToken()
-            }
-            val newRequest = request.newBuilder().header("Authorization", "$token").build()
-            return chain.proceed(newRequest)
+//        if (isRequestWithToken(request.url.toUri().path)) {
+        val token = runBlocking {
+            tokenManager.getToken()
         }
+        val newRequest = request.newBuilder().header("Authorization", "$token").build()
+        return chain.proceed(newRequest)
+//        }
 
-        return chain.proceed(request)
+//        return chain.proceed(request)
     }
 
 
@@ -94,7 +94,7 @@ class AuthAuthenticator @Inject constructor(
 
         runBlocking {
             val response =
-                authService.login(loginRequest = LoginRequest("ssafy1@ssafy.com", "Ssafy1234!"))
+                authService.userLogin(loginRequest = LoginRequest("ssafy1@ssafy.com", "Ssafy1234!"))
             // Access Token 토큰 재발급 성공
             if (response.isSuccessful) {
                 val body = response.body()

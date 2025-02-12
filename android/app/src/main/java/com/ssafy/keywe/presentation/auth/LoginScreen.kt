@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.ssafy.keywe.common.HelperRoute
 import com.ssafy.keywe.common.SharingRoute
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -78,7 +79,7 @@ fun LoginScreen(
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            navController.navigate("home")
+            navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(true))
         }
     }
 

@@ -33,14 +33,14 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
 import com.ssafy.keywe.presentation.order.component.MenuSubCategory
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(
-    navController: NavController, viewModel: MenuViewModel = hiltViewModel()
+    navController: NavController, viewModel: OrderViewModel = hiltViewModel()
 ) {
 
     Scaffold(topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
@@ -49,9 +49,10 @@ fun MenuScreen(
             FloatingCartButton(navController, viewModel)
         }) {
         Column(
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
         ) {
-            MenuCategoryScreen()
+            MenuCategoryScreen(viewModel)
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
@@ -62,8 +63,10 @@ fun MenuScreen(
 }
 
 @Composable
-fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
-    val cartItemCount by viewModel.cartItemCount.collectAsState()
+fun FloatingCartButton(navController: NavController, viewModel: OrderViewModel) {
+//    val cartItemCount by viewModel.cartItemCount.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
+    val cartItemsCount = cartItems.sumOf { it.quantity }
 
     Box(
         contentAlignment = Alignment.TopEnd, // 오른쪽 상단 정렬
@@ -89,7 +92,7 @@ fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
         }
     }
 
-    if (cartItemCount > 0) {
+    if (cartItemsCount > 0) {
         Box(
             modifier = Modifier
                 .size(17.dp) // 뱃지 크기 조정
@@ -98,9 +101,9 @@ fun FloatingCartButton(navController: NavController, viewModel: MenuViewModel) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (cartItemCount < 100) cartItemCount.toString() else "99+",
+                text = if (cartItemsCount < 100) cartItemsCount.toString() else "99+",
                 color = whiteBackgroundColor,
-                fontSize = if (cartItemCount < 100) 12.sp else 9.sp
+                fontSize = if (cartItemsCount < 100) 12.sp else 9.sp
             )
         }
     }

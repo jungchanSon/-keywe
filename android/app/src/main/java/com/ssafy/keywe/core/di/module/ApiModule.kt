@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -22,7 +23,8 @@ object ApiModule {
     ): Retrofit {
         return Retrofit.Builder().baseUrl(NetworkUtil.BASE_URL).client(okHttpClient)
             .addConverterFactory(
-                jsonBuilder.asConverterFactory("application/json".toMediaType())
+                GsonConverterFactory.create()
+//                jsonBuilder.asConverterFactory("application/json".toMediaType())
             ).build()
     }
 }

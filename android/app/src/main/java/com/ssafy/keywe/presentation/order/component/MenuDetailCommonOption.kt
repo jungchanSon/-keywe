@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,11 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h6
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.orangeColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
@@ -43,10 +43,13 @@ fun MenuDetailCommonOption(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .background(greyBackgroundColor)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(top = 12.dp)
+                .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -70,7 +73,7 @@ fun MenuDetailCommonOptionRow(options: List<String>, selected: String, onSelect:
         options.forEach { option ->
             MenuDetailCommonOptionButton(
                 option = option,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).height(45.dp),
                 isSelected = selectedOption == option,
                 onSelect = {
                     selectedOption = option
@@ -88,9 +91,10 @@ fun MenuDetailCommonOptionButton(
     isSelected: Boolean,
     onSelect: () -> Unit,
 ) {
-
     Box(
         modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
             .clip(RoundedCornerShape(10.dp))
             .background(whiteBackgroundColor)
             .border(
@@ -98,21 +102,14 @@ fun MenuDetailCommonOptionButton(
                 color = if (isSelected) orangeColor else polishedSteelColor,
                 shape = RoundedCornerShape(10.dp)
             )
+            .noRippleClickable { onSelect() } // 클릭 이벤트 적용
+            .padding(vertical = 8.dp, horizontal = 16.dp), // 패딩 추가하여 버튼 크기 조정
+        contentAlignment = Alignment.Center
     ) {
-        Button(
-            onClick = onSelect,
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = titleTextColor
-            ),
-            elevation = ButtonDefaults.buttonElevation(0.dp)
-        ) {
-            Text(
-                text = option,
-                style = h6.copy(fontSize = 16.sp)
-            )
-        }
+        Text(
+            text = option,
+            style = h6.copy(fontSize = 16.sp),
+            color = titleTextColor
+        )
     }
 }

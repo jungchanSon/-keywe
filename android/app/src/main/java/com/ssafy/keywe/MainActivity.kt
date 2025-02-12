@@ -46,6 +46,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.HelperRoute
+import com.ssafy.keywe.common.LoginRoute
 import com.ssafy.keywe.common.MyBottomNavigation
 import com.ssafy.keywe.common.PermissionDialog
 import com.ssafy.keywe.common.RationaleDialog
@@ -103,7 +104,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 tokenManager.tokenClearedEvent.collect {
                     // 로그인 화면으로 이동
-                    navController.navigate(BottomRoute.LoginRoute) {
+                    navController.navigate(LoginRoute) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
@@ -237,16 +238,13 @@ fun MyApp(
             }
             composable<BottomRoute.HomeRoute> {
                 HomeScreen(navController, tokenManager)
+//                InputPhoneNumberScreen(navController)
             }
-            composable<BottomRoute.LoginRoute> {
-                LoginScreen(
-                    navController,
-                )
-            }
+            composable<LoginRoute> { LoginScreen(navController) }
             composable<SignUpRoute> {
                 SignUpScreen(navController)
             }
-            profileGraph(navController)
+            profileGraph(navController, tokenManager)
             menuGraph(navController)
             composable<SharingRoute> {
                 ScreenSharing()
@@ -261,6 +259,7 @@ fun MyApp(
                     Log.d("Helper Back", "interceptor Back")
                 })
             }
+//            kioskGraph(navController)
         }
 
     }
@@ -299,6 +298,7 @@ fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
             Text(text = "토큰 초기화")
             Button(onClick = {
                 navController.navigate(Route.MenuBaseRoute.MenuRoute)
+//                navController.navigate(Route.KioskBaseRoute.KioskPhoneNumberRoute)
             }) {
                 Text("메뉴 라우팅")
             }

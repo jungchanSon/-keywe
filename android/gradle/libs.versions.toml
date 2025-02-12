@@ -35,6 +35,8 @@ firebaseMessagingKtx = "24.1.0"
 navigationRuntimeKtx = "2.8.5"
 webrtc = "1.0.5"
 
+gson = "2.8.9"
+
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -80,6 +82,8 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 webrtc = { module = "com.mesibo.api:webrtc", version.ref = "webrtc" }
+
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 
 

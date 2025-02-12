@@ -8,11 +8,9 @@ object JWTUtil {
         val jwt = JWT(token)
 
         val issuer = jwt.issuer //get registered claims
-        val claim = jwt.getClaim("TYPE").asString() //get custom claims
+        val claim = jwt.getClaim("tokenType").asString() //get custom claims
         val isExpired = jwt.isExpired(10) // Do time validation with 10 seconds leeway
         Log.d("jwt", "issuer = $issuer, claim = $claim, isExpired = $isExpired")
         return claim == "TEMP"
     }
-
-
 }

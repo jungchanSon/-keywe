@@ -11,7 +11,6 @@ import com.ssafy.keywe.data.dto.Status
 import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.domain.auth.AuthRepository
 import com.ssafy.keywe.domain.auth.LoginModel
-import com.ssafy.keywe.util.JWTUtil
 import com.ssafy.keywe.util.RegUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,9 +72,7 @@ class LoginViewModel @Inject constructor(
     ) {
         _isLoggedIn.value = true
         Log.d("token", newToken.toString())
-
-        JWTUtil.isTempToken(newToken.accessToken.split(" ")[1])
-
+//        JWTUtil.isTempToken(newToken.accessToken)
         viewModelScope.launch {
             tokenManager.saveTempToken(newToken.accessToken)
         }

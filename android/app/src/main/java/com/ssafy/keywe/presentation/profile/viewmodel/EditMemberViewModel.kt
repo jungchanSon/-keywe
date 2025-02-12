@@ -1,7 +1,11 @@
 package com.ssafy.keywe.presentation.profile.viewmodel
 
+import android.net.Uri
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.data.dto.profile.ProfileData
 import com.ssafy.keywe.presentation.profile.state.EditMemberState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +19,23 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(EditMemberState())
     val state = _state.asStateFlow()
 
+    // 휴대폰 번호 입력을 위한 TextField 상태
+    private val _phoneTextFieldValue = MutableStateFlow(TextFieldValue(""))
+    val phoneTextFieldValue = _phoneTextFieldValue.asStateFlow()
+
+
+    // 이미지 처리를 위한 상태 추가
+    private val _profileImageUri = MutableStateFlow<Uri?>(null)
+    val profileImageUri = _profileImageUri.asStateFlow()
+
+    fun updateProfileImage(uri: Uri) {
+        _profileImageUri.value = uri
+        _state.update {
+            it.copy(isModified = true)
+        }
+    }
+
+
     fun onNameChange(name: String) {
         _state.update {
             it.copy(
@@ -24,8 +45,9 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun onPhoneChange(input: String) {
-        val numbersOnly = input.filter { it.isDigit() }
+
+    fun onPhoneChange(input: TextFieldValue) {
+        val numbersOnly = input.text.filter { it.isDigit() }
 
         if (numbersOnly.length <= 11) {
             val formatted = when {
@@ -38,6 +60,8 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
                     )
                 }-${numbersOnly.substring(7)}"
             }
+            // 커서 위치 계산
+            val newCursorPosition = formatted.length.coerceAtMost(formatted.length)
 
             _state.update {
                 it.copy(
@@ -45,6 +69,11 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
                     isModified = true
                 )
             }
+            // TextFieldValue 업데이트
+            _phoneTextFieldValue.value = TextFieldValue(
+                text = formatted,
+                selection = TextRange(newCursorPosition)
+            )
         }
     }
 
@@ -61,19 +90,43 @@ class EditMemberViewModel @Inject constructor() : ViewModel() {
 
     fun deleteProfile() {
         viewModelScope.launch {
-            // 프로필 삭제 로직 구현
+            try {
+                // API 호출하여 프로필 업데이트
+                // 성공 시 네비게이션 처리
+            } catch (e: Exception) {
+                // 에러 처리
+            }
         }
     }
 
-    fun updateProfile() {
+
+    fun updateProfile(profileViewModel: ProfileViewModel) {
         viewModelScope.launch {
-            // 프로필 업데이트 로직 구현
+            try {
+                val updatedProfile = ProfileData(
+                    userId = state.value.profileId,
+                    name = state.value.name,
+                    phone = state.value.phone,
+                    profile = profileImageUri.value?.toString(),
+                    role = state.value.role,
+                    simplePassword = state.value.simplePassword
+                )
+                profileViewModel.updateProfile(updatedProfile)
+            } catch (e: Exception) {
+                // 에러 처리
+            }
         }
     }
 
-    fun loadMemberData(memberId: String) {
+    fun loadMemberData(profileId: String) {
         viewModelScope.launch {
             // 기존 회원 정보 로드 로직 구현
+            _state.update {
+                it.copy(
+                    profileId = profileId
+                    // 다른 데이터 로드
+                )
+            }
         }
     }
 }

@@ -11,16 +11,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 
 @Composable
 fun MenuImage(
-    menuId: Int,
-    viewModel: MenuViewModel
+    menuId: Long,
+    viewModel: OrderViewModel
 ) {
 
     val menu = viewModel.getMenuDataById(menuId)
-    val menuImageURL = menu?.imageURL ?: ""
+    val menuImageURL = menu?.image ?: ""
 
     Image(
         painter = rememberAsyncImagePainter(model = menuImageURL),

@@ -1,7 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,22 +26,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
 import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.caption
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
+import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
 
 @Composable
 fun MenuCartMenuBox(
     cartItem: CartItem,
-    viewModel: MenuViewModel,
-    navController: NavController,
+    viewModel: OrderViewModel,
 ) {
-
     Box {
         Column {
             // x버튼
@@ -64,25 +61,24 @@ fun MenuCartMenuBox(
                         modifier = Modifier
                             .width(16.5.dp)
                             .height(16.5.dp)
-                            .clickable { viewModel.openDeleteDialog(cartItem) },
+                            .noRippleClickable { viewModel.openDeleteDialog(cartItem) },
                         painter = painterResource(R.drawable.x),
                         contentDescription = "x"
                     )
                 }
             }
             // 이미지 + 이름 + 가격
-            MenuCartMenu(cartItem, viewModel, navController)
+            MenuCartMenu(cartItem, viewModel)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: NavController) {
-    val quantity = remember { mutableIntStateOf(cartItem.quantity) }
+fun MenuCartMenu(cartItem: CartItem, viewModel: OrderViewModel) {
+    val cartItems by viewModel.cartItems.collectAsState()
+    val updatedCartItem = cartItems.find { it.id == cartItem.id }
+    val quantity = updatedCartItem?.quantity ?: cartItem.quantity
     val isOptionChangeSheetOpen = remember { mutableStateOf(false) }
-
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val name = cartItem.name
     val price = cartItem.price
@@ -91,13 +87,12 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
     val extraOptions = cartItem.extraOptions
 
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-//                .height(60.dp)
-//                .fillMaxHeight(),
                 .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
@@ -109,7 +104,7 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                     .height(60.dp)
                     .width(60.dp)
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillHeight
             )
 
             Box(
@@ -130,8 +125,10 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = name, style = subtitle2.copy(
-                                fontWeight = FontWeight.Bold, letterSpacing = 0.sp
+                            text = name,
+                            style = subtitle2.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.sp
                             )
                         )
 
@@ -139,21 +136,20 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "크기: $size", style = caption.copy(
+                                text = "크기: $size, 온도: $temperature",
+                                style = caption.copy(
                                     letterSpacing = 0.sp
-                                ), color = polishedSteelColor
-                            )
-                            Text(
-                                text = "온도: $temperature", style = caption.copy(
-                                    letterSpacing = 0.sp
-                                ), color = polishedSteelColor
+                                ),
+                                color = polishedSteelColor
                             )
 
                             extraOptions.forEach { (optionName, count) ->
                                 Text(
-                                    text = "$optionName: $count", style = caption.copy(
+                                    text = "$optionName: $count",
+                                    style = caption.copy(
                                         letterSpacing = 0.sp
-                                    ), color = polishedSteelColor
+                                    ),
+                                    color = polishedSteelColor
                                 )
                             }
                         }
@@ -166,40 +162,50 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
                             verticalAlignment = Alignment.Bottom
                         ) {
                             Row(
-                                modifier = Modifier.height(18.12.dp),
+                                modifier = Modifier
+                                    .height(18.12.dp),
                                 horizontalArrangement = Arrangement.spacedBy(
-                                    14.dp, Alignment.CenterHorizontally
+                                    14.dp,
+                                    Alignment.CenterHorizontally
                                 ),
                                 verticalAlignment = Alignment.Bottom
                             ) {
                                 Text(
-                                    text = "${price}원", style = subtitle2.copy(
-                                        fontWeight = FontWeight.Bold, letterSpacing = 0.em
+                                    text = "${price}원",
+                                    style = subtitle2.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 0.em
                                     )
                                 )
                                 VerticalDivider()
-                                Text(text = "옵션 변경",
+                                Text(
+                                    text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
-                                    modifier = Modifier.clickable {
+                                    modifier = Modifier.noRippleClickable {
                                         isOptionChangeSheetOpen.value = true
-                                    })
+                                    }
+                                )
                             }
 
                             Box(modifier = Modifier.height(24.dp)) {
-                                OptionAmount(optionAmount = quantity.intValue, onDecrease = {
-                                    if (quantity.intValue > 1) {
-                                        quantity.intValue--
+                                CartMenuAmount(
+                                    optionAmount = quantity,
+                                    onDecrease = {
+                                        if (quantity > 1) {
+                                            viewModel.updateCartQuantity(
+                                                cartItem.id,
+                                                quantity - 1
+                                            ) // 업데이트 로직 호출
+                                        }
+                                    },
+                                    onIncrease = {
                                         viewModel.updateCartQuantity(
-                                            cartItem.id, quantity.intValue
+                                            cartItem.id,
+                                            quantity + 1
                                         ) // 업데이트 로직 호출
                                     }
-                                }, onIncrease = {
-                                    quantity.intValue++
-                                    viewModel.updateCartQuantity(
-                                        cartItem.id, quantity.intValue
-                                    ) // 업데이트 로직 호출
-                                })
+                                )
                             }
                         }
                     }
@@ -209,9 +215,43 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: MenuViewModel, navController: Na
     }
 
     if (isOptionChangeSheetOpen.value) {
-        OptionChangeBottomSheet(cartItem = cartItem,
+        OptionChangeBottomSheet(
+            cartItem = cartItem,
             viewModel = viewModel,
-            onDismiss = { isOptionChangeSheetOpen.value = false })
+            onDismiss = { isOptionChangeSheetOpen.value = false }
+        )
     }
 
+}
+
+@Composable
+fun CartMenuAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .width(88.dp)
+            .fillMaxHeight(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            modifier = Modifier
+                .width(20.dp)
+                .height(20.dp)
+                .noRippleClickable { onDecrease() },
+            painter = painterResource(R.drawable.minus_circle),
+            contentDescription = "minus in circle"
+        )
+        Text(
+            text = "$optionAmount",
+            style = subtitle1
+        )
+        Image(
+            modifier = Modifier
+                .width(20.dp)
+                .height(20.dp)
+                .noRippleClickable { onIncrease() },
+            painter = painterResource(R.drawable.profileplus),
+            contentDescription = "plus in circle"
+        )
+    }
 }

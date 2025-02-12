@@ -8,13 +8,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
+import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
 import com.ssafy.keywe.presentation.profile.AddMemberScreen
 import com.ssafy.keywe.presentation.profile.EditMember
 import com.ssafy.keywe.presentation.profile.EmailVerification
-import com.ssafy.keywe.presentation.profile.ProfileChoice
+import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
 import kotlinx.serialization.Serializable
 
@@ -25,7 +27,6 @@ fun currentBottomRoute(navController: NavHostController): BottomRoute? {
     return route?.let {
         return when (route.split(".").last()) {
             BottomRoute.HomeRoute::class.simpleName -> BottomRoute.HomeRoute
-            BottomRoute.LoginRoute::class.simpleName -> BottomRoute.LoginRoute
             BottomRoute.ProfileRoute::class.simpleName -> BottomRoute.ProfileRoute
             else -> null
         }
@@ -43,7 +44,7 @@ sealed interface Route {
         data object MenuRoute : Route
 
         @Serializable
-        data class MenuDetailRoute(val id: Int) : Route
+        data class MenuDetailRoute(val id: Long) : Route
 
         @Serializable
         data object MenuCartRoute : Route
@@ -53,7 +54,7 @@ sealed interface Route {
     data object ProfileBaseRoute : Route {
 
         @Serializable
-        data object ProfileChoiceRoute : Route
+        data class ProfileChoiceRoute(val isJoinApp: Boolean) : Route
 
         @Serializable
         data object ProfileEditRoute : Route
@@ -64,6 +65,16 @@ sealed interface Route {
         @Serializable
         data object ProfileEmailVerifyRoute : Route
     }
+
+    @Serializable
+    data object KioskBaseRoute : Route {
+
+        @Serializable
+        data object KioskPhoneNumberRoute : Route
+
+        @Serializable
+        data object KioskPasswordRoute : Route
+    }
 }
 
 sealed interface BottomRoute {
@@ -72,9 +83,6 @@ sealed interface BottomRoute {
 
     @Serializable
     data object HomeRoute : BottomRoute
-
-    @Serializable
-    data object LoginRoute : BottomRoute
 }
 
 @Serializable
@@ -82,15 +90,20 @@ object SharingRoute
 
 @Serializable
 data class HelperRoute(val isKiosk: Boolean = false, val channelName: String)
+@Serializable
+data object LoginRoute
 
 @Serializable
 object SignUpRoute
 
 
-fun NavGraphBuilder.profileGraph(navController: NavHostController) {
+fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager: TokenManager) {
     navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
-        composable<BottomRoute.ProfileRoute> { ProfileScreen(navController) }
-        composable<Route.ProfileBaseRoute.ProfileChoiceRoute> { ProfileChoice(navController) }
+        composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
+        composable<Route.ProfileBaseRoute.ProfileChoiceRoute> {
+            val args = it.toRoute<Route.ProfileBaseRoute.ProfileChoiceRoute>()
+            ProfileChoiceScreen(navController, args.isJoinApp)
+        }
         composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMember(navController) }
         composable<Route.ProfileBaseRoute.ProfileEmailVerifyRoute> { EmailVerification(navController) }
         composable<Route.ProfileBaseRoute.ProfileAddRoute> { AddMemberScreen(navController) }
@@ -108,3 +121,12 @@ fun NavGraphBuilder.menuGraph(navController: NavHostController) {
     }
 }
 
+fun NavGraphBuilder.kioskGraph(navController: NavHostController) {
+    navigation<Route.KioskBaseRoute>(startDestination = Route.KioskBaseRoute.KioskPhoneNumberRoute) {
+        composable<Route.KioskBaseRoute.KioskPhoneNumberRoute> {
+            InputPhoneNumberScreen(
+                navController
+            )
+        }
+    }
+}

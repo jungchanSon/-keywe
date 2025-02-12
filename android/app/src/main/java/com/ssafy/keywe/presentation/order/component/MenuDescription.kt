@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,22 +18,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.pretendardkr
 import com.ssafy.keywe.ui.theme.titleTextColor
 
 @Composable
 fun MenuDescription(
-    menuId: Int,
-    viewModel: MenuViewModel = hiltViewModel()
+    menuId: Long,
+    viewModel: OrderViewModel = hiltViewModel()
 ) {
     val menu = viewModel.getMenuDataById(menuId)
+    Log.d("Menu Description", ":$menu")
 
-    val menuName = menu?.name ?: ""
-    val menuRecipe = menu?.recipe ?: ""
-    val menuPrice = menu?.price ?: 0
+    val menuName = menu?.menuName ?: ""
+    val menuRecipe = menu?.menuRecipe ?: ""
+    val menuPrice = menu?.menuPrice ?: 0
 
     Row(
         modifier = Modifier
@@ -76,7 +77,7 @@ fun MenuDescription(
         }
         MenuPlusButton({
             viewModel.addToCart(
-                menuId, "tall","Hot", emptyMap(), menuPrice
+                menuId, "Tall","Hot", emptyMap(), menuPrice
             )
         })
     }
