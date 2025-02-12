@@ -64,7 +64,7 @@ import com.ssafy.keywe.common.profileGraph
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.websocket.SignalService
 import com.ssafy.keywe.data.websocket.SignalType
-import com.ssafy.keywe.domain.fcm.FCMNotificationModel
+import com.ssafy.keywe.domain.fcm.NotificationData
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
@@ -133,8 +133,8 @@ class MainActivity : ComponentActivity() {
         }
 
         // notification comes when app is killed
-        val notification: FCMNotificationModel? =
-            intent.getParcelableExtra<FCMNotificationModel>("notification")
+        val notification: NotificationData? =
+            intent.getParcelableExtra<NotificationData>("notification")
 
         notification?.let {
             lifecycleScope.launch {
@@ -160,7 +160,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         // notification coming when app in inactive/background, data included in intent extra
 
-        val notification = intent.getParcelableExtra<FCMNotificationModel>("notification")
+        val notification = intent.getParcelableExtra<NotificationData>("notification")
 
         Log.d("FCM notification", "onNewIntent $notification")
         notification?.let {

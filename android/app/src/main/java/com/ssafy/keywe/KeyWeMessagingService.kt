@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.ssafy.keywe.domain.fcm.FCMNotificationModel
+import com.ssafy.keywe.domain.fcm.NotificationData
 import kotlin.random.Random
 
 
@@ -29,7 +30,6 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         Log.d("FCM notification", "${remoteMessage.notification?.title}")
         Log.d("FCM notification", "${remoteMessage.notification?.body}")
         Log.d("FCM notification", "${remoteMessage.data}")
-
 
 
 //        if (remoteMessage.data.isNotEmpty()) {
@@ -53,13 +53,13 @@ class KeyWeMessagingService : FirebaseMessagingService() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalMaterialApi::class)
-    private fun sendNotification(title: String, body: String, notification: FCMNotificationModel) {
+    private fun sendNotification(notification: FCMNotificationModel) {
         val channelId = "FCM_Channel"
         val notificationId = System.currentTimeMillis().toInt()
 
         val intent = Intent(this, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            putExtra("notification", notification)
+            putExtra("notification", notification.data)
         }
 
         val pendingIntent = PendingIntent.getActivity(
@@ -69,9 +69,9 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val builder =
             NotificationCompat.Builder(this, channelId).setSmallIcon(R.mipmap.sym_def_app_icon)
-                .setContentTitle(title).setContentText(body)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setAutoCancel(true)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setContentTitle(notification.title).setContentText(notification.body)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(notification.body))
+                .setAutoCancel(true).setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)
@@ -93,12 +93,7 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         //if you don't know the format of your FCM message,
         //just print it out, and you'll know how to parse it
         val bundle = intent.extras
-        if (bundle != null) {
-            for (key in bundle.keySet()) {
-                val value = bundle[key]
-                Log.d("FCM", "Key: $key Value: $value")
-            }
-        }
+
 
         //the background notification is created by super method
         //but you can't remove the super method.
@@ -111,11 +106,11 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         if (bundle == null) return
 
         //pares the message
-//        val cloudMsg: CloudMsg = parseCloudMsg(bundle)
+        val fcmMsg: FCMNotificationModel = parseFCMMsg(bundle)
 
         //if you want take the data to Activity, set it
 
-        sendNotification("title", "desc", FCMNotificationModel("1", "2", "3"))
+        sendNotification(fcmMsg)
     }
 
 
@@ -123,23 +118,29 @@ class KeyWeMessagingService : FirebaseMessagingService() {
      * parse the message which is from FCM
      * @param bundle
      */
-    private fun parseCloudMsg(bundle: Bundle): FCMNotificationModel {
-        var title: String? = null
-        var msg: String? = null
+    private fun parseFCMMsg(bundle: Bundle): FCMNotificationModel {
+        var title: String = "키위 요청"
+        var body: String? = null
 
         //if the message is sent from Firebase platform, the key will be that
-        msg = bundle["gcm.notification.body"] as String?
+        body = bundle["gcm.notification.body"] as String? ?: "대리주문 요청이 왔습니다."
 
         if (bundle.containsKey("gcm.notification.title")) title =
-            bundle["gcm.notification.title"] as String?
+            bundle["gcm.notification.title"] as String ?: "키위 요청"
 
-        //parse your custom message
-        var testValue: String? = null
-        testValue = bundle["testKey"] as String?
+        if (bundle != null) {
+            for (key in bundle.keySet()) {
+                val value = bundle[key]
+                Log.d("FCM", "Key: $key Value: $value")
+            }
+        }
+        val storeId = bundle["storeId"] as String
+        val kioskUserId = bundle["kioskUserId"] as String
+        val sessionId = bundle["sessionId"] as String
+
 
         //package them into a object(CloudMsg is your own structure), it is easy to send to Activity.
-//        val cloudMsg: CloudMsg = FCMNotificationModel(title, msg, testValue)
-        return FCMNotificationModel("1", "2", "3")
+        return FCMNotificationModel(title, body, NotificationData(storeId, kioskUserId, sessionId))
     }
 
 
