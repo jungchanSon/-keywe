@@ -32,19 +32,19 @@ class KeyWeMessagingService : FirebaseMessagingService() {
 
 
 
-        if (remoteMessage.data.isNotEmpty()) {
-            val storeId = remoteMessage.data["storeId"]
-            val kioskUserId = remoteMessage.data["kioskUserId"]
-            val sessionId = remoteMessage.data["sessionId"]
-            Log.d(remoteMessage.data.toString(), "Message data payload: ${remoteMessage.data}")
-
-            val title = remoteMessage.notification?.title ?: "No Title"
-            val body = remoteMessage.notification?.body ?: "No Body"
-//            val count = remoteMessage.data["count"]?.toIntOrNull() ?: 0
-            if (storeId != null && kioskUserId != null && sessionId != null) sendNotification(
-                title, body, FCMNotificationModel(storeId, kioskUserId, sessionId)
-            )
-        }
+//        if (remoteMessage.data.isNotEmpty()) {
+//            val storeId = remoteMessage.data["storeId"]
+//            val kioskUserId = remoteMessage.data["kioskUserId"]
+//            val sessionId = remoteMessage.data["sessionId"]
+//            Log.d(remoteMessage.data.toString(), "Message data payload: ${remoteMessage.data}")
+//
+//            val title = remoteMessage.notification?.title ?: "No Title"
+//            val body = remoteMessage.notification?.body ?: "No Body"
+////            val count = remoteMessage.data["count"]?.toIntOrNull() ?: 0
+//            if (storeId != null && kioskUserId != null && sessionId != null) sendNotification(
+//                title, body, FCMNotificationModel(storeId, kioskUserId, sessionId)
+//            )
+//        }
 
 //        remoteMessage.notification?.let { message ->
 //            sendNotification(message, 1)
