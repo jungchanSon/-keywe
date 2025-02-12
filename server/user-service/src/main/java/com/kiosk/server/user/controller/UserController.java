@@ -5,6 +5,7 @@ import com.kiosk.server.user.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,13 +62,13 @@ public class UserController {
     }
 
     // 프로필 삭제조회
-    @DeleteMapping("/profile/{profileId}")
+    @DeleteMapping("/profile")
     public ResponseEntity<Void> deleteUserProfile(
         @RequestHeader("userId") Long userId,
         @RequestHeader("profileId") Long originProfileId,
-        @PathVariable long profileId
+        @Validated @RequestBody UserProfileRequest request
     ) {
-        deleteUserProfileService.doService(userId, originProfileId, profileId);
+        deleteUserProfileService.doService(userId, originProfileId, request.profileId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
