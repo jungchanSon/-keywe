@@ -21,7 +21,7 @@ public class FindChildProfileListServiceImpl implements FindChildProfileListServ
     public List<ChildProfileResponse> doService(long userId) {
         return userProfileRepository.getUserProfileList(userId)
             .stream()
-            .filter(profile -> ProfileRole.CHILD == profile.type())
+            .filter(profile -> ProfileRole.CHILD == profile.role())
             .map(profile -> new ChildProfileResponse(String.valueOf(profile.id()), profile.name()))
             .toList();
     }
