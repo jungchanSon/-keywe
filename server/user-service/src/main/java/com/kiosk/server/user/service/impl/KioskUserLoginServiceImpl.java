@@ -26,7 +26,7 @@ public class KioskUserLoginServiceImpl implements KioskUserLoginService {
 
         UserProfile profile = userProfileRepository.findByPhoneAndPassword(phone, password);
         if (profile == null) {
-            throw new UnauthorizedException("Invalid Credentials");
+            throw new UnauthorizedException("인증에 실패했습니다. 올바른 정보로 다시 시도해 주세요.");
         }
         String accessToken = tokenUtil.createAuthenticationToken(profile.getUserId(), profile.getProfileId());
         return new KioskUserLoginResult(accessToken, String.valueOf(profile.getUserId()));
@@ -35,14 +35,14 @@ public class KioskUserLoginServiceImpl implements KioskUserLoginService {
     private void validatePhoneNumber(String phone) {
         String regex = "^01(?:0|1|[6-9])-?(?:\\d{3}|\\d{4})-?\\d{4}$";
         if (!Pattern.matches(regex, phone)) {
-            throw new BadRequestException("Invalid phone number format");
+            throw new BadRequestException("휴대폰 번호 형식이 올바르지 않습니다.");
         }
     }
 
     private void validatePassword(String password) {
         String regex = "^\\d{4}$";
         if (!Pattern.matches(regex, password)) {
-            throw new BadRequestException("Password must be 4 digits");
+            throw new BadRequestException("비밀번호는 숫자 4자리여야 합니다.");
         }
     }
 }

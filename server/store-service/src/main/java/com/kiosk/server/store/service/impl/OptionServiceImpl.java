@@ -27,13 +27,13 @@ public class OptionServiceImpl implements OptionService {
     public StoreMenu validateMenuAndOption(long userId, long menuId, Long optionId) {
         StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
-            throw new EntityNotFoundException("Menu not found");
+            throw new EntityNotFoundException("해당 메뉴를 찾을 수 없습니다. 입력하신 메뉴 정보를 다시 확인해 주세요.");
         }
 
         if (optionId != null) {
             StoreMenuOption existingOption = optionRepository.findByOptionId(menuId, optionId);
             if (existingOption == null) {
-                throw new EntityNotFoundException("Option not found");
+                throw new EntityNotFoundException("해당 옵션을 찾을 수 없습니다. 입력하신 옵션 정보를 다시 확인해 주세요.");
             }
         }
 

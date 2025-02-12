@@ -24,7 +24,7 @@ public class UpdateCategoryServiceImpl implements UpdateCategoryService {
         validateCategoryId(categoryId);
 
         if (!StringUtils.hasLength(newCategoryName)) {
-            throw new BadRequestException("Category name is empty");
+            throw new BadRequestException("카테고리 이름이 입력되지 않았습니다. 올바른 이름을 입력해 주세요.");
         }
 
         // 업데이트 할 데이터 매핑
@@ -38,7 +38,7 @@ public class UpdateCategoryServiceImpl implements UpdateCategoryService {
     private void validateCategoryId(long categoryId) {
         StoreMenuCategory category = categoryRepository.findCategoryById(categoryId);
         if (category == null) {
-            throw new EntityNotFoundException("Category not found");
+            throw new EntityNotFoundException("해당 카테고리를 찾을 수 없습니다. 입력하신 정보를 다시 확인해 주세요.");
         }
     }
 }

@@ -38,7 +38,7 @@ public class CreateUserProfileServiceImpl implements CreateUserProfileService {
             userValidateUtil.validateProfilePass(profilePass);
             newProfile = UserProfile.createParent(userId, profileName, role, phoneNumber, profilePass);
         } else {
-            throw new BadRequestException("Invalid profile role");
+            throw new BadRequestException("프로필 역할이 올바르지 않습니다. 올바른 역할을 선택해 주세요.");
         }
 
         userProfileRepository.createNewProfile(newProfile);
@@ -57,7 +57,7 @@ public class CreateUserProfileServiceImpl implements CreateUserProfileService {
         try {
             return ProfileRole.valueOf(profileRole.toUpperCase());
         } catch (Exception e) {
-            throw new BadRequestException("Invalid profile role");
+            throw new BadRequestException("프로필 역할이 올바르지 않습니다. 올바른 역할을 선택해 주세요.");
         }
     }
 

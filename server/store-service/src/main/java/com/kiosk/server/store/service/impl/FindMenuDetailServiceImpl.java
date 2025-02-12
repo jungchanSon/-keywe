@@ -28,7 +28,7 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
         // 메뉴 기본 정보 조회
         StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
-            throw new EntityNotFoundException("Menu not found");
+            throw new EntityNotFoundException("해당 메뉴를 찾을 수 없습니다. 메뉴 정보를 다시 확인해 주세요.");
         }
 
         // 메뉴 이미지 조회 & Base64 변환
