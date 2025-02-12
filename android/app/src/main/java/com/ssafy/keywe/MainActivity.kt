@@ -145,9 +145,7 @@ class MainActivity : ComponentActivity() {
 
                 NavControllerHolder.navController!!.navigate(
                     WaitingRoomRoute(
-                        it.storeId,
-                        it.kioskUserId,
-                        it.sessionId
+                        it.storeId, it.kioskUserId, it.sessionId
                     )
                 )
 
@@ -175,9 +173,7 @@ class MainActivity : ComponentActivity() {
                 Log.d("FCM notification", "onNewIntent3")
                 NavControllerHolder.navController!!.navigate(
                     WaitingRoomRoute(
-                        it.storeId,
-                        it.kioskUserId,
-                        it.sessionId
+                        it.storeId, it.kioskUserId, it.sessionId
                     )
                 )
                 return@launch
@@ -333,6 +329,9 @@ fun HomeScreen(
 
 
     val profileId = 677367955509677381
+    val sessionId = 677367955509677381
+    val storeId = 677367955509677381
+    val kioskUserId = 677367955509677381
 
     Column {
         DefaultAppBar(title = "title", navController = navController)
@@ -350,10 +349,17 @@ fun HomeScreen(
             }
         }
         TextButton(onClick = {
-            val intent = Intent(context, SignalService::class.java)
-            intent.action = SignalType.CONNECT.name
-            context.startService(intent)
-        }) { Text("스톰프 연결") }
+//            val intent = Intent(context, SignalService::class.java)
+//            intent.action = SignalType.CONNECT.name
+//            context.startService(intent)
+            navController.navigate(
+                WaitingRoomRoute(
+                    sessionId = sessionId.toString(),
+                    storeId = storeId.toString(),
+                    kioskUserId = kioskUserId.toString()
+                )
+            )
+        }) { Text("키위 요청") }
         TextButton(onClick = {
             val intent = Intent(context, SignalService::class.java)
             intent.action = SignalType.SUBSCRIBE.name
@@ -366,16 +372,25 @@ fun HomeScreen(
         TextButton(onClick = {
             val intent = Intent(context, SignalService::class.java)
             intent.action = SignalType.REQUEST.name
+            intent.putExtra(
+                "storeId", storeId.toString()
+            )
             context.startService(intent)
         }) { Text("원격 연결") }
         TextButton(onClick = {
             val intent = Intent(context, SignalService::class.java)
             intent.action = SignalType.ACCEPT.name
+            intent.putExtra(
+                "sessionId", sessionId.toString()
+            )
             context.startService(intent)
         }) { Text("주문 수락") }
         TextButton(onClick = {
             val intent = Intent(context, SignalService::class.java)
             intent.action = SignalType.CLOSE.name
+            intent.putExtra(
+                "sessionId", sessionId.toString()
+            )
             context.startService(intent)
         }) { Text("주문 종료") }
     }

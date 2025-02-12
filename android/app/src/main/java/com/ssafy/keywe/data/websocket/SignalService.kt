@@ -1,3 +1,4 @@
+// SignalService.kt
 package com.ssafy.keywe.data.websocket
 
 import android.app.Service
@@ -7,13 +8,13 @@ import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.ssafy.keywe.webrtc.KeyWeWebSocket
+import com.ssafy.keywe.webrtc.data.STOMPTYPE
+import com.ssafy.keywe.webrtc.data.SignalRepository
 import com.ssafy.keywe.webrtc.data.WebSocketMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,75 +22,74 @@ enum class SignalType {
     CONNECT, SUBSCRIBE, REQUEST, ACCEPT, CLOSE,
 }
 
+enum class SignalState {
+    CONNECTING, CONNECTED, DISCONNECTED
+}
+
 @AndroidEntryPoint
 class SignalService : Service() {
     @Inject
     lateinit var keyWeWebSocket: KeyWeWebSocket
+
+    // Repository를 주입받아서 메시지 업데이트에 사용
+    @Inject
+    lateinit var signalRepository: SignalRepository
+
     private val serviceJob = SupervisorJob()
     private val scope = CoroutineScope(serviceJob)
     private val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
 
-    // Service에서 발생하는 WebSocket 메시지를 외부로 노출하기 위한 Flow
-    private val _stompMessageFlow = MutableSharedFlow<WebSocketMessage>()
-    val stompMessageFlow: Flow<WebSocketMessage> get() = _stompMessageFlow
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent != null) {
-            when (intent.action) {
+        intent?.let {
+            when (it.action) {
                 SignalType.CONNECT.toString() -> {
                     scope.launch {
-                        keyWeWebSocket.connect()
+                        when (keyWeWebSocket.connect()) {
+                            true -> Log.d("SignalService", "WebSocket connected")
+                            false -> Log.d("SignalService", "WebSocket connection failed")
+                        }
                     }
                 }
 
                 SignalType.SUBSCRIBE.toString() -> {
-                    val profileId = intent.getStringExtra("profileId")!!
+                    val profileId = it.getStringExtra("profileId")!!
                     Log.d("SignalService", "profileId: $profileId")
-
                     scope.launch {
-//                        val message: Flow<StompFrame.Message> = keyWeWebSocket.subscribe(profileId)
-//                        keyWeWebSocket.sub
-//
-//                        message.collect {
-//                            val message =
-//                                moshi.adapter(WebSocketMessage::class.java).fromJson(it.bodyAsText)
-//                        }
-
-                        // keyWeWebSocket.subscribe()로 받은 Flow를 collect하고,
-                        // JSON 파싱 후 _stompMessageFlow에 emit
+                        // keyWeWebSocket.subscribe()로 받은 Flow를 collect하고, JSON 파싱 후 처리
                         keyWeWebSocket.subscribe(profileId).collect { frame ->
                             val message = moshi.adapter(WebSocketMessage::class.java)
                                 .fromJson(frame.bodyAsText)
-//                            val intent = Intent("custom-event-name")
-//                            intent.putExtra("data", "전달할 데이터")
-//                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
-
                             Log.d("SignalService", "Received message: $message")
-//                            message?.let { _stompMessageFlow.emit(it) }
+                            message?.let { msg ->
+                                handleSTOMP(msg)
+                            }
                         }
                     }
                 }
 
                 SignalType.REQUEST.toString() -> {
+                    val storeId = it.getStringExtra("storeId")!!
                     scope.launch {
-                        keyWeWebSocket.sendRequest("\"Hello, World!\"")
+                        keyWeWebSocket.sendRequest(storeId)
                     }
                 }
 
                 SignalType.ACCEPT.toString() -> {
+                    val sessionId = it.getStringExtra("sessionId")!!
                     scope.launch {
-                        keyWeWebSocket.sendAccept("\"Hello, World!\"")
+                        keyWeWebSocket.sendAccept(sessionId)
                     }
                 }
 
                 SignalType.CLOSE.toString() -> {
+                    val sessionId = it.getStringExtra("sessionId")!!
                     scope.launch {
-                        keyWeWebSocket.sendClose("\"Hello, World!\"")
+                        keyWeWebSocket.sendClose(sessionId)
                         stopSelf()
                     }
                 }
 
-
+                else -> {}
             }
         }
         return super.onStartCommand(intent, flags, startId)
@@ -97,10 +97,23 @@ class SignalService : Service() {
 
     override fun onDestroy() {
         scope.cancel()
+        Log.d("SignalService", "onDestroy")
         super.onDestroy()
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        TODO("Not yet implemented")
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    // STOMP 메시지 처리 및 Repository 업데이트
+    private fun handleSTOMP(stomp: WebSocketMessage) {
+        when (stomp.type) {
+            STOMPTYPE.REQUESTED -> Log.d("SignalService", "REQUESTED ${stomp.data}")
+            STOMPTYPE.WAITING -> Log.d("SignalService", "WAITING ${stomp.data}")
+            STOMPTYPE.ACCEPTED -> Log.d("SignalService", "ACCEPTED")
+            STOMPTYPE.TIMEOUT -> Log.d("SignalService", "TIMEOUT")
+            STOMPTYPE.END -> Log.d("SignalService", "END")
+            STOMPTYPE.ERROR -> Log.d("SignalService", "ERROR")
+        }
+        // Repository에 메시지 업데이트 (UI에서 구독 가능)
+        signalRepository.updateMessage(stomp)
     }
 }

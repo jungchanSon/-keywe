@@ -6,25 +6,29 @@ import com.squareup.moshi.JsonClass
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Serializable
+enum class STOMPTYPE {
+    REQUESTED, WAITING, ACCEPTED, TIMEOUT, END, ERROR
+}
 
 @Serializable
 data class WebSocketMessage(
-    val type: String,
-    val sessionId: String,
-    val channelInfo: ChannelInfo?,
-    val data: SessionData?,
+    val type: STOMPTYPE,
+    val data: STOMPData?,
+    val timestamp: String,
 )
 
-@Serializable
-data class ChannelInfo(
-    val channelName: String,
-    val token: String,
-)
 
 @Serializable
-data class SessionData(
-    val helperUserId: String,
-    val kioskUserId: String,
+data class STOMPData(
+    val success: Int?,
+    val failure: Int?,
+    val sessionId: String?,
+    val helperUserId: String?,
+    val kioskUserId: String?,
+    val channelName: String?,
+    val message: String?,
+    val code: String?
 )
 
 @Serializable

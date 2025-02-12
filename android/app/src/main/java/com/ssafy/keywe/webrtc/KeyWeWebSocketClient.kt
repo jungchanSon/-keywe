@@ -78,7 +78,7 @@ class KeyWeWebSocket @Inject constructor(
         stompClient = StompClient(wsClient)
     }
 
-    suspend fun connect(): StompSession? {
+    suspend fun connect(): Boolean {
         val token = tokenManager.getToken()
         if (token != null) {
             session = token.run {
@@ -88,10 +88,10 @@ class KeyWeWebSocket @Inject constructor(
                     )
                 ).withMoshi(moshi)
             }
-            return session
+            return true
         } else {
             Log.e("WebSocket", "Token is null")
-            return null
+            return false
         }
     }
 
@@ -113,7 +113,7 @@ class KeyWeWebSocket @Inject constructor(
         val json = Json.encodeToString(requestMessage)
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
-                destination = RequestEndPoint,
+                destination = RequestEndPoint + storeId,
             )
         )
     }
@@ -123,9 +123,10 @@ class KeyWeWebSocket @Inject constructor(
         val json = Json.encodeToString(acceptMessage)
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
-                destination = RequestEndPoint,
+                destination = AcceptEndPoint + sessionId,
             )
         )
+
     }
 
     suspend fun sendClose(sessionId: String) {
@@ -133,7 +134,7 @@ class KeyWeWebSocket @Inject constructor(
         val json = Json.encodeToString(closeMessage)
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
-                destination = RequestEndPoint,
+                destination = CloseEndPoint + sessionId,
             )
         )
     }
@@ -141,9 +142,9 @@ class KeyWeWebSocket @Inject constructor(
 
     companion object {
         const val SocketUrl = "ws://i12a404.p.ssafy.io:8080/remote/ws"
-        var SubScribeEndPoint = "/topic/"//${profileId}
-        const val RequestEndPoint = "/app/remote-order/request"
-        const val AcceptEndPoint = "/app/remote-order/accept"
-        const val CloseEndPoint = "/app/remote-order/end"
+        val SubScribeEndPoint = "/topic/"
+        val RequestEndPoint = "/app/remote-order/request/"
+        val AcceptEndPoint = "/app/remote-order/accept/"
+        val CloseEndPoint = "/app/remote-order/end/"
     }
 }
