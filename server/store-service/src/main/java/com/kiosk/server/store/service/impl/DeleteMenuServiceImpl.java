@@ -24,7 +24,7 @@ public class DeleteMenuServiceImpl implements DeleteMenuService {
 
         // 유저 권한 확인
         if (userId != menu.getUserId()) {
-            throw new UnauthorizedException("삭제 권한이 없습니다. 요청이 유효한지 다시 확인해 주세요.");
+            throw new UnauthorizedException("삭제 권한이 없습니다.");
         }
 
         // 메뉴 삭제 (옵션, 이미지 ON DELETE CASCADE로 자동 삭제)
