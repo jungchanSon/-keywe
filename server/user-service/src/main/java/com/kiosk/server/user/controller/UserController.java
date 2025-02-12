@@ -1,7 +1,6 @@
 package com.kiosk.server.user.controller;
 
 import com.kiosk.server.user.controller.dto.*;
-import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,14 +50,13 @@ public class UserController {
     }
 
     // 프로필 수정
-    @PatchMapping("/profile/{profileId}")
+    @PatchMapping("/profile")
     public ResponseEntity<PatchProfileResponse> modifyUserProfile(
         @RequestHeader("userId") Long userId,
         @RequestHeader("profileId") Long profileId,
         @RequestBody PatchProfileRequest request
     ) {
-        UserProfile userProfile = modifyUserProfileService.doService(userId, profileId, request.name(), request.phone(), request.password());
-        PatchProfileResponse response = new PatchProfileResponse(userProfile.getProfileName(), userProfile.getPhoneNumber(), userProfile.getProfilePass());
+        PatchProfileResponse response = modifyUserProfileService.doService(userId, profileId, request.name(), request.phone(), request.password());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

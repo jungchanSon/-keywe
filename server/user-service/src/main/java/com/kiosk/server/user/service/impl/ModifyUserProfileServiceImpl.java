@@ -2,6 +2,7 @@ package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
+import com.kiosk.server.user.controller.dto.PatchProfileResponse;
 import com.kiosk.server.user.domain.ProfileRole;
 import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.domain.UserProfileRepository;
@@ -22,7 +23,7 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
     private final UserProfileRepository userProfileRepository;
 
     @Override
-    public UserProfile doService(long userId, long profileId, String profileName, String phoneNumber, String profilePass) {
+    public PatchProfileResponse doService(long userId, long profileId, String profileName, String phoneNumber, String profilePass) {
 
         // userProfile 조회
         UserProfile userProfile = fetchUserProfile(userId, profileId);
@@ -32,25 +33,32 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
         String updatedName = profileName != null ? profileName : userProfile.getProfileName();
         String updatedPhone = phoneNumber != null ? phoneNumber : userProfile.getPhoneNumber();
 
-        userValidateUtil.validatePhoneNumber(updatedPhone);
-
         // Role에 따라 필요한 필드를  처리
         Map<String, Object> updateProfileParam = userProfileUtil.createProfileParams(userId, profileId, updatedName, updatedPhone);
 
         // 역할에 따른 처리
         if (role.equals(ProfileRole.PARENT)) {
+            userValidateUtil.validatePhoneNumber(updatedPhone);
             userValidateUtil.validateProfilePass(profilePass);
             updateProfileParam.put("profilePass", profilePass);
             userProfileRepository.updateParentProfile(updateProfileParam);
 
         } else if (role.equals(ProfileRole.CHILD)) {
+            updateProfileParam.remove("phoneNumber", updatedPhone);
             userProfileRepository.updateChildProfile(updateProfileParam);
 
         } else {
             throw new BadRequestException("Role not supported");
         }
 
-        return userProfileUtil.getUserProfileById(userId, profileId);
+        UserProfile user = userProfileUtil.getUserProfileById(userId, profileId);
+
+        return new PatchProfileResponse(
+                user.getProfileRole(),
+                user.getProfileName(),
+                user.getPhoneNumber(),
+                user.getProfilePass()
+        );
     }
 
     private UserProfile fetchUserProfile(long userId, long profileId) {

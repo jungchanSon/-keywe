@@ -1,4 +1,6 @@
 package com.kiosk.server.user.controller.dto;
 
-public record PatchProfileResponse(String name, String phone, String password) {
+import com.kiosk.server.user.domain.ProfileRole;
+
+public record PatchProfileResponse(ProfileRole role, String name, String phone, String password) {
 }
