@@ -1,4 +1,6 @@
 package com.kiosk.server.user.controller.dto;
 
-public record CreateProfileResponse(long profileId) {
+import com.kiosk.server.user.domain.ProfileRole;
+
+public record CreateProfileResponse(String id, ProfileRole role, String createAt) {
 }

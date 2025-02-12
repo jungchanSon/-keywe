@@ -1,11 +1,11 @@
 package com.kiosk.server.user.controller;
 
 import com.kiosk.server.user.controller.dto.*;
-import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,8 +37,8 @@ public class UserController {
     }
 
     // 프로필 상세조회
-    @GetMapping("/profile/{profileId}")
-    public ResponseEntity<UserProfileDetailResponse> getUserProfile(@RequestHeader("userId") Long userId, @PathVariable long profileId) {
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileDetailResponse> getUserProfile(@RequestHeader("userId") Long userId, @RequestHeader("profileId") Long profileId) {
         UserProfileDetailResponse response = profileDetailService.doService(userId, profileId);
         return ResponseEntity.ok(response);
     }
@@ -46,31 +46,29 @@ public class UserController {
     // 프로필 생성
     @PostMapping("/profile")
     public ResponseEntity<CreateProfileResponse> createProfile(@RequestHeader("userId") Long userId, @RequestBody CreateProfileRequest request) {
-        long profileId = createUserProfileService.doService(userId, request.name(), request.type(), request.phone(), request.password());
-        CreateProfileResponse response = new CreateProfileResponse(profileId);
+        CreateProfileResponse response = createUserProfileService.doService(userId, request.name(), request.type(), request.phone(), request.password());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // 프로필 수정
-    @PatchMapping("/profile/{profileId}")
+    @PatchMapping("/profile")
     public ResponseEntity<PatchProfileResponse> modifyUserProfile(
         @RequestHeader("userId") Long userId,
         @RequestHeader("profileId") Long profileId,
         @RequestBody PatchProfileRequest request
     ) {
-        UserProfile userProfile = modifyUserProfileService.doService(userId, profileId, request.name(), request.phone(), request.password());
-        PatchProfileResponse response = new PatchProfileResponse(userProfile.getProfileName(), userProfile.getPhoneNumber(), userProfile.getProfilePass());
+        PatchProfileResponse response = modifyUserProfileService.doService(userId, profileId, request.name(), request.phone(), request.password());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // 프로필 삭제조회
-    @DeleteMapping("/profile/{profileId}")
+    @DeleteMapping("/profile")
     public ResponseEntity<Void> deleteUserProfile(
         @RequestHeader("userId") Long userId,
         @RequestHeader("profileId") Long originProfileId,
-        @PathVariable long profileId
+        @Validated @RequestBody UserProfileRequest request
     ) {
-        deleteUserProfileService.doService(userId, originProfileId, profileId);
+        deleteUserProfileService.doService(userId, originProfileId, request.profileId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -18,6 +18,10 @@ public class ProfileDetailServiceImpl implements ProfileDetailService {
 
         UserProfile userProfile = userProfileUtil.getUserProfileById(userId, profileId);
 
-        return new UserProfileDetailResponse(profileId, userProfile.getProfileName(), userProfile.getPhoneNumber());
+        return new UserProfileDetailResponse(
+                String.valueOf(userProfile.getProfileId()),
+                userProfile.getProfileName(),
+                userProfile.getProfileRole(),
+                userProfile.getPhoneNumber());
     }
 }

@@ -1,6 +1,7 @@
 package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
+import com.kiosk.server.user.controller.dto.CreateProfileResponse;
 import com.kiosk.server.user.domain.ProfileRole;
 import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.domain.UserProfileRepository;
@@ -8,6 +9,9 @@ import com.kiosk.server.user.service.CreateUserProfileService;
 import com.kiosk.server.user.util.UserValidateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +21,7 @@ public class CreateUserProfileServiceImpl implements CreateUserProfileService {
     private final UserProfileRepository userProfileRepository;
 
     @Override
-    public long doService(long userId, String profileName, String profileRole, String phoneNumber, String profilePass) {
+    public CreateProfileResponse doService(long userId, String profileName, String profileRole, String phoneNumber, String profilePass) {
 
         // null 혹은 빈 값 유효성 검사
         userValidateUtil.validateName(userId, profileName);
@@ -39,7 +43,14 @@ public class CreateUserProfileServiceImpl implements CreateUserProfileService {
 
         userProfileRepository.createNewProfile(newProfile);
 
-        return newProfile.getProfileId();
+        LocalDateTime regDate = newProfile.getRegDate();
+        String CratedAt = regDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        return new CreateProfileResponse(
+                String.valueOf(newProfile.getProfileId()),
+                newProfile.getProfileRole(),
+                CratedAt
+        );
     }
 
     private ProfileRole convertToProfileRole(String profileRole) {
