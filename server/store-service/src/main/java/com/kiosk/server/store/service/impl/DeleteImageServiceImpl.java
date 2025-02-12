@@ -22,7 +22,7 @@ public class DeleteImageServiceImpl implements DeleteImageService {
             return;
         }
         if (exImage.getUserId() != userId) {
-            throw new UnauthorizedException("Mismatched userId");
+            throw new UnauthorizedException("삭제 권한이 없습니다. 요청을 다시 확인해 주세요.");
         }
 
         // DB에서 이미지 삭제

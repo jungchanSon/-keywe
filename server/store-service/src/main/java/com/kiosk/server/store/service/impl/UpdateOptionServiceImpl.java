@@ -25,7 +25,7 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
     @Override
     public CreateMenuResponse doService(long userId, long menuId, long optionId, MenuOptionRequest request) {
         if (request == null || optionId < 0) {
-            throw new BadRequestException("Option ID is required for update");
+            throw new BadRequestException("옵션 업데이트를 위해 유효한 옵션 ID와 옵션 정보를 제공해 주세요.");
         }
 
         StoreMenu menu = optionService.validateMenuAndOption(userId, menuId, optionId);
@@ -51,7 +51,7 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
 
         // optionId가 제대로 포함되어 있는지 확인
         if (!updateMap.containsKey("optionId") || updateMap.get("optionId") == null) {
-            throw new EntityNotFoundException("optionId is missing in update map");
+            throw new EntityNotFoundException("옵션 업데이트에 필요한 필수 정보가 누락되었습니다. 입력값을 확인해 주세요.");
         }
         return updateMap;
     }

@@ -32,7 +32,7 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
         StoreMenu exMenu = getStoreMenu(userId, menuId);
 
         if (updateMenu.menuCategoryId() == null) {
-            throw new EntityNotFoundException("No such category");
+            throw new EntityNotFoundException("해당 카테고리를 찾을 수 없습니다. 입력하신 정보를 다시 확인해 주세요.");
         }
 
         // 업데이트할 데이터 매핑
@@ -66,7 +66,7 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
     private StoreMenu getStoreMenu(long userId, long menuId) {
         StoreMenu exMenu = menuRepository.findById(userId, menuId);
         if (exMenu == null) {
-            throw new EntityNotFoundException("Menu not found");
+            throw new EntityNotFoundException("해당 메뉴를 찾을 수 없습니다. 입력하신 정보를 다시 확인해 주세요.");
         }
         return exMenu;
     }

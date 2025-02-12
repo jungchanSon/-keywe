@@ -19,11 +19,11 @@ public class DeleteCategoryServiceImpl implements DeleteCategoryService {
 
         StoreMenuCategory category = categoryRepository.findCategoryById(categoryId);
         if (category == null) {
-            throw new EntityNotFoundException("Invalid category id");
+            throw new EntityNotFoundException("삭제하려는 카테고리를 찾을 수 없습니다. 카테고리 정보를 확인해 주세요.");
         }
 
         if (userId != category.getUserId()) {
-            throw new UnauthorizedException("You do not have permission to delete this category");
+            throw new UnauthorizedException("삭제 권한이 없습니다. 요청이 유효한지 다시 확인해 주세요.");
         }
 
         categoryRepository.deleteCategory(categoryId);

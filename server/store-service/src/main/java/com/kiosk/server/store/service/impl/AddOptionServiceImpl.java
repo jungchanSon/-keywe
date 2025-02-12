@@ -28,7 +28,7 @@ public class AddOptionServiceImpl implements AddOptionService {
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public CreateMenuResponse doService(long userId, long menuId, MenuOptionRequest request) {
         if (request == null) {
-            throw new EntityNotFoundException("No option data provided");
+            throw new EntityNotFoundException("옵션 정보가 없습니다. 옵션 정보를 입력해 주세요.");
         }
 
         StoreMenu menu = optionService.validateMenuAndOption(userId, menuId, null);
@@ -62,7 +62,7 @@ public class AddOptionServiceImpl implements AddOptionService {
 
         // 요청된 그룹 ID가 존재하는지 확인
         if (!optionRepository.existsOptionGroupById(menuId, requestedpId)) {
-            throw new EntityNotFoundException("Option group not found: " + requestedpId);
+            throw new EntityNotFoundException("해당 옵션 그룹을 찾을 수 없습니다. 올바른 옵션 그룹을 선택해 주세요.");
         }
 
         return requestedpId;
@@ -70,7 +70,7 @@ public class AddOptionServiceImpl implements AddOptionService {
 
     private void validateOptionUniqueness(StoreMenuOption newOption) {
         if (optionRepository.existsOptionById(newOption.getOptionId())) {
-            throw new DuplicateKeyException("Duplicate option id");
+            throw new DuplicateKeyException("이미 등록된 옵션입니다. 다른 옵션을 사용해 주세요.");
         }
     }
 }

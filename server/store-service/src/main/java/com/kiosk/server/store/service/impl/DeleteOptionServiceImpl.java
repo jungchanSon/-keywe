@@ -26,23 +26,23 @@ public class DeleteOptionServiceImpl implements DeleteOptionService {
         // 옵션 존재 여부 확인
         StoreMenuOption option = optionRepository.findByOptionId(menuId, optionId);
         if (option == null) {
-            throw new EntityNotFoundException("Invalid option");
+            throw new EntityNotFoundException("삭제하려는 옵션을 찾을 수 없습니다. 옵션 정보를 확인해 주세요.");
         }
 
         // 옵션이 해당 메뉴에 속해있는지 확인
         if (menuId != option.getMenuId()) {
-            throw new UnauthorizedException("You do not have permission to delete this option");
+            throw new UnauthorizedException("삭제 권한이 없습니다. 요청이 유효한지 다시 확인해 주세요.");
         }
 
         // 메뉴 존재 여부 확인
         StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
-            throw new EntityNotFoundException("Invalid menu");
+            throw new EntityNotFoundException("삭제하려는 메뉴를 찾을 수 없습니다. 메뉴 정보를 확인해 주세요.");
         }
 
         // 유저 권한 확인
         if (userId != menu.getUserId()) {
-            throw new UnauthorizedException("You do not have permission to delete this option");
+            throw new UnauthorizedException("삭제 권한이 없습니다. 요청이 유효한지 다시 확인해 주세요.");
         }
 
         if (request.optionId() == null) {

@@ -19,12 +19,12 @@ public class DeleteMenuServiceImpl implements DeleteMenuService {
         // 메뉴 존재 여부 확인
         StoreMenu menu = menuRepository.findById(userId, menuId);
         if (menu == null) {
-            throw new EntityNotFoundException("Menu Not found");
+            throw new EntityNotFoundException("삭제하려는 메뉴를 찾을 수 없습니다. 메뉴 정보를 확인해 주세요.");
         }
 
         // 유저 권한 확인
         if (userId != menu.getUserId()) {
-            throw new UnauthorizedException("You do not have permission to delete this menu");
+            throw new UnauthorizedException("삭제 권한이 없습니다. 요청이 유효한지 다시 확인해 주세요.");
         }
 
         // 메뉴 삭제 (옵션, 이미지 ON DELETE CASCADE로 자동 삭제)

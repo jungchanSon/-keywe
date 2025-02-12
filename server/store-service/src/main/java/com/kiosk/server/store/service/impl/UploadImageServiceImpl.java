@@ -23,7 +23,7 @@ public class UploadImageServiceImpl implements UploadImageService {
 
         // 파일 존재 여부 확인
         if (file == null || file.isEmpty()) {
-            throw new BadRequestException("No file selected");
+            throw new BadRequestException("파일이 선택되지 않았습니다. 업로드할 파일을 선택해 주세요.");
         }
 
         // 파일 확장자 검증
@@ -38,17 +38,17 @@ public class UploadImageServiceImpl implements UploadImageService {
             menuImageRepository.insert(image);
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to process the image file");
+            throw new RuntimeException("이미지 파일 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
         }
     }
 
     private void validateFileExtension(String fileName) {
         if (fileName == null || !fileName.contains(".")) {
-            throw new BadRequestException("Invalid file format");
+            throw new BadRequestException("파일 형식이 올바르지 않습니다. 올바른 파일을 선택해 주세요.");
         }
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
         if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new BadRequestException("Unsupported file format: " + extension);
+            throw new BadRequestException("지원하지 않는 파일 형식입니다. 업로드 가능한 형식: " + extension);
         }
     }
 

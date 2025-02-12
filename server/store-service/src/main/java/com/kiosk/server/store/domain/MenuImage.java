@@ -28,13 +28,13 @@ public class MenuImage {
 
     private static void validateInputData(long userId, long menuId, byte[] imageBytes) {
         if (userId <= 0) {
-            throw new BadRequestException("Invalid user id");
+            throw new BadRequestException("유효하지 않은 사용자 ID입니다. 올바른 사용자 정보를 입력해 주세요.");
         }
         if (imageBytes == null) {
-            throw new BadRequestException("Invalid image");
+            throw new BadRequestException("이미지 데이터가 누락되었습니다. 올바른 이미지를 제공해 주세요.");
         }
         if (menuId <= 0) {
-            throw new BadRequestException("Invalid menu id");
+            throw new BadRequestException("유효하지 않은 메뉴 ID입니다. 올바른 메뉴 정보를 입력해 주세요.");
         }
     }
 

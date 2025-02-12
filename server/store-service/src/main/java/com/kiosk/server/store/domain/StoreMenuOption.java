@@ -46,7 +46,7 @@ public class StoreMenuOption {
             for (MenuOptionData dto : dtoList) {
                 List<String> values = dto.optionValue();
                 if (values == null || values.isEmpty()) {
-                    throw new EntityNotFoundException("No MenuOptionData for '" + dto.optionName() + "'");
+                    throw new EntityNotFoundException("옵션 '" + dto.optionName() + "'에 대한 값이 없습니다. 옵션 값을 확인해 주세요.");
                 }
                 // 새 그룹 ID 생성
                 long groupId = IdUtil.create();
@@ -62,7 +62,7 @@ public class StoreMenuOption {
 
     private static String validateInput(String input, String fieldName) {
         if (!StringUtils.hasLength(input)) {
-            throw new EntityNotFoundException(fieldName + "Name cannot be empty");
+            throw new EntityNotFoundException("입력하신 " + fieldName + "이(가) 비어 있습니다. 올바른 값을 입력해 주세요.");
         }
         return input;
     }
