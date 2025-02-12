@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,10 +44,14 @@ fun MenuDetailMenu(
     viewModel: MenuDetailViewModel
 ) {
     Log.d("MenuDetailMenu", ":$menuId")
-    val menu = viewModel.fetchMenuDetailById(menuId)
+    val menu by viewModel.selectedDetailMenu.collectAsState()
+
+    // 데이터 가져오기
+    LaunchedEffect(menuId) {
+        viewModel.fetchMenuDetailById(menuId)
+    }
     Log.d("MenuDetailMenu", ":$menu")
     val menuName = menu?.menuName ?: ""
-    val menuImage = menu?.image ?: ""
     val menuDescription = menu?.menuDescription ?: ""
 
     Box(
@@ -60,7 +67,7 @@ fun MenuDetailMenu(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            MenuDetailImage(menuImage)
+            MenuDetailImage(menuId, viewModel)
             Text(
                 text = menuName,
                 color = primaryColor,
@@ -81,21 +88,40 @@ fun MenuDetailMenu(
 }
 
 @Composable
-fun MenuDetailImage(menuImage:String) {
+fun MenuDetailImage(menuId: Long, viewModel: MenuDetailViewModel) {
+//    val menu = viewModel.getMenuDetailModelById(menuId)
+
+    val menu by viewModel.selectedDetailMenu.collectAsState()
+
+    LaunchedEffect(menuId) {
+        viewModel.fetchMenuDetailById(menuId)
+    }
+
+    val menuImage = menu?.image ?: ""
+
     Box(
         modifier = Modifier
             .size(200.dp)
             .background(color = lightColor, shape = CircleShape)
             .padding(12.dp)
     ) {
+        Log.d("menuDetailImage:", "$menuImage")
+        val modifierImage = Modifier.fillMaxSize()
+        if (menuImage.isNotBlank()) {
+            Base64Image(modifier = modifierImage, menuImage)
+            Log.d("menuDetailImage NotBlank:", "$menuImage")
+        } else {
+            DefaultMenuImage(modifierImage)
+            Log.d("menuDetailImage Blank:", "$menuImage")
+        }
 
-        Image(
-            painter = rememberAsyncImagePainter(model = menuImage),
-            contentDescription = "Web Image",
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(CircleShape),
-            contentScale = ContentScale.FillHeight
-        )
+//        Image(
+//            painter = rememberAsyncImagePainter(model = menuImage),
+//            contentDescription = "Web Image",
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .clip(CircleShape),
+//            contentScale = ContentScale.FillHeight
+//        )
     }
 }

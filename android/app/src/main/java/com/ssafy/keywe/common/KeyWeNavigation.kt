@@ -102,7 +102,7 @@ fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager:
         composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
         composable<Route.ProfileBaseRoute.ProfileChoiceRoute> {
             val args = it.toRoute<Route.ProfileBaseRoute.ProfileChoiceRoute>()
-            ProfileChoiceScreen(navController, args.isJoinApp)
+            ProfileChoiceScreen(navController, args.isJoinApp)  
         }
         composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMember(navController) }
         composable<Route.ProfileBaseRoute.ProfileEmailVerifyRoute> { EmailVerification(navController) }

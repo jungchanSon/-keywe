@@ -4,6 +4,7 @@ import android.util.Log
 import com.ssafy.keywe.data.ApiResponseHandler.handleApiResponse
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.data.dto.order.CartItemsRequest
 import com.ssafy.keywe.data.dto.order.CategoryRequest
 import com.ssafy.keywe.data.dto.order.CategoryResponse
 import com.ssafy.keywe.data.dto.order.MenuDetailResponse
@@ -11,6 +12,8 @@ import com.ssafy.keywe.data.dto.order.MenuOptionResponse
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
+import com.ssafy.keywe.data.dto.order.PostCartItemsRequest
+import com.ssafy.keywe.data.dto.order.PostCartItemsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -121,6 +124,14 @@ class OrderRemoteDataSource @Inject constructor(
             orderService.deleteOption(menuId, optionValueId)
         }
 
+    override suspend fun requestPostCartItems(
+        phoneNumber: Long,
+        cartItemsRequest: CartItemsRequest
+    ): ResponseResult<PostCartItemsResponse> {
+        handleApiResponse {
+            orderService.postCartItems(postCartItemsRequest)
+        }
+    }
 
 }
 

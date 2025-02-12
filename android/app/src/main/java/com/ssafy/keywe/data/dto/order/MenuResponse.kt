@@ -49,3 +49,7 @@ data class MenuOptionResponse(
     val menuPrice: Int,
     val options: List<OptionsResponse>
 )
+
+data class PostCartItemsResponse(
+    val orderId: String
+)

@@ -1,6 +1,7 @@
 package com.ssafy.keywe.data.order
 
 import com.ssafy.keywe.data.ResponseResult
+import com.ssafy.keywe.data.dto.order.CartItemsRequest
 import com.ssafy.keywe.data.dto.order.CategoryRequest
 import com.ssafy.keywe.data.dto.order.CategoryResponse
 import com.ssafy.keywe.data.dto.order.MenuDetailResponse
@@ -10,6 +11,7 @@ import com.ssafy.keywe.data.dto.order.MenuPostRequest
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
+import com.ssafy.keywe.data.dto.order.PostCartItemsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -31,4 +33,5 @@ interface OrderDataSource {
     suspend fun requestUpdateOption(menuId: Long, optionValueId: Long, optionRequest: OptionPostRequest): ResponseResult<MenuOptionResponse>
     suspend fun requestDeleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit>
 
+    suspend fun requestPostCartItems(PostCartItemsRequest): ResponseResult<PostCartItemsResponse>
 }

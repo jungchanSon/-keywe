@@ -36,3 +36,18 @@ data class MenuPatchItemRequest(
     val menuPrice: Int?
 )
 
+data class PostCartItemsRequest(
+    val phoneNumber: String,
+    val menuList: List<CartItemsRequest>
+)
+
+data class CartItemsRequest(
+    val menuId: Long,
+    val menuCount: Long,
+    val optionList: List<OptionListRequest>
+)
+
+data class OptionListRequest(
+    val optionValueId: Long,
+    val optionCount: Long
+)

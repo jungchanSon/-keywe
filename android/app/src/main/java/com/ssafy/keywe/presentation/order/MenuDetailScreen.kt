@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.domain.order.OptionsModel
 import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailExtraOption
@@ -91,6 +92,13 @@ fun MenuDetailScreen(
 
     val extraOptionList = menu?.options ?.filter { it.optionType == "Extra" } ?: emptyList()
 
+    val sortedExtraOptions = extraOptionList.sortedWith(compareBy<OptionsModel> { it.optionType }
+        .thenBy {
+            val match = Regex("\\d+").find(it.optionName)
+            match?.value?.toIntOrNull() ?: Int.MAX_VALUE
+        }
+    )
+
 //    val options = remember { viewModel.getExtraOptions() }
 
     Scaffold(
@@ -154,7 +162,7 @@ fun MenuDetailScreen(
 
                     item {
                         MenuDetailExtraOption(
-                            options = extraOptionList,
+                            options = sortedExtraOptions,
                             onOptionSelected = { name, newAmount, optionPrice ->
                                 extraOptions[name] = newAmount
                                 totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value] ?: 0) +

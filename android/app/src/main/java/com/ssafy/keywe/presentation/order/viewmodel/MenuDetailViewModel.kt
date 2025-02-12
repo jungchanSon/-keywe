@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.domain.order.MenuDetailModel
+import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +43,7 @@ class MenuDetailViewModel @Inject constructor(
     private val _selectedDetailMenu = MutableStateFlow<MenuDetailModel?>(null)
     val selectedDetailMenu: StateFlow<MenuDetailModel?> = _selectedDetailMenu.asStateFlow()
 
-    fun     fetchMenuDetailById(id: Long): MenuDetailModel? {
+    fun fetchMenuDetailById(id: Long) {
         Log.d("Fetch Menu", ":$id")
 
         viewModelScope.launch {
@@ -62,10 +63,14 @@ class MenuDetailViewModel @Inject constructor(
             }
         }
         Log.d("selectDetailMenu 메뉴:", "${selectedDetailMenu.value}")
-        return selectedDetailMenu.value
+//        return selectedDetailMenu.value
     }
 
 //    fun getExtraOptions(): List<OptionData> = extraOptions
+
+    fun getMenuDetailModelById(id: Long): MenuDetailModel? {
+        return if (selectedDetailMenu.value?.menuId == id) selectedDetailMenu.value else null
+    }
 
     private val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
 

@@ -56,3 +56,7 @@ data class OptionPostModel(
     val optionPrice: Int,
     val optionsValueGroup: List<OptionsValueGroupModel>
 )
+
+data class PostCartItemsModel(
+    val orderId: String
+)
