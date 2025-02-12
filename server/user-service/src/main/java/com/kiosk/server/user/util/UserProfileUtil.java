@@ -4,11 +4,13 @@ import com.kiosk.server.common.exception.custom.EntityNotFoundException;
 import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.domain.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserProfileUtil {
@@ -19,7 +21,8 @@ public class UserProfileUtil {
     public UserProfile getUserProfileById(long userId, long profileId) {
 
         if (userId <= 0 || profileId <= 0) {
-            throw new IllegalArgumentException("userId and profileId must be greater than 0");
+            log.error("userId and profileId must be greater than 0");
+            throw new IllegalArgumentException("잘못된 요청입니다.");
         }
 
         Map<String, Object> idParams = createIdParams(userId, profileId);
@@ -27,7 +30,7 @@ public class UserProfileUtil {
         UserProfile foundProfile = userProfileRepository.findUserProfileById(idParams);
 
         if (foundProfile == null) {
-            throw new EntityNotFoundException("User profile not found");
+            throw new EntityNotFoundException("해당 사용자 프로필을 찾을 수 없습니다. 입력하신 정보를 다시 확인해 주세요.");
         }
 
         return foundProfile;

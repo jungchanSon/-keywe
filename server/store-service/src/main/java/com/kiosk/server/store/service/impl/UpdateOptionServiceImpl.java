@@ -9,12 +9,14 @@ import com.kiosk.server.store.domain.MenuOptionRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.UpdateOptionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UpdateOptionServiceImpl implements UpdateOptionService {
@@ -25,7 +27,8 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
     @Override
     public CreateMenuResponse doService(long userId, long menuId, long optionId, MenuOptionRequest request) {
         if (request == null || optionId < 0) {
-            throw new BadRequestException("옵션 업데이트를 위해 유효한 옵션 ID와 옵션 정보를 제공해 주세요.");
+            log.error("request or optionId is null");
+            throw new BadRequestException("잘못된 요청입니다");
         }
 
         StoreMenu menu = optionService.validateMenuAndOption(userId, menuId, optionId);
