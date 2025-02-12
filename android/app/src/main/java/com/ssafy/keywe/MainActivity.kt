@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -60,6 +62,7 @@ import com.ssafy.keywe.common.profileGraph
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
+import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
@@ -85,6 +88,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var screenSizeManager: ScreenSizeManager
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +99,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val density = LocalDensity.current
-            
+
             screenSizeManager.updateScreenSize(this, density)
 
             val navController = rememberNavController()
@@ -184,7 +188,7 @@ class MainActivity : ComponentActivity() {
             val token = task.result
             Log.d("push notification device token", "token received: $token")
             lifecycleScope.launch {
-                PushNotificationManager.registerTokenOnServer(token)
+                PushNotificationManager.updateToken(token)
             }
         })
     }
@@ -196,7 +200,15 @@ class MainActivity : ComponentActivity() {
 fun MyApp(
     navController: NavHostController,
     tokenManager: TokenManager,
+    fcmViewModel: FCMViewModel = hiltViewModel(),
 ) {
+
+    val token by PushNotificationManager.token.collectAsStateWithLifecycle()
+    LaunchedEffect(token) {
+        if (token != null) {
+            fcmViewModel.updateToken(token!!)
+        }
+    }
 
 //    val client = StreamVideoBuilder(
 //        context = context,

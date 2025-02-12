@@ -105,7 +105,7 @@ class ProfileViewModel @Inject constructor(
     private fun handleSuccess(
         model: List<GetAllProfileModel>,
     ) {
-        Log.d("model", "model")
+        Log.d("model", "model = $model")
         _profiles.update {
             model
         }

@@ -70,11 +70,7 @@ android {
         compose = true
     }
 }
-/*
-agora:
-  app-id: 2a649e9d060a46849cd443c41382f60a
-  app-certificate: 4e60af7c172b4a10957eac6b3ac9211e
- */
+
 dependencies {
 // https://mvnrepository.com/artifact/io.getstream/stream-webrtc-android
 //    implementation("org.webrtc:google-webrtc:1.0.30039@aar")
@@ -82,9 +78,12 @@ dependencies {
 //    implementation("io.agora.rtc:voice-sdk:4.")
 //    implementation(libs.webrtc)
 
+    // STOMP
+    implementation("org.hildan.krossbow:krossbow-stomp-core:9.0.0")
+
     implementation(libs.androidx.core.ktx.v1120)  // ✅ Parcelable 확장 함수 포함
 
-    implementation (libs.gson)
+    implementation(libs.gson)
 
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // ✅ Gson Converter 추가
 

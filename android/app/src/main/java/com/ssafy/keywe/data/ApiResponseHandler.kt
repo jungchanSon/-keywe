@@ -31,7 +31,7 @@ object ApiResponseHandler {
 //                    Log.d("rest api error", "${errorResponse}")
 
                     ResponseResult.ServerError(
-                        status = Status.Code(404),//errorResponse.code
+                        status = Status.Code(500),//errorResponse.code
                     )
                 }
             }

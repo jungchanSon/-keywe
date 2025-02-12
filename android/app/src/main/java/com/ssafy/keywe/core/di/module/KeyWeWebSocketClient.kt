@@ -35,16 +35,17 @@ class SignalWebSocketListener @Inject constructor() : WebSocketListener() {
 
 }
 
-class SignalWebSocket @Inject constructor(
+class KeyWeWebSocket @Inject constructor(
     private val webSocketListener: SignalWebSocketListener,
     @WebSocketClientQualifier private val okHttpClient: OkHttpClient,
 ) {
     private val webSocket: WebSocket
-    private val signalUrl = "wss://api.signal.keywe.shop"
+    private val socketUrl = "ws://i12a404.p.ssafy.io:8080"
 
     init {
-        val signalRequest = Request.Builder().url(signalUrl).build()
+        val signalRequest = Request.Builder().url(socketUrl).build()
         webSocket = okHttpClient.newWebSocket(signalRequest, webSocketListener)
+
     }
 
     fun sendMessage() {

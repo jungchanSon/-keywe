@@ -36,8 +36,8 @@ object NetworkModule {
     fun provideSignalWebSocket(
         webSocketListener: SignalWebSocketListener,
         @WebSocketClientQualifier okHttpClient: OkHttpClient,
-    ): SignalWebSocket {
-        return SignalWebSocket(webSocketListener, okHttpClient)
+    ): KeyWeWebSocket {
+        return KeyWeWebSocket(webSocketListener, okHttpClient)
     }
 
     @Provides

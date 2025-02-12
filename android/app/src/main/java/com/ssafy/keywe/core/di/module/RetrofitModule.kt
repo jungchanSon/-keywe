@@ -1,6 +1,7 @@
 package com.ssafy.keywe.core.di.module
 
 import com.ssafy.keywe.data.auth.AuthService
+import com.ssafy.keywe.data.fcm.FCMService
 import com.ssafy.keywe.data.order.OrderService
 import com.ssafy.keywe.data.profile.ProfileService
 import dagger.Module
@@ -27,4 +28,8 @@ object RetrofitModule {
     @Provides
     fun provideProfileService(retrofit: Retrofit): ProfileService =
         retrofit.create(ProfileService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideFCMService(retrofit: Retrofit): FCMService = retrofit.create(FCMService::class.java)
 }

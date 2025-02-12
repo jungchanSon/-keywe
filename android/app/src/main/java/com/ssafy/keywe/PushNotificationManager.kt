@@ -1,9 +1,13 @@
 package com.ssafy.keywe
 
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 object PushNotificationManager {
     private var countReceived: Int = 0
+    val _token = MutableStateFlow<String?>(null)
+    var token = _token.asStateFlow()
 
     fun setDataReceived(count: Int) {
         this.countReceived = count
@@ -13,8 +17,9 @@ object PushNotificationManager {
         return this.countReceived
     }
 
-    suspend fun registerTokenOnServer(token: String) {
-        delay(2000)
+    fun updateToken(token: String) {
+        this._token.update {
+            token
+        }
     }
-
 }

@@ -54,16 +54,12 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         )
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(title)
-            .setContentText(body)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
-            .setAutoCancel(true)
+        val builder = NotificationCompat.Builder(this, channelId).setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title).setContentText(body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setAutoCancel(true)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setSound(defaultSoundUri)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
 
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -120,6 +116,7 @@ class KeyWeMessagingService : FirebaseMessagingService() {
     @SuppressLint("ResourceType")
     override fun onNewToken(token: String) {
 
+        PushNotificationManager.updateToken(token)
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // FCM registration token to your app server.

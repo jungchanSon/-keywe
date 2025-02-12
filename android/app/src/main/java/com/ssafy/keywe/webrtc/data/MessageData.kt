@@ -6,6 +6,27 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
+@Serializable
+data class WebSocketMessage(
+    val type: String,
+    val sessionId: String,
+    val channelInfo: ChannelInfo?,
+    val data: SessionData?,
+)
+
+@Serializable
+data class ChannelInfo(
+    val channelName: String,
+    val token: String,
+)
+
+@Serializable
+data class SessionData(
+    val helperUserId: String,
+    val kioskUserId: String,
+)
+
+
 //@Serializable
 //sealed class ScreenSize(val width: Float, val height: Float) {
 //    @Serializable
@@ -57,8 +78,7 @@ data class Touch(
     override val messageType: MessageType,
     override val x: Float,
     override val y: Float,
-) :
-    MessageData() {
+) : MessageData() {
     fun convertGestureToAnotherScreen(
         remoteScreen: ScreenSize,    // B 화면
         offset: Offset,  // A 화면에서의 터치한 offset 좌표
@@ -76,8 +96,7 @@ data class Drag(
     override val messageType: MessageType,
     override val x: Float,
     override val y: Float,
-) :
-    MessageData() {
+) : MessageData() {
     fun convertGestureToAnotherScreen(
         remoteScreen: ScreenSize,    // B 화면
         offset: Offset,  // A 화면에서의 터치한 offset 좌표
