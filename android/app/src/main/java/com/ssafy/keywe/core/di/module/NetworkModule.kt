@@ -3,6 +3,8 @@ package com.ssafy.keywe.core.di.module
 import com.ssafy.keywe.data.AuthAuthenticator
 import com.ssafy.keywe.data.AuthInterceptor
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.webrtc.KeyWeWebSocket
+import com.ssafy.keywe.webrtc.SignalWebSocketListener
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,8 +38,9 @@ object NetworkModule {
     fun provideSignalWebSocket(
         webSocketListener: SignalWebSocketListener,
         @WebSocketClientQualifier okHttpClient: OkHttpClient,
+        tokenManager: TokenManager,
     ): KeyWeWebSocket {
-        return KeyWeWebSocket(webSocketListener, okHttpClient)
+        return KeyWeWebSocket(webSocketListener, okHttpClient, tokenManager)
     }
 
     @Provides
@@ -82,7 +85,8 @@ object NetworkModule {
         }
         return OkHttpClient.Builder()
             // 웹 소켓 연결 유지
-            .pingInterval(30, TimeUnit.SECONDS).addInterceptor(provideLoggingInterceptor).build()
+            .callTimeout(1, TimeUnit.MINUTES).pingInterval(10, TimeUnit.SECONDS)
+            .addInterceptor(provideLoggingInterceptor).build()
     }
 
 }

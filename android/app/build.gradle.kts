@@ -78,8 +78,17 @@ dependencies {
 //    implementation("io.agora.rtc:voice-sdk:4.")
 //    implementation(libs.webrtc)
 
+
     // STOMP
-    implementation("org.hildan.krossbow:krossbow-stomp-core:9.0.0")
+    implementation("org.hildan.krossbow:krossbow-stomp-core:7.0.0")
+    implementation("org.hildan.krossbow:krossbow-websocket-builtin:7.0.0")
+    implementation("org.hildan.krossbow:krossbow-websocket-okhttp:7.0.0")
+    implementation("org.hildan.krossbow:krossbow-stomp-moshi:7.0.0")
+
+    implementation("com.squareup.moshi:moshi:1.15.2")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+    implementation("com.squareup.moshi:moshi-adapters:1.14.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     implementation(libs.androidx.core.ktx.v1120)  // ✅ Parcelable 확장 함수 포함
 

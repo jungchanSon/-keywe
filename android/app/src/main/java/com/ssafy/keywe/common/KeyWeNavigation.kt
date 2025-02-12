@@ -90,12 +90,20 @@ object SharingRoute
 
 @Serializable
 data class HelperRoute(val isKiosk: Boolean = false, val channelName: String)
+
 @Serializable
 data object LoginRoute
 
 @Serializable
 object SignUpRoute
 
+
+@Serializable
+data class WaitingRoomRoute(
+    val storeId: String,
+    val kioskUserId: String,
+    val sessionId: String,
+)
 
 fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager: TokenManager) {
     navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {

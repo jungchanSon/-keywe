@@ -4,11 +4,11 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -56,10 +57,14 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.SplashRoute
+import com.ssafy.keywe.common.WaitingRoomRoute
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.menuGraph
 import com.ssafy.keywe.common.profileGraph
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.data.websocket.SignalService
+import com.ssafy.keywe.data.websocket.SignalType
+import com.ssafy.keywe.domain.fcm.FCMNotificationModel
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
@@ -69,6 +74,8 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.HelperScreen
 import com.ssafy.keywe.webrtc.ScreenSharing
 import com.ssafy.keywe.webrtc.ScreenSizeManager
+import com.ssafy.keywe.webrtc.screen.WaitingRoomScreen
+import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -100,6 +107,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val density = LocalDensity.current
 
+            // todo FCM device ID 추가
+            val deviceId =
+                Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
+
+
             screenSizeManager.updateScreenSize(this, density)
 
             val navController = rememberNavController()
@@ -119,61 +131,57 @@ class MainActivity : ComponentActivity() {
         }
 
         // notification comes when app is killed
-        val count: Int? = intent?.extras?.getString("count")?.toInt()
-        Log.d("push notification", "on create count : $count")
-        count?.let {
-            PushNotificationManager.setDataReceived(count = count)
-            lifecycleScope.launch {
+        val notification: FCMNotificationModel? =
+            intent.getParcelableExtra<FCMNotificationModel>("notification")
 
+        notification?.let {
+            lifecycleScope.launch {
                 while (NavControllerHolder.navController == null) {
                     Log.d("push notification", "not logged in, waiting...")
                     delay(500)
                 }
 
-                NavControllerHolder.navController?.navigate("menuDetail")
-//                while (rootNavigationViewModel.getMainNavigationViewModel() == null) {
-//                    Log.d("push notification", "not logged in, waiting...")
-//                    delay(500)
-//                }
-//                val mainNavigationController = rootNavigationViewModel.getMainNavigationViewModel()
-//                mainNavigationController!!.showPushNotification()
+                NavControllerHolder.navController!!.navigate(
+                    WaitingRoomRoute(
+                        it.storeId,
+                        it.kioskUserId,
+                        it.sessionId
+                    )
+                )
+
                 return@launch
             }
             return
         }
-
     }
 
-    private fun handleNotification(intent: Intent) {
-        val message = intent.getStringExtra("notification_message")
-        message?.let {}
-        Toast.makeText(this, "notification_message", Toast.LENGTH_SHORT).show()
-
-    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleNotification(intent)
-        NavControllerHolder.navController?.navigate("menuDetail")
-
-        Log.d("push notification ", " on new intent extras? : ${intent?.extras}")
-
         // notification coming when app in inactive/background, data included in intent extra
-        val count: Int? = intent?.extras?.getString("count")?.toInt()
-        count?.let {
-            Log.d("push notification ", " on new intent count : $count")
-            PushNotificationManager.setDataReceived(count = count)
-            lifecycleScope.launch {
 
-//                while (rootNavigationViewModel.getMainNavigationViewModel() == null) {
-//                    Log.d("push notification", "not logged in, waiting...")
-//                    delay(100)
-//                }
-//
-//                val mainNavigationController = rootNavigationViewModel.getMainNavigationViewModel()
-//                mainNavigationController!!.showPushNotification()
+        val notification = intent.getParcelableExtra<FCMNotificationModel>("notification")
+
+        Log.d("FCM notification", "onNewIntent $notification")
+        notification?.let {
+            lifecycleScope.launch {
+                Log.d("FCM notification", "onNewIntent2")
+                while (NavControllerHolder.navController == null) {
+                    Log.d("push notification", "not logged in, waiting...")
+                    delay(500)
+                }
+                Log.d("FCM notification", "onNewIntent3")
+                NavControllerHolder.navController!!.navigate(
+                    WaitingRoomRoute(
+                        it.storeId,
+                        it.kioskUserId,
+                        it.sessionId
+                    )
+                )
                 return@launch
             }
+            Log.d("FCM notification", "onNewIntent4")
+
             return
         }
     }
@@ -271,6 +279,15 @@ fun MyApp(
                     Log.d("Helper Back", "interceptor Back")
                 })
             }
+            composable<WaitingRoomRoute> {
+                val arg = it.toRoute<WaitingRoomRoute>()
+                WaitingRoomScreen(
+                    navController = navController,
+                    sessionId = arg.sessionId,
+                    storeId = arg.storeId,
+                    kioskUserId = arg.kioskUserId
+                )
+            }
 //            kioskGraph(navController)
         }
 
@@ -298,8 +315,23 @@ fun RequestNotificationPermissionDialog() {
 
 
 @Composable
-fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
+fun HomeScreen(
+    navController: NavHostController, tokenManager: TokenManager,
+    viewModel: SignalViewModel = hiltViewModel(),
+) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+//    val message by viewModel.messageFlow.collectAsState(initial = null)
+//
+//    if (message != null) {
+//        Text(text = "메시지: ${message.toString()}")
+//    } else {
+//        Text(text = "메시지 대기중...")
+//    }
+
+
+    val profileId = 677367955509677381
+
     Column {
         DefaultAppBar(title = "title", navController = navController)
         TextButton(onClick = {
@@ -315,6 +347,35 @@ fun HomeScreen(navController: NavHostController, tokenManager: TokenManager) {
                 Text("메뉴 라우팅")
             }
         }
+        TextButton(onClick = {
+            val intent = Intent(context, SignalService::class.java)
+            intent.action = SignalType.CONNECT.name
+            context.startService(intent)
+        }) { Text("스톰프 연결") }
+        TextButton(onClick = {
+            val intent = Intent(context, SignalService::class.java)
+            intent.action = SignalType.SUBSCRIBE.name
+            intent.putExtra(
+                "profileId", profileId.toString()
+            )
+            context.startService(intent)
+        }) { Text("구독 연결") }
+
+        TextButton(onClick = {
+            val intent = Intent(context, SignalService::class.java)
+            intent.action = SignalType.REQUEST.name
+            context.startService(intent)
+        }) { Text("원격 연결") }
+        TextButton(onClick = {
+            val intent = Intent(context, SignalService::class.java)
+            intent.action = SignalType.ACCEPT.name
+            context.startService(intent)
+        }) { Text("주문 수락") }
+        TextButton(onClick = {
+            val intent = Intent(context, SignalService::class.java)
+            intent.action = SignalType.CLOSE.name
+            context.startService(intent)
+        }) { Text("주문 종료") }
     }
 }
 

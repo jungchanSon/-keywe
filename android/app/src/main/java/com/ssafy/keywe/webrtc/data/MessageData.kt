@@ -2,6 +2,7 @@ package com.ssafy.keywe.webrtc.data
 
 import android.util.Log
 import androidx.compose.ui.geometry.Offset
+import com.squareup.moshi.JsonClass
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,6 +25,24 @@ data class ChannelInfo(
 data class SessionData(
     val helperUserId: String,
     val kioskUserId: String,
+)
+
+@Serializable
+@JsonClass(generateAdapter = true)
+data class RequestMessage(
+    val storeId: String,
+)
+
+@Serializable
+@JsonClass(generateAdapter = true)
+data class AcceptMessage(
+    val sessionId: String,
+)
+
+@Serializable
+@JsonClass(generateAdapter = true)
+data class CloseMessage(
+    val sessionId: String,
 )
 
 
