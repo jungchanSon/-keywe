@@ -29,7 +29,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     // 이메일 중복 체크
     private void checkEmailDuplication(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new ConflictException("Email Duplicated");
+            throw new ConflictException("중복된 이메일입니다. 다른 이메일을 입력해 주세요.");
         }
     }
 
@@ -50,11 +50,11 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         String passRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~!@#$%^&*_\\-+=`|\\\\(){}\\[\\]:;\"'<>,.?/]).{8,16}$";
 
         if (email == null || !email.matches(emailRegex)) {
-            throw new BadRequestException("Invalid Email Format");
+            throw new BadRequestException("이메일 형식이 올바르지 않습니다. 올바른 이메일 형식으로 입력해 주세요.");
         }
 
         if (password == null || !password.matches(passRegex)) {
-            throw new BadRequestException("Invalid Password Format");
+            throw new BadRequestException("패스워드 형식이 올바르지 않습니다. 올바른 패스워드 형식으로 입력해 주세요.");
         }
     }
 

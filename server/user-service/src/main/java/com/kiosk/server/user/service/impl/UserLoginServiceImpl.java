@@ -22,14 +22,14 @@ public class UserLoginServiceImpl implements UserLoginService {
         User foundUser = userRepository.findByEmail(email);
 
         if(foundUser == null) {
-            throw new UnauthorizedException("Incorrect Credentials");
+            throw new UnauthorizedException("인증에 실패했습니다. 올바른 이메일을 입력해 주세요.");
         }
 
         // 비밀번호 검증
         String hashedInputPassword = HashUtil.hashPassword(inputPassword, foundUser.getSalt());
 
         if (!foundUser.getPassword().equals(hashedInputPassword)) {
-            throw new UnauthorizedException("Incorrect Credentials");
+            throw new UnauthorizedException("인증에 실패했습니다. 올바른 비밀번호를 입력해 주세요.");
         }
 
         return tokenUtil.createTemporaryToken(foundUser.getUserId());

@@ -23,13 +23,13 @@ public class DeleteUserProfileServiceImpl implements DeleteUserProfileService {
 
         // profileId 검증
         if (originProfileId != profileId) {
-            throw new UnauthorizedException("Unauthorized ProfileId");
+            throw new UnauthorizedException("인증에 실패했습니다. 올바른 프로필로 다시 시도해 주세요.");
         }
 
         // userProfile 조회
         UserProfile userProfile = userProfileUtil.getUserProfileById(userId, originProfileId);
         if(userProfile == null) {
-            throw new EntityNotFoundException("User Profile Not Found");
+            throw new EntityNotFoundException("해당 프로필을 찾을 수 없습니다. 올바른 프로필로 다시 시도해 주세요.");
         }
 
         // 삭제

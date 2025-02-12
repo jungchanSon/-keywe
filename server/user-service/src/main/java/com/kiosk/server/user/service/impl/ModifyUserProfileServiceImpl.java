@@ -48,7 +48,7 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
             userProfileRepository.updateChildProfile(updateProfileParam);
 
         } else {
-            throw new BadRequestException("Role not supported");
+            throw new BadRequestException("프로필 역할이 선택되지 않았습니다. 올바른 프로필 역할을 선택해주세요.");
         }
 
         UserProfile user = userProfileUtil.getUserProfileById(userId, profileId);
@@ -64,7 +64,7 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
     private UserProfile fetchUserProfile(long userId, long profileId) {
         UserProfile userProfile = userProfileUtil.getUserProfileById(userId, profileId);
         if (userProfile == null) {
-            throw new EntityNotFoundException("User profile not found");
+            throw new EntityNotFoundException("수정할 프로필이 선택되지 않았습니다. 수정할 프로필을 선택한 후 다시 시도해 주세요.");
         }
         return userProfile;
     }
