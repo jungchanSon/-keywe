@@ -5,6 +5,7 @@
 
     <!-- ok -->
     <string name="ok">OK</string>
+    <string name="accessibility_service_description">대리 주문</string>
 
     <!-- FCM -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>

@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
@@ -63,6 +64,7 @@ import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.HelperScreen
 import com.ssafy.keywe.webrtc.ScreenSharing
+import com.ssafy.keywe.webrtc.ScreenSizeManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -79,6 +81,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var tokenManager: TokenManager
 
+    @Inject
+    lateinit var screenSizeManager: ScreenSizeManager
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +93,10 @@ class MainActivity : ComponentActivity() {
         val splashscreen = installSplashScreen()
         enableEdgeToEdge()
         setContent {
+            val density = LocalDensity.current
+            
+            screenSizeManager.updateScreenSize(this, density)
+
             val navController = rememberNavController()
             NavControllerHolder.navController = navController
             // TokenManager의 이벤트를 전역적으로 구독
@@ -249,7 +257,9 @@ fun MyApp(
 
 //                val context = LocalContext.current
 //                val viewModel: KeyWeViewModel = hiltViewModel()
-                HelperScreen(channelName, navController)
+                HelperScreen(channelName, navController, {
+                    Log.d("Helper Back", "interceptor Back")
+                })
             }
         }
 

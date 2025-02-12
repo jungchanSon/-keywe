@@ -232,4 +232,8 @@ fun ScreenCaptureButton(context: Context, surface: Surface?, navController: NavH
     }) {
         Text("채널 입장")
     }
+
+    BottomButton(
+        content = "접근성 확인", onClick = {
+        })
 }
