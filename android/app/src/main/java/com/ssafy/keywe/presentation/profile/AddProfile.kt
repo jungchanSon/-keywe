@@ -81,6 +81,13 @@ fun AddMemberScreen(
     val state = viewModel.state.collectAsState().value
     val focusManager = LocalFocusManager.current
 
+    LaunchedEffect(Unit) {
+        viewModel.profileAddedEvent.collect {
+            navController.popBackStack()
+        }
+    }
+
+
     Scaffold(
         topBar = { DefaultAppBar(title = "구성원 추가", navController = navController) },
         modifier = Modifier
@@ -120,7 +127,7 @@ fun AddMemberScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (state.selectedTab == 0) {
+            if (state.selectedTab == 0) { // 부모인 경우
                 Spacer(modifier = Modifier.height(16.dp))
                 PhoneNumberInput(viewModel)
 
@@ -210,8 +217,8 @@ fun AddMemberScreen(
                 // 간편 비밀번호
                 DefaultTextFormField(
                     label = "간편 비밀번호",
-                    placeholder = "간편 비밀번호 숫자자리를 입력해주세요.",
-                    text = state.simplePassword,
+                    placeholder = "간편 비밀번호 숫자 4자리를 입력해주세요.",
+                    text = state.password,
                     onValueChange = { viewModel.onSimplePasswordChange(it) },
                     isPassword = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -224,8 +231,11 @@ fun AddMemberScreen(
             // 추가하기 버튼
             Button(
                 onClick = {
-                    viewModel.addMember(profileViewModel)
-                    navController.popBackStack()
+                    viewModel.postProfile()
+                    navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = false))
+//                    {
+//                        popUpTo(Route.ProfileBaseRoute) { inclusive = false }  // 기존 스택을 유지할지 여부 설정
+//                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -9,7 +9,7 @@ data class AddMemberState(
     val isVerificationSent: Boolean = false,
     val isVerificationValid: Boolean = false,
     val verificationStatus: VerificationStatus = VerificationStatus.NONE,
-    val simplePassword: String = ""
+    val password: String = ""
 )
 
 enum class VerificationStatus {
