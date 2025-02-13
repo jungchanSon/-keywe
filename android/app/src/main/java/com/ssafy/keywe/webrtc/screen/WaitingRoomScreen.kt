@@ -24,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.data.websocket.SignalService
@@ -72,6 +71,10 @@ fun WaitingRoomScreen(
     var text = "연결 중 입니다."
 
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        connectSTOMP(context)
+    }
 
     LaunchedEffect(message) {
         message?.let {
@@ -122,9 +125,7 @@ fun WaitingRoomScreen(
 
     }
 
-    LaunchedEffect(Unit) {
-        connectSTOMP(context)
-    }
+
 
 
     Scaffold(topBar = {
@@ -155,11 +156,11 @@ fun CountdownTimer(navController: NavHostController) {
     LaunchedEffect(seconds) {
         if (seconds == 0) {
             Log.d("CountdownTimer", "타이머 종료")
-            navController.navigate(BottomRoute.HomeRoute, builder = {
-                popUpTo(BottomRoute.HomeRoute) {
-                    inclusive = true
-                }
-            })
+//            navController.navigate(BottomRoute.HomeRoute, builder = {
+//                popUpTo(BottomRoute.HomeRoute) {
+//                    inclusive = true
+//                }
+//            })
         }
     }
 

@@ -20,8 +20,6 @@ class TokenManager @Inject constructor(
     private var cachedAccessToken: String? = null
     private var cachedRefreshToken: String? = null
 
-    private var fcmToken: String? = null
-
     // 이벤트를 알리기 위한 SharedFlow
     private val _tokenClearedEvent = MutableSharedFlow<Unit>()
     val tokenClearedEvent: SharedFlow<Unit> = _tokenClearedEvent
@@ -115,7 +113,4 @@ class TokenManager @Inject constructor(
         cachedAccessToken = token
     }
 
-    fun saveFCMToken(token: String) {
-        fcmToken = token
-    }
 }

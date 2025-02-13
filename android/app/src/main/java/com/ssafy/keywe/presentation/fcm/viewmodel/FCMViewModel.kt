@@ -8,7 +8,6 @@ import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.dto.Status
 import com.ssafy.keywe.data.dto.fcm.FCMRequest
-import com.ssafy.keywe.domain.fcm.FCMModel
 import com.ssafy.keywe.domain.fcm.FCMRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +37,7 @@ class FCMViewModel @Inject constructor(
         registToken(token)
     }
 
-    private fun handleSuccess(model: FCMModel) {
+    private fun handleSuccess(unit: Unit) {
     }
 
     private fun handleError(

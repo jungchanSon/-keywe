@@ -3,6 +3,7 @@ package com.ssafy.keywe.presentation.profile.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.PushNotificationManager
 import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
@@ -10,8 +11,10 @@ import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.dto.Status
 import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
+import com.ssafy.keywe.data.dto.fcm.FCMRequest
 import com.ssafy.keywe.domain.auth.AuthRepository
 import com.ssafy.keywe.domain.auth.SelectProfileModel
+import com.ssafy.keywe.domain.fcm.FCMRepository
 import com.ssafy.keywe.domain.profile.GetProfileListModel
 import com.ssafy.keywe.domain.profile.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +28,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository, private val tokenManager: TokenManager,
     private val authRepository: AuthRepository,
+    private val fcmRepository: FCMRepository,
 ) : ViewModel() {
     private val _profilesUi =
         MutableStateFlow<List<GetProfileListModel>>(emptyList()) //프로필 목록을 보여주는 상태관리
@@ -59,6 +63,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun selectAccount(model: GetProfileListModel) {
+        Log.d("PROFILE ID", "selected ProfileId = ${model.id}")
         viewModelScope.launch {
             val request = SelectProfileRequest(
                 model.id.toLong()
@@ -74,11 +79,16 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun saveToken(model: SelectProfileModel) {
+        val token = PushNotificationManager.token.value
+        val deviceId = PushNotificationManager.deviceId.value
+        val request = FCMRequest(token!!, deviceId!!)
         tokenManager.saveCacheAccessToken(model.accessToken)
         viewModelScope.launch {
             tokenManager.saveAccessToken(model.accessToken)
+            fcmRepository.registFCM(request)
 //            tokenManager.saveRefreshToken(model.refreshToken)
         }
+
     }
 
 //    private fun postProfile(profile: GetProfileRequest) {
