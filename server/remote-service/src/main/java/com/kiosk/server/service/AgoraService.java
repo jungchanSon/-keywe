@@ -1,6 +1,6 @@
 package com.kiosk.server.service;
 
-import com.kiosk.server.websocket.message.AgoraChannelInfo;
+import com.kiosk.server.service.dto.AgoraChannelInfo;
 import io.agora.media.RtcTokenBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -5,10 +5,12 @@ import com.kiosk.server.client.feign.dto.UserProfile;
 import com.kiosk.server.common.util.IdUtil;
 import com.kiosk.server.domain.RemoteOrderSession;
 import com.kiosk.server.domain.RemoteOrderStatus;
-import com.kiosk.server.websocket.message.RemoteOrderResponseMessage;
-import com.kiosk.server.websocket.message.RemoteOrderResponseMessageType;
+import com.kiosk.server.event.RemoteOrderRequestedEvent;
+import com.kiosk.server.websocket.message.response.RemoteOrderResponse;
+import com.kiosk.server.websocket.message.response.RemoteOrderError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,7 +18,7 @@ import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -29,9 +31,9 @@ import java.util.List;
 public class RemoteOrderService {
 
     private final UserClient userClient;
-    private final FCMService fcmService;
     private final TaskScheduler taskScheduler;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ApplicationEventPublisher eventPublisher;
     private final RedisTemplate<String, Object> objectRedisTemplate;
     private final RedisTemplate<String, RemoteOrderSession> sessionRedisTemplate;
 
@@ -43,7 +45,7 @@ public class RemoteOrderService {
     // Redis에 세션 저장
     public String createSession(String userId, String familyId, String storeId) {
 
-        if(!userClient.verifyParentRole(userId)) {
+        if (!userClient.verifyParentRole(userId)) {
             return null;
         }
 
@@ -66,17 +68,15 @@ public class RemoteOrderService {
 
         objectRedisTemplate.opsForSet().add(HELPER_PREFIX + familyId, availableHelperUserIds.toArray());
 
-        // FCM 발송 및 타임아웃 체크 스케줄링
-        fcmService.sendToFamily(session);
-
+        // 타임아웃 체크 스케줄링
         scheduleTimeoutCheck(session.getSessionId());
+
+        eventPublisher.publishEvent(new RemoteOrderRequestedEvent(session));
 
         return session.getSessionId();
     }
 
-    @Transactional
     public RemoteOrderSession acceptSession(String sessionId, String helperUserId, String familyId) {
-
         // 가족 구성원이 맞는지 확인
         Boolean isMember = objectRedisTemplate.opsForSet().isMember(HELPER_PREFIX + familyId, helperUserId);
         if (Boolean.FALSE.equals(isMember)) {
@@ -108,11 +108,7 @@ public class RemoteOrderService {
                 operations.opsForValue().set(key, session);
 
                 // 트랜잭션 실행
-                if (operations.exec() != null) {  // 성공하면 업데이트된 세션 반환
-                    return session;
-                } else {  // 실패하면 null 반환
-                    return null;
-                }
+                return !CollectionUtils.isEmpty(operations.exec()) ? session : null;
             }
         });
     }
@@ -120,7 +116,7 @@ public class RemoteOrderService {
     public RemoteOrderSession endSession(String userId, String sessionId) {
         String key = SESSION_PREFIX + sessionId;
 
-        RemoteOrderSession session = getSession(sessionId);
+        RemoteOrderSession session = sessionRedisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
         if (session == null) {
             return null;
         }
@@ -136,12 +132,7 @@ public class RemoteOrderService {
         return session;
     }
 
-    // Redis에서 세션 조회
-    private RemoteOrderSession getSession(String sessionId) {
-        return sessionRedisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
-    }
-
-    // 30초 타임아웃 체크 스케줄링
+    // 타임아웃 체크 스케줄링
     private void scheduleTimeoutCheck(String sessionId) {
         taskScheduler.schedule(
             () -> checkTimeout(sessionId),
@@ -151,7 +142,7 @@ public class RemoteOrderService {
 
     // 타임아웃 체크 및 처리
     private void checkTimeout(String sessionId) {
-        RemoteOrderSession session = getSession(sessionId);
+        RemoteOrderSession session = sessionRedisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
         String key = SESSION_PREFIX + sessionId;
 
         if (session != null && RemoteOrderStatus.WAITING.name().equals(session.getStatus())) {
@@ -160,10 +151,7 @@ public class RemoteOrderService {
 
             messagingTemplate.convertAndSend(
                 "/topic/" + session.getKioskUserId(),
-                RemoteOrderResponseMessage.builder()
-                    .type(RemoteOrderResponseMessageType.TIMEOUT)
-                    .sessionId(sessionId)
-                    .build()
+                RemoteOrderResponse.error(RemoteOrderError.SESSION_TIMEOUT)
             );
         }
     }

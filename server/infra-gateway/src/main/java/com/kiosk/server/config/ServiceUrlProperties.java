@@ -7,6 +7,7 @@ public record ServiceUrlProperties(
     String userService,
     String storeService,
     String remoteService,
-    String orderService
+    String orderService,
+    String notificationService
 ) {
 }

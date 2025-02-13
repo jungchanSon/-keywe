@@ -3,7 +3,13 @@ package com.kiosk.server.websocket.handler;
 import com.kiosk.server.domain.RemoteOrderSession;
 import com.kiosk.server.service.AgoraService;
 import com.kiosk.server.service.RemoteOrderService;
-import com.kiosk.server.websocket.message.*;
+import com.kiosk.server.service.dto.AgoraChannelInfo;
+import com.kiosk.server.websocket.message.request.RemoteOrderAcceptRequest;
+import com.kiosk.server.websocket.message.request.RemoteOrderEndRequest;
+import com.kiosk.server.websocket.message.request.RemoteOrderRequest;
+import com.kiosk.server.websocket.message.response.RemoteOrderError;
+import com.kiosk.server.websocket.message.response.RemoteOrderResponse;
+import com.kiosk.server.websocket.message.response.RemoteOrderResponseType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
@@ -11,7 +17,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
@@ -25,7 +30,7 @@ public class RemoteOrderHandler {
 
     @MessageMapping("/remote-order/request")
     public void handleOrderRequest(
-        RemoteOrderRequestMessage requestMessage,
+        RemoteOrderRequest requestMessage,
         @Header("simpSessionAttributes") Map<String, Object> sessionAttributes
     ) {
         String userId = (String) sessionAttributes.get("userId");
@@ -35,27 +40,23 @@ public class RemoteOrderHandler {
         if (sessionId == null) {
             messagingTemplate.convertAndSend(
                 "/topic/" + userId,
-                RemoteOrderResponseMessage.builder()
-                    .type(RemoteOrderResponseMessageType.ERROR)
-                    .data(Map.of("message", "User does not have parent role"))
-                    .build()
+                RemoteOrderResponse.error(RemoteOrderError.CHILD_REMOTE_ORDER_FORBIDDEN)
             );
             return;
         }
 
         // 키오스크에게 sessionId 전달
-        RemoteOrderResponseMessage responseMessage = RemoteOrderResponseMessage.builder()
-            .type(RemoteOrderResponseMessageType.REQUESTED)
-            .sessionId(sessionId)
-            .timestamp(LocalDateTime.now().toString())
-            .build();
+        RemoteOrderResponse responseMessage = RemoteOrderResponse.success(
+            RemoteOrderResponseType.REQUESTED,
+            Map.of("sessionId", sessionId)
+        );
 
         messagingTemplate.convertAndSend("/topic/" + userId, responseMessage);
     }
 
     @MessageMapping("/remote-order/accept")
     public void handleOrderAccept(
-        RemoteOrderAcceptRequestMessage message,
+        RemoteOrderAcceptRequest message,
         @Header("simpSessionAttributes") Map<String, Object> sessionAttributes
     ) {
         String helperUserId = (String) sessionAttributes.get("userId");
@@ -67,25 +68,24 @@ public class RemoteOrderHandler {
         if (session == null) {
             messagingTemplate.convertAndSend(
                 "/topic/" + helperUserId,
-                RemoteOrderResponseMessage.builder()
-                    .type(RemoteOrderResponseMessageType.ERROR)
-                    .sessionId(message.sessionId())
-                    .data(Map.of("message", "Session already accepted or expired"))
-                    .build()
+                RemoteOrderResponse.error(RemoteOrderError.SESSION_TIMEOUT)
             );
             return;
         }
 
         // Agora 채널 생성 및 전송
-        AgoraChannelInfo channelInfo = agoraService.createChannel(session.getSessionId());
+        AgoraChannelInfo agoraChannelInfo = agoraService.createChannel(session.getSessionId());
 
         // 양쪽에 Agora 토큰 전달
-        RemoteOrderResponseMessage acceptedMessage = RemoteOrderResponseMessage.builder()
-            .type(RemoteOrderResponseMessageType.ACCEPTED)
-            .sessionId(session.getSessionId())
-            .data(Map.of("kioskUserId", session.getKioskUserId(), "helperUserId", helperUserId))
-            .channelInfo(channelInfo)
-            .build();
+        RemoteOrderResponse acceptedMessage = RemoteOrderResponse.success(
+            RemoteOrderResponseType.ACCEPTED,
+            Map.of(
+                "sessionId", session.getSessionId(),
+                "helperUserId", helperUserId,
+                "kioskUserId", session.getKioskUserId(),
+                "channel", agoraChannelInfo
+            )
+        );
 
         messagingTemplate.convertAndSend("/topic/" + helperUserId, acceptedMessage);
         messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), acceptedMessage);
@@ -93,17 +93,14 @@ public class RemoteOrderHandler {
 
     @MessageMapping("/remote-order/end")
     public void handleOrderEnd(
-        RemoteOrderEndRequestMessage message,
+        RemoteOrderEndRequest message,
         @Header("simpSessionAttributes") Map<String, Object> sessionAttributes
     ) {
         String userId = (String) sessionAttributes.get("userId");
 
         RemoteOrderSession session = remoteOrderService.endSession(userId, message.sessionId());
 
-        RemoteOrderResponseMessage endMessage = RemoteOrderResponseMessage.builder()
-            .type(RemoteOrderResponseMessageType.END)
-            .sessionId(session.getSessionId())
-            .build();
+        RemoteOrderResponse endMessage = RemoteOrderResponse.success(RemoteOrderResponseType.END);
 
         // 상대방에게 이벤트 전달
         String targetUserId = userId.equals(session.getKioskUserId())

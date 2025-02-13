@@ -19,7 +19,6 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseMessaging firebaseMessaging() throws IOException {
-
         GoogleCredentials credentials = GoogleCredentials.fromStream(
             new ByteArrayInputStream(credentialsJson.getBytes()));
 
