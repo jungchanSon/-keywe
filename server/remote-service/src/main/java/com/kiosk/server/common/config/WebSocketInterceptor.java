@@ -1,4 +1,4 @@
-package com.kiosk.server.websocket.handler;
+package com.kiosk.server.common.config;
 
 import enums.TokenClaimName;
 import io.jsonwebtoken.Claims;
@@ -22,13 +22,13 @@ import java.util.Objects;
 
 @Slf4j
 @Component
-public class WebSocketHandler implements ChannelInterceptor {
+public class WebSocketInterceptor implements ChannelInterceptor {
 
     private static final String TOPIC_PREFIX = "/topic/";
 
     private final SecretKey secretKey;
 
-    public WebSocketHandler(@Value("${jwt.secret}") String SECRET_KEY) {
+    public WebSocketInterceptor(@Value("${jwt.secret}") String SECRET_KEY) {
         this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(SECRET_KEY), "HmacSHA256");
     }
 
