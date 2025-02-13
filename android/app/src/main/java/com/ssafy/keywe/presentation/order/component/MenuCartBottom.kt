@@ -1,5 +1,7 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.ssafy.keywe.common.app.BottomButton
+import com.ssafy.keywe.domain.order.OrderRepository
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -25,7 +30,7 @@ import com.ssafy.keywe.ui.theme.subtitle2
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
-fun MenuCartBottom(amount: Int, price: Int) {
+fun MenuCartBottom(amount: Int, price: Int, viewModel: MenuCartViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -36,7 +41,7 @@ fun MenuCartBottom(amount: Int, price: Int) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             MenuCartInfo(amount, price)
-            MenuCartBottomOrderButton(amount, onClick = {})
+            MenuCartBottomOrderButton(amount, viewModel)
         }
     }
 }
@@ -79,11 +84,23 @@ fun MenuCartInfo(amount: Int, price: Int) {
 @Composable
 fun MenuCartBottomOrderButton(
     amount: Int,
-    onClick: () -> Unit,
+    viewModel: MenuCartViewModel
 ) {
+
     BottomButton(
         content = "결제하기",
-        onClick = onClick,
+        onClick = {
+            val phoneNumber = "01012345678"
+            val orderModel = viewModel.createOrderModel("010-1234-5678")
+
+            viewModel.postOrder(orderModel) { result ->  // ✅ 주문 요청 실행
+                result.onSuccess { response ->
+//                    Log.d("주문 완료", "ID: ${it.orderId}")
+                }.onFailure { error ->
+//                    Log.d("주문 실패", "${it.message}")
+                }
+            }
+        },
         enabled = amount > 0,
         modifier = Modifier
             .fillMaxWidth()

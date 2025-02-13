@@ -57,6 +57,22 @@ data class OptionPostModel(
     val optionsValueGroup: List<OptionsValueGroupModel>
 )
 
-data class PostCartItemsModel(
+data class OrderModel(
+    val phoneNumber: String,
+    val menuList: List<OrderMenuItemModel>
+)
+
+data class OrderMenuItemModel(
+    val menuId: Long,
+    val menuCount: Int,
+    val optionList: List<OrderOptionItemModel>
+)
+
+data class OrderOptionItemModel(
+    val optionValueId: Long,
+    val optionCount: Int
+)
+
+data class OrderResponseModel(
     val orderId: String
 )

@@ -50,6 +50,6 @@ data class MenuOptionResponse(
     val options: List<OptionsResponse>
 )
 
-data class PostCartItemsResponse(
+data class PostOrderResponse(
     val orderId: String
 )

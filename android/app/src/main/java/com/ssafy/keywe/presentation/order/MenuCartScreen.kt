@@ -41,6 +41,7 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.HorizontalDivider
 import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
+import com.ssafy.keywe.presentation.order.component.MenuCartFinishDialog
 import com.ssafy.keywe.presentation.order.component.MenuCartMenuBox
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
@@ -56,12 +57,13 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @Composable
 fun MenuCartScreen(
     navController: NavController,
-    menuDetailViewModel: MenuCartViewModel
+    menuCartViewModel: MenuCartViewModel
     ) {
-    val cartItems by menuDetailViewModel.cartItems.collectAsState()
+    val cartItems by menuCartViewModel.cartItems.collectAsState()
     Log.d("MenuCartScreen", "cartItems: $cartItems")
-    val isDeleteDialogOpen by menuDetailViewModel.isDeleteDialogOpen.collectAsState()
-    val selectedCartItem by menuDetailViewModel.selectedCartItem.collectAsState()
+    val isDeleteDialogOpen by menuCartViewModel.isDeleteDialogOpen.collectAsState()
+    val isCompleteOrder by menuCartViewModel.isCompleteOrder.collectAsState()
+    val selectedCartItem by menuCartViewModel.selectedCartItem.collectAsState()
 
     val isAllDeleteDialogOpen = remember { mutableStateOf(false) }
 
@@ -80,10 +82,10 @@ fun MenuCartScreen(
             MenuCartDeleteDialog(
                 title = "장바구니 삭제",
                 description = "선택한 상품을 장바구니에서 삭제하시겠습니까?",
-                onCancel = { menuDetailViewModel.closeDeleteDialog() },
+                onCancel = { menuCartViewModel.closeDeleteDialog() },
                 onConfirm = {
                     selectedCartItem?.let { cartItem ->
-                        menuDetailViewModel.removeFromCart(cartItem.id)
+                        menuCartViewModel.removeFromCart(cartItem.id)
                     }
                 })
         }
@@ -95,11 +97,18 @@ fun MenuCartScreen(
                 description = "장바구니에 담긴 모든 메뉴를 삭제하시겠습니까?",
                 onCancel = { isAllDeleteDialogOpen.value = false },
                 onConfirm = {
-                    menuDetailViewModel.clearCart()
+                    menuCartViewModel.clearCart()
                     isAllDeleteDialogOpen.value = false
                 }
             )
         }
+
+//        if (isCompleteOrder) {
+//            MenuCartFinishDialog(
+//                title = "주문 완료",
+//                description = ""
+//            )
+//        }
 
     }
     Scaffold(
@@ -139,7 +148,7 @@ fun MenuCartScreen(
                 ) {
                     items(cartItems, key = { it.id }) { item ->
                         MenuCartMenuBox(
-                            cartItem = item, viewModel = menuDetailViewModel
+                            cartItem = item, viewModel = menuCartViewModel
                         )
 
                         Box(
@@ -178,7 +187,8 @@ fun MenuCartScreen(
                     .fillMaxWidth(),
             ) {
                 MenuCartBottom(cartItems.sumOf { it.quantity },
-                    cartItems.sumOf { it.price * it.quantity })
+                    cartItems.sumOf { it.price * it.quantity },
+                    menuCartViewModel)
             }
         }
     }

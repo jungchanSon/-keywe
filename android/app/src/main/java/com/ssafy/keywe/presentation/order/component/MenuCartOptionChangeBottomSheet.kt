@@ -32,8 +32,6 @@ import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -59,7 +57,6 @@ fun OptionChangeBottomSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val selectedSize = remember { mutableStateOf(cartItem.size) }
     val selectedTemperature = remember { mutableStateOf(cartItem.temperature) }
-//    val options = remember { viewModel.getExtraOptions() }
     val extraOptions =
         remember { mutableStateMapOf<String, Int>().apply { putAll(cartItem.extraOptions) } }
 

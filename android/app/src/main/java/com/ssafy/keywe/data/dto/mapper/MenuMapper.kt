@@ -12,6 +12,10 @@ import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
 import com.ssafy.keywe.data.dto.order.OptionsValueGroupResponse
 import com.ssafy.keywe.data.dto.order.OptionsResponse
+import com.ssafy.keywe.data.dto.order.OrderMenuItem
+import com.ssafy.keywe.data.dto.order.OrderOptionItem
+import com.ssafy.keywe.data.dto.order.PostOrderRequest
+import com.ssafy.keywe.data.dto.order.PostOrderResponse
 import com.ssafy.keywe.domain.order.MenuDetailModel
 import com.ssafy.keywe.domain.order.MenuModel
 import com.ssafy.keywe.domain.order.MenuOptionModel
@@ -19,6 +23,10 @@ import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OptionPostModel
 import com.ssafy.keywe.domain.order.OptionsValueGroupModel
 import com.ssafy.keywe.domain.order.OptionsModel
+import com.ssafy.keywe.domain.order.OrderMenuItemModel
+import com.ssafy.keywe.domain.order.OrderModel
+import com.ssafy.keywe.domain.order.OrderOptionItemModel
+import com.ssafy.keywe.domain.order.OrderResponseModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -163,5 +171,33 @@ fun OptionPostModel.toRequest(): OptionPostRequest {
         optionName = this.optionName,
         optionPrice = this.optionPrice,
         optionsValueGroup = this.optionsValueGroup.map { it.toRequest() }
+    )
+}
+
+fun OrderModel.toRequest(): PostOrderRequest {
+    return PostOrderRequest(
+        phoneNumber = this.phoneNumber,
+        menuList = this.menuList.map { it.toRequest() }
+    )
+}
+
+fun OrderMenuItemModel.toRequest(): OrderMenuItem {
+    return OrderMenuItem(
+        menuId = this.menuId,
+        menuCount = this.menuCount,
+        optionList = this.optionList.map { it.toRequest() }
+    )
+}
+
+fun OrderOptionItemModel.toRequest(): OrderOptionItem {
+    return OrderOptionItem(
+        optionValueId = this.optionValueId,
+        optionCount = this.optionCount
+    )
+}
+
+fun PostOrderResponse.toDomain(): OrderResponseModel {
+    return OrderResponseModel(
+        orderId = this.orderId
     )
 }

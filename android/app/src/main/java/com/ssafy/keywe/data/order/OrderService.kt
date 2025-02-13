@@ -7,8 +7,8 @@ import com.ssafy.keywe.data.dto.order.MenuOptionResponse
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
-import com.ssafy.keywe.data.dto.order.PostCartItemsRequest
-import com.ssafy.keywe.data.dto.order.PostCartItemsResponse
+import com.ssafy.keywe.data.dto.order.PostOrderRequest
+import com.ssafy.keywe.data.dto.order.PostOrderResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -99,9 +99,9 @@ interface OrderService {
     ): Response<Unit>
 
     @POST(ORDER_POST_PATH)
-    suspend fun postCartItems(
-        @Body postCartItemsRequest: PostCartItemsRequest
-    ): Response<PostCartItemsResponse>
+    suspend fun postOrder(
+        @Body postOrderRequest: PostOrderRequest
+    ): Response<PostOrderResponse>
 
     companion object {
         private const val CATEGORY_POST_GET_PATH = "/category"
