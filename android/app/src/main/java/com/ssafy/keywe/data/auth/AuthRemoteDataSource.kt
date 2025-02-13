@@ -9,7 +9,6 @@ import com.ssafy.keywe.data.dto.auth.LoginResponse
 import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
 import com.ssafy.keywe.data.dto.auth.SelectProfileResponse
 import com.ssafy.keywe.data.dto.auth.SignUpRequest
-import com.ssafy.keywe.data.dto.auth.SignUpResponse
 import javax.inject.Inject
 
 class AuthRemoteDataSource @Inject constructor(private val authService: AuthService) :
@@ -24,7 +23,7 @@ class AuthRemoteDataSource @Inject constructor(private val authService: AuthServ
             authService.ceoLogin(ceoLoginRequest)
         }
 
-    override suspend fun requestSignUp(signUpRequest: SignUpRequest): ResponseResult<SignUpResponse> =
+    override suspend fun requestSignUp(signUpRequest: SignUpRequest): ResponseResult<Unit> =
         handleApiResponse {
             authService.signup(signUpRequest)
         }

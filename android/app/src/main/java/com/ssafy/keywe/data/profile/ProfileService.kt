@@ -2,6 +2,7 @@ package com.ssafy.keywe.data.profile
 
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileListResponse
+import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
 import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
@@ -12,6 +13,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ProfileService {
     @GET(PROFILE_LIST_PATH)
@@ -20,6 +22,7 @@ interface ProfileService {
 
     @GET(PROFILE_PATH)
     suspend fun getProfileDetail(
+        @Body getProfileRequest: GetProfileRequest
     ): Response<GetProfileDetailResponse>
 
     @POST(PROFILE_PATH)
@@ -34,7 +37,7 @@ interface ProfileService {
 
     @DELETE(PROFILE_PATH)
     suspend fun deleteProfile(
-        @Body profileId: Long,
+        @Path("profileId") profileId: Long,
     ): Response<Unit>
 
     companion object {

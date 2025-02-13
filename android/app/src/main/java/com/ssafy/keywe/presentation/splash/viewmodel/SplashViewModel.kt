@@ -6,9 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.data.datastore.ProfileDataStore
 import com.ssafy.keywe.util.JWTUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -20,6 +24,7 @@ enum class SplashRouteType {
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val tokenManager: TokenManager, // 로그인 상태 확인용
+    private val profileDataStore: ProfileDataStore,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -47,6 +52,13 @@ class SplashViewModel @Inject constructor(
                         _splashRouteType.value = SplashRouteType.HOME
                     }
                 }
+                val profileId = profileDataStore.profileIdFlow.map { profileId ->
+                    profileId.takeIf {
+                        it != null
+                    }
+                }.first()
+
+                if (profileId != null) ProfileIdManager.updateProfileId(profileId)
 
                 _isLoading.value = false
             }

@@ -54,12 +54,14 @@ fun ProfileChoiceScreen(
     val profiles by profileViewModel.profiles.collectAsStateWithLifecycle()
     val parentProfiles = profiles.filter { it.role == PARENT }
     val childProfiles = profiles.filter { it.role == CHILD }
-    val token by PushNotificationManager.token.collectAsStateWithLifecycle()
+    val token by PushNotificationManager.token.collectAsStateWithLifecycle() // 프로필 id도 해야함
 
     Scaffold(
         topBar = { DefaultAppBar(title = "계정 관리", navController = navController) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
+
+
         if (profiles.isEmpty()) {
             // 프로필이 없을 때의 UI
             Column(
@@ -69,6 +71,7 @@ fun ProfileChoiceScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Text("isJoin $isJoinApp")
                 Box(
                     modifier = Modifier
                         .size(120.dp)
@@ -97,6 +100,7 @@ fun ProfileChoiceScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 24.dp)
             ) {
+                Text("isJoin $isJoinApp")
                 // 부모 프로필 섹션
                 if (parentProfiles.isNotEmpty()) {
                     Text(
@@ -111,14 +115,12 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, token, fcmViewModel, navController
                                 )
+//                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
 
                         },
-//                        , onAddClick = {
-//                        navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
-//                    },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -137,6 +139,7 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, token, fcmViewModel, navController
                                 )
+//                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
