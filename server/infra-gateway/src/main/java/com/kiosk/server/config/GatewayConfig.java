@@ -19,6 +19,7 @@ public class GatewayConfig {
             .route(r -> r.path("/store/**", "/menu/**", "/category/**", "/store/swagger-ui/**", "/store/v3/api-docs").uri(serviceUrlProperties.storeService()))
             .route(r -> r.path("/remote/**").uri(serviceUrlProperties.remoteService()))
             .route(r -> r.path("/order/**").uri(serviceUrlProperties.orderService()))
+            .route(r -> r.path("/notification/**").uri(serviceUrlProperties.notificationService()))
             .build();
     }
 }

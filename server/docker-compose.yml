@@ -25,6 +25,7 @@ services:
       - STORE_SERVICE_URL=store-service-app
       - REMOTE_SERVICE_URL=remote-service-app
       - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_SERVICE_URL=notification-service-app
     networks:
       - kiwi-service-network
 
@@ -105,7 +106,30 @@ services:
     environment:
       - USER_SERVICE_URL=user-service-app
       - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_SERVICE_URL=notification-service-app
       - REMOTE_SERVICE_REDIS=kiwi-redis-remote-order
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+
+  notification-service-app:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8110/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8110:8110"
+    environment:
+      - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_MYSQL_URL=kiwi-db-notification:3306
     deploy:
       replicas: 1
     networks:
