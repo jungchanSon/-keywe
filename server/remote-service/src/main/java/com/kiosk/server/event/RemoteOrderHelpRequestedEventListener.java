@@ -7,6 +7,7 @@ import com.kiosk.server.client.feign.dto.SendFcmMessageResponse;
 import com.kiosk.server.domain.RemoteOrderSession;
 import com.kiosk.server.websocket.message.RemoteOrderResponseMessage;
 import com.kiosk.server.websocket.message.RemoteOrderResponseMessageType;
+import com.kiosk.server.websocket.message.RemoteServiceError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
@@ -57,18 +58,13 @@ public class RemoteOrderHelpRequestedEventListener {
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null ||
             response.getBody().successCount() == 0) {
-            responseMessage = RemoteOrderResponseMessage.builder()
-                .type(RemoteOrderResponseMessageType.ERROR)
-                .data(Map.of("message", "가족에게 요청 전송이 실패했어요."))
-                .build();
+            responseMessage = RemoteOrderResponseMessage.error(RemoteServiceError.PUSH_NOTIFICATION_SEND_FAILED);
         } else {
             SendFcmMessageResponse result = response.getBody();
-
-            responseMessage = RemoteOrderResponseMessage.builder()
-                .type(RemoteOrderResponseMessageType.WAITING)
-                .sessionId(session.getSessionId())
-                .data(Map.of("success", result.successCount(), "failure", result.failureCount()))
-                .build();
+            responseMessage = RemoteOrderResponseMessage.success(
+                RemoteOrderResponseMessageType.WAITING,
+                Map.of("success", result.successCount(), "failure", result.failureCount())
+            );
         }
 
         messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), responseMessage);

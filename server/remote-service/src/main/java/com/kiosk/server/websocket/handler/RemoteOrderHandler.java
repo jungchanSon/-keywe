@@ -11,7 +11,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
@@ -35,20 +34,16 @@ public class RemoteOrderHandler {
         if (sessionId == null) {
             messagingTemplate.convertAndSend(
                 "/topic/" + userId,
-                RemoteOrderResponseMessage.builder()
-                    .type(RemoteOrderResponseMessageType.ERROR)
-                    .data(Map.of("message", "User does not have parent role"))
-                    .build()
+                RemoteOrderResponseMessage.error(RemoteServiceError.CHILD_REMOTE_ORDER_FORBIDDEN)
             );
             return;
         }
 
         // 키오스크에게 sessionId 전달
-        RemoteOrderResponseMessage responseMessage = RemoteOrderResponseMessage.builder()
-            .type(RemoteOrderResponseMessageType.REQUESTED)
-            .sessionId(sessionId)
-            .timestamp(LocalDateTime.now().toString())
-            .build();
+        RemoteOrderResponseMessage responseMessage = RemoteOrderResponseMessage.success(
+            RemoteOrderResponseMessageType.REQUESTED,
+            Map.of("sessionId", sessionId)
+        );
 
         messagingTemplate.convertAndSend("/topic/" + userId, responseMessage);
     }
@@ -67,25 +62,24 @@ public class RemoteOrderHandler {
         if (session == null) {
             messagingTemplate.convertAndSend(
                 "/topic/" + helperUserId,
-                RemoteOrderResponseMessage.builder()
-                    .type(RemoteOrderResponseMessageType.ERROR)
-                    .sessionId(message.sessionId())
-                    .data(Map.of("message", "Session already accepted or expired"))
-                    .build()
+                RemoteOrderResponseMessage.error(RemoteServiceError.SESSION_TIMEOUT)
             );
             return;
         }
 
         // Agora 채널 생성 및 전송
-        AgoraChannelInfo channelInfo = agoraService.createChannel(session.getSessionId());
+        AgoraChannelInfo agoraChannelInfo = agoraService.createChannel(session.getSessionId());
 
         // 양쪽에 Agora 토큰 전달
-        RemoteOrderResponseMessage acceptedMessage = RemoteOrderResponseMessage.builder()
-            .type(RemoteOrderResponseMessageType.ACCEPTED)
-            .sessionId(session.getSessionId())
-            .data(Map.of("kioskUserId", session.getKioskUserId(), "helperUserId", helperUserId))
-            .channelInfo(channelInfo)
-            .build();
+        RemoteOrderResponseMessage acceptedMessage = RemoteOrderResponseMessage.success(
+            RemoteOrderResponseMessageType.ACCEPTED,
+            Map.of(
+                "sessionId", session.getSessionId(),
+                "helperUserId", helperUserId,
+                "kioskUserId", session.getKioskUserId(),
+                "channel", agoraChannelInfo
+            )
+        );
 
         messagingTemplate.convertAndSend("/topic/" + helperUserId, acceptedMessage);
         messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), acceptedMessage);
@@ -100,10 +94,7 @@ public class RemoteOrderHandler {
 
         RemoteOrderSession session = remoteOrderService.endSession(userId, message.sessionId());
 
-        RemoteOrderResponseMessage endMessage = RemoteOrderResponseMessage.builder()
-            .type(RemoteOrderResponseMessageType.END)
-            .sessionId(session.getSessionId())
-            .build();
+        RemoteOrderResponseMessage endMessage = RemoteOrderResponseMessage.success(RemoteOrderResponseMessageType.END);
 
         // 상대방에게 이벤트 전달
         String targetUserId = userId.equals(session.getKioskUserId())

@@ -7,7 +7,7 @@ import com.kiosk.server.domain.RemoteOrderSession;
 import com.kiosk.server.domain.RemoteOrderStatus;
 import com.kiosk.server.event.RemoteOrderHelpRequestedEvent;
 import com.kiosk.server.websocket.message.RemoteOrderResponseMessage;
-import com.kiosk.server.websocket.message.RemoteOrderResponseMessageType;
+import com.kiosk.server.websocket.message.RemoteServiceError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -154,10 +154,7 @@ public class RemoteOrderService {
 
             messagingTemplate.convertAndSend(
                 "/topic/" + session.getKioskUserId(),
-                RemoteOrderResponseMessage.builder()
-                    .type(RemoteOrderResponseMessageType.TIMEOUT)
-                    .sessionId(sessionId)
-                    .build()
+                RemoteOrderResponseMessage.error(RemoteServiceError.SESSION_TIMEOUT)
             );
         }
     }
