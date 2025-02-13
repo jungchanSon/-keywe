@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.ssafy.keywe.TokenProto
 import com.ssafy.keywe.data.TokenSerializer
+import com.ssafy.keywe.data.datastore.ProfileDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,4 +29,12 @@ object DataStoreModule {
             context.dataStoreFile("token.pb")
         }, scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     )
+
+    @Provides
+    @Singleton
+    fun provideProfileDataStore(
+        @ApplicationContext context: Context
+    ): ProfileDataStore {
+        return ProfileDataStore(context)
+    }
 }

@@ -2,6 +2,9 @@ package com.ssafy.keywe.presentation.auth.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.data.ApiResponseHandler.onException
+import com.ssafy.keywe.data.ApiResponseHandler.onServerError
+import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.dto.auth.SignUpRequest
 import com.ssafy.keywe.domain.auth.AuthRepository
 import com.ssafy.keywe.util.RegUtil
@@ -9,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,6 +36,9 @@ class SignUpViewModel @Inject constructor(
 
     private val _validForm = MutableStateFlow(false)
     val validForm: StateFlow<Boolean> = _validForm.asStateFlow()
+
+    private val _isSignUpIn = MutableStateFlow(false)
+    val isSignIn: StateFlow<Boolean> = _isSignUpIn.asStateFlow()
 
     fun onEmailChanged(value: String) {
         _email.value = value
@@ -68,7 +75,8 @@ class SignUpViewModel @Inject constructor(
             val request = SignUpRequest(
                 email = _email.value, password = _password.value
             )
-            repository.signUp(request)
+            repository.signUp(request).onSuccess { _isSignUpIn.update { true } }
+                .onException { e, message -> {} }.onServerError { }
         }
     }
 }

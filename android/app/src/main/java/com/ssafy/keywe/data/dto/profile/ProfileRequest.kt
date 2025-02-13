@@ -10,6 +10,12 @@ import kotlinx.serialization.Serializable
 //    @SerialName("simplePassword") val simplePassword: String
 //)
 
+
+@Serializable
+data class GetProfileRequest(
+    @SerialName("profileId") val profileId: Long
+)
+
 @Serializable
 data class PostProfileRequest(
     @SerialName("role") val role: String,
@@ -22,7 +28,7 @@ data class PostProfileRequest(
 @Serializable
 data class UpdateProfileRequest(
     @SerialName("name") val name: String,
-    @SerialName("phone") val phone: String?,
-    @SerialName("password") val password: String?
+    @SerialName("phone") val phone: String? = null,
+    @SerialName("password") val password: String? = null
 )
 

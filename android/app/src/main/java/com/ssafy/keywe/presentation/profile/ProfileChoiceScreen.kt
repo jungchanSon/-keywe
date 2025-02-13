@@ -66,6 +66,7 @@ fun ProfileChoiceScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Text("isJoin $isJoinApp")
                 Box(
                     modifier = Modifier
                         .size(120.dp)
@@ -94,6 +95,7 @@ fun ProfileChoiceScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 24.dp)
             ) {
+                Text("isJoin $isJoinApp")
                 // 부모 프로필 섹션
                 if (parentProfiles.isNotEmpty()) {
                     Text(
@@ -108,14 +110,12 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, navController
                                 )
+//                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
 
                         },
-//                        , onAddClick = {
-//                        navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
-//                    },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -134,6 +134,7 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, navController
                                 )
+//                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }

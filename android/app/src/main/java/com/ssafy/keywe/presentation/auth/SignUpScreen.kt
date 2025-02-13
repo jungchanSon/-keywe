@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ssafy.keywe.common.LoginRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -42,7 +44,17 @@ fun SignUpScreen(
 
     val valid by viewModel.validForm.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val isSigned by viewModel.isSignIn.collectAsStateWithLifecycle()
+    LaunchedEffect(isSigned) {
+        if (isSigned) {
+            navController.navigate(LoginRoute) {
+                popUpTo(0) {
+                    inclusive = true
+                }
+            }
 
+        }
+    }
     Scaffold(topBar = {
         DefaultAppBar(title = "회원가입", navController = navController)
     }) {

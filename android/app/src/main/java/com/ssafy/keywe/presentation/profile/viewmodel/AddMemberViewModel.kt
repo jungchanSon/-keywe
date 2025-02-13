@@ -52,7 +52,7 @@ class AddMemberViewModel @Inject constructor(
     private val _profileImageUri = MutableStateFlow<Uri?>(null)
     val profileImageUri = _profileImageUri.asStateFlow()
 
-    fun postProfile() {
+    fun postProfile(onSuccess: () -> Unit) {
         viewModelScope.launch {
             try {
                 Log.d("state 상태", "$state.value")
@@ -61,15 +61,16 @@ class AddMemberViewModel @Inject constructor(
                 val request = PostProfileRequest(
                     role = if (_state.value.selectedTab == 0) "PARENT" else "CHILD",
                     name = _state.value.name,
-                    phone = if (_state.value.selectedTab == 0) phoneNumber else "",
+                    phone = if (_state.value.selectedTab == 0) phoneNumber else null,
 //                    password = if (_state.value.selectedTab == 0) _state.value.password.toInt() else 0
-                    password = if (_state.value.selectedTab == 0) _state.value.password else ""
+                    password = if (_state.value.selectedTab == 0) _state.value.password else null
                 )
                 Log.d("Add Member", "$request")
 
                 when (val result = repository.postProfile(request)) {
                     is ResponseResult.Success -> {
                         _profileAddedEvent.emit(request)
+                        onSuccess()
 //                        clearState()
                         AddMemberState()
                         Log.d("Add Member", "성공함")

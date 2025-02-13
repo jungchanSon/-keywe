@@ -10,7 +10,6 @@ import com.ssafy.keywe.domain.auth.AuthRepository
 import com.ssafy.keywe.domain.auth.CEOLoginModel
 import com.ssafy.keywe.domain.auth.LoginModel
 import com.ssafy.keywe.domain.auth.SelectProfileModel
-import com.ssafy.keywe.domain.auth.SignUpModel
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -39,15 +38,16 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signUp(signUpRequest: SignUpRequest): ResponseResult<SignUpModel> {
+    override suspend fun signUp(signUpRequest: SignUpRequest): ResponseResult<Unit> {
         return when (val result = authDataSource.requestSignUp(signUpRequest)) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e,
                 EXCEPTION_NETWORK_ERROR_MESSAGE
             )
+            //SignUpModel
 
             is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-            is ResponseResult.Success -> ResponseResult.Success(result.data!!.toDomain())
+            is ResponseResult.Success -> result
         }
     }
 

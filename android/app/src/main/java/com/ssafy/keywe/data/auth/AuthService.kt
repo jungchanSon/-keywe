@@ -7,7 +7,6 @@ import com.ssafy.keywe.data.dto.auth.LoginResponse
 import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
 import com.ssafy.keywe.data.dto.auth.SelectProfileResponse
 import com.ssafy.keywe.data.dto.auth.SignUpRequest
-import com.ssafy.keywe.data.dto.auth.SignUpResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -36,7 +35,8 @@ interface AuthService {
     suspend fun signup(
         @Body signUpRequest: SignUpRequest,
 //        @Header("Authorization") authorization: Boolean = false,
-    ): Response<SignUpResponse>
+    ): Response<Unit>
+
 
     companion object {
         private const val USER_LOGIN_PATH = "/auth/user/login"

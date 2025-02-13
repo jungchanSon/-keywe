@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.PushNotificationManager
+import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
@@ -68,14 +69,52 @@ class ProfileViewModel @Inject constructor(
             val request = SelectProfileRequest(
                 model.id.toLong()
             )
-            authRepository.selectProfile(request).onSuccess(::saveToken).onException { e, message ->
-                Log.d("Select User onException", "SelectError $message")
-            }.onServerError { status ->
-                Log.d("Select User onServerError", "SelectError $status")
+            authRepository.selectProfile(request).onSuccess { response ->
+                ProfileIdManager.updateProfileId(model.id.toLong())
+                saveToken(response)
             }
+                .onException { e, message ->
+                    Log.d("Select User onException", "SelectError $message")
+                }.onServerError { status ->
+                    Log.d("Select User onServerError", "SelectError $status")
+                }
 
         }
 
+    }
+
+//    fun selectAccount(model: GetProfileListModel) {
+//        viewModelScope.launch {
+//            val request = SelectProfileRequest(
+//                model.id.toLong()
+//            )
+//            authRepository.selectProfile(request).onSuccess(::saveToken).onException { e, message ->
+//                Log.d("Select User onException", "SelectError $message")
+//            }.onServerError { status ->
+//                Log.d("Select User onServerError", "SelectError $status")
+//            }
+//
+//        }
+//
+//    }
+
+    fun refreshProfileList() {
+        viewModelScope.launch {
+            when (val result = profileRepository.getProfileList()) {
+                is ResponseResult.Success -> {
+                    _profiles.value = result.data
+                    Log.d("refreshProfileList", "프로필 목록 새로고침 성공")
+                }
+
+                is ResponseResult.ServerError -> {
+                    Log.e("refreshProfileList", "서버 에러: ${result.status}")
+                }
+
+                is ResponseResult.Exception -> {
+                    Log.e("refreshProfileList", "예외 발생: ${result.e.message}")
+                }
+            }
+        }
     }
 
     private fun saveToken(model: SelectProfileModel) {
@@ -90,45 +129,6 @@ class ProfileViewModel @Inject constructor(
         }
 
     }
-
-//    private fun postProfile(profile: GetProfileRequest) {
-//        viewModelScope.launch {
-//            val currentProfiles = _profilesUi.value.toMutableList()
-//            currentProfiles.add(profile)
-//            _profilesUi.value = currentProfiles
-//        }
-//    }
-
-
-//    fun addProfile(profile: ProfileData) {
-//        _profiles.update { currentProfiles ->
-//            currentProfiles + profile
-//        }
-//    }
-
-//    fun observeProfileAddedEvent(addMemberViewModel: AddMemberViewModel) {
-//        viewModelScope.launch {
-//            addMemberViewModel.profileAddedEvent.collect { newProfile ->
-//                postProfile(newProfile) // ✅ 프로필 추가
-//            }
-//        }
-//    }
-
-//    // 프로필 수정
-//    fun updateProfile(updatedProfile: UpdateProfileRequest) {
-//        _profilesUi.update { currentList ->
-//            currentList.map {
-//                if (it.name == updatedProfile.name) updatedProfile else it
-//            }
-//        }
-//    }
-
-//    // 프로필 삭제
-//    fun deleteProfile(profileId: String) {
-//        _profilesUi.update { currentList ->
-//            currentList.filter { it.phone != profileId }
-//        }
-//    }
 
 
     private fun handleSuccess(
