@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -28,6 +29,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
 
     private final SecretKey secretKey;
 
+    @Autowired
     public WebSocketInterceptor(@Value("${jwt.secret}") String SECRET_KEY) {
         this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(SECRET_KEY), "HmacSHA256");
     }
@@ -44,7 +46,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
         return message;
     }
 
-    public void handleConnect(StompHeaderAccessor accessor) {
+    private void handleConnect(StompHeaderAccessor accessor) {
         String bearerToken = accessor.getFirstNativeHeader("Authorization");
 
         if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {

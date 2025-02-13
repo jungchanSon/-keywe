@@ -19,6 +19,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'io.agora:authentication:1.6.1'
+    implementation 'commons-codec:commons-codec:1.15'
 
     api project(":common-token")
     api project(":common")
