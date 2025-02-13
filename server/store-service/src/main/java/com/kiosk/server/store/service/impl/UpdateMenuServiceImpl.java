@@ -8,6 +8,7 @@ import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.UpdateMenuService;
 import com.kiosk.server.store.service.UploadImageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,11 +29,13 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
 
     @Override
     public void doService(long userId, long menuId, UpdateMenuRequest updateMenu, MultipartFile image) {
+        log.info("UpdateMenuService: userId={}, menuId={}, updateMenu={}", userId, menuId, updateMenu);
 
         // 기존 메뉴 조회
         StoreMenu exMenu = getStoreMenu(userId, menuId);
 
         if (updateMenu.menuCategoryId() == null) {
+            log.warn("메뉴 업데이트 실패 - userId={}, menuId={}, 이유=카테고리 없음", userId, menuId);
             throw new EntityNotFoundException("해당 카테고리를 찾을 수 없습니다. 입력하신 정보를 다시 확인해 주세요.");
         }
 
@@ -55,17 +59,21 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
 
         // 메뉴 업데이트 실행
         menuRepository.update(updateParams);
+        log.info("메뉴 업데이트 완료 - userId={}, menuId={}, newCategoryId={}, newPrice={}",
+                userId, menuId, updateMenu.menuCategoryId(), menuPrice);
 
         // 이미지 존재하면 이미지 저장
         if (image != null && !image.isEmpty()) {
             menuImageRepository.deleteById(menuId);
             uploadImageService.doService(userId, menuId, image);
+            log.info("메뉴 이미지 업데이트 완료 - userId={}, menuId={}", userId, menuId);
         }
     }
 
     private StoreMenu getStoreMenu(long userId, long menuId) {
         StoreMenu exMenu = menuRepository.findById(userId, menuId);
         if (exMenu == null) {
+            log.warn("메뉴 조회 실패 - userId={}, menuId={}", userId, menuId);
             throw new EntityNotFoundException("해당 메뉴를 찾을 수 없습니다. 입력하신 정보를 다시 확인해 주세요.");
         }
         return exMenu;
