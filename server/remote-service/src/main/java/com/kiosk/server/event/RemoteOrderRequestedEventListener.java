@@ -5,9 +5,9 @@ import com.kiosk.server.client.feign.dto.NotificationMessage;
 import com.kiosk.server.client.feign.dto.SendFcmMessageRequest;
 import com.kiosk.server.client.feign.dto.SendFcmMessageResponse;
 import com.kiosk.server.domain.RemoteOrderSession;
-import com.kiosk.server.websocket.message.RemoteOrderResponseMessage;
-import com.kiosk.server.websocket.message.RemoteOrderResponseMessageType;
-import com.kiosk.server.websocket.message.RemoteServiceError;
+import com.kiosk.server.websocket.message.response.RemoteOrderResponse;
+import com.kiosk.server.websocket.message.response.RemoteOrderResponseType;
+import com.kiosk.server.websocket.message.response.RemoteOrderError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
@@ -20,14 +20,14 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class RemoteOrderHelpRequestedEventListener {
+public class RemoteOrderRequestedEventListener {
 
     private final NotificationClient notificationClient;
     private final SimpMessagingTemplate messagingTemplate;
 
     @Async
     @EventListener
-    public void handleRemoteOrderHelpRequested(RemoteOrderHelpRequestedEvent event) {
+    public void handleRemoteOrderHelpRequested(RemoteOrderRequestedEvent event) {
         RemoteOrderSession session = event.session();
 
         // FCM 메시지 구성 로직
@@ -54,15 +54,15 @@ public class RemoteOrderHelpRequestedEventListener {
 
         ResponseEntity<SendFcmMessageResponse> response = notificationClient.sendFcmMessage(request);
 
-        RemoteOrderResponseMessage responseMessage;
+        RemoteOrderResponse responseMessage;
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null ||
             response.getBody().successCount() == 0) {
-            responseMessage = RemoteOrderResponseMessage.error(RemoteServiceError.PUSH_NOTIFICATION_SEND_FAILED);
+            responseMessage = RemoteOrderResponse.error(RemoteOrderError.PUSH_NOTIFICATION_SEND_FAILED);
         } else {
             SendFcmMessageResponse result = response.getBody();
-            responseMessage = RemoteOrderResponseMessage.success(
-                RemoteOrderResponseMessageType.WAITING,
+            responseMessage = RemoteOrderResponse.success(
+                RemoteOrderResponseType.WAITING,
                 Map.of("success", result.successCount(), "failure", result.failureCount())
             );
         }

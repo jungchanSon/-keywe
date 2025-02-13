@@ -1,4 +1,4 @@
-package com.kiosk.server.websocket.config;
+package com.kiosk.server.common.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

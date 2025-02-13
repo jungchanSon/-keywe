@@ -5,9 +5,9 @@ import com.kiosk.server.client.feign.dto.UserProfile;
 import com.kiosk.server.common.util.IdUtil;
 import com.kiosk.server.domain.RemoteOrderSession;
 import com.kiosk.server.domain.RemoteOrderStatus;
-import com.kiosk.server.event.RemoteOrderHelpRequestedEvent;
-import com.kiosk.server.websocket.message.RemoteOrderResponseMessage;
-import com.kiosk.server.websocket.message.RemoteServiceError;
+import com.kiosk.server.event.RemoteOrderRequestedEvent;
+import com.kiosk.server.websocket.message.response.RemoteOrderResponse;
+import com.kiosk.server.websocket.message.response.RemoteOrderError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -71,7 +71,7 @@ public class RemoteOrderService {
         // 타임아웃 체크 스케줄링
         scheduleTimeoutCheck(session.getSessionId());
 
-        eventPublisher.publishEvent(new RemoteOrderHelpRequestedEvent(session));
+        eventPublisher.publishEvent(new RemoteOrderRequestedEvent(session));
 
         return session.getSessionId();
     }
@@ -151,7 +151,7 @@ public class RemoteOrderService {
 
             messagingTemplate.convertAndSend(
                 "/topic/" + session.getKioskUserId(),
-                RemoteOrderResponseMessage.error(RemoteServiceError.SESSION_TIMEOUT)
+                RemoteOrderResponse.error(RemoteOrderError.SESSION_TIMEOUT)
             );
         }
     }

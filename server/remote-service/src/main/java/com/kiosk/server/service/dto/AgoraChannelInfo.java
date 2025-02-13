@@ -1,4 +1,4 @@
-package com.kiosk.server.websocket.message;
+package com.kiosk.server.service.dto;
 
 public record AgoraChannelInfo(String name, String token) {
 }

@@ -1,11 +1,11 @@
-package com.kiosk.server.websocket.message;
+package com.kiosk.server.websocket.message.response;
 
 import lombok.Getter;
 
 import java.util.Map;
 
 @Getter
-public enum RemoteServiceError {
+public enum RemoteOrderError {
 
     SESSION_TIMEOUT("R100", "만료된 주문 요청입니다."),
     PUSH_NOTIFICATION_SEND_FAILED("R101", "가족에게 요청을 보내지 못했어요."),
@@ -14,7 +14,7 @@ public enum RemoteServiceError {
     private final String code;
     private final String message;
 
-    RemoteServiceError(String code, String message) {
+    RemoteOrderError(String code, String message) {
         this.code = code;
         this.message = message;
     }
