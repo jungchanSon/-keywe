@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -87,8 +88,7 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
     val image = cartItem.image?: ""
     val temperature = cartItem.temperature
     val extraOptions = cartItem.extraOptions
-
-    val menu by viewModel.selectedDetailMenu.collectAsState()
+    Log.d("extraOptions", "$extraOptions")
 
     LaunchedEffect(cartItem.menuId) {
         viewModel.fetchMenuDetailById(cartItem.menuId)
@@ -106,15 +106,7 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
             verticalAlignment = Alignment.CenterVertically
         ) {
             val modifierCartImage = Modifier.height(60.dp).width(60.dp).clip(CircleShape)
-//            Image(
-//                painter = rememberAsyncImagePainter(model = cartItem.image),
-//                contentDescription = "Menu Image",
-//                modifier = Modifier
-//                    .height(60.dp)
-//                    .width(60.dp)
-//                    .clip(CircleShape),
-//                contentScale = ContentScale.FillHeight
-//            )
+
             Base64Image(modifier = modifierCartImage, image)
 
             Box(
@@ -153,12 +145,11 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
                                 color = polishedSteelColor
                             )
 
-                            extraOptions.forEach { (optionName, count) ->
+                            extraOptions.forEach { (_, value) ->
+                                val (optionName, count) = value  // 튜플 구조분해 할당
                                 Text(
                                     text = "$optionName: $count",
-                                    style = caption.copy(
-                                        letterSpacing = 0.sp
-                                    ),
+                                    style = caption.copy(letterSpacing = 0.sp),
                                     color = polishedSteelColor
                                 )
                             }

@@ -1,6 +1,7 @@
 package com.ssafy.keywe.presentation.order.component
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -16,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
+import com.ssafy.keywe.domain.order.OptionsValueGroupModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
@@ -24,11 +31,12 @@ import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import kotlinx.coroutines.delay
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun MenuDetailBottom(
-    menuId: Long, selectedSize: String, selectedTemperature: String, extraOptions: Map<String, Int>,
+    menuId: Long, selectedSize: String, selectedTemperature: String, extraOptions: Map<Long, Pair<String, Int>>,
     totalPrice: Int,
     navController: NavController, menuCartViewModel: MenuCartViewModel
 ) {
@@ -67,20 +75,34 @@ fun MenuDetailBottomBackButton(
     menuId: Long,
     selectedSize: String,
     selectedTemperature: String,
-    extraOptions: Map<String, Int>,
+    extraOptions: Map<Long, Pair<String, Int>>,
     totalPrice: Int,
     navController: NavController,
     menuCartViewModel: MenuCartViewModel
 ) {
+    val selectedOptions = if (extraOptions.isNotEmpty()) {
+        extraOptions.mapValues { (_, pair) -> pair.second }
+    } else {
+        mapOf() // 기본값 설정
+    }
+
+    Log.d("MenuDetailBottomBackButton", "🔥 extraOptions: $extraOptions")
+    Log.d("MenuDetailBottomBackButton", "🔥 selectedOptions: $selectedOptions")
+
+    var addToCartTrigger by remember { mutableStateOf(false) }
+
     BottomButton(
         content = content, onClick = {
+            Log.d("MenuDetailBottomBackButton", "🛒 addToCart 호출됨!")
             menuCartViewModel.addToCart(
                 menuId = menuId,
                 size = selectedSize,
                 temperature = selectedTemperature,
-                extraOptions = extraOptions,
+                selectedOptions = selectedOptions,
                 totalPrice = totalPrice
             )
+            addToCartTrigger = true
+
             navController.popBackStack()
 //            navController.navigate(Route.MenuBaseRoute.MenuRoute)
         }, modifier = Modifier
@@ -91,6 +113,14 @@ fun MenuDetailBottomBackButton(
             disabledContainerColor = greyBackgroundColor
         )
     )
+
+    LaunchedEffect(addToCartTrigger) {
+        if (addToCartTrigger) {
+            delay(100) // 업데이트 반영 기다리기
+            Log.d("MenuDetailBottomBackButton", "🛒 addToCart 이후 장바구니 상태: ${menuCartViewModel.cartItems.value}")
+            addToCartTrigger = false // 다시 초기화
+        }
+    }
 }
 
 @Composable

@@ -38,10 +38,10 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 @Composable
 fun MenuDetailExtraOption(
     options: List<OptionsModel>,
-    onOptionSelected: (String, Int, Int) -> Unit
+    onOptionSelected: (Long, String, Int) -> Unit
 ) {
 
-    val extraOptions = remember { mutableStateMapOf<String, Int>() }
+    val extraOptions = remember { mutableStateMapOf<Long, Pair<String, Int>>() }
 
     Box(
         modifier = Modifier
@@ -67,8 +67,20 @@ fun MenuDetailExtraOption(
                     verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
                 ) {
                     options.forEach { option ->
+                        val optionId = option.optionsValueGroup.firstOrNull()?.optionValueId ?: option.optionId
                         val optionName = option.optionsValueGroup.firstOrNull()?.optionValue ?: option.optionName
-                        OptionBox(optionName, option.optionPrice, extraOptions, onOptionSelected)
+
+                        OptionBox(
+                            id = optionId,
+                            name = optionName,
+                            optionPrice = option.optionPrice,
+                            extraOptions = extraOptions,
+                            onOptionSelected = { id, name, count ->
+                                if (count == 0) extraOptions.remove(id)
+                                else extraOptions[id] = name to count
+                                onOptionSelected(id, name, count)
+                            }
+                        )
                     }
                 }
             }
@@ -118,13 +130,14 @@ fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Un
 
 @Composable
 fun OptionBox(
+    id: Long,
     name: String,
     optionPrice: Int,
-    extraOptions: MutableMap<String, Int>,
-    onOptionSelected: (String, Int, Int) -> Unit
+    extraOptions: MutableMap<Long, Pair<String, Int>>,
+    onOptionSelected: (Long, String, Int) -> Unit
 ) {
 
-    val optionAmount by rememberUpdatedState(extraOptions[name] ?: 0)
+    val optionAmount = remember { mutableIntStateOf(extraOptions[id]?.second ?: 0) }
 
     Box(
         modifier = Modifier
@@ -146,16 +159,18 @@ fun OptionBox(
         ) {
             Option(name, optionPrice)
             OptionAmount(
-                optionAmount,
+                optionAmount.value,
                 onDecrease = {
-                    if (optionAmount > 0) {
-                        extraOptions[name] = optionAmount - 1
-                        onOptionSelected(name, optionAmount - 1, optionPrice)
+                    if (optionAmount.value > 0) {
+                        optionAmount.value -= 1
+                        extraOptions[id] = name to optionAmount.value
+                        onOptionSelected(id, name, optionAmount.intValue)
                     }
                 }, onIncrease = {
-                    if (optionAmount < 9) {
-                        extraOptions[name] = optionAmount + 1
-                        onOptionSelected(name, optionAmount + 1, optionPrice)
+                    if (optionAmount.value < 9) {
+                        optionAmount.value += 1
+                        extraOptions[id] = name to optionAmount.value
+                        onOptionSelected(id, name, optionAmount.value)
                     }
                 })
         }

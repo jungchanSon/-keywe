@@ -57,8 +57,14 @@ fun OptionChangeBottomSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val selectedSize = remember { mutableStateOf(cartItem.size) }
     val selectedTemperature = remember { mutableStateOf(cartItem.temperature) }
-    val extraOptions =
-        remember { mutableStateMapOf<String, Int>().apply { putAll(cartItem.extraOptions) } }
+
+    val extraOptions = remember {
+        mutableStateMapOf<Long, Pair<String, Int>>().apply {
+            cartItem.extraOptions.forEach { (optionId, pair) ->
+                put(optionId, pair)
+            }
+        }
+    }
 
     val commonOptionList = menu?.options?.filter { it.optionType == "Common" } ?: emptyList()
     val sizeOptions = commonOptionList.find { it.optionName.equals("size", ignoreCase = true) }
@@ -68,15 +74,29 @@ fun OptionChangeBottomSheet(
 
     val extraOptionList = menu?.options?.filter { it.optionType == "Extra" } ?: emptyList()
 
+//    val totalPrice = remember {
+//        derivedStateOf {
+//            val menuPrice = menu?.menuPrice ?: 0
+//            val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
+//            val extraOptionPrice = extraOptions.entries.sumOf { (name, count) ->
+//                val optionPrice = extraOptionList.find {
+//                    it.optionsValueGroup.firstOrNull()?.optionValue == name
+//                }?.optionPrice ?: 0
+//                optionPrice * count
+//            }
+//            menuPrice + sizePrice + extraOptionPrice
+//        }
+//    }
+
     val totalPrice = remember {
         derivedStateOf {
             val menuPrice = menu?.menuPrice ?: 0
             val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
-            val extraOptionPrice = extraOptions.entries.sumOf { (name, count) ->
+            val extraOptionPrice = extraOptions.entries.sumOf { (_, pair) ->
                 val optionPrice = extraOptionList.find {
-                    it.optionsValueGroup.firstOrNull()?.optionValue == name
+                    it.optionsValueGroup.firstOrNull()?.optionValue == pair.first
                 }?.optionPrice ?: 0
-                optionPrice * count
+                optionPrice * pair.second
             }
             menuPrice + sizePrice + extraOptionPrice
         }
@@ -89,7 +109,9 @@ fun OptionChangeBottomSheet(
             selectedSize.value = cartItem.size
             selectedTemperature.value = cartItem.temperature
             extraOptions.clear()
-            extraOptions.putAll(cartItem.extraOptions)
+            cartItem.extraOptions.forEach { (optionId, pair) ->
+                extraOptions[optionId] = pair
+            }
         }
     }
 
@@ -147,15 +169,20 @@ fun OptionChangeBottomSheet(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         extraOptionList.forEach { option ->
+                            val optionId = option.optionsValueGroup.firstOrNull()?.optionValueId ?: option.optionId
                             val optionName = option.optionsValueGroup.firstOrNull()?.optionValue ?: option.optionName
+
                             OptionBox(
+                                id = optionId,
                                 name = optionName,
                                 optionPrice = option.optionPrice,
                                 extraOptions = extraOptions,
-                                onOptionSelected = { name, count, _ ->
-                                    if (count == 0) extraOptions.remove(name) else extraOptions[name] = count
+                                onOptionSelected = { id, name, count -> // ✅ id를 첫 번째로 변경
+                                    if (count == 0) extraOptions.remove(id)
+                                    else extraOptions[id] = name to count
                                 }
                             )
+
                         }
                     }
                 }
@@ -234,7 +261,7 @@ fun OptionChangeBottomSheet(
                         cartItem.menuId,
                         selectedSize.value,
                         selectedTemperature.value,
-                        extraOptions
+                        extraOptions.mapValues { (_, pair) -> pair.second }
                     )
                     sheetState.hide()
                     onDismiss()

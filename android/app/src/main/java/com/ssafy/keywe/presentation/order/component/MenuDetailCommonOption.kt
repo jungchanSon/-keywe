@@ -65,7 +65,6 @@ fun MenuDetailCommonOption(
 
 @Composable
 fun MenuDetailCommonOptionRow(options: List<String>, selected: String, onSelect: (String) -> Unit) {
-    var selectedOption by remember { mutableStateOf(selected) }
 
     Row(
         modifier = Modifier
@@ -76,11 +75,8 @@ fun MenuDetailCommonOptionRow(options: List<String>, selected: String, onSelect:
             MenuDetailCommonOptionButton(
                 option = option,
                 modifier = Modifier.weight(1f).height(45.dp),
-                isSelected = selectedOption == option,
-                onSelect = {
-                    selectedOption = option
-                    onSelect(option)
-                }
+                isSelected = selected == option,
+                onSelect = { onSelect(option) }
             )
         }
     }

@@ -80,10 +80,9 @@ fun MenuCartDeleteDialog(
 fun MenuCartFinishDialog(
     title: String,
     description: String,
-    onCancel: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    Dialog(onDismissRequest = { onCancel() }) {
+    Dialog(onDismissRequest = {}) {
         Surface(
             modifier = Modifier
                 .width(280.dp) // 다이얼로그 크기 조절

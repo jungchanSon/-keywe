@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +52,7 @@ import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import kotlinx.coroutines.delay
 
 
 @SuppressLint("UnrememberedGetBackStackEntry")
@@ -72,7 +74,7 @@ fun MenuCartScreen(
             .zIndex(1f)
             .fillMaxSize()
             .background(
-                color = if (isDeleteDialogOpen || isAllDeleteDialogOpen.value) titleTextColor.copy(
+                color = if (isDeleteDialogOpen || isAllDeleteDialogOpen.value || isCompleteOrder) titleTextColor.copy(
                     alpha = 0.5f
                 ) else Color.Transparent
             )
@@ -103,12 +105,16 @@ fun MenuCartScreen(
             )
         }
 
-//        if (isCompleteOrder) {
-//            MenuCartFinishDialog(
-//                title = "주문 완료",
-//                description = ""
-//            )
-//        }
+        if (isCompleteOrder) {
+            MenuCartFinishDialog(
+                title = "주문 완료",
+                description = "주문이 정상적으로 완료되었습니다.",
+                onConfirm = {
+                    menuCartViewModel.closeCompleteOrderDialog()
+                    navController.navigate(Route.MenuBaseRoute.MenuRoute)
+                }
+            )
+        }
 
     }
     Scaffold(
