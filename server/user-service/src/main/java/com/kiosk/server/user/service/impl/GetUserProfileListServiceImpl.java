@@ -4,10 +4,12 @@ import com.kiosk.server.user.controller.dto.UserProfileResponse;
 import com.kiosk.server.user.domain.UserProfileRepository;
 import com.kiosk.server.user.service.GetUserProfileListService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GetUserProfileListServiceImpl implements GetUserProfileListService {
@@ -16,6 +18,7 @@ public class GetUserProfileListServiceImpl implements GetUserProfileListService 
 
     @Override
     public List<UserProfileResponse> doService(long userId) {
+        log.info("GetUserProfileListService: userId={}", userId);
 
         return userProfileRepository.getUserProfileList(userId);
     }
