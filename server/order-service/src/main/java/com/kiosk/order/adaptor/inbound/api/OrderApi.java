@@ -1,6 +1,7 @@
 package com.kiosk.order.adaptor.inbound.api;
 
 import com.kiosk.order.adaptor.inbound.api.dto.OrderRequestDTO;
+import com.kiosk.order.adaptor.inbound.api.dto.OrderResponseDTO;
 import com.kiosk.order.adaptor.inbound.api.mapper.OrderDTOMapper;
 import com.kiosk.order.application.port.inbound.OrderCommand;
 import com.kiosk.order.application.port.inbound.OrderUseCase;
@@ -18,10 +19,14 @@ public class OrderApi {
     private final OrderDTOMapper orderDTOMapper;
 
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestHeader("userId") long shopId, @RequestBody OrderRequestDTO.Order order) {
+    public ResponseEntity<OrderResponseDTO.Response> createOrder(@RequestHeader("userId") long shopId, @RequestBody OrderRequestDTO.Order order) {
         long orderId = orderUseCase.commandOrder(orderDTOMapper.toVO(order, shopId));
 
-        return ResponseEntity.ok().body(String.valueOf(orderId));
+        return ResponseEntity.ok().body(
+                OrderResponseDTO.Response.builder()
+                        .orderId(String.valueOf(orderId))
+                        .build()
+        );
     }
 
 }
