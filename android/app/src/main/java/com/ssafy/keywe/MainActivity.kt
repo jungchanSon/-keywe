@@ -32,8 +32,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -68,7 +66,6 @@ import com.ssafy.keywe.data.websocket.SignalType
 import com.ssafy.keywe.domain.fcm.NotificationData
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
-import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
@@ -204,15 +201,9 @@ class MainActivity : ComponentActivity() {
 fun MyApp(
     navController: NavHostController,
     tokenManager: TokenManager,
-    fcmViewModel: FCMViewModel = hiltViewModel(),
+//    fcmViewModel: FCMViewModel = hiltViewModel(),
 ) {
 
-    val token by PushNotificationManager.token.collectAsStateWithLifecycle()
-    LaunchedEffect(token) {
-        if (token != null) {
-            fcmViewModel.updateToken(token!!)
-        }
-    }
 
 //    val client = StreamVideoBuilder(
 //        context = context,
@@ -264,7 +255,6 @@ fun MyApp(
             }
             profileGraph(navController, tokenManager)
             menuGraph(navController, menuCartViewModel)
-            menuGraph(navController)
             composable<SharingRoute> {
                 ScreenSharing()
             }

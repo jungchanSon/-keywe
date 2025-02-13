@@ -27,11 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ssafy.keywe.PushNotificationManager
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.domain.profile.GetProfileListModel
+import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
@@ -47,11 +49,12 @@ fun ProfileChoiceScreen(
     navController: NavController,
     isJoinApp: Boolean,
     profileViewModel: ProfileViewModel = hiltViewModel(),
+    fcmViewModel: FCMViewModel = hiltViewModel(),
 ) {
     val profiles by profileViewModel.profiles.collectAsStateWithLifecycle()
     val parentProfiles = profiles.filter { it.role == PARENT }
     val childProfiles = profiles.filter { it.role == CHILD }
-
+    val token by PushNotificationManager.token.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { DefaultAppBar(title = "계정 관리", navController = navController) },
@@ -105,8 +108,9 @@ fun ProfileChoiceScreen(
                         profiles = parentProfiles, onProfileClick = { profile ->
                             // 처음
                             if (isJoinApp) {
-                                profileViewModel.selectAccount(profile)
-                                navController.navigate(BottomRoute.HomeRoute)
+                                joinHome(
+                                    profileViewModel, profile, token, fcmViewModel, navController
+                                )
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
@@ -115,7 +119,6 @@ fun ProfileChoiceScreen(
 //                        , onAddClick = {
 //                        navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
 //                    },
-
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -131,8 +134,9 @@ fun ProfileChoiceScreen(
                         profiles = childProfiles, onProfileClick = { profile ->
                             // 처음
                             if (isJoinApp) {
-                                profileViewModel.selectAccount(profile)
-                                navController.navigate(BottomRoute.HomeRoute)
+                                joinHome(
+                                    profileViewModel, profile, token, fcmViewModel, navController
+                                )
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
@@ -182,12 +186,31 @@ fun ProfileChoiceScreen(
     }
 }
 
+private fun joinHome(
+    profileViewModel: ProfileViewModel,
+    profile: GetProfileListModel,
+    token: String?,
+    fcmViewModel: FCMViewModel,
+    navController: NavController,
+) {
+    profileViewModel.selectAccount(profile)
+    if (token != null) {
+        fcmViewModel.updateToken(token)
+    }
+    navController.navigate(BottomRoute.HomeRoute, builder = {
+        popUpTo(0) {
+            inclusive = true
+        }
+        launchSingleTop = true
+    })
+}
+
 
 @Composable
 fun ProfileGrid(
     profiles: List<GetProfileListModel>, onProfileClick: (GetProfileListModel) -> Unit,
 //    onAddClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),

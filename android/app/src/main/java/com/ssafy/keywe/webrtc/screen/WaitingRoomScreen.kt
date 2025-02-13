@@ -11,19 +11,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.data.websocket.SignalService
 import com.ssafy.keywe.data.websocket.SignalType
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
-import timber.log.Timber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private fun connectSTOMP(context: Context) {
     val intent = Intent(context, SignalService::class.java)
@@ -62,6 +71,8 @@ fun WaitingRoomScreen(
     }
     var text = "연결 중 입니다."
 
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(message) {
         message?.let {
             when (it.type) {
@@ -80,9 +91,12 @@ fun WaitingRoomScreen(
                 }
 
                 STOMPTYPE.ACCEPTED -> {
+                    scope.launch {
+                        delay(3000)
+                    }
+
                     navController.navigate(Route.MenuBaseRoute.MenuRoute) {
-                        navBackStackEntry?.destination?.route?.let {
-                            route ->
+                        navBackStackEntry?.destination?.route?.let { route ->
                             popUpTo(route) {
                                 inclusive = true
                             }
@@ -112,6 +126,7 @@ fun WaitingRoomScreen(
         connectSTOMP(context)
     }
 
+
     Scaffold(topBar = {
         DefaultAppBar(
             title = "대기방", navController = navController
@@ -121,7 +136,37 @@ fun WaitingRoomScreen(
             modifier = Modifier.padding(innerPadding), verticalArrangement = Arrangement.Center
         ) {
             Text("$text")
+            CountdownTimer(navController)
         }
 
     }
+}
+
+@Composable
+fun CountdownTimer(navController: NavHostController) {
+    var seconds by remember { mutableIntStateOf(3) }
+
+    LaunchedEffect(Unit) {
+        while (seconds > 0) {
+            delay(1000) // 1초 대기
+            seconds--  // 초 감소
+        }
+    }
+    LaunchedEffect(seconds) {
+        if (seconds == 0) {
+            Log.d("CountdownTimer", "타이머 종료")
+            navController.navigate(BottomRoute.HomeRoute, builder = {
+                popUpTo(BottomRoute.HomeRoute) {
+                    inclusive = true
+                }
+            })
+        }
+    }
+
+    Text(
+        text = if (seconds > 0) "${seconds}초 후에 00이 됩니다." else "00",
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(16.dp)
+    )
 }

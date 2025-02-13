@@ -36,8 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.ssafy.keywe.common.HelperRoute
-import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -79,7 +79,15 @@ fun LoginScreen(
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(true))
+            val toRoute = Route.ProfileBaseRoute.ProfileChoiceRoute(true)
+            navController.navigate(toRoute, builder = {
+                popUpTo(0) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            })
+
+
         }
     }
 
@@ -135,9 +143,6 @@ fun LoginScreen(
             BottomButton(content = "로그인", onClick = {
                 onSearchExplicitlyTriggered()
                 viewModel.login()
-//                navController.navigate("greet", builder = {
-//                    popUpTo("login") { inclusive = true }
-//                })
             }, enabled = validForm)
             Spacer(modifier = modifier.height(12.dp))
             Text(
@@ -234,7 +239,5 @@ fun ScreenCaptureButton(context: Context, surface: Surface?, navController: NavH
         Text("채널 입장")
     }
 
-    BottomButton(
-        content = "접근성 확인", onClick = {
-        })
+    BottomButton(content = "접근성 확인", onClick = {})
 }
