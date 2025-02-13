@@ -8,7 +8,7 @@ import java.util.Map;
 public enum RemoteOrderError {
 
     UNKNOWN("R000", "알 수 없는 오류 발생"),
-    SESSION_TIMEOUT("R100", "만료된 요청입니다."),
+    SESSION_TIMEOUT("R100", "요청이 만료되었습니다."),
     PUSH_NOTIFICATION_SEND_FAILED("R101", "요청 전송에 실패했습니다."),
     CHILD_REMOTE_ORDER_FORBIDDEN("R102", "자식은 주문 요청이 불가합니다."),
     SESSION_NOT_FOUND("R103", "존재하지 않는 세션입니다."),

@@ -5,9 +5,9 @@ import com.kiosk.server.client.feign.dto.NotificationMessage;
 import com.kiosk.server.client.feign.dto.SendFcmMessageRequest;
 import com.kiosk.server.client.feign.dto.SendFcmMessageResponse;
 import com.kiosk.server.domain.RemoteOrderSession;
+import com.kiosk.server.websocket.exception.RemoteOrderError;
 import com.kiosk.server.websocket.message.response.RemoteOrderResponse;
 import com.kiosk.server.websocket.message.response.RemoteOrderResponseType;
-import com.kiosk.server.websocket.message.response.RemoteOrderError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
@@ -54,19 +54,27 @@ public class RemoteOrderRequestedEventListener {
 
         ResponseEntity<SendFcmMessageResponse> response = notificationClient.sendFcmMessage(request);
 
-        RemoteOrderResponse responseMessage;
-
-        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null ||
-            response.getBody().successCount() == 0) {
-            responseMessage = RemoteOrderResponse.error(RemoteOrderError.PUSH_NOTIFICATION_SEND_FAILED);
+        if (
+            response.getStatusCode() != HttpStatus.OK ||
+                response.getBody() == null ||
+                response.getBody().successCount() == 0
+        ) {
+            messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(),
+                RemoteOrderResponse.error(RemoteOrderError.PUSH_NOTIFICATION_SEND_FAILED));
         } else {
             SendFcmMessageResponse result = response.getBody();
-            responseMessage = RemoteOrderResponse.success(
+
+            RemoteOrderResponse responseMessage = RemoteOrderResponse.success(
                 RemoteOrderResponseType.WAITING,
-                Map.of("success", result.successCount(), "failure", result.failureCount())
+                Map.of(
+                    "success", result.successCount(),
+                    "failure", result.failureCount()
+                )
             );
+
+            messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), responseMessage);
         }
 
-        messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), responseMessage);
+
     }
 }

@@ -1,4 +1,4 @@
-package com.kiosk.server.common.config;
+package com.kiosk.server.websocket.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +24,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/remote/ws")
+        registry
+            .addEndpoint("/remote/ws")
             .setAllowedOriginPatterns("*");
 
-        registry.addEndpoint("/remote/ws")
+        registry
+            .addEndpoint("/remote/ws")
             .setAllowedOriginPatterns("*")
             .withSockJS();
     }
