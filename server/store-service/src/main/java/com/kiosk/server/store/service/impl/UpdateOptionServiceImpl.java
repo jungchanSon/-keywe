@@ -26,8 +26,10 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
 
     @Override
     public CreateMenuResponse doService(long userId, long menuId, long optionId, MenuOptionRequest request) {
+        log.info("UpdateOptionService: userId={}, menuId={}, optionId={}, request={}", userId, menuId, optionId, request);
+
         if (request == null || optionId < 0) {
-            log.error("request or optionId is null");
+            log.warn("잘못된 요청 - userId={}, menuId={}, optionId={}, request={}", userId, menuId, optionId, request);
             throw new BadRequestException("잘못된 요청입니다");
         }
 
@@ -36,6 +38,8 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
         Map<String, Object> updateMap = getUpdateMap(optionId, request);
 
         optionRepository.update(updateMap);
+        log.info("옵션 업데이트 완료 - userId={}, menuId={}, optionId={}, optionName={}",
+                userId, menuId, optionId, request.optionName());
 
         // 최신 옵션 목록 조회 후 응답 반환
         List<OptionGroupResponse> optionGroups = optionService.getUpdatedOptionGroups(menuId);
@@ -54,6 +58,7 @@ public class UpdateOptionServiceImpl implements UpdateOptionService {
 
         // optionId가 제대로 포함되어 있는지 확인
         if (!updateMap.containsKey("optionId") || updateMap.get("optionId") == null) {
+            log.warn("옵션 업데이트 필수 정보 누락 - optionId={}", optionId);
             throw new EntityNotFoundException("옵션 업데이트에 필요한 필수 정보가 누락되었습니다. 입력값을 확인해 주세요.");
         }
         return updateMap;

@@ -8,10 +8,12 @@ import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.FindMenusService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FindMenusServiceImpl implements FindMenusService {
@@ -22,7 +24,10 @@ public class FindMenusServiceImpl implements FindMenusService {
 
     @Override
     public List<MenuResponse> doService(long userId, Long categoryId) {
+        log.info("FindMenusService: userId={}, categoryId={}", userId, categoryId);
+
         if (categoryId != null && !categoryRepository.existsById(categoryId)) {
+            log.warn("존재하지 않는 카테고리 요청 - userId={}, categoryId={}", userId, categoryId);
             throw new BadRequestException("존재하지 않는 카테고리입니다.");
         }
 
@@ -32,6 +37,7 @@ public class FindMenusServiceImpl implements FindMenusService {
                 : menuRepository.findByCategory(userId, categoryId);
 
         if (menuList.isEmpty()) {
+            log.info("조회된 메뉴 없음 - userId={}, categoryId={}", userId, categoryId);
             return Collections.emptyList();
         }
 
@@ -58,6 +64,8 @@ public class FindMenusServiceImpl implements FindMenusService {
             ));
         }
 
+        log.info("메뉴 조회 완료 - userId={}, categoryId={}, menuCount={}", userId, categoryId, menuResponse.size());
+
         return menuResponse;
     }
 
@@ -78,5 +86,4 @@ public class FindMenusServiceImpl implements FindMenusService {
         }
         return imageMap;
     }
-
 }
