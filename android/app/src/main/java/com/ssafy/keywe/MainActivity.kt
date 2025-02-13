@@ -67,6 +67,7 @@ import com.ssafy.keywe.domain.fcm.NotificationData
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
@@ -222,6 +223,7 @@ fun MyApp(
     }
 
     val menuCartViewModel: MenuCartViewModel = hiltViewModel()
+    val appBarViewModel: OrderAppBarViewModel = hiltViewModel()
 
     val state by navController.currentBackStackEntryAsState()
     // splash 와 login 은 topAppBar 없음
@@ -254,7 +256,7 @@ fun MyApp(
                 SignUpScreen(navController)
             }
             profileGraph(navController, tokenManager)
-            menuGraph(navController, menuCartViewModel)
+            menuGraph(navController, menuCartViewModel, appBarViewModel)
             composable<SharingRoute> {
                 ScreenSharing()
             }
