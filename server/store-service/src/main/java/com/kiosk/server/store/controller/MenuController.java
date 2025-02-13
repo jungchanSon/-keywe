@@ -1,6 +1,5 @@
 package com.kiosk.server.store.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kiosk.server.store.controller.dto.*;
 import com.kiosk.server.store.service.*;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -64,15 +62,12 @@ public class MenuController {
     @PatchMapping(path = "/{menuId}", consumes = "multipart/form-data")
     public ResponseEntity<Void> updateMenu(
         @RequestHeader("userId") Long userId,
-        @RequestPart("menu") String json,
+        @RequestPart("menu") UpdateMenuRequest request,
         @RequestPart(required = false) MultipartFile image,
         @PathVariable long menuId
-    ) throws IOException {
+    ) {
         log.info("Request: userId={}, updateMenuId={}", userId, menuId);
-        // JSON 문자열 DTO로 반환
-        ObjectMapper mapper = new ObjectMapper();
-        UpdateMenuRequest dto = mapper.readValue(json, UpdateMenuRequest.class);
-        updateMenuService.doService(userId, menuId, dto, image);
+        updateMenuService.doService(userId, menuId, request, image);
         return ResponseEntity.ok().build();
     }
 
