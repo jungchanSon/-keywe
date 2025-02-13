@@ -1,4 +1,4 @@
-package com.kiosk.server.common.config;
+package com.kiosk.server.websocket.config;
 
 import enums.TokenClaimName;
 import io.jsonwebtoken.Claims;

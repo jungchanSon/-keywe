@@ -6,9 +6,10 @@ import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
 import com.kiosk.server.user.service.RegisterUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RegisterUserServiceImpl implements RegisterUserService {
@@ -16,6 +17,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     private final UserRepository userRepository;
 
     public void doService(String email, String password) {
+        log.info("RegisterUserService: email={}", email);
 
         checkEmailDuplication(email);
         verifyFormat(email, password);
@@ -23,12 +25,14 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         User user = User.create(email, password);
 
         userRepository.registerUser(user);
+        log.info("사용자 등록 완료 - email={}", email);
 
     }
 
     // 이메일 중복 체크
     private void checkEmailDuplication(String email) {
         if (userRepository.existsByEmail(email)) {
+            log.warn("중복된 이메일 등록 시도 - email={}", email);
             throw new ConflictException("중복된 이메일입니다. 다른 이메일을 입력해 주세요.");
         }
     }
@@ -50,12 +54,13 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         String passRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~!@#$%^&*_\\-+=`|\\\\(){}\\[\\]:;\"'<>,.?/]).{8,16}$";
 
         if (email == null || !email.matches(emailRegex)) {
+            log.warn("유효하지 않은 이메일 입력 - email={}", email);
             throw new BadRequestException("이메일 형식이 올바르지 않습니다. 올바른 이메일 형식으로 입력해 주세요.");
         }
 
         if (password == null || !password.matches(passRegex)) {
+            log.warn("유효하지 않은 패스워드 입력 - email={}", email);
             throw new BadRequestException("패스워드 형식이 올바르지 않습니다. 올바른 패스워드 형식으로 입력해 주세요.");
         }
     }
-
 }

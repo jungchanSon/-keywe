@@ -5,8 +5,10 @@ import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.service.ProfileDetailService;
 import com.kiosk.server.user.util.UserProfileUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileDetailServiceImpl implements ProfileDetailService {
@@ -15,8 +17,12 @@ public class ProfileDetailServiceImpl implements ProfileDetailService {
 
     @Override
     public UserProfileDetailResponse doService(long userId, long profileId) {
+        log.info("ProfileDetailService: userId={}, profileId={}", userId, profileId);
 
         UserProfile userProfile = userProfileUtil.getUserProfileById(userId, profileId);
+        log.info("조회된 프로필 - userId={}, profileId={}, name={}, role={}, phone={}",
+                userProfile.getUserId(), userProfile.getProfileId(),
+                userProfile.getProfileName(), userProfile.getProfileRole(), userProfile.getPhoneNumber());
 
         return new UserProfileDetailResponse(
                 String.valueOf(userProfile.getProfileId()),

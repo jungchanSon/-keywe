@@ -10,10 +10,12 @@ import com.kiosk.server.user.service.ModifyUserProfileService;
 import com.kiosk.server.user.util.UserProfileUtil;
 import com.kiosk.server.user.util.UserValidateUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
@@ -24,11 +26,13 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
 
     @Override
     public PatchProfileResponse doService(long userId, long profileId, String profileName, String phoneNumber, String profilePass) {
+        log.info("ModifyUserProfileService: userId={}, profileId={}", userId, profileId);
 
         // userProfile 조회
         UserProfile userProfile = fetchUserProfile(userId, profileId);
 
         ProfileRole role = userProfile.getProfileRole();
+        log.info("조회된 프로필 - userId={}, profileId={}, role={}", userId, profileId, role);
 
         String updatedName = profileName != null ? profileName : userProfile.getProfileName();
         String updatedPhone = phoneNumber != null ? phoneNumber : userProfile.getPhoneNumber();
@@ -42,16 +46,21 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
             userValidateUtil.validateProfilePass(profilePass);
             updateProfileParam.put("profilePass", profilePass);
             userProfileRepository.updateParentProfile(updateProfileParam);
+            log.info("부모 프로필 업데이트 완료 - userId={}, profileId={}", userId, profileId);
 
         } else if (role.equals(ProfileRole.CHILD)) {
             updateProfileParam.remove("phoneNumber", updatedPhone);
             userProfileRepository.updateChildProfile(updateProfileParam);
+            log.info("자녀 프로필 업데이트 완료 - userId={}, profileId={}", userId, profileId);
 
         } else {
+            log.warn("잘못된 프로필 역할 - userId={}, profileId={}, role={}", userId, profileId, role);
             throw new BadRequestException("프로필 역할이 선택되지 않았습니다. 올바른 프로필 역할을 선택해주세요.");
         }
 
         UserProfile user = userProfileUtil.getUserProfileById(userId, profileId);
+        log.info("최종 수정된 프로필 - userId={}, profileId={}, role={}, name={}, phone={}",
+                user.getUserId(), user.getProfileId(), user.getProfileRole(), user.getProfileName(), user.getPhoneNumber());
 
         return new PatchProfileResponse(
                 user.getProfileRole(),
@@ -64,9 +73,9 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
     private UserProfile fetchUserProfile(long userId, long profileId) {
         UserProfile userProfile = userProfileUtil.getUserProfileById(userId, profileId);
         if (userProfile == null) {
+            log.warn("수정할 프로필을 찾을 수 없음 - userId={}, profileId={}", userId, profileId);
             throw new EntityNotFoundException("수정할 프로필이 선택되지 않았습니다. 수정할 프로필을 선택한 후 다시 시도해 주세요.");
         }
         return userProfile;
     }
-
 }
