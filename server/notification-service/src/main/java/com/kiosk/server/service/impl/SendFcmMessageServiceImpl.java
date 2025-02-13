@@ -107,7 +107,9 @@ public class SendFcmMessageServiceImpl implements SendFcmMessageService {
             response.getFailureCount() + response.getSuccessCount());
 
         // 유효하지 않은 토큰 삭제 처리 이벤트
-        eventPublisher.publishEvent(new InvalidPushTokensDetectedEvent(invalidPushTokens));
+        if (!invalidPushTokens.isEmpty()) {
+            eventPublisher.publishEvent(new InvalidPushTokensDetectedEvent(invalidPushTokens));
+        }
 
         return new SendFcmMessageResult(response.getSuccessCount(), response.getFailureCount());
     }
