@@ -1,5 +1,6 @@
 package com.kiosk.server.websocket.message.response;
 
+import com.kiosk.server.websocket.exception.RemoteOrderError;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

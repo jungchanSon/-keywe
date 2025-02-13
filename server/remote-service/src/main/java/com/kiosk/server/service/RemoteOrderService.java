@@ -6,8 +6,8 @@ import com.kiosk.server.common.util.IdUtil;
 import com.kiosk.server.domain.RemoteOrderSession;
 import com.kiosk.server.domain.RemoteOrderStatus;
 import com.kiosk.server.event.RemoteOrderRequestedEvent;
+import com.kiosk.server.websocket.exception.*;
 import com.kiosk.server.websocket.message.response.RemoteOrderResponse;
-import com.kiosk.server.websocket.message.response.RemoteOrderError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -44,9 +44,8 @@ public class RemoteOrderService {
 
     // Redis에 세션 저장
     public String createSession(String userId, String familyId, String storeId) {
-
         if (!userClient.verifyParentRole(userId)) {
-            return null;
+            throw new ChildRemoteOrderForbiddenException();
         }
 
         RemoteOrderSession session = RemoteOrderSession.builder()
@@ -80,23 +79,24 @@ public class RemoteOrderService {
         // 가족 구성원이 맞는지 확인
         Boolean isMember = objectRedisTemplate.opsForSet().isMember(HELPER_PREFIX + familyId, helperUserId);
         if (Boolean.FALSE.equals(isMember)) {
-            return null;
+            throw new UnauthorizedRemoteOrderAcceptException();
         }
-
-        String key = SESSION_PREFIX + sessionId;
 
         // 세션 가져오기 및 상태 검증을 원자적 작업으로 수행
         return sessionRedisTemplate.execute(new SessionCallback<>() {
             @Override
             public RemoteOrderSession execute(RedisOperations operations) throws DataAccessException {
+                String key = SESSION_PREFIX + sessionId;
+
                 operations.watch(key);  // key 감시 시작
 
                 RemoteOrderSession session = (RemoteOrderSession) operations.opsForValue().get(key);
-
-                // 유효성 검증
-                if (session == null || !RemoteOrderStatus.WAITING.name().equals(session.getStatus())) {
+                if (session == null) {
+                    throw new SessionNotFoundException();
+                }
+                if (!RemoteOrderStatus.WAITING.name().equals(session.getStatus())) {
                     operations.unwatch();  // 감시 해제
-                    return null;
+                    throw new NotAcceptableRequestStateException();
                 }
 
                 // 트랜잭션 시작
@@ -108,7 +108,10 @@ public class RemoteOrderService {
                 operations.opsForValue().set(key, session);
 
                 // 트랜잭션 실행
-                return !CollectionUtils.isEmpty(operations.exec()) ? session : null;
+                if (CollectionUtils.isEmpty(operations.exec())) {
+                    throw new NotAcceptableRequestStateException();
+                }
+                return session;
             }
         });
     }
@@ -118,12 +121,12 @@ public class RemoteOrderService {
 
         RemoteOrderSession session = sessionRedisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
         if (session == null) {
-            return null;
+            throw new SessionNotFoundException();
         }
 
         // 요청자나 수락자만 종료 가능
         if (!userId.equals(session.getKioskUserId()) && !userId.equals(session.getHelperUserId())) {
-            return null;
+            throw new UnauthorizedRemoteOrderEndException();
         }
 
         session.setStatus(RemoteOrderStatus.ENDED.name());
@@ -149,8 +152,7 @@ public class RemoteOrderService {
             session.setStatus(RemoteOrderStatus.TIMEOUT.name());
             sessionRedisTemplate.opsForValue().set(key, session, SESSION_TTL);
 
-            messagingTemplate.convertAndSend(
-                "/topic/" + session.getKioskUserId(),
+            messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(),
                 RemoteOrderResponse.error(RemoteOrderError.SESSION_TIMEOUT)
             );
         }
