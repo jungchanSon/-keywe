@@ -30,7 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import kotlinx.coroutines.launch
@@ -38,7 +39,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MenuMenuList(
     navController: NavController,
-    viewModel: OrderViewModel
+    viewModel: MenuViewModel,
+    menuCartViewModel: MenuCartViewModel
 ) {
     val filteredMenuList by viewModel.filteredMenuItems.collectAsState()
     val listState = rememberLazyGridState() // 스크롤 상태 관리
@@ -70,7 +72,8 @@ fun MenuMenuList(
                     selectItem = {
                         navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(menu.menuId))
                     },
-                    viewModel
+                    viewModel,
+                    menuCartViewModel
                 )
             }
         }
@@ -81,7 +84,9 @@ fun MenuMenuList(
 fun MenuMenuScreen(
     menuId: Long,
     selectItem: () -> Unit,
-    viewModel: OrderViewModel
+    viewModel: MenuViewModel,
+    menuCartViewModel: MenuCartViewModel
+
 ) {
     Log.d("Menu ID", "$menuId")
 
@@ -105,7 +110,7 @@ fun MenuMenuScreen(
             Log.d("menu Column", "$menuId")
             MenuImage(menuId, viewModel)
 
-            MenuDescription(menuId, viewModel)
+            MenuDescription(menuId, viewModel, menuCartViewModel)
         }
 
         val density = LocalDensity.current.density // Density 가져오기

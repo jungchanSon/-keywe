@@ -19,4 +19,6 @@ interface OrderRepository {
     suspend fun updateOption(menuId: Long, optionValueId: Long, option: OptionPostModel): ResponseResult<MenuOptionModel>
     suspend fun deleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit>
 
+    suspend fun postOrder(orderModel: OrderModel): ResponseResult<OrderResponseModel>
+
 }

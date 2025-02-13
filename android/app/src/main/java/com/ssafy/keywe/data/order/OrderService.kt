@@ -7,6 +7,8 @@ import com.ssafy.keywe.data.dto.order.MenuOptionResponse
 import com.ssafy.keywe.data.dto.order.MenuPostResponse
 import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
+import com.ssafy.keywe.data.dto.order.PostOrderRequest
+import com.ssafy.keywe.data.dto.order.PostOrderResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -96,6 +98,11 @@ interface OrderService {
         @Path("optionValueId") optionValueId: Long
     ): Response<Unit>
 
+    @POST(ORDER_POST_PATH)
+    suspend fun postOrder(
+        @Body postOrderRequest: PostOrderRequest
+    ): Response<PostOrderResponse>
+
     companion object {
         private const val CATEGORY_POST_GET_PATH = "/category"
         private const val CATEGORY_PATCH_DELETE_PATH = "/category/{categoryId}"
@@ -103,5 +110,6 @@ interface OrderService {
         private const val MENU_GET_PATCH_DELETE_PATH = "/menu/{menuId}"
         private const val OPTION_POST_PATH = "/menu/{menuId}/options"
         private const val OPTION_PATCH_DELETE_PATH = "/menu/{menuId}/options/{optionValueId}"
+        private const val ORDER_POST_PATH = "/order"
     }
 }

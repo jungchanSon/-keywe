@@ -16,7 +16,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -28,10 +30,10 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 fun MenuDetailBottom(
     menuId: Long, selectedSize: String, selectedTemperature: String, extraOptions: Map<String, Int>,
     totalPrice: Int,
-    navController: NavController
+    navController: NavController, menuCartViewModel: MenuCartViewModel
 ) {
     val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
-    val viewModel = hiltViewModel<OrderViewModel>(parentBackStackEntry)
+    val viewModel = hiltViewModel<MenuDetailViewModel>(parentBackStackEntry)
 
 
     Box(modifier = Modifier.background(greyBackgroundColor)) {
@@ -48,8 +50,8 @@ fun MenuDetailBottom(
                     selectedTemperature = selectedTemperature,
                     extraOptions = extraOptions,
                     totalPrice = totalPrice,
-                    viewModel = viewModel,
-                    navController = navController
+                    navController = navController,
+                    menuCartViewModel = menuCartViewModel
                 )
             }
             Box(modifier = Modifier.weight(1f)) {
@@ -67,12 +69,12 @@ fun MenuDetailBottomBackButton(
     selectedTemperature: String,
     extraOptions: Map<String, Int>,
     totalPrice: Int,
-    viewModel: OrderViewModel,
-    navController: NavController
+    navController: NavController,
+    menuCartViewModel: MenuCartViewModel
 ) {
     BottomButton(
         content = content, onClick = {
-            viewModel.addToCart(
+            menuCartViewModel.addToCart(
                 menuId = menuId,
                 size = selectedSize,
                 temperature = selectedTemperature,

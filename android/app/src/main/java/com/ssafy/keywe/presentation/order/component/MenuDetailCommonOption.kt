@@ -32,13 +32,15 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
 fun MenuDetailCommonOption(
+    sizeOptions: List<String>,
+    temperatureOptions: List<String>,
     selectedSize: String = "Tall",
     selectedTemperature: String = "Hot",
     onSizeSelected: (String) -> Unit,
     onTemperatureSelected: (String) -> Unit
 ) {
-    val sizeList = listOf("Tall", "Grande", "Venti")
-    val temperatureList = listOf("Hot", "Ice")
+//    val sizeList = listOf("Tall", "Grande", "Venti")
+//    val temperatureList = listOf("Hot", "Ice")
 
     Box(
         modifier = Modifier
@@ -53,8 +55,8 @@ fun MenuDetailCommonOption(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MenuDetailCommonOptionRow(sizeList, selectedSize, onSizeSelected)
-            MenuDetailCommonOptionRow(temperatureList, selectedTemperature, onTemperatureSelected)
+            MenuDetailCommonOptionRow(sizeOptions, selectedSize, onSizeSelected)
+            MenuDetailCommonOptionRow(temperatureOptions, selectedTemperature, onTemperatureSelected)
 
         }
     }

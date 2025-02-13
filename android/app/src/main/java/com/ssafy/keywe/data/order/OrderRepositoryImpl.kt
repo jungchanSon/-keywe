@@ -14,6 +14,8 @@ import com.ssafy.keywe.domain.order.MenuModel
 import com.ssafy.keywe.domain.order.MenuOptionModel
 import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OptionPostModel
+import com.ssafy.keywe.domain.order.OrderModel
+import com.ssafy.keywe.domain.order.OrderResponseModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
@@ -233,6 +235,19 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun postOrder(order: OrderModel): ResponseResult<OrderResponseModel> {
+        val request = order.toRequest()
+
+        return runCatching {
+            when (val result = orderDataSource.requestPostOrder(request)) {
+                is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())
+                is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
+                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+            }
+        }.getOrElse {
+            ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
+        }
+    }
 
 
     companion object {

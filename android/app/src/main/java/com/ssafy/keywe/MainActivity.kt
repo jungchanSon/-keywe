@@ -33,6 +33,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -68,6 +69,7 @@ import com.ssafy.keywe.domain.fcm.NotificationData
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
@@ -228,6 +230,8 @@ fun MyApp(
         RequestNotificationPermissionDialog()
     }
 
+    val menuCartViewModel: MenuCartViewModel = hiltViewModel()
+
     val state by navController.currentBackStackEntryAsState()
     // splash 와 login 은 topAppBar 없음
     val isShowTopAppBar: Boolean = state?.destination?.route?.let {
@@ -259,6 +263,7 @@ fun MyApp(
                 SignUpScreen(navController)
             }
             profileGraph(navController, tokenManager)
+            menuGraph(navController, menuCartViewModel)
             menuGraph(navController)
             composable<SharingRoute> {
                 ScreenSharing()

@@ -20,7 +20,7 @@ data class OptionPostRequest(
     val optionType: String,
     val optionName: String,
     val optionPrice: Int,
-    val optionValueGroup: List<OptionValueGroupResponse>
+    val optionsValueGroup: List<OptionsValueGroupResponse>
 )
 
 data class MenuPatchRequest(
@@ -36,3 +36,18 @@ data class MenuPatchItemRequest(
     val menuPrice: Int?
 )
 
+data class PostOrderRequest(
+    val phoneNumber: String,
+    val menuList: List<OrderMenuItem>
+)
+
+data class OrderMenuItem(
+    val menuId: Long,
+    val menuCount: Int,
+    val optionList: List<OrderOptionItem>
+)
+
+data class OrderOptionItem(
+    val optionValueId: Long,
+    val optionCount: Int
+)

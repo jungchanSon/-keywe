@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,8 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultModalBottomSheet
-import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -44,21 +44,38 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OptionChangeBottomSheet(
-    cartItem: CartItem, viewModel: OrderViewModel, onDismiss: () -> Unit
+    cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewModel, onDismiss: () -> Unit
 ) {
+
+    val menu by viewModel.selectedDetailMenu.collectAsState()
+
+    // 데이터 가져오기
+    LaunchedEffect(cartItem.menuId) {
+        viewModel.fetchMenuDetailById(cartItem.menuId)
+    }
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val selectedSize = remember { mutableStateOf(cartItem.size) }
     val selectedTemperature = remember { mutableStateOf(cartItem.temperature) }
-    val options = remember { viewModel.getExtraOptions() }
     val extraOptions =
         remember { mutableStateMapOf<String, Int>().apply { putAll(cartItem.extraOptions) } }
 
+    val commonOptionList = menu?.options?.filter { it.optionType == "Common" } ?: emptyList()
+    val sizeOptions = commonOptionList.find { it.optionName.equals("size", ignoreCase = true) }
+    val temperatureOptions = commonOptionList.find { it.optionName.contains("temp", ignoreCase = true) }
+    val sizeValues = sizeOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Tall", "Grande", "Venti")
+    val temperatureValues = temperatureOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Hot", "Ice")
+
+    val extraOptionList = menu?.options?.filter { it.optionType == "Extra" } ?: emptyList()
+
     val totalPrice = remember {
         derivedStateOf {
-            val menuPrice = viewModel.getMenuDataById(cartItem.menuId)?.menuPrice ?: 0
+            val menuPrice = menu?.menuPrice ?: 0
             val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
             val extraOptionPrice = extraOptions.entries.sumOf { (name, count) ->
-                val optionPrice = options.find { it.name == name }?.price ?: 0
+                val optionPrice = extraOptionList.find {
+                    it.optionsValueGroup.firstOrNull()?.optionValue == name
+                }?.optionPrice ?: 0
                 optionPrice * count
             }
             menuPrice + sizePrice + extraOptionPrice
@@ -107,12 +124,12 @@ fun OptionChangeBottomSheet(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         MenuDetailCommonOptionRow(
-                            listOf("Tall", "Grande", "Venti"),
+                            sizeValues,
                             selectedSize.value,
                             onSelect = { selectedSize.value = it }
                         )
                         MenuDetailCommonOptionRow(
-                            listOf("Hot", "Ice"),
+                            temperatureValues,
                             selectedTemperature.value,
                             onSelect = { selectedTemperature.value = it }
                         )
@@ -129,14 +146,16 @@ fun OptionChangeBottomSheet(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        options.forEach { option ->
-                            OptionBox(name = option.name,
-                                optionPrice = option.price,
+                        extraOptionList.forEach { option ->
+                            val optionName = option.optionsValueGroup.firstOrNull()?.optionValue ?: option.optionName
+                            OptionBox(
+                                name = optionName,
+                                optionPrice = option.optionPrice,
                                 extraOptions = extraOptions,
                                 onOptionSelected = { name, count, _ ->
-                                    if (count == 0) extraOptions.remove(name) else extraOptions[name] =
-                                        count
-                                })
+                                    if (count == 0) extraOptions.remove(name) else extraOptions[name] = count
+                                }
+                            )
                         }
                     }
                 }

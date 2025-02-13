@@ -7,18 +7,19 @@ data class MenuModel(
     val menuDescription: String,
     val menuRecipe: String,
     val menuPrice: Int,
-    val imageBase64: String? = null,
+    val image: String? = null,
     val options: List<OptionsModel>
 )
 
 data class OptionsModel(
+    val optionId: Long,
     val optionName: String,
     val optionType: String,
     val optionPrice: Int,
-    val optionValueGroup: List<OptionValueGroupModel>
+    val optionsValueGroup: List<OptionsValueGroupModel>
 )
 
-data class OptionValueGroupModel(
+data class OptionsValueGroupModel(
     val optionValueId: Long,
     val optionValue: String
 )
@@ -37,7 +38,7 @@ data class MenuDetailModel(
     val menuDescription: String,
     val menuRecipe: String,
     val menuPrice: Int,
-    val imageUrl: String? = null,
+    val image: String? = null,
     val options: List<OptionsModel>
 )
 
@@ -53,5 +54,25 @@ data class OptionPostModel(
     val optionType: String,
     val optionName: String,
     val optionPrice: Int,
-    val optionValueGroup: List<OptionValueGroupModel>
+    val optionsValueGroup: List<OptionsValueGroupModel>
+)
+
+data class OrderModel(
+    val phoneNumber: String,
+    val menuList: List<OrderMenuItemModel>
+)
+
+data class OrderMenuItemModel(
+    val menuId: Long,
+    val menuCount: Int,
+    val optionList: List<OrderOptionItemModel>
+)
+
+data class OrderOptionItemModel(
+    val optionValueId: Long,
+    val optionCount: Int
+)
+
+data class OrderResponseModel(
+    val orderId: String
 )

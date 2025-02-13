@@ -16,10 +16,10 @@ data class OptionsResponse(
     val optionType: String,
     val optionName: String,
     val optionPrice: Int,
-    val optionValueGroup: List<OptionValueGroupResponse>
+    val optionsValueGroup: List<OptionsValueGroupResponse>
 )
 
-data class OptionValueGroupResponse(
+data class OptionsValueGroupResponse(
     val optionValueId: Long,
     val optionValue: String
 )
@@ -48,4 +48,8 @@ data class MenuOptionResponse(
     val menuName: String,
     val menuPrice: Int,
     val options: List<OptionsResponse>
+)
+
+data class PostOrderResponse(
+    val orderId: String
 )

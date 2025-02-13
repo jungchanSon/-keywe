@@ -75,3 +75,41 @@ fun MenuCartDeleteDialog(
         }
     }
 }
+
+@Composable
+fun MenuCartFinishDialog(
+    title: String,
+    description: String,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    Dialog(onDismissRequest = { onCancel() }) {
+        Surface(
+            modifier = Modifier
+                .width(280.dp) // 다이얼로그 크기 조절
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp)) // 둥근 모서리 적용
+                .background(Color.White),
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = title, style = h6sb)
+                Text(text = description, style = subtitle1)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    BottomButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        content = "확인",
+                        onClick = onConfirm
+                    )
+                }
+            }
+        }
+    }
+}

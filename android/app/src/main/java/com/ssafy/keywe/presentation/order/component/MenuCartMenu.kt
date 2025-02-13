@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,8 +29,8 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
-import com.ssafy.keywe.presentation.order.viewmodel.CartItem
-import com.ssafy.keywe.presentation.order.viewmodel.OrderViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
@@ -38,8 +39,8 @@ import com.ssafy.keywe.ui.theme.subtitle2
 
 @Composable
 fun MenuCartMenuBox(
-    cartItem: CartItem,
-    viewModel: OrderViewModel,
+    cartItem: MenuCartViewModel.CartItem,
+    viewModel: MenuCartViewModel,
 ) {
     Box {
         Column {
@@ -74,7 +75,7 @@ fun MenuCartMenuBox(
 }
 
 @Composable
-fun MenuCartMenu(cartItem: CartItem, viewModel: OrderViewModel) {
+fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewModel) {
     val cartItems by viewModel.cartItems.collectAsState()
     val updatedCartItem = cartItems.find { it.id == cartItem.id }
     val quantity = updatedCartItem?.quantity ?: cartItem.quantity
@@ -83,8 +84,15 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: OrderViewModel) {
     val name = cartItem.name
     val price = cartItem.price
     val size = cartItem.size
+    val image = cartItem.image?: ""
     val temperature = cartItem.temperature
     val extraOptions = cartItem.extraOptions
+
+    val menu by viewModel.selectedDetailMenu.collectAsState()
+
+    LaunchedEffect(cartItem.menuId) {
+        viewModel.fetchMenuDetailById(cartItem.menuId)
+    }
 
     Box(
         modifier = Modifier
@@ -97,15 +105,17 @@ fun MenuCartMenu(cartItem: CartItem, viewModel: OrderViewModel) {
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(model = cartItem.imageURL),
-                contentDescription = "Menu Image",
-                modifier = Modifier
-                    .height(60.dp)
-                    .width(60.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.FillHeight
-            )
+            val modifierCartImage = Modifier.height(60.dp).width(60.dp).clip(CircleShape)
+//            Image(
+//                painter = rememberAsyncImagePainter(model = cartItem.image),
+//                contentDescription = "Menu Image",
+//                modifier = Modifier
+//                    .height(60.dp)
+//                    .width(60.dp)
+//                    .clip(CircleShape),
+//                contentScale = ContentScale.FillHeight
+//            )
+            Base64Image(modifier = modifierCartImage, image)
 
             Box(
                 modifier = Modifier
