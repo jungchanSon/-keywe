@@ -11,5 +11,7 @@ include(
         "common",
         "common-token",
         "common-http",
-        "swagger"
+        "swagger",
+        "infra-logging",
+        "infra-kafka"
 )
