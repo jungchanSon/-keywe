@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -107,11 +108,7 @@ public class RemoteOrderService {
                 operations.opsForValue().set(key, session);
 
                 // 트랜잭션 실행
-                if (operations.exec() != null) {  // 성공하면 업데이트된 세션 반환
-                    return session;
-                } else {  // 실패하면 null 반환
-                    return null;
-                }
+                return !CollectionUtils.isEmpty(operations.exec()) ? session : null;
             }
         });
     }
