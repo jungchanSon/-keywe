@@ -32,7 +32,7 @@ public class RemoteOrderService {
 
     private static final Duration SESSION_TIMEOUT = Duration.ofSeconds(30);
 
-    public String createSession(String userId, String familyId, String storeId) {
+    public String saveSession(String userId, String familyId, String storeId) {
         if (!userClient.verifyParentRole(userId)) {
             throw new ChildRemoteOrderForbiddenException();
         }

@@ -34,7 +34,7 @@ public class RemoteOrderHandler {
     ) {
         String userId = (String) sessionAttributes.get("userId");
         String familyId = (String) sessionAttributes.get("familyId");
-        String sessionId = remoteOrderService.createSession(userId, familyId, requestMessage.storeId());
+        String sessionId = remoteOrderService.saveSession(userId, familyId, requestMessage.storeId());
 
         // 키오스크에게 sessionId 전달
         RemoteOrderResponse responseMessage = RemoteOrderResponse.success(
