@@ -19,7 +19,7 @@ public interface PushTokenRepository extends Repository<PushToken, Integer> {
 
     List<PushToken> findByProfileId(Long profileId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM PushToken pt WHERE pt IN :pushTokens")
     void deletePushTokensInBatch(List<PushToken> pushTokens);
 }
