@@ -1,6 +1,7 @@
 package com.kiosk.server.domain;
 
 import com.kiosk.server.common.util.IdUtil;
+import com.kiosk.server.common.exception.UnauthorizedProfileAccessException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -49,5 +50,11 @@ public class PushToken {
         this.profileId = profileId;
         this.deviceId = deviceId;
         this.token = token;
+    }
+
+    public void verifyProfileAccess(Long requestedProfileId) {
+        if (!this.profileId.equals(requestedProfileId)) {
+            throw new UnauthorizedProfileAccessException(requestedProfileId, this.profileId);
+        }
     }
 }

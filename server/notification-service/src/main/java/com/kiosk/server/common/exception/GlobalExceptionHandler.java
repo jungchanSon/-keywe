@@ -14,6 +14,12 @@ import java.io.StringWriter;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UnauthorizedProfileAccessException.class)
+    public ResponseEntity<ErrorResponse> handleException(UnauthorizedProfileAccessException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
     @ExceptionHandler(PushNotificationDeliveryException.class)
     public ResponseEntity<ErrorResponse> handleException(PushNotificationDeliveryException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
