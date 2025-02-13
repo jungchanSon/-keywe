@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.auth
 
+import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.view.Surface
@@ -37,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.ssafy.keywe.common.HelperRoute
 import com.ssafy.keywe.common.Route
-import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -156,18 +156,7 @@ fun LoginScreen(
                 style = caption,
                 textDecoration = TextDecoration.Underline
             )
-            ScreenCaptureButton(context, surface.value, navController)
-//            BottomButton(content = "미디어 권한 요청", onClick = {
-//
-//            })
-//            BottomButton(content = "화면 공유", onClick = {
-//                context.startForegroundService(
-//                    Intent(context, MediaService::class.java)
-//                )
-//            })
-//            ScreenCaptureView { newSurface ->
-//                surface.value = newSurface
-//            }
+            ScreenCaptureButton(context, navController)
         }
     }
 
@@ -175,69 +164,55 @@ fun LoginScreen(
 
 
 @Composable
-fun ScreenCaptureButton(context: Context, surface: Surface?, navController: NavHostController) {
-//    val mediaProjectionManager = remember {
-//        context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-//    }
-//
-//    val launcher =
-//        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-//                // permission 성공 후 서비스 실행
-//                val serviceIntent = Intent(context, MediaService::class.java).apply {
-//                    putExtra("RESULT_CODE", result.resultCode)
-//                    putExtra("DATA", result.data)
-//                    putExtra("SURFACE", surface)
-//                }
-//                ContextCompat.startForegroundService(context, serviceIntent)
-//            }
-//        }
+fun ScreenCaptureButton(context: Context, navController: NavHostController) {
     val permissionLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions()) { grantedMap ->
             val allGranted = grantedMap.values.all { it }
             if (allGranted) {
                 // Permission is granted
                 Toast.makeText(context, "Permission Granted", Toast.LENGTH_LONG).show()
-//
-//                rtcEngine.startScreenCapture(screenCaptureParameters)
-//                val mediaOptions = ChannelMediaOptions()
-//                mediaOptions.channelProfile = Constants.CHANNEL_PROFILE_LIVE_BROADCASTING
-//                mediaOptions.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER
-//                mediaOptions.autoSubscribeAudio = true
-//                mediaOptions.autoSubscribeVideo = true
-//                mediaOptions.publishCameraTrack = false
-//                mediaOptions.publishMicrophoneTrack = false
-//                mediaOptions.publishScreenCaptureAudio = true
-//                mediaOptions.publishScreenCaptureVideo = true
-//                TokenUtils.gen(channelName, 0) {
-//                    rtcEngine.joinChannel(it, channelName, 0, mediaOptions)
-//                }
-                navController.navigate(SharingRoute)
+//                navController.navigate(SharingRoute)
+                navController.navigate(HelperRoute(false, "test"))
             } else {
                 // Permission is denied
                 Toast.makeText(context, "Permission Denied", Toast.LENGTH_LONG).show()
             }
         }
+
+
     Button(onClick = {
-//        val intent = mediaProjectionManager.createScreenCaptureIntent()
-//        launcher.launch(intent)
         permissionLauncher.launch(
-            arrayOf(
-                android.Manifest.permission.RECORD_AUDIO,
-                android.Manifest.permission.CAMERA,
-            )
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                arrayOf(
+                    Manifest.permission.RECORD_AUDIO,
+                )
+            } else {
+                arrayOf(
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                )
+            }
         )
     }) {
-        Text("화면 공유 시작")
+        Text("키위 요청")
     }
 
     Button(onClick = {
-//        val intent = mediaProjectionManager.createScreenCaptureIntent()
-//        launcher.launch(intent)
-        navController.navigate(HelperRoute(false, "test"))
+        permissionLauncher.launch(
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                arrayOf(
+                    Manifest.permission.RECORD_AUDIO,
+                )
+            } else {
+                arrayOf(
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                )
+            }
+        )
     }) {
         Text("채널 입장")
     }
-
-    BottomButton(content = "접근성 확인", onClick = {})
 }

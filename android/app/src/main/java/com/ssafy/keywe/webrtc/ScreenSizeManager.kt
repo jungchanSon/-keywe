@@ -17,9 +17,15 @@ class ScreenSizeManager @Inject constructor(
     var screenSize: ScreenSize = ScreenSize(MessageType.ScreenSize, 0f, 0f)
         private set
 
+    var statusBarHeightPx: Int = 0
+
 //    init {
 //        updateScreenSize()
 //    }
+
+    fun updateSystemSize(statusHeight: Int) {
+        statusBarHeightPx = statusHeight
+    }
 
     fun updateScreenSize(context: Context, density: Density) {
         val metrics = context.resources.displayMetrics
@@ -37,11 +43,11 @@ class ScreenSizeManager @Inject constructor(
 
         Log.d("Screen Size DP", "width: $width, height: $height")
 //        Log.d("Screen Size DP", "Float width: ${width.value}, height: ${height.value}")
-//        screenSize = ScreenSize(
-//            MessageType.ScreenSize, metrics.widthPixels.toFloat(), metrics.heightPixels.toFloat()
-//        )
         screenSize = ScreenSize(
-            MessageType.ScreenSize, width.value, height.value
+            MessageType.ScreenSize, metrics.widthPixels.toFloat(), metrics.heightPixels.toFloat()
         )
+//        screenSize = ScreenSize(
+//            MessageType.ScreenSize, width.value, height.value
+//        )
     }
 }

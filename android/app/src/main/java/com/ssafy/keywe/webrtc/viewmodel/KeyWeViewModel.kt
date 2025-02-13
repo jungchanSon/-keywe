@@ -15,7 +15,7 @@ import com.ssafy.keywe.webrtc.data.MessageData
 import com.ssafy.keywe.webrtc.data.MessageType
 import com.ssafy.keywe.webrtc.data.ScreenSize
 import com.ssafy.keywe.webrtc.data.Touch
-import com.ssafy.keywe.webrtc.ui.VideoStatsInfo
+import com.ssafy.keywe.webrtc.ui.AudioStatsInfo
 import com.ssafy.keywe.webrtc.utils.TokenUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.agora.api.example.compose.data.SettingPreferences
@@ -24,8 +24,6 @@ import io.agora.rtc2.Constants
 import io.agora.rtc2.IRtcEngineEventHandler
 import io.agora.rtc2.RtcEngine
 import io.agora.rtc2.RtcEngineConfig
-import io.agora.rtc2.ScreenCaptureParameters
-import io.agora.rtc2.video.VideoEncoderConfiguration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -50,14 +48,16 @@ class KeyWeViewModel @Inject constructor(
     private val _screenUid = MutableStateFlow<Int?>(null)
     val screenUid = _screenUid.asStateFlow()
 
-    private val _localStats = MutableStateFlow<VideoStatsInfo?>(VideoStatsInfo())
+    private val _localStats = MutableStateFlow<AudioStatsInfo?>(null)
     val localStats = _localStats.asStateFlow()
 
-    private val _remoteStats = MutableStateFlow<VideoStatsInfo?>(VideoStatsInfo())
+    private val _remoteStats = MutableStateFlow<AudioStatsInfo?>(null)
     val remoteStats = _remoteStats.asStateFlow()
 
-    private val _screenCaptureParameters = MutableStateFlow<ScreenCaptureParameters?>(null)
-    val screenCaptureParameters = _screenCaptureParameters.asStateFlow()
+    private val _audioRoute = MutableStateFlow<Int?>(Constants.AUDIO_ROUTE_EARPIECE)
+    val audioRoute = _audioRoute.asStateFlow()
+
+    private var _systemUiHeight = screenSizeManager.statusBarHeightPx
 
     private val applicationContext: Context = application.applicationContext
 
@@ -85,7 +85,6 @@ class KeyWeViewModel @Inject constructor(
         _localScreenSize = screenSizeManager.screenSize
 
         Log.d("ScreenSharing", "init ScreenSharing")
-        if (!_isKiosk) _screenCaptureParameters.update { ScreenCaptureParameters() }
 
         _rtcEngine.update {
             RtcEngine.create(RtcEngineConfig().apply {
@@ -93,14 +92,18 @@ class KeyWeViewModel @Inject constructor(
                 mContext = applicationContext
                 mAppId = BuildConfig.AGORA_APP_ID
                 mEventHandler = object : IRtcEngineEventHandler() {
+
+                    override fun onAudioRouteChanged(routing: Int) {
+                        _audioRoute.update {
+                            routing
+                        }
+                        super.onAudioRouteChanged(routing)
+                    }
+
+
                     override fun onJoinChannelSuccess(channel: String?, uid: Int, elapsed: Int) {
                         super.onJoinChannelSuccess(channel, uid, elapsed)
                         Log.d("ScreenSharing", "onJoinChannelSuccess: $uid")
-//                        isJoined = true
-//                        localUid = uid
-//                        if (isScreenPreview) {
-//                            screenUid = localUid
-//                        }
 
                         val streamId = _rtcEngine.value?.run {
                             val streamId = createDataStream(true, true)
@@ -108,17 +111,16 @@ class KeyWeViewModel @Inject constructor(
                             streamId
                         }
                         sendScreenSize(streamId, it)
+                        _localStats.update {
+                            AudioStatsInfo()
+                        }
                     }
 
                     override fun onLeaveChannel(stats: RtcStats?) {
                         super.onLeaveChannel(stats)
-//                        isJoined = false
-//                        localUid = 0
-//                        localStats = VideoStatsInfo()
-//                        remoteUid = 0
-//                        remoteStats = VideoStatsInfo()
-//                        screenUid = 0
                         _screenUid.update { null }
+                        _localStats.update { null }
+                        _remoteStats.update { null }
                     }
 
                     override fun onUserJoined(uid: Int, elapsed: Int) {
@@ -129,46 +131,27 @@ class KeyWeViewModel @Inject constructor(
                             _screenUid.update { uid }
                         }
                         sendScreenSize(_localDataStreamId.value, _rtcEngine.value)
-//                        _localDataStreamId.value?.also { id ->
-//                            Log.d("sendGesture", "send local Screen Size")
-//                            val jsonString = Json.encodeToString(_localScreenSize)
-//                            val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
-//                            it?.sendStreamMessage(id, messageBytes)
-//                        }
-//                        sendGesture()
-//                        remoteUid = uid
-//                        remoteStats = VideoStatsInfo()
+                        _remoteStats.update {
+                            AudioStatsInfo()
+                        }
                     }
 
                     override fun onUserOffline(uid: Int, reason: Int) {
                         super.onUserOffline(uid, reason)
                         Log.d("ScreenSharing", "onUserOffline: $uid")
-//                        if (remoteUid == uid) {
-//                            remoteUid = 0
-//                            remoteStats = VideoStatsInfo()
-//                        }
                         _screenUid.update { null }
                         _remoteScreenSize = null
+                        _remoteStats.update { null }
                     }
 
-                    override fun onRtcStats(stats: RtcStats?) {
-                        super.onRtcStats(stats)
-//                        Log.d("ScreenSharing", "onRtcStats: $stats")
-                        _localStats.update {
-                            it?.copy(rtcStats = stats)
-                        }
-                    }
+//                    override fun onRtcStats(stats: RtcStats?) {
+//                        super.onRtcStats(stats)
+////                        Log.d("ScreenSharing", "onRtcStats: $stats")
+//                        _localStats.update {
+//                            it?.copy(rtcStats = stats)
+//                        }
+//                    }
 
-                    override fun onLocalVideoStats(
-                        source: Constants.VideoSourceType?,
-                        stats: LocalVideoStats?,
-                    ) {
-                        super.onLocalVideoStats(source, stats)
-//                        Log.d("ScreenSharing", "onLocalVideoStats: $stats")
-                        _localStats.update {
-                            it?.copy(localVideoStats = stats)
-                        }
-                    }
 
                     override fun onLocalAudioStats(stats: LocalAudioStats?) {
                         super.onLocalAudioStats(stats)
@@ -178,42 +161,14 @@ class KeyWeViewModel @Inject constructor(
                         }
                     }
 
-                    override fun onRemoteVideoStats(stats: RemoteVideoStats?) {
-                        super.onRemoteVideoStats(stats)
-                        val uid = stats?.uid ?: return
-//                        Log.d("ScreenSharing", "onRemoteVideoStats: $stats")
-                        if (_isKiosk && _screenUid.value == uid) {
-                            _remoteStats.update {
-                                it?.copy(remoteVideoStats = stats)
-                            }
-                        }
-                    }
-
                     override fun onRemoteAudioStats(stats: RemoteAudioStats?) {
                         super.onRemoteAudioStats(stats)
                         val uid = stats?.uid ?: return
 //                        Log.d("ScreenSharing", "onRemoteAudioStats: $stats")
-                        if (_isKiosk && _screenUid.value == uid) {
-                            _remoteStats.update {
-                                it?.copy(remoteAudioStats = stats)
-                            }
+                        _remoteStats.update {
+                            it?.copy(remoteAudioStats = stats)
                         }
-                    }
 
-                    override fun onLocalVideoStateChanged(
-                        source: Constants.VideoSourceType?,
-                        state: Int,
-                        reason: Int,
-                    ) {
-                        super.onLocalVideoStateChanged(source, state, reason)
-//                        Log.d("ScreenSharing", "onLocalVideoStateChanged: $source $state $reason")
-                        if (source == Constants.VideoSourceType.VIDEO_SOURCE_SCREEN_PRIMARY) {
-                            if (state == Constants.LOCAL_VIDEO_STREAM_STATE_CAPTURING) {
-//                                isScreenSharing = true
-                            } else if (state == Constants.LOCAL_VIDEO_STREAM_STATE_FAILED || state == Constants.LOCAL_VIDEO_STREAM_STATE_STOPPED) {
-//                                isScreenSharing = false
-                            }
-                        }
                     }
 
                     override fun onStreamMessage(uid: Int, streamId: Int, data: ByteArray) {
@@ -234,6 +189,11 @@ class KeyWeViewModel @Inject constructor(
                             try {
                                 // JSON 문자열을 MyData 객체로 역직렬화
                                 val gestureData = Json.decodeFromString<MessageData>(jsonString)
+                                Log.d(
+                                    "sendGesture",
+                                    "=======================메시지 수신 성공======================="
+                                )
+
                                 Log.d("sendGesture", "수신된 데이터: $uid $streamId $gestureData")
 
                                 // 받은 데이터를 기반으로 필요한 동작 수행
@@ -266,69 +226,27 @@ class KeyWeViewModel @Inject constructor(
 
                 }
             }).apply {
-                setVideoEncoderConfiguration(
-                    VideoEncoderConfiguration(
-                        SettingPreferences.getVideoDimensions(),
-                        SettingPreferences.getVideoFrameRate(),
-                        VideoEncoderConfiguration.STANDARD_BITRATE,
-                        SettingPreferences.getOrientationMode()
-                    )
-                )
-                enableVideo()
+                enableAudio()
+                setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION)
             }
         }
 
-    }
-
-    private fun sendScreenSize(streamId: Int?, it: RtcEngine?) {
-        streamId?.also { id ->
-//            val message = _localScreenSize?.toMessage()
-            val jsonString = json.encodeToString(_localScreenSize)
-            val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
-            Log.d("sendGesture", "send local Screen Size $jsonString")
-            it?.sendStreamMessage(id, messageBytes)
-        }
     }
 
 
     fun joinChannel(channelName: String) {
-        if (_isKiosk) {
-            _rtcEngine.value?.startScreenCapture(_screenCaptureParameters.value)
-            val mediaOptions = ChannelMediaOptions()
-            mediaOptions.channelProfile = Constants.CHANNEL_PROFILE_LIVE_BROADCASTING
-            mediaOptions.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER
-            mediaOptions.autoSubscribeAudio = true
-            mediaOptions.autoSubscribeVideo = true
-            mediaOptions.publishCameraTrack = false
-            mediaOptions.publishMicrophoneTrack = false
-            mediaOptions.publishScreenCaptureAudio = true
-            mediaOptions.publishScreenCaptureVideo = true
-            TokenUtils.gen(channelName, 0) {
-                _rtcEngine.value?.joinChannel(it, channelName, 0, mediaOptions)
-            }
-        } else {
-            val mediaOptions = ChannelMediaOptions()
-            mediaOptions.channelProfile = Constants.CHANNEL_PROFILE_LIVE_BROADCASTING
-            mediaOptions.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER
-            mediaOptions.autoSubscribeAudio = true
-            mediaOptions.autoSubscribeVideo = true
-            mediaOptions.publishCameraTrack = false
-            mediaOptions.publishMicrophoneTrack = false
-            mediaOptions.publishScreenCaptureAudio = true
-            mediaOptions.publishScreenCaptureVideo = true
-            TokenUtils.gen(channelName, 0) {
-                _rtcEngine.value?.joinChannel(it, channelName, 0, mediaOptions)
-            }
+        val mediaOptions = ChannelMediaOptions()
+        mediaOptions.publishCameraTrack = false
+        mediaOptions.publishMicrophoneTrack = true
+        mediaOptions.autoSubscribeAudio = true
+        mediaOptions.autoSubscribeVideo = false
+        TokenUtils.gen(channelName, 0) {
+            _rtcEngine.value?.joinChannel(it, channelName, 0, mediaOptions)
         }
-
     }
 
     fun exit() {
-        _rtcEngine.value?.let {
-            it.stopScreenCapture()
-            it.stopPreview(Constants.VideoSourceType.VIDEO_SOURCE_SCREEN_PRIMARY)
-            it.leaveChannel()
-        }
+        _rtcEngine.value?.leaveChannel()
         RtcEngine.destroy()
     }
 
@@ -347,14 +265,25 @@ class KeyWeViewModel @Inject constructor(
         if (result != 0) {
             Log.e("sendGesture", "메시지 전송 실패: $result")
         } else {
-            Log.d("sendGesture", "메시지 전송 성공")
+            Log.d("sendGesture", "=======================메시지 전송 성공=======================")
         }
     }
+
+    private fun sendScreenSize(streamId: Int?, it: RtcEngine?) {
+        streamId?.also { id ->
+//            val message = _localScreenSize?.toMessage()
+            val jsonString = json.encodeToString(_localScreenSize)
+            val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
+            Log.d("sendGesture", "send local Screen Size $jsonString")
+            it?.sendStreamMessage(id, messageBytes)
+        }
+    }
+
 
     private fun handleRemoteControl(gestureData: MessageData) {
         // 상대방에서 터치한 offset 수신
         val convertOffset = _localScreenSize!!.convertGestureToAnotherScreen(
-            _remoteScreenSize!!, Offset(gestureData.x, gestureData.y)
+            _remoteScreenSize!!, Offset(gestureData.x, gestureData.y + _systemUiHeight)
         )
         val intent = Intent(applicationContext, RemoteControlService::class.java)
         when (gestureData) {
@@ -367,10 +296,10 @@ class KeyWeViewModel @Inject constructor(
 
 //        ScreenRatioUtil.dpToPixel(convertOffset.x)
 
-
+//        intent.putExtra("x", gestureData.x)
+//        intent.putExtra("y", gestureData.y)
         intent.putExtra("x", convertOffset.x)
         intent.putExtra("y", convertOffset.y)
         applicationContext.startService(intent)
     }
-
 }

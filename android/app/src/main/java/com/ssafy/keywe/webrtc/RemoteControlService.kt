@@ -101,7 +101,7 @@ class RemoteControlService : AccessibilityService() {
     }
 
     private fun click(x: Float, y: Float, startTime: Long = 100, duration: Long = 100) {
-        Log.d("RemoteControlService", "CLICK")
+        Log.d("RemoteControlService", "CLICK x: $x, y: $y")
         val gestureBuilder = GestureDescription.Builder()
         val path = Path()
         path.moveTo(x, y)

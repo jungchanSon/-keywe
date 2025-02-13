@@ -30,7 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.ssafy.keywe.common.app.BottomButton
-import com.ssafy.keywe.util.ScreenRatioUtil
 import com.ssafy.keywe.webrtc.data.Drag
 import com.ssafy.keywe.webrtc.data.MessageType
 import com.ssafy.keywe.webrtc.data.Touch
@@ -79,7 +78,12 @@ fun HelperScreen(
     viewModel: KeyWeViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+
+
     LaunchedEffect(Unit) {
+        // todo 채널 입장 전 permission 요청
+
+
         viewModel.joinChannel(channelName)
     }
 
@@ -112,14 +116,14 @@ fun HelperScreen(
     Scaffold(modifier = Modifier.pointerInteropFilter { motionEvent ->
         when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> {
-                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
-                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
+//                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
+//                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
 
-//                Log.d("sendGesture", "x DP = ${motionEvent.x.dp} y DP = ${motionEvent.y.dp}")
-                Log.d("sendGesture", "x DP = ${x} y DP = ${y}")
+                Log.d("sendGesture", "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}")
+//                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
                 viewModel.sendClickGesture(
                     Touch(
-                        MessageType.Touch, x, y,
+                        MessageType.Touch, motionEvent.x, motionEvent.y,
                     )
                 )
                 println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")

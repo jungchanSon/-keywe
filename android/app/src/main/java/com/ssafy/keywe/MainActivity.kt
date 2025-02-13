@@ -15,8 +15,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -27,8 +30,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,6 +78,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.HelperScreen
 import com.ssafy.keywe.webrtc.ScreenSharing
 import com.ssafy.keywe.webrtc.ScreenSizeManager
+import com.ssafy.keywe.webrtc.data.ScreenSize
 import com.ssafy.keywe.webrtc.screen.WaitingRoomScreen
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -99,12 +105,46 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+//        val windowMetrics = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            windowManager.currentWindowMetrics
+//        } else {
+//            TODO("VERSION.SDK_INT < R")
+//        }
+//        val fullWidthPx = windowMetrics.bounds.width()
+//        val fullHeightPx = windowMetrics.bounds.height()
+//
+//        Log.d("ScreenSize", "전체 화면 크기 (시스템 UI 포함) : $fullWidthPx x $fullHeightPx")
+
+
         Timber.plant(Timber.DebugTree())
         retrieveFCMToken()
         val splashscreen = installSplashScreen()
         enableEdgeToEdge()
         setContent {
+
+            val configuration = LocalConfiguration.current
             val density = LocalDensity.current
+
+            val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx().toInt() }
+            val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx().toInt() }
+            Log.d("ScreenSize", "전체 화면 크기 (시스템 UI 포함) : $screenWidthPx x $screenHeightPx")
+
+
+            val systemBarsInsets = WindowInsets.systemBars // 상태 바 + 네비게이션 바
+            val imeInsets = WindowInsets.ime // 키보드 (IME) 높이
+
+            val statusBarHeightPx = with(density) { systemBarsInsets.getTop(density) }
+            val navBarHeightPx = with(density) { systemBarsInsets.getBottom(density) }
+            val imeHeightPx = with(density) { imeInsets.getBottom(density) }
+
+            val usableHeightPx = screenHeightPx - statusBarHeightPx - navBarHeightPx
+            
+            screenSizeManager.updateSystemSize(statusBarHeightPx)
+
+            Log.d("ScreenSize", "navBarHeightPx: $statusBarHeightPx x $navBarHeightPx")
+            Log.d("ScreenSize", "전체 화면 크기 (시스템 UI 제외) : $screenWidthPx x $usableHeightPx")
+
 
             // todo FCM device ID 추가
             val deviceId =

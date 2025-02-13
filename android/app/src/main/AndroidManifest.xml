@@ -88,11 +88,10 @@
         </service>
 
 
-        <!--        <service-->
-        <!--            android:name=".data.webrtc.MediaService"-->
-        <!--            android:exported="false"-->
-        <!--            android:foregroundServiceType="mediaProjection">-->
-        <!--        </service>-->
+        <service
+            android:name=".data.webrtc.MediaService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection"></service>
 
         <service
             android:name=".data.websocket.SignalService"
