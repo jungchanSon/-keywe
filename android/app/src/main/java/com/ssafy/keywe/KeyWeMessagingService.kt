@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
@@ -14,7 +13,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.core.app.NotificationCompat
-import com.google.firebase.messaging.Constants
 import com.google.firebase.messaging.Constants.MessageNotificationKeys
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -44,7 +42,6 @@ class KeyWeMessagingService : FirebaseMessagingService() {
             val body = remoteMessage.notification?.body ?: "No Body"
 //            val count = remoteMessage.data["count"]?.toIntOrNull() ?: 0
             if (storeId != null && kioskUserId != null && sessionId != null) {
-                Log.d("FCM notification", "send Message")
                 sendNotification(
                     FCMNotificationModel(
                         title, body, NotificationData(storeId, kioskUserId, sessionId)
@@ -55,10 +52,6 @@ class KeyWeMessagingService : FirebaseMessagingService() {
 
         }
 
-//        val fcmMsg: FCMNotificationModel = parseFCMMsg(bundle)
-//        remoteMessage.notification?.let { message ->
-//            sendNotification(fcmMsg)
-//        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -112,106 +105,22 @@ class KeyWeMessagingService : FirebaseMessagingService() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @OptIn(ExperimentalMaterialApi::class)
     override fun handleIntent(intent: Intent) {
         //add a log, and you'll see the method will be triggered all the time (both foreground and background).
         Log.d("FCM", "handleIntent")
 
         //if you don't know the format of your FCM message,
         //just print it out, and you'll know how to parse it
-        val bundle = intent.extras
-
 
         val new = intent?.apply {
             val temp = extras?.apply {
-                remove(Constants.MessageNotificationKeys.ENABLE_NOTIFICATION)
-                remove(keyWithOldPrefix(Constants.MessageNotificationKeys.ENABLE_NOTIFICATION))
+                remove(MessageNotificationKeys.ENABLE_NOTIFICATION)
+                remove(keyWithOldPrefix(MessageNotificationKeys.ENABLE_NOTIFICATION))
             }
             replaceExtras(temp)
         }
         super.handleIntent(new)
 
-        //the background notification is created by super method
-        //but you can't remove the super method.
-        //the super method do other things, not just creating the notification
-//        super.handleIntent(intent)
-
-//        //remove the Notificaitons
-//        removeFirebaseOrigianlNotificaitons()
-//
-//        if (bundle == null) return
-//
-//        //pares the message
-//        val fcmMsg: FCMNotificationModel = parseFCMMsg(bundle)
-//
-//        //if you want take the data to Activity, set it
-//
-//        sendNotification(fcmMsg)
-    }
-
-
-    /**
-     * parse the message which is from FCM
-     * @param bundle
-     */
-    private fun parseFCMMsg(bundle: Bundle): FCMNotificationModel {
-        var title: String = "키위 요청"
-        var body: String? = null
-
-        //if the message is sent from Firebase platform, the key will be that
-        body = bundle["gcm.notification.body"] as String? ?: "대리주문 요청이 왔습니다."
-
-        if (bundle.containsKey("gcm.notification.title")) title =
-            bundle["gcm.notification.title"] as String ?: "키위 요청"
-
-        // 알림 내용 확인용
-//        if (bundle != null) {
-//            for (key in bundle.keySet()) {
-//                val value = bundle[key]
-//                Log.d("FCM", "Key: $key Value: $value")
-//            }
-//        }
-        val storeId = bundle["storeId"] as String
-        val kioskUserId = bundle["kioskUserId"] as String
-        val sessionId = bundle["sessionId"] as String
-
-
-        //package them into a object(CloudMsg is your own structure), it is easy to send to Activity.
-        return FCMNotificationModel(title, body, NotificationData(storeId, kioskUserId, sessionId))
-    }
-
-
-    /**
-     * remove the notification created by "super.handleIntent(intent)"
-     */
-    private fun removeFirebaseOrigianlNotificaitons() {
-        //check notificationManager is available
-
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager ?: return
-
-        //check api level for getActiveNotifications()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            //if your Build version is less than android 6.0
-            //we can remove all notifications instead.
-            notificationManager.cancelAll();
-            return
-        }
-
-        //check there are notifications
-        val activeNotifications = notificationManager.activeNotifications ?: return
-
-        //remove all notification created by library(super.handleIntent(intent))
-        for (tmp in activeNotifications) {
-            Log.d(
-                "FCM StatusBarNotification", "tag/id: " + tmp.tag + " / " + tmp.id
-            )
-            val tag = tmp.tag
-            val id = tmp.id
-
-            //trace the library source code, follow the rule to remove it.
-            if (tag != null && tag.contains("FCM-Notification")) notificationManager.cancel(tag, id)
-        }
     }
 
 
