@@ -59,8 +59,8 @@ public class UpdateMenuServiceImpl implements UpdateMenuService {
 
         // 메뉴 업데이트 실행
         menuRepository.update(updateParams);
-        log.info("메뉴 업데이트 완료 - userId={}, menuId={}, newCategoryId={}, newPrice={}",
-                userId, menuId, updateMenu.menuCategoryId(), menuPrice);
+        log.info("메뉴 업데이트 완료 - userId={}, menuId={}, menuName={}, newCategoryId={}, newPrice={}",
+                userId, menuId, updateMenu.menuName(), updateMenu.menuCategoryId(), menuPrice);
 
         // 이미지 존재하면 이미지 저장
         if (image != null && !image.isEmpty()) {
