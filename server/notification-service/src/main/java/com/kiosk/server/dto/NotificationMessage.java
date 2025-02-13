@@ -9,7 +9,7 @@ public record NotificationMessage(
     String channelId,
     Map<String, String> data,
     MessagePriority priority,
-    Integer timeToLive
+    Integer timeToLive // 단위: 초
 ) {
     public enum MessagePriority {
         HIGH, NORMAL
