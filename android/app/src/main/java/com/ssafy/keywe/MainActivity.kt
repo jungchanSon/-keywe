@@ -165,12 +165,10 @@ class MainActivity : ComponentActivity() {
         Log.d("FCM notification", "onNewIntent $notification")
         notification?.let {
             lifecycleScope.launch {
-                Log.d("FCM notification", "onNewIntent2")
                 while (NavControllerHolder.navController == null) {
                     Log.d("push notification", "not logged in, waiting...")
                     delay(500)
                 }
-                Log.d("FCM notification", "onNewIntent3")
                 NavControllerHolder.navController!!.navigate(
                     WaitingRoomRoute(
                         it.storeId, it.kioskUserId, it.sessionId
@@ -178,8 +176,6 @@ class MainActivity : ComponentActivity() {
                 )
                 return@launch
             }
-            Log.d("FCM notification", "onNewIntent4")
-
             return
         }
     }

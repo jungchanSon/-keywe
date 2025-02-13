@@ -14,6 +14,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.core.app.NotificationCompat
+import com.google.firebase.messaging.Constants
+import com.google.firebase.messaging.Constants.MessageNotificationKeys
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.ssafy.keywe.domain.fcm.FCMNotificationModel
@@ -27,27 +29,35 @@ class KeyWeMessagingService : FirebaseMessagingService() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d("FCM notification", "${remoteMessage.notification?.title}")
-        Log.d("FCM notification", "${remoteMessage.notification?.body}")
-        Log.d("FCM notification", "${remoteMessage.data}")
+        Log.d("FCM notification", "onMessageReceived: ${remoteMessage.notification?.title}")
+        Log.d("FCM notification", "onMessageReceived: ${remoteMessage.notification?.body}")
+        Log.d("FCM notification", "onMessageReceived: ${remoteMessage.data}")
 
 
-//        if (remoteMessage.data.isNotEmpty()) {
-//            val storeId = remoteMessage.data["storeId"]
-//            val kioskUserId = remoteMessage.data["kioskUserId"]
-//            val sessionId = remoteMessage.data["sessionId"]
-//            Log.d(remoteMessage.data.toString(), "Message data payload: ${remoteMessage.data}")
-//
-//            val title = remoteMessage.notification?.title ?: "No Title"
-//            val body = remoteMessage.notification?.body ?: "No Body"
-////            val count = remoteMessage.data["count"]?.toIntOrNull() ?: 0
-//            if (storeId != null && kioskUserId != null && sessionId != null) sendNotification(
-//                title, body, FCMNotificationModel(storeId, kioskUserId, sessionId)
-//            )
-//        }
+        if (remoteMessage.data.isNotEmpty()) {
+            val storeId = remoteMessage.data["storeId"]
+            val kioskUserId = remoteMessage.data["kioskUserId"]
+            val sessionId = remoteMessage.data["sessionId"]
+            Log.d(remoteMessage.data.toString(), "Message data payload: ${remoteMessage.data}")
 
+            val title = remoteMessage.notification?.title ?: "No Title"
+            val body = remoteMessage.notification?.body ?: "No Body"
+//            val count = remoteMessage.data["count"]?.toIntOrNull() ?: 0
+            if (storeId != null && kioskUserId != null && sessionId != null) {
+                Log.d("FCM notification", "send Message")
+                sendNotification(
+                    FCMNotificationModel(
+                        title, body, NotificationData(storeId, kioskUserId, sessionId)
+                    )
+                )
+            }
+
+
+        }
+
+//        val fcmMsg: FCMNotificationModel = parseFCMMsg(bundle)
 //        remoteMessage.notification?.let { message ->
-//            sendNotification(message, 1)
+//            sendNotification(fcmMsg)
 //        }
     }
 
@@ -84,6 +94,23 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         manager.notify(notificationId, builder.build())
     }
 
+    fun isNotification(data: Bundle): Boolean {
+        return "1" == data.getString(MessageNotificationKeys.ENABLE_NOTIFICATION) || ("1" == data.getString(
+            keyWithOldPrefix(MessageNotificationKeys.ENABLE_NOTIFICATION)
+        ))
+    }
+
+    private fun keyWithOldPrefix(key: String): String {
+        if (!key.startsWith(MessageNotificationKeys.NOTIFICATION_PREFIX)) {
+            return key
+        }
+
+        return key.replace(
+            MessageNotificationKeys.NOTIFICATION_PREFIX,
+            MessageNotificationKeys.NOTIFICATION_PREFIX_OLD
+        )
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalMaterialApi::class)
     override fun handleIntent(intent: Intent) {
@@ -95,22 +122,31 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         val bundle = intent.extras
 
 
+        val new = intent?.apply {
+            val temp = extras?.apply {
+                remove(Constants.MessageNotificationKeys.ENABLE_NOTIFICATION)
+                remove(keyWithOldPrefix(Constants.MessageNotificationKeys.ENABLE_NOTIFICATION))
+            }
+            replaceExtras(temp)
+        }
+        super.handleIntent(new)
+
         //the background notification is created by super method
         //but you can't remove the super method.
         //the super method do other things, not just creating the notification
-        super.handleIntent(intent)
+//        super.handleIntent(intent)
 
-        //remove the Notificaitons
-        removeFirebaseOrigianlNotificaitons()
-
-        if (bundle == null) return
-
-        //pares the message
-        val fcmMsg: FCMNotificationModel = parseFCMMsg(bundle)
-
-        //if you want take the data to Activity, set it
-
-        sendNotification(fcmMsg)
+//        //remove the Notificaitons
+//        removeFirebaseOrigianlNotificaitons()
+//
+//        if (bundle == null) return
+//
+//        //pares the message
+//        val fcmMsg: FCMNotificationModel = parseFCMMsg(bundle)
+//
+//        //if you want take the data to Activity, set it
+//
+//        sendNotification(fcmMsg)
     }
 
 
@@ -128,12 +164,13 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         if (bundle.containsKey("gcm.notification.title")) title =
             bundle["gcm.notification.title"] as String ?: "키위 요청"
 
-        if (bundle != null) {
-            for (key in bundle.keySet()) {
-                val value = bundle[key]
-                Log.d("FCM", "Key: $key Value: $value")
-            }
-        }
+        // 알림 내용 확인용
+//        if (bundle != null) {
+//            for (key in bundle.keySet()) {
+//                val value = bundle[key]
+//                Log.d("FCM", "Key: $key Value: $value")
+//            }
+//        }
         val storeId = bundle["storeId"] as String
         val kioskUserId = bundle["kioskUserId"] as String
         val sessionId = bundle["sessionId"] as String
@@ -157,7 +194,7 @@ class KeyWeMessagingService : FirebaseMessagingService() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             //if your Build version is less than android 6.0
             //we can remove all notifications instead.
-            //notificationManager.cancelAll();
+            notificationManager.cancelAll();
             return
         }
 
