@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-user-configmap
+  labels:
+    task: logging
+    k8s-app: logstash
+data:
+  log_user.conf: |
+    input {
+      kafka {
+        bootstrap_servers => "kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
+        topics => ["log-user"]
+        consumer_threads => 1
+        decorate_events => true
+      }
+    }
+
+    filter {
+      json {
+        source => "message"
+      }
+
+      mutate {
+        rename => { "timestamp" => "log_timestamp" }
+      }
+
+      date {
+        match => ["log_timestamp", "ISO8601"]
+        target => "@timestamp"
+        remove_field => ["log_timestamp"]
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch:9200"]
+        user => "${ELASTIC_USERNAME}"
+        password => "${ELASTIC_PASSWORD}"
+        index => "logs-user-%{+YYYY.MM.dd}"
+        action => "create"
+      }
+    }
