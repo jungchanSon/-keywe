@@ -27,6 +27,7 @@ import com.ssafy.keywe.presentation.profile.EditMemberScreen
 import com.ssafy.keywe.presentation.profile.EmailVerification
 import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
+import com.ssafy.keywe.webrtc.screen.ConnectingScreen
 import com.ssafy.keywe.webrtc.screen.HelperWaitingRoomScreen
 import com.ssafy.keywe.webrtc.screen.ParentWaitingRoomScreen
 import kotlinx.serialization.Serializable
@@ -78,6 +79,9 @@ sealed interface Route {
 
         @Serializable
         data object ParentWaitingRoomRoute : Route
+
+        @Serializable
+        data object ConnectingScreenRoute : Route
     }
 
     @Serializable
@@ -204,6 +208,12 @@ fun NavGraphBuilder.menuGraph(
             val arg = it.toRoute<Route.MenuBaseRoute.ParentWaitingRoomRoute>()
             ParentWaitingRoomScreen(
                 navController,
+            )
+        }
+
+        composable<Route.MenuBaseRoute.ConnectingScreenRoute> {
+            ConnectingScreen(
+                navController, menuCartViewModel, appBarViewModel
             )
         }
     }

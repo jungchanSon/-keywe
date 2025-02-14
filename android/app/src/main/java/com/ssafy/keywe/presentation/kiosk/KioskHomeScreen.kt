@@ -33,12 +33,12 @@ fun KioskHomeScreen(
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel,
 ) {
-    val systemUiController = rememberSystemUiController()
+//    val systemUiController = rememberSystemUiController()
 
     // 시스템 UI 숨기기
-    SideEffect {
-        systemUiController.isSystemBarsVisible = false
-    }
+//    SideEffect {
+//        systemUiController.isSystemBarsVisible = false
+//    }
 
     Column(
         modifier = Modifier
