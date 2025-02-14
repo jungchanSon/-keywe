@@ -2,7 +2,7 @@ package com.ssafy.keywe.data.profile
 
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.dto.mapper.toDomain
-import com.ssafy.keywe.data.dto.profile.GetProfileRequest
+//import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
 import com.ssafy.keywe.domain.profile.GetProfileDetailModel
@@ -39,8 +39,8 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getProfileDetail(getProfileRequest: GetProfileRequest): ResponseResult<GetProfileDetailModel> {
-        return when (val result = profileDataSource.requestGetProfileDetail(getProfileRequest)) {
+    override suspend fun getProfileDetail(profileId: Long): ResponseResult<GetProfileDetailModel> {
+        return when (val result = profileDataSource.requestGetProfileDetail(profileId)) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
             )

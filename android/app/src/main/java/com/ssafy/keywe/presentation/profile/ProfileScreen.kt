@@ -43,7 +43,7 @@ fun ProfileScreen(
 ) {
 //    val profileData by viewModel.profileData.collectAsStateWithLifecycle()
 
-    val profileData = viewModel.profileData.collectAsState()
+    val profileData = viewModel.profiledatailData.collectAsState()
 
     Scaffold(
         topBar = { DefaultAppBar(title = "프로필", navController = navController) },
@@ -134,12 +134,11 @@ fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         MenuButton(text = "본인정보", onClick = {})
-        MenuButton(text = "계정 관리", onClick = {
+        MenuButton(text = "프로필 수정", onClick = {
             navController.navigate(
                 Route.ProfileBaseRoute.ProfileChoiceRoute(false)
             )
         })
-        MenuButton(text = "도움말", onClick = {})
         MenuButton(text = "로그아웃", onClick = {
             scope.launch {
                 tokenManager.clearTokens()
