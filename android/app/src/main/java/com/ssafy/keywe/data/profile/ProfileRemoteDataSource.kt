@@ -1,10 +1,10 @@
 package com.ssafy.keywe.data.profile
 
+//import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.data.ApiResponseHandler.handleApiResponse
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileListResponse
-import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
 import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
@@ -19,9 +19,9 @@ class ProfileRemoteDataSource @Inject constructor(private val profileService: Pr
             profileService.getProfileList()
         }
 
-    override suspend fun requestGetProfileDetail(getProfileRequest: GetProfileRequest): ResponseResult<GetProfileDetailResponse> =
+    override suspend fun requestGetProfileDetail(profileId: Long): ResponseResult<GetProfileDetailResponse> =
         handleApiResponse {
-            profileService.getProfileDetail(getProfileRequest)
+            profileService.getProfileDetail(profileId)
         }
 
     override suspend fun requestPostProfile(postProfileRequest: PostProfileRequest): ResponseResult<PostProfileResponse> =

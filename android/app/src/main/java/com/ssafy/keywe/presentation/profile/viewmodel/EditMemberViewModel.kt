@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.datastore.ProfileDataStore
-import com.ssafy.keywe.data.dto.profile.GetProfileRequest
+//import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
 import com.ssafy.keywe.domain.profile.ProfileRepository
 import com.ssafy.keywe.presentation.profile.state.EditMemberState
@@ -110,7 +110,7 @@ class EditMemberViewModel @Inject constructor(
 //                return@launch
 //            } 프로필 아디이 사용할 경우
             ProfileIdManager.profileId.value?.let { profileId ->
-                when (val result = repository.getProfileDetail(GetProfileRequest(profileId))) {
+                when (val result = repository.getProfileDetail(profileId)) {
                     is ResponseResult.Success -> {
                         val profile = result.data
                         _state.update {

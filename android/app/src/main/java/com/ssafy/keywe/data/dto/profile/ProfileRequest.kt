@@ -11,10 +11,10 @@ import kotlinx.serialization.Serializable
 //)
 
 
-@Serializable
-data class GetProfileRequest(
-    @SerialName("profileId") val profileId: Long
-)
+//@Serializable
+//data class GetProfileRequest(
+//    @SerialName("profileId") val profileId: Long
+//)
 
 @Serializable
 data class PostProfileRequest(

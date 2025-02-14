@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
-import com.ssafy.keywe.data.dto.profile.GetProfileRequest
+//import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.domain.profile.GetProfileDetailModel
 import com.ssafy.keywe.domain.profile.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ class ProfileDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _profileData = MutableStateFlow<GetProfileDetailResponse?>(null)
-    val profileData = _profileData.asStateFlow()
+    val profiledatailData = _profileData.asStateFlow()
 
     private val _state = MutableStateFlow<GetProfileDetailModel?>(null)
     val state = _state.asStateFlow()
@@ -41,7 +41,7 @@ class ProfileDetailViewModel @Inject constructor(
             _error.value = null
 
             ProfileIdManager.profileId.value?.let { profileId ->
-                when (val result = repository.getProfileDetail(GetProfileRequest(profileId))) {
+                when (val result = repository.getProfileDetail(profileId)) {
                     is ResponseResult.Success -> {
                         _state.value = result.data
                     }
