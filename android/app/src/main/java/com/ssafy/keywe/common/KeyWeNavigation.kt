@@ -29,6 +29,7 @@ import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
 import com.ssafy.keywe.webrtc.screen.HelperWaitingRoomScreen
 import com.ssafy.keywe.webrtc.screen.ParentWaitingRoomScreen
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -160,6 +161,7 @@ fun NavGraphBuilder.menuGraph(
     navController: NavHostController,
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel,
+    keyWeViewModel: KeyWeViewModel,
 ) {
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
@@ -167,18 +169,29 @@ fun NavGraphBuilder.menuGraph(
         }
         composable<Route.MenuBaseRoute.MenuRoute> {
             val menuScreenViewModel: MenuViewModel = hiltViewModel()
-            MenuScreen(navController, menuScreenViewModel, menuCartViewModel, appBarViewModel)
+            MenuScreen(
+                navController,
+                menuScreenViewModel,
+                menuCartViewModel,
+                appBarViewModel,
+                keyWeViewModel
+            )
         }
         composable<Route.MenuBaseRoute.MenuDetailRoute> {
             val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
             val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
             Log.d("Detail Navigator", ":$arg.id")
             MenuDetailScreen(
-                navController, menuDetailViewModel, menuCartViewModel, appBarViewModel, arg.id
+                navController,
+                menuDetailViewModel,
+                menuCartViewModel,
+                appBarViewModel,
+                arg.id,
+                keyWeViewModel
             )
         }
         composable<Route.MenuBaseRoute.MenuCartRoute> {
-            MenuCartScreen(navController, menuCartViewModel, appBarViewModel)
+            MenuCartScreen(navController, menuCartViewModel, appBarViewModel, keyWeViewModel)
         }
         composable<Route.MenuBaseRoute.KioskPhoneNumberRoute> {
             val kioskViewModel: KioskViewModel = hiltViewModel()
@@ -196,14 +209,18 @@ fun NavGraphBuilder.menuGraph(
         composable<Route.MenuBaseRoute.HelperWaitingRoomRoute> {
             val arg = it.toRoute<Route.MenuBaseRoute.HelperWaitingRoomRoute>()
             HelperWaitingRoomScreen(
-                navController, arg.sessionId, arg.storeId, arg.kioskUserId
+                navController,
+                arg.sessionId,
+                arg.storeId,
+                arg.kioskUserId,
+                keyWeViewModel = keyWeViewModel
             )
         }
 
         composable<Route.MenuBaseRoute.ParentWaitingRoomRoute> {
             val arg = it.toRoute<Route.MenuBaseRoute.ParentWaitingRoomRoute>()
             ParentWaitingRoomScreen(
-                navController,
+                navController, keyWeViewModel = keyWeViewModel
             )
         }
     }

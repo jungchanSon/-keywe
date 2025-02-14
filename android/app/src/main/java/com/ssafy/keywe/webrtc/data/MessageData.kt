@@ -27,9 +27,15 @@ data class STOMPData(
     val sessionId: String?,
     val helperUserId: String?,
     val kioskUserId: String?,
-    val channelName: String?,
+    val channel: ChannelData?,
     val message: String?,
     val code: String?,
+)
+
+@Serializable
+data class ChannelData(
+    val name: String,
+    val token: String,
 )
 
 @Serializable

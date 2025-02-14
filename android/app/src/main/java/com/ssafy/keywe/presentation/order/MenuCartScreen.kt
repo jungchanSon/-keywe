@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -50,6 +51,8 @@ import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.screen.closeSTOMP
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 
 
 @SuppressLint("UnrememberedGetBackStackEntry")
@@ -57,7 +60,8 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 fun MenuCartScreen(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
-    appBarViewModel: OrderAppBarViewModel = hiltViewModel()
+    appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
+    keyWeViewModel: KeyWeViewModel,
 ) {
     val cartItems by menuCartViewModel.cartItems.collectAsState()
     Log.d("MenuCartScreen", "cartItems: $cartItems")
@@ -67,6 +71,7 @@ fun MenuCartScreen(
 
     val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
     val isAllDeleteDialogOpen = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -117,6 +122,8 @@ fun MenuCartScreen(
                 onConfirm = {
 
                     /* 너의 action */
+                    closeSTOMP(context)
+                    keyWeViewModel.exit()
                     appBarViewModel.toggleUnconnect()
                 })
         }
@@ -147,8 +154,8 @@ fun MenuCartScreen(
                         style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                         color = polishedSteelColor,
                         modifier = Modifier.noRippleClickable {
-                                isAllDeleteDialogOpen.value = true
-                            })
+                            isAllDeleteDialogOpen.value = true
+                        })
                 }
 
 
@@ -201,7 +208,8 @@ fun MenuCartScreen(
                     .background(whiteBackgroundColor)
                     .fillMaxWidth(),
             ) {
-                MenuCartBottom(cartItems.sumOf { it.quantity },
+                MenuCartBottom(
+                    cartItems.sumOf { it.quantity },
                     cartItems.sumOf { it.price * it.quantity },
                     menuCartViewModel
                 )

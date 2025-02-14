@@ -37,9 +37,11 @@ class KeyWeMessagingService : FirebaseMessagingService() {
             val kioskUserId = remoteMessage.data["kioskUserId"]
             val sessionId = remoteMessage.data["sessionId"]
             Log.d(remoteMessage.data.toString(), "Message data payload: ${remoteMessage.data}")
+            val title = remoteMessage.data["title"] ?: "대리 주문 도움 요청"
+            val body = remoteMessage.data["body"] ?: "키오스크 주문 도움이 필요합니다."
 
-            val title = remoteMessage.notification?.title ?: "No Title"
-            val body = remoteMessage.notification?.body ?: "No Body"
+//            val title = remoteMessage.notification?.title ?: "대리 주문 도움 요청"
+//            val body = remoteMessage.notification?.body ?: "키오스크 주문 도움이 필요합니다."
 //            val count = remoteMessage.data["count"]?.toIntOrNull() ?: 0
             if (storeId != null && kioskUserId != null && sessionId != null) {
                 sendNotification(

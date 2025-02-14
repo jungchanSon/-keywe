@@ -84,22 +84,22 @@ fun HelperScreen(
         // todo 채널 입장 전 permission 요청
 
 
-        viewModel.joinChannel(channelName)
+//        viewModel.joinChannel(channelName)
     }
 
     val rtcEngine by viewModel.rtcEngine.collectAsStateWithLifecycle()
     val statsInfo by viewModel.remoteStats.collectAsStateWithLifecycle()
-    val screenUid by viewModel.screenUid.collectAsStateWithLifecycle()
-
-    LaunchedEffect(screenUid) {
-        val intent = Intent(context, RemoteControlService::class.java)
-        intent.action = "touch"
-        intent.putExtra("x", 200)
-        intent.putExtra("x", 300)
-        context.startService(intent)
-//        if (screenUid != null)
-//        openAccessibilitySettings(context)
-    }
+//    val screenUid by viewModel.screenUid.collectAsStateWithLifecycle()
+//
+//    LaunchedEffect(screenUid) {
+//        val intent = Intent(context, RemoteControlService::class.java)
+//        intent.action = "touch"
+//        intent.putExtra("x", 200)
+//        intent.putExtra("x", 300)
+//        context.startService(intent)
+////        if (screenUid != null)
+////        openAccessibilitySettings(context)
+//    }
     LaunchedEffect(Unit) {
         openAccessibilitySettings(context)
     }
@@ -147,9 +147,9 @@ fun HelperScreen(
         Column(modifier = Modifier
             .padding(innerPadding)
             .clickable { }) {
-            if (screenUid != null) BottomButton(content = "데이터 전송", onClick = {
-//                    viewModel.sendGesture()
-            })
+//            if (screenUid != null) BottomButton(content = "데이터 전송", onClick = {
+////                    viewModel.sendGesture()
+//            })
 //                VideoCell(
 //                    modifier = Modifier.fillMaxSize(),
 //                    id = screenUid ?: 0,
@@ -163,9 +163,9 @@ fun HelperScreen(
 //                    },
 //                    statsInfo = statsInfo,
 //                )
-            else
+//            else
 
-                Text("연결 중입니다.")
+            Text("연결 중입니다.")
             BottomButton(content = "접근성 확인", onClick = {
 //                    viewModel.sendGesture()
             })

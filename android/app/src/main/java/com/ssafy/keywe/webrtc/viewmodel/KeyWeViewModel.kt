@@ -10,13 +10,13 @@ import androidx.lifecycle.SavedStateHandle
 import com.ssafy.keywe.BuildConfig
 import com.ssafy.keywe.webrtc.RemoteControlService
 import com.ssafy.keywe.webrtc.ScreenSizeManager
+import com.ssafy.keywe.webrtc.data.ChannelData
 import com.ssafy.keywe.webrtc.data.Drag
 import com.ssafy.keywe.webrtc.data.MessageData
 import com.ssafy.keywe.webrtc.data.MessageType
 import com.ssafy.keywe.webrtc.data.ScreenSize
 import com.ssafy.keywe.webrtc.data.Touch
 import com.ssafy.keywe.webrtc.ui.AudioStatsInfo
-import com.ssafy.keywe.webrtc.utils.TokenUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.agora.api.example.compose.data.SettingPreferences
 import io.agora.rtc2.ChannelMediaOptions
@@ -45,8 +45,6 @@ class KeyWeViewModel @Inject constructor(
 
     private val _isKiosk: Boolean = savedStateHandle["isKiosk"] ?: true
 
-    private val _screenUid = MutableStateFlow<Int?>(null)
-    val screenUid = _screenUid.asStateFlow()
 
     private val _localStats = MutableStateFlow<AudioStatsInfo?>(null)
     val localStats = _localStats.asStateFlow()
@@ -66,6 +64,11 @@ class KeyWeViewModel @Inject constructor(
 
     private var _localScreenSize: ScreenSize? = null
     private var _remoteScreenSize: ScreenSize? = null
+
+    private val _connected = MutableStateFlow<Boolean>(true)
+    val connected = _connected.asStateFlow()
+
+
     val module = SerializersModule {
         polymorphic(MessageData::class) {
             subclass(Touch::class, Touch.serializer())
@@ -79,12 +82,11 @@ class KeyWeViewModel @Inject constructor(
         classDiscriminator = "type"  // JSON 변환 시 타입 정보 유지
     }
 
-
-    init {
+    fun connectWebRTC() {
         // 내 기기 화면 사이즈 설정
+        _connected.update { true }
         _localScreenSize = screenSizeManager.screenSize
-
-        Log.d("ScreenSharing", "init ScreenSharing")
+        Log.d("KeyWeViewModel", "init connectWebRTC")
 
         _rtcEngine.update {
             RtcEngine.create(RtcEngineConfig().apply {
@@ -118,7 +120,6 @@ class KeyWeViewModel @Inject constructor(
 
                     override fun onLeaveChannel(stats: RtcStats?) {
                         super.onLeaveChannel(stats)
-                        _screenUid.update { null }
                         _localStats.update { null }
                         _remoteStats.update { null }
                     }
@@ -126,10 +127,6 @@ class KeyWeViewModel @Inject constructor(
                     override fun onUserJoined(uid: Int, elapsed: Int) {
                         super.onUserJoined(uid, elapsed)
                         Log.d("ScreenSharing", "onUserJoined: $uid")
-                        if (!_isKiosk) {
-                            // 헬퍼 입장에서 다른 사용자가 채널에 들어 올 경우 해당 사용자의 uid 로 screenUid 업데이트
-                            _screenUid.update { uid }
-                        }
                         sendScreenSize(_localDataStreamId.value, _rtcEngine.value)
                         _remoteStats.update {
                             AudioStatsInfo()
@@ -139,7 +136,6 @@ class KeyWeViewModel @Inject constructor(
                     override fun onUserOffline(uid: Int, reason: Int) {
                         super.onUserOffline(uid, reason)
                         Log.d("ScreenSharing", "onUserOffline: $uid")
-                        _screenUid.update { null }
                         _remoteScreenSize = null
                         _remoteStats.update { null }
                     }
@@ -233,21 +229,22 @@ class KeyWeViewModel @Inject constructor(
 
     }
 
-
-    fun joinChannel(channelName: String) {
+    fun joinChannel(channelData: ChannelData) {
         val mediaOptions = ChannelMediaOptions()
         mediaOptions.publishCameraTrack = false
         mediaOptions.publishMicrophoneTrack = true
         mediaOptions.autoSubscribeAudio = true
         mediaOptions.autoSubscribeVideo = false
-        TokenUtils.gen(channelName, 0) {
-            _rtcEngine.value?.joinChannel(it, channelName, 0, mediaOptions)
-        }
+        _rtcEngine.value?.joinChannel(channelData.token, channelData.name, 0, mediaOptions)
+//        TokenUtils.gen(channelData.name, ch) {
+//        }
     }
 
     fun exit() {
         _rtcEngine.value?.leaveChannel()
         RtcEngine.destroy()
+        _rtcEngine.value = null
+        _connected.update { false }
     }
 
     fun sendClickGesture(gestureData: MessageData) {

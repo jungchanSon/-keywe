@@ -78,6 +78,7 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.HelperScreen
 import com.ssafy.keywe.webrtc.ScreenSharing
 import com.ssafy.keywe.webrtc.ScreenSizeManager
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -261,6 +262,7 @@ fun MyApp(
 
     val menuCartViewModel: MenuCartViewModel = hiltViewModel()
     val appBarViewModel: OrderAppBarViewModel = hiltViewModel()
+    val keyWeViewModel: KeyWeViewModel = hiltViewModel()
 
     val state by navController.currentBackStackEntryAsState()
     // splash 와 login 은 topAppBar 없음
@@ -293,7 +295,9 @@ fun MyApp(
                 SignUpScreen(navController)
             }
             profileGraph(navController, tokenManager)
-            menuGraph(navController, menuCartViewModel, appBarViewModel)
+            menuGraph(
+                navController, menuCartViewModel, appBarViewModel, keyWeViewModel
+            )
 //            kioskGraph(navController)
             composable<SharingRoute> {
                 ScreenSharing()

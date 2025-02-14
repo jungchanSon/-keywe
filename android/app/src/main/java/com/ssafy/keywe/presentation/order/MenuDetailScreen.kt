@@ -1,6 +1,5 @@
 package com.ssafy.keywe.presentation.order
 
-import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,16 +17,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.DefaultOrderAppBar
@@ -39,9 +37,12 @@ import com.ssafy.keywe.presentation.order.component.MenuDetailExtraOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.screen.closeSTOMP
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 
 @Composable
 fun MenuDetailScreen(
@@ -49,9 +50,11 @@ fun MenuDetailScreen(
     menuDetailViewModel: MenuDetailViewModel,
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel,
-    menuId: Long
+    menuId: Long,
+    keyWeViewModel: KeyWeViewModel,
 ) {
     Log.d("Menu Detail", ":$menuId")
+    val context = LocalContext.current
 
     val menu by menuDetailViewModel.selectedDetailMenu.collectAsState()
 
@@ -63,8 +66,7 @@ fun MenuDetailScreen(
     if (menu == null) {
         // 데이터 로딩 중이므로 기본 UI를 표시 (예: 로딩 화면)
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator() // 로딩 표시
         }
@@ -102,12 +104,11 @@ fun MenuDetailScreen(
 
     val extraOptionList = menu?.options?.filter { it.optionType == "Extra" } ?: emptyList()
 
-    val sortedExtraOptions = extraOptionList.sortedWith(compareBy<OptionsModel> { it.optionType }
-        .thenBy {
+    val sortedExtraOptions =
+        extraOptionList.sortedWith(compareBy<OptionsModel> { it.optionType }.thenBy {
             val match = Regex("\\d+").find(it.optionName)
             match?.value?.toIntOrNull() ?: Int.MAX_VALUE
-        }
-    )
+        })
 
     val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
 
@@ -120,23 +121,27 @@ fun MenuDetailScreen(
                     alpha = 0.5f
                 ) else Color.Transparent
             )
-    ){
+    ) {
         // 통화 종료 다이얼로그
         if (isStopCallingDialogOpen) {
-            MenuCartDeleteDialog(
-                title = "통화 종료",
+            MenuCartDeleteDialog(title = "통화 종료",
                 description = "통화를 종료하시겠습니까?",
                 onCancel = { appBarViewModel.toggleUnconnect() },
                 onConfirm = {
                     /* 너의 action */
+                    closeSTOMP(context)
+                    keyWeViewModel.exit()
                     appBarViewModel.toggleUnconnect()
-                }
-            )
+                })
         }
     }
 
     Scaffold(
-        topBar = { DefaultOrderAppBar(title = "주문하기", navController = navController, viewModel = appBarViewModel) },
+        topBar = {
+            DefaultOrderAppBar(
+                title = "주문하기", navController = navController, viewModel = appBarViewModel
+            )
+        },
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -145,8 +150,7 @@ fun MenuDetailScreen(
                 .background(whiteBackgroundColor),
         ) {
             Column(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter)
             ) {
                 // 상단 스크롤 가능 영역
                 LazyColumn(
@@ -170,23 +174,21 @@ fun MenuDetailScreen(
                     }
 
                     item {
-                        MenuDetailCommonOption(
-                            sizeOptions = sizeValues,
+                        MenuDetailCommonOption(sizeOptions = sizeValues,
                             temperatureOptions = temperatureValues,
                             selectedSize = selectedSize.value, // 🔹 MutableState<String> 자체를 전달
                             selectedTemperature = selectedTemperature.value,
                             onSizeSelected = { size ->
                                 selectedSize.value = size
-                                totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value] ?: 0) +
-                                        extraOptions.entries.sumOf { (optionId, pair) ->
-                                            val optionPrice = extraOptionList.find { option ->
-                                                option.optionsValueGroup.any { it.optionValueId == optionId }
-                                            }?.optionPrice ?: 0
-                                            optionPrice * pair.second
-                                        }
+                                totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value]
+                                    ?: 0) + extraOptions.entries.sumOf { (optionId, pair) ->
+                                    val optionPrice = extraOptionList.find { option ->
+                                        option.optionsValueGroup.any { it.optionValueId == optionId }
+                                    }?.optionPrice ?: 0
+                                    optionPrice * pair.second
+                                }
                             },
-                            onTemperatureSelected = { temp -> selectedTemperature.value = temp }
-                        )
+                            onTemperatureSelected = { temp -> selectedTemperature.value = temp })
                         Spacer(
                             modifier = Modifier
                                 .height(12.dp)
@@ -197,21 +199,19 @@ fun MenuDetailScreen(
 
                     item {
 
-                        MenuDetailExtraOption(
-                            options = sortedExtraOptions,
+                        MenuDetailExtraOption(options = sortedExtraOptions,
                             onOptionSelected = { id, name, newAmount ->
                                 if (newAmount == 0) extraOptions.remove(id)
                                 else extraOptions[id] = name to newAmount
-                            }
-                        )
+                            })
 
-                        totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value] ?: 0) +
-                                extraOptions.entries.sumOf { (optionId, pair) ->
-                                    val optionPrice = extraOptionList.find { option ->
-                                        option.optionsValueGroup.any { it.optionValueId == optionId }
-                                    }?.optionPrice ?: 0
-                                    optionPrice * pair.second
-                                }
+                        totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value]
+                            ?: 0) + extraOptions.entries.sumOf { (optionId, pair) ->
+                            val optionPrice = extraOptionList.find { option ->
+                                option.optionsValueGroup.any { it.optionValueId == optionId }
+                            }?.optionPrice ?: 0
+                            optionPrice * pair.second
+                        }
                     }
                 }
             }

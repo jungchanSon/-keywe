@@ -17,7 +17,6 @@ class SignalRepository @Inject constructor() {
     private val _subscribed = MutableStateFlow<Boolean>(false)
     val subscribed: StateFlow<Boolean> = _subscribed
 
-
     // 외부에서 메시지를 업데이트할 수 있도록 함수 제공
     fun updateMessage(message: WebSocketMessage) {
         _stompMessageFlow.value = message
@@ -32,4 +31,5 @@ class SignalRepository @Inject constructor() {
     fun updateSubscribed(subscribed: Boolean) {
         _subscribed.value = subscribed
     }
+
 }

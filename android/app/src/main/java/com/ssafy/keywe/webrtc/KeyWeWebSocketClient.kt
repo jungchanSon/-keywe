@@ -7,7 +7,6 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.ssafy.keywe.core.di.module.WebSocketClientQualifier
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.webrtc.data.AcceptMessage
-import com.ssafy.keywe.webrtc.data.CloseMessage
 import com.ssafy.keywe.webrtc.data.RequestMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.encodeToString
@@ -132,23 +131,15 @@ class KeyWeWebSocket @Inject constructor(
 
     }
 
-    suspend fun sendClose(sessionId: String) {
-        val closeMessage = CloseMessage(sessionId)
-        val json = Json.encodeToString(closeMessage)
-        Log.d("sendClose", "$json")
-        val receipt = session!!.send(
-            body = FrameBody.Text(json), headers = StompSendHeaders(
-                destination = CloseEndPoint,
-            )
-        )
+    suspend fun close() {
+        session!!.disconnect()
     }
 
 
     companion object {
         const val SocketUrl = "ws://i12a404.p.ssafy.io:8080/remote/ws"
         val SubScribeEndPoint = "/topic/"
-        val RequestEndPoint = "/app/remote-order/request/"
-        val AcceptEndPoint = "/app/remote-order/accept/"
-        val CloseEndPoint = "/app/remote-order/end/"
+        val RequestEndPoint = "/app/remote-order/request"
+        val AcceptEndPoint = "/app/remote-order/accept"
     }
 }

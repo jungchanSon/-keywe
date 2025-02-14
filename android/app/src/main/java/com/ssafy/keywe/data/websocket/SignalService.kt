@@ -48,7 +48,6 @@ class SignalService : Service() {
                         when (keyWeWebSocket.connect()) {
                             true -> {
                                 signalRepository.updateConnect(true)
-
                                 Log.d("SignalService", "WebSocket connected")
                             }
 
@@ -60,8 +59,12 @@ class SignalService : Service() {
                 SignalType.SUBSCRIBE.toString() -> {
                     val profileId = it.getStringExtra("profileId")!!
                     Log.d("SignalService", "profileId: $profileId")
+
                     scope.launch {
                         // keyWeWebSocket.subscribe()로 받은 Flow를 collect하고, JSON 파싱 후 처리
+//                        signalRepository.updateFrameMessage(keyWeWebSocket.subscribe(profileId))
+
+
                         keyWeWebSocket.subscribe(profileId).collect { frame ->
                             val message = moshi.adapter(WebSocketMessage::class.java)
                                 .fromJson(frame.bodyAsText)
@@ -89,9 +92,9 @@ class SignalService : Service() {
                 }
 
                 SignalType.CLOSE.toString() -> {
-                    val sessionId = it.getStringExtra("sessionId")!!
                     scope.launch {
-                        keyWeWebSocket.sendClose(sessionId)
+                        Log.d("SignalService", "WebSocket closed")
+                        keyWeWebSocket.close()
                         stopSelf()
                     }
                 }
