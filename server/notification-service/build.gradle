@@ -18,6 +18,7 @@ dependencyManagement {
 
 dependencies {
 
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.google.firebase:firebase-admin:9.2.0'
