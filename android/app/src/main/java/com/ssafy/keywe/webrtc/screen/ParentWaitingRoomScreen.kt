@@ -49,6 +49,15 @@ private fun subscribeSTOMP(context: Context, profileId: String) {
     context.startService(intent)
 }
 
+private fun requestSTOMP(context: Context, profileId: String) {
+    val intent = Intent(context, SignalService::class.java)
+    intent.action = SignalType.REQUEST.name
+    intent.putExtra(
+        "profileId", profileId
+    )
+    context.startService(intent)
+}
+
 @Composable
 fun ParentWaitingRoomScreen(
     navController: NavHostController,
@@ -82,7 +91,15 @@ fun ParentWaitingRoomScreen(
 
     LaunchedEffect(connected) {
         if (connected) {
+            // 연결 후 구독
             subscribeSTOMP(context, profileId.toString())
+        }
+    }
+
+    LaunchedEffect(subscribe) {
+        if (subscribe) {
+            //구독 후 요청
+
         }
     }
 

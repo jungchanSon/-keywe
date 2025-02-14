@@ -90,6 +90,11 @@ fun HelperWaitingRoomScreen(
                     text = "구독 중입니다."
                 }
 
+                STOMPTYPE.SUBSCRIBE -> {
+                    // 연결 완료 후 구독
+                    text = "구독 중입니다."
+                }
+
                 STOMPTYPE.WAITING -> {
                     Log.d(
                         "WaitingRoomScreen", "알림 ${it.data!!.success}개 성공 ${it.data!!.failure}개 실패."
