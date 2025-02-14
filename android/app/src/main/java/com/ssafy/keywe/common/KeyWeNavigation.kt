@@ -138,11 +138,16 @@ object SignUpRoute
 //    val sessionId: String,
 //)
 
-fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager: TokenManager) {
+fun NavGraphBuilder.profileGraph(
+    navController: NavHostController,
+    tokenManager: TokenManager,
+//    profileDataStore: ProfileDataStore
+) {
     navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
         composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
         composable<Route.ProfileBaseRoute.ProfileChoiceRoute> {
             val args = it.toRoute<Route.ProfileBaseRoute.ProfileChoiceRoute>()
+//            val profileDataStore: ProfileDataStore = hiltViewModel()
             ProfileChoiceScreen(navController, args.isJoinApp)
         }
         composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMemberScreen(navController) }

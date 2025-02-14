@@ -22,7 +22,7 @@ import com.ssafy.keywe.ui.theme.subtitle2
 fun Profile(
     modifier: Modifier = Modifier,
     name: String = "김싸피",
-    profileImage: String?
+    profileImage: Any?
 ) {
     Column(
         modifier = modifier

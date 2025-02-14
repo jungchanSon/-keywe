@@ -32,7 +32,9 @@ import com.ssafy.keywe.R
 import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.domain.profile.GetProfileListModel
+import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
@@ -48,6 +50,8 @@ fun ProfileChoiceScreen(
     navController: NavController,
     isJoinApp: Boolean,
     profileViewModel: ProfileViewModel = hiltViewModel(),
+    fcmViewModel: FCMViewModel = hiltViewModel(),
+//    profileDataStore: ProfileDataStore = hiltViewModel()
 ) {
     val profiles by profileViewModel.profiles.collectAsStateWithLifecycle() // 프로필뷰모델에서 프로필 목록을 자동으로 업데이트하기
     val parentProfiles = profiles.filter { it.role == PARENT }
@@ -59,8 +63,14 @@ fun ProfileChoiceScreen(
         profileViewModel.refreshProfileList()
     }
 
+
     Scaffold(
-        topBar = { DefaultAppBar(title = "계정 관리", navController = navController) },
+        topBar = {
+            DefaultAppBar(
+                title = if (isJoinApp) "프로필 선택" else "계정 관리",
+                navController = navController
+            )
+        },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         if (profiles.isEmpty()) {
@@ -116,7 +126,6 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, navController
                                 )
-                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
@@ -140,7 +149,6 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, navController
                                 )
-                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
@@ -196,6 +204,7 @@ private fun joinHome(
     navController: NavController,
 ) {
     profileViewModel.selectAccount(profile)
+    ProfileIdManager.updateProfileId(profile.id.toLong())
     navController.navigate(BottomRoute.HomeRoute, builder = {
         popUpTo(0) {
             inclusive = true
@@ -220,7 +229,7 @@ fun ProfileGrid(
     ) {
         items(profiles) { profile ->
             Profile(name = profile.name,
-                profileImage = "",
+                profileImage = R.drawable.humanimage,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onProfileClick(profile) })

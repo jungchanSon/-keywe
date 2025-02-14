@@ -238,7 +238,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(
     navController: NavHostController,
-    tokenManager: TokenManager,
+    tokenManager: TokenManager
 //    fcmViewModel: FCMViewModel = hiltViewModel(),
 ) {
 

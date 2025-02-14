@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.component.OrderStaticsBox
@@ -42,8 +44,14 @@ fun ProfileScreen(
     viewModel: ProfileDetailViewModel = hiltViewModel()
 ) {
 //    val profileData by viewModel.profileData.collectAsStateWithLifecycle()
+//    val profileData = viewModel.profiledatailData.collectAsState()
 
-    val profileData = viewModel.profiledatailData.collectAsState()
+    val profileState = viewModel.state.collectAsState()
+
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProfileDetail()
+    }
 
     Scaffold(
         topBar = { DefaultAppBar(title = "프로필", navController = navController) },
@@ -73,12 +81,12 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = profileData.value?.name ?: "",
+                        text = profileState.value?.name ?: "",
                         style = h6sb,
                         modifier = Modifier.padding(top = 8.dp)
                     )
                     Text(
-                        text = profileData.value?.role ?: "",
+                        text = profileState.value?.role ?: "",
                         style = subtitle1,
                         color = Color.Gray
                     )
@@ -135,9 +143,11 @@ fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager
     ) {
         MenuButton(text = "본인정보", onClick = {})
         MenuButton(text = "프로필 수정", onClick = {
-            navController.navigate(
-                Route.ProfileBaseRoute.ProfileChoiceRoute(false)
-            )
+            ProfileIdManager.profileId.value?.let { profile ->
+                navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
+            }
+//            navController.navigate(
+//                Route.ProfileBaseRoute.ProfileChoiceRoute(false)
         })
         MenuButton(text = "로그아웃", onClick = {
             scope.launch {

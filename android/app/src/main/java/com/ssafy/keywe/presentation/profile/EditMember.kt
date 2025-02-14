@@ -3,6 +3,7 @@ package com.ssafy.keywe.presentation.profile
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -81,7 +82,7 @@ fun EditMemberScreen(
     Scaffold(topBar = {
         DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
             TextButton(onClick = {
-                viewModel.updateProfile(profileViewModel)
+                viewModel.updateProfile(profileViewModel, navController)
                 navController.popBackStack(
                     Route.ProfileBaseRoute.ProfileChoiceRoute(false),
                     false
@@ -144,6 +145,7 @@ fun EditMemberScreen(
 
                 onClick = {
                     profileId?.let {
+                        Log.d("profileId", "$profileId")
                         AlertDialog.Builder(context).setTitle("프로필 삭제")
                             .setMessage("정말로 이 프로필을 삭제하시겠습니까?").setPositiveButton("삭제") { _, _ ->
                                 viewModel.deleteProfile(it)
