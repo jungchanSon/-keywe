@@ -8,7 +8,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class STOMPTYPE {
-    REQUESTED, WAITING, ACCEPTED, TIMEOUT, END, ERROR
+    // TODO SUBSCRIBE screen 쪽에 수정
+    REQUESTED, SUBSCRIBE, WAITING, ACCEPTED, TIMEOUT, END, ERROR
 }
 
 @Serializable

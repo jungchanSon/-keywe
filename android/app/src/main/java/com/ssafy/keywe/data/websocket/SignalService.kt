@@ -40,12 +40,18 @@ class SignalService : Service() {
     private val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
         intent?.let {
             when (it.action) {
                 SignalType.CONNECT.toString() -> {
                     scope.launch {
                         when (keyWeWebSocket.connect()) {
-                            true -> Log.d("SignalService", "WebSocket connected")
+                            true -> {
+                                signalRepository.updateConnect(true)
+
+                                Log.d("SignalService", "WebSocket connected")
+                            }
+
                             false -> Log.d("SignalService", "WebSocket connection failed")
                         }
                     }
@@ -106,7 +112,14 @@ class SignalService : Service() {
     // STOMP 메시지 처리 및 Repository 업데이트
     private fun handleSTOMP(stomp: WebSocketMessage) {
         when (stomp.type) {
-            STOMPTYPE.REQUESTED -> Log.d("SignalService", "REQUESTED ${stomp.data}")
+            STOMPTYPE.REQUESTED -> {
+                Log.d("SignalService", "REQUESTED ${stomp.data}")
+            }
+
+            STOMPTYPE.SUBSCRIBE -> {
+                Log.d("SignalService", "SUBSCRIBE ${stomp.data}")
+            }
+
             STOMPTYPE.WAITING -> Log.d("SignalService", "WAITING ${stomp.data}")
             STOMPTYPE.ACCEPTED -> Log.d("SignalService", "ACCEPTED")
             STOMPTYPE.TIMEOUT -> Log.d("SignalService", "TIMEOUT")

@@ -98,6 +98,7 @@ class KeyWeWebSocket @Inject constructor(
     suspend fun subscribe(profileId: String): Flow<StompFrame.Message> {
 //        val signalMessage: Flow<StompFrame.Message> =
 
+        Log.d("subscribe", "${SubScribeEndPoint + profileId}")
         return session!!.subscribe(
             StompSubscribeHeaders(
                 destination = SubScribeEndPoint + profileId,
@@ -113,7 +114,7 @@ class KeyWeWebSocket @Inject constructor(
         val json = Json.encodeToString(requestMessage)
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
-                destination = RequestEndPoint + storeId,
+                destination = RequestEndPoint,
             )
         )
     }
@@ -123,7 +124,7 @@ class KeyWeWebSocket @Inject constructor(
         val json = Json.encodeToString(acceptMessage)
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
-                destination = AcceptEndPoint + sessionId,
+                destination = AcceptEndPoint,
             )
         )
 
@@ -134,7 +135,7 @@ class KeyWeWebSocket @Inject constructor(
         val json = Json.encodeToString(closeMessage)
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
-                destination = CloseEndPoint + sessionId,
+                destination = CloseEndPoint,
             )
         )
     }

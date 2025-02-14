@@ -393,7 +393,6 @@ fun HomeScreen(
         }) { Text("키위 요청") }
         TextButton(onClick = {
             val intent = Intent(context, SignalService::class.java)
-            intent.action = SignalType.SUBSCRIBE.name
             intent.putExtra(
                 "profileId", profileId.toString()
             )

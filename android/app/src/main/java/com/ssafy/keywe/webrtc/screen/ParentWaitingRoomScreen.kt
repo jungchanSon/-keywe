@@ -56,6 +56,8 @@ fun ParentWaitingRoomScreen(
 ) {
     // 초기 값은 null일 수 있으므로 안전하게 처리
     val message by viewModel.stompMessageFlow.collectAsStateWithLifecycle()
+    val connected by viewModel.connected.collectAsStateWithLifecycle()
+    val subscribe by viewModel.subscribed.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -78,16 +80,25 @@ fun ParentWaitingRoomScreen(
         connectSTOMP(context)
     }
 
+    LaunchedEffect(connected) {
+        if (connected) {
+            subscribeSTOMP(context, profileId.toString())
+        }
+    }
+
     LaunchedEffect(message) {
         if (profileId != null) {
             message?.let {
                 when (it.type) {
-                    STOMPTYPE.REQUESTED -> {
+                    STOMPTYPE.SUBSCRIBE -> {
                         // 연결 완료 후 구독
-                        subscribeSTOMP(context, profileId.toString())
-                        Log.d("WaitingRoomScreen", "구독 중입니다.")
                         text = "구독 중입니다."
                     }
+
+                    STOMPTYPE.REQUESTED -> {
+
+                    }
+
 
                     STOMPTYPE.WAITING -> {
                         Log.d(
