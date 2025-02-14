@@ -25,4 +25,6 @@ dependencies {
     api project(":common-http")
     api project(":common-token")
     api project(":swagger")
+    api project(":infra-kafka")
+    implementation project(":infra-logging")
 }

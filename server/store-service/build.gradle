@@ -20,4 +20,6 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     api project(":common-http")
     api project(":swagger")
+    api project(":infra-kafka")
+    implementation project(":infra-logging")
 }
