@@ -43,10 +43,12 @@ public class MenuController {
     @GetMapping
     public ResponseEntity<List<MenuResponse>> findMenus(
         @RequestHeader("userId") Long userId,
-        @RequestParam(value = "cid", required = false) Long categoryId
+        @RequestParam(value = "cid", required = false) Long categoryId,
+        @RequestParam(value = "sid", required = false) Long storeId
     ) {
-        log.info("Request: userId={}, categoryId={}", userId, categoryId);
-        List<MenuResponse> responses = findMenusService.doService(userId, categoryId);
+        log.info("Request: userId={}, categoryId={}, storeId={}", userId, categoryId, storeId);
+        Long actualStoreId = storeId != null ? storeId : userId;
+        List<MenuResponse> responses = findMenusService.doService(actualStoreId, categoryId);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
