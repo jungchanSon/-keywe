@@ -32,7 +32,7 @@ public class PushToken {
     @Column(name = "device_id", nullable = false, length = 100)
     private String deviceId;
 
-    @Column(name = "token", nullable = false)
+    @Column(name = "token", nullable = false, unique = true)
     private String token;
 
     @CreatedDate

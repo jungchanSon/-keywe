@@ -25,7 +25,7 @@ public class InternalController {
 
         SendFcmMessageResult result = sendFcmMessageService.doService(
             request.targetType(),
-            request.targetId(),
+            request.targetIds(),
             request.message());
 
         return ResponseEntity.ok(result);

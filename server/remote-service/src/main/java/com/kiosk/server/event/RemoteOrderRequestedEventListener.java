@@ -5,6 +5,7 @@ import com.kiosk.server.client.feign.dto.NotificationMessage;
 import com.kiosk.server.client.feign.dto.SendFcmMessageRequest;
 import com.kiosk.server.client.feign.dto.SendFcmMessageResponse;
 import com.kiosk.server.domain.RemoteOrderSession;
+import com.kiosk.server.domain.RemoteOrderSessionRepository;
 import com.kiosk.server.websocket.exception.RemoteOrderError;
 import com.kiosk.server.websocket.message.response.RemoteOrderResponse;
 import com.kiosk.server.websocket.message.response.RemoteOrderResponseType;
@@ -16,6 +17,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -24,6 +26,7 @@ public class RemoteOrderRequestedEventListener {
 
     private final NotificationClient notificationClient;
     private final SimpMessagingTemplate messagingTemplate;
+    private final RemoteOrderSessionRepository remoteOrderSessionRepository;
 
     @Async
     @EventListener
@@ -32,6 +35,8 @@ public class RemoteOrderRequestedEventListener {
 
         // FCM 메시지 구성 로직
         Map<String, String> notificationData = Map.of(
+            "title", "대리 주문 도움 요청",
+            "body", "키오스크 주문 도움이 필요합니다.",
             "sessionId", session.getSessionId(),
             "storeId", session.getStoreId(),
             "kioskUserId", session.getKioskUserId()
@@ -46,11 +51,9 @@ public class RemoteOrderRequestedEventListener {
             30
         );
 
-        SendFcmMessageRequest request = new SendFcmMessageRequest(
-            "USER",
-            Long.valueOf(session.getFamilyId()),
-            notificationMessage
-        );
+        List<String> helperIds = remoteOrderSessionRepository.findHelperIds(session.getFamilyId());
+
+        SendFcmMessageRequest request = new SendFcmMessageRequest("PROFILE", helperIds, notificationMessage);
 
         ResponseEntity<SendFcmMessageResponse> response = notificationClient.sendFcmMessage(request);
 
@@ -74,7 +77,5 @@ public class RemoteOrderRequestedEventListener {
 
             messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), responseMessage);
         }
-
-
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,6 +43,16 @@ public class RemoteOrderSessionRepository {
             session,
             SESSION_TTL
         );
+    }
+
+    public List<String> findHelperIds(String familyId) {
+        Set<Object> members = objectRedisTemplate.opsForSet().members(HELPER_PREFIX + familyId);
+        if (members == null) {
+            return Collections.emptyList();
+        }
+        return members.stream()
+            .map(Object::toString)
+            .toList();
     }
 
     public void saveHelperIds(String familyId, List<String> helperIds) {

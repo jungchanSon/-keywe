@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +29,15 @@ public class SendFcmMessageServiceImpl implements SendFcmMessageService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
-    public SendFcmMessageResult doService(TargetType targetType, Long targetId, NotificationMessage message) {
+    @Transactional(readOnly = true)
+    public SendFcmMessageResult doService(TargetType targetType, List<Long> targetIds, NotificationMessage message) {
+        if (CollectionUtils.isEmpty(targetIds)) {
+            return new SendFcmMessageResult(0, 0);
+        }
+
         List<PushToken> pushTokens = switch (targetType) {
-            case USER -> pushTokenRepository.findByUserId(targetId);
-            case PROFILE -> pushTokenRepository.findByProfileId(targetId);
+            case USER -> pushTokenRepository.findByUserIds(targetIds);
+            case PROFILE -> pushTokenRepository.findByProfileIds(targetIds);
         };
 
         if (pushTokens.isEmpty()) {

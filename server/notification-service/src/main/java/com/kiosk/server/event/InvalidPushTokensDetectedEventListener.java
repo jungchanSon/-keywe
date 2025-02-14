@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class InvalidPushTokensDetectedEventListener {
     private final DeletePushTokensService deletePushTokensService;
 
     @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @EventListener(InvalidPushTokensDetectedEvent.class)
     public void handle(InvalidPushTokensDetectedEvent event) {
         List<PushToken> invalidTokens = event.invalidTokens();

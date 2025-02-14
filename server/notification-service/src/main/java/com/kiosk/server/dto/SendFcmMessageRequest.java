@@ -1,4 +1,6 @@
 package com.kiosk.server.dto;
 
-public record SendFcmMessageRequest(TargetType targetType, Long targetId, NotificationMessage message) {
+import java.util.List;
+
+public record SendFcmMessageRequest(TargetType targetType, List<Long> targetIds, NotificationMessage message) {
 }
