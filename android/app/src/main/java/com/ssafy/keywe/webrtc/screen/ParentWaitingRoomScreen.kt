@@ -49,11 +49,11 @@ private fun subscribeSTOMP(context: Context, profileId: String) {
     context.startService(intent)
 }
 
-private fun requestSTOMP(context: Context, profileId: String) {
+private fun requestSTOMP(context: Context, storeId: String) {
     val intent = Intent(context, SignalService::class.java)
     intent.action = SignalType.REQUEST.name
     intent.putExtra(
-        "profileId", profileId
+        "storeId", storeId
     )
     context.startService(intent)
 }
@@ -99,7 +99,8 @@ fun ParentWaitingRoomScreen(
     LaunchedEffect(subscribe) {
         if (subscribe) {
             //구독 후 요청
-
+            Log.d("Request", "request = storeId")
+            requestSTOMP(context, "storeId")
         }
     }
 
@@ -113,9 +114,12 @@ fun ParentWaitingRoomScreen(
                     }
 
                     STOMPTYPE.REQUESTED -> {
-
+                        Log.d(
+                            "WaitingRoomScreen",
+                            "요청 ${it.data!!.success}개 성공 ${it.data!!.failure}개 실패."
+                        )
+                        text = "요청을 보냈습니다."
                     }
-
 
                     STOMPTYPE.WAITING -> {
                         Log.d(

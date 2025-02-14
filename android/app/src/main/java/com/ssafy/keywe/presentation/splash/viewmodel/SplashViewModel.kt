@@ -57,7 +57,7 @@ class SplashViewModel @Inject constructor(
                         it != null
                     }
                 }.first()
-
+                Log.d("profileID", "profileID = $profileId")
                 if (profileId != null) ProfileIdManager.updateProfileId(profileId)
 
                 _isLoading.value = false

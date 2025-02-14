@@ -71,6 +71,7 @@ class SignalService : Service() {
                             }
                         }
                     }
+                    signalRepository.updateSubscribed(true)
                 }
 
                 SignalType.REQUEST.toString() -> {
@@ -117,6 +118,7 @@ class SignalService : Service() {
             }
 
             STOMPTYPE.SUBSCRIBE -> {
+                // 무시
                 Log.d("SignalService", "SUBSCRIBE ${stomp.data}")
             }
 

@@ -112,6 +112,7 @@ class KeyWeWebSocket @Inject constructor(
     suspend fun sendRequest(storeId: String) {
         val requestMessage = RequestMessage(storeId)
         val json = Json.encodeToString(requestMessage)
+        Log.d("sendRequest", "$json")
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
                 destination = RequestEndPoint,
@@ -122,6 +123,7 @@ class KeyWeWebSocket @Inject constructor(
     suspend fun sendAccept(sessionId: String) {
         val acceptMessage = AcceptMessage(sessionId)
         val json = Json.encodeToString(acceptMessage)
+        Log.d("sendAccept", "$json")
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
                 destination = AcceptEndPoint,
@@ -133,6 +135,7 @@ class KeyWeWebSocket @Inject constructor(
     suspend fun sendClose(sessionId: String) {
         val closeMessage = CloseMessage(sessionId)
         val json = Json.encodeToString(closeMessage)
+        Log.d("sendClose", "$json")
         val receipt = session!!.send(
             body = FrameBody.Text(json), headers = StompSendHeaders(
                 destination = CloseEndPoint,

@@ -10,6 +10,7 @@ import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.data.datastore.ProfileDataStore
 import com.ssafy.keywe.data.dto.Status
 import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
 import com.ssafy.keywe.data.dto.fcm.FCMRequest
@@ -30,6 +31,7 @@ class ProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository, private val tokenManager: TokenManager,
     private val authRepository: AuthRepository,
     private val fcmRepository: FCMRepository,
+    private val profileDataStore: ProfileDataStore,
 ) : ViewModel() {
     private val _profilesUi =
         MutableStateFlow<List<GetProfileListModel>>(emptyList()) //프로필 목록을 보여주는 상태관리
@@ -71,6 +73,7 @@ class ProfileViewModel @Inject constructor(
             )
             authRepository.selectProfile(request).onSuccess { response ->
                 ProfileIdManager.updateProfileId(model.id.toLong())
+                profileDataStore.saveProfileId(model.id.toLong())
                 saveToken(response)
             }
                 .onException { e, message ->
@@ -116,7 +119,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-    
+
 
     private fun saveToken(model: SelectProfileModel) {
         val token = PushNotificationManager.token.value
