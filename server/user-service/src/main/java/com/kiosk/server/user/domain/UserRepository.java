@@ -11,4 +11,7 @@ public interface UserRepository {
     // 아이디로 회원 조회
     User findByEmail(String email);
 
+    // 회원 이메일 인증 완료 처리
+    void verifyEmail(Long userId);
+
 }
