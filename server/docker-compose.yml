@@ -46,6 +46,8 @@ services:
     environment:
       - USER_MYSQL_URL=kiwi-db-user:3306
       - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_SERVICE_URL=notification-service-app
+      - DOMAIN_NAME=i12a404.p.ssafy.io
     deploy:
       replicas: 1
     networks:
