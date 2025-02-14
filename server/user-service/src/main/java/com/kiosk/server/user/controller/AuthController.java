@@ -26,8 +26,7 @@ public class AuthController {
     @PostMapping("/user/login")
     public ResponseEntity<LoginResponse> login(@RequestBody UserLoginRequest request) {
         log.info("Request Login email: {}", request.email());
-        String temporaryToken = userLoginService.doService(request.email(), request.password());
-        LoginResponse response = new LoginResponse(temporaryToken);
+        LoginResponse response = userLoginService.doService(request.email(), request.password());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

@@ -1,4 +1,6 @@
 package com.kiosk.server.user.controller.dto;
 
-public record LoginResponse(String accessToken) {
+import com.kiosk.server.user.domain.UserRole;
+
+public record LoginResponse(String accessToken, UserRole role) {
 }
