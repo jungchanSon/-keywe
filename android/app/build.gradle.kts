@@ -96,6 +96,8 @@ dependencies {
 
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // ✅ Gson Converter 추가
 
+    // 시스템 UI 조작 가능
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
     // Firebase FCM
     implementation(platform(libs.firebase.bom))

@@ -12,7 +12,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.presentation.kiosk.InputPasswordScreen
 import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
+import com.ssafy.keywe.presentation.kiosk.KioskHomeScreen
+import com.ssafy.keywe.presentation.kiosk.viewmodel.KioskViewModel
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
@@ -25,6 +28,7 @@ import com.ssafy.keywe.presentation.profile.EditMember
 import com.ssafy.keywe.presentation.profile.EmailVerification
 import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
+import com.ssafy.keywe.webrtc.screen.WaitingRoomScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -48,6 +52,9 @@ sealed interface Route {
     @Serializable
     data object MenuBaseRoute : Route {
         @Serializable
+        data object KioskHomeRoute : Route
+
+        @Serializable
         data object MenuRoute : Route
 
         @Serializable
@@ -55,6 +62,19 @@ sealed interface Route {
 
         @Serializable
         data object MenuCartRoute : Route
+
+        @Serializable
+        data object KioskPhoneNumberRoute : Route
+
+        @Serializable
+        data object KioskPasswordRoute : Route
+
+        @Serializable
+        data class WaitingRoomRoute(
+            val storeId: String,
+            val kioskUserId: String,
+            val sessionId: String,
+        ) : Route
     }
 
     @Serializable
@@ -73,15 +93,15 @@ sealed interface Route {
         data object ProfileEmailVerifyRoute : Route
     }
 
-    @Serializable
-    data object KioskBaseRoute : Route {
-
-        @Serializable
-        data object KioskPhoneNumberRoute : Route
-
-        @Serializable
-        data object KioskPasswordRoute : Route
-    }
+//    @Serializable
+//    data object KioskBaseRoute : Route {
+//
+//        @Serializable
+//        data object KioskPhoneNumberRoute : Route
+//
+//        @Serializable
+//        data object KioskPasswordRoute : Route
+//    }
 }
 
 sealed interface BottomRoute {
@@ -105,12 +125,12 @@ data object LoginRoute
 object SignUpRoute
 
 
-@Serializable
-data class WaitingRoomRoute(
-    val storeId: String,
-    val kioskUserId: String,
-    val sessionId: String,
-)
+//@Serializable
+//data class WaitingRoomRoute(
+//    val storeId: String,
+//    val kioskUserId: String,
+//    val sessionId: String,
+//)
 
 fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager: TokenManager) {
     navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
@@ -126,7 +146,10 @@ fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager:
 }
 
 fun NavGraphBuilder.menuGraph(navController: NavHostController, menuCartViewModel: MenuCartViewModel, appBarViewModel: OrderAppBarViewModel) {
-    navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.MenuRoute) {
+    navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
+        composable<Route.MenuBaseRoute.KioskHomeRoute> {
+            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel)
+        }
         composable<Route.MenuBaseRoute.MenuRoute> {
             val menuScreenViewModel: MenuViewModel = hiltViewModel()
             MenuScreen(navController, menuScreenViewModel, menuCartViewModel, appBarViewModel)
@@ -140,15 +163,38 @@ fun NavGraphBuilder.menuGraph(navController: NavHostController, menuCartViewMode
         composable<Route.MenuBaseRoute.MenuCartRoute> {
             MenuCartScreen(navController, menuCartViewModel, appBarViewModel)
         }
-    }
-}
-
-fun NavGraphBuilder.kioskGraph(navController: NavHostController) {
-    navigation<Route.KioskBaseRoute>(startDestination = Route.KioskBaseRoute.KioskPhoneNumberRoute) {
-        composable<Route.KioskBaseRoute.KioskPhoneNumberRoute> {
+        composable<Route.MenuBaseRoute.KioskPhoneNumberRoute> {
+            val kioskViewModel: KioskViewModel = hiltViewModel()
             InputPhoneNumberScreen(
-                navController
+                navController, menuCartViewModel, appBarViewModel, kioskViewModel
+            )
+        }
+        composable<Route.MenuBaseRoute.KioskPasswordRoute> {
+            val kioskViewModel: KioskViewModel = hiltViewModel()
+            InputPasswordScreen(
+                navController, menuCartViewModel, appBarViewModel, kioskViewModel
+            )
+        }
+
+        composable<Route.MenuBaseRoute.WaitingRoomRoute> {
+            WaitingRoomScreen(
+                navController, "1", "1", "1"
             )
         }
     }
 }
+
+//fun NavGraphBuilder.kioskGraph(navController: NavHostController) {
+//    navigation<Route.KioskBaseRoute>(startDestination = Route.KioskBaseRoute.KioskPhoneNumberRoute) {
+//        composable<Route.KioskBaseRoute.KioskPhoneNumberRoute> {
+//            InputPhoneNumberScreen(
+//                navController
+//            )
+//        }
+//        composable<Route.KioskBaseRoute.KioskPasswordRoute> {
+//            InputPasswordScreen(
+//                navController
+//            )
+//        }
+//    }
+//}

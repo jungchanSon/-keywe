@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
+import timber.log.Timber
 
 @Composable
 fun MenuCartMenuBox(
@@ -87,7 +89,13 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
     val size = cartItem.size
     val image = cartItem.image?: ""
     val temperature = cartItem.temperature
-    val extraOptions = cartItem.extraOptions
+    val extraOptions = remember(cartItem) {
+        mutableStateMapOf<Long, Pair<String, Int>>().apply {
+            cartItem.extraOptions.forEach { (optionId, pair) ->
+                put(optionId, pair)
+            }
+        }
+    }
     Log.d("extraOptions", "$extraOptions")
 
     LaunchedEffect(cartItem.menuId) {
@@ -145,13 +153,16 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
                                 color = polishedSteelColor
                             )
 
-                            extraOptions.forEach { (_, value) ->
-                                val (optionName, count) = value  // 튜플 구조분해 할당
-                                Text(
-                                    text = "$optionName: $count",
-                                    style = caption.copy(letterSpacing = 0.sp),
-                                    color = polishedSteelColor
-                                )
+                            extraOptions.forEach { (optionValueId, value) ->
+                                val (optionValue, count) = value
+
+                                if (optionValue.isNotBlank() && count > 0) { // 빈 값과 0개인 옵션 제외
+                                    Text(
+                                        text = "$optionValue: $count",
+                                        style = caption.copy(letterSpacing = 0.sp),
+                                        color = polishedSteelColor
+                                    )
+                                }
                             }
                         }
 

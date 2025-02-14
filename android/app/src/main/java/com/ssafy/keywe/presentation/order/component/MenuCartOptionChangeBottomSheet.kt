@@ -58,7 +58,7 @@ fun OptionChangeBottomSheet(
     val selectedSize = remember { mutableStateOf(cartItem.size) }
     val selectedTemperature = remember { mutableStateOf(cartItem.temperature) }
 
-    val extraOptions = remember {
+    val extraOptions = remember(cartItem) {
         mutableStateMapOf<Long, Pair<String, Int>>().apply {
             cartItem.extraOptions.forEach { (optionId, pair) ->
                 put(optionId, pair)
@@ -169,20 +169,25 @@ fun OptionChangeBottomSheet(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         extraOptionList.forEach { option ->
-                            val optionId = option.optionsValueGroup.firstOrNull()?.optionValueId ?: option.optionId
-                            val optionName = option.optionsValueGroup.firstOrNull()?.optionValue ?: option.optionName
+                            option.optionsValueGroup.forEach { optionValue ->
+                                val optionId = optionValue.optionValueId // ✅ optionId가 아니라 optionValueId 사용
+                                val optionName = optionValue.optionValue
 
-                            OptionBox(
-                                id = optionId,
-                                name = optionName,
-                                optionPrice = option.optionPrice,
-                                extraOptions = extraOptions,
-                                onOptionSelected = { id, name, count -> // ✅ id를 첫 번째로 변경
-                                    if (count == 0) extraOptions.remove(id)
-                                    else extraOptions[id] = name to count
-                                }
-                            )
+                                OptionBox(
+                                    id = optionId, // ✅ optionValueId를 id로 설정
+                                    name = optionName,
+                                    optionPrice = option.optionPrice,
+                                    extraOptions = extraOptions,
+                                    onOptionSelected = { id, _, count ->
+                                        val optionValue = extraOptionList
+                                            .flatMap { it.optionsValueGroup }
+                                            .find { it.optionValueId == id }?.optionValue ?: "Unknown"
 
+                                        if (count == 0) extraOptions.remove(id)
+                                        else extraOptions[id] = optionValue to count // ✅ optionValue 저장
+                                    }
+                                )
+                            }
                         }
                     }
                 }

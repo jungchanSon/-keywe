@@ -91,6 +91,8 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         totalPrice: Int
     ) {
         viewModelScope.launch {
+            _selectedDetailMenu.value = null
+
             fetchMenuDetailById(menuId)
 
             var retryCount = 0
@@ -200,23 +202,34 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
 
             Timber.tag("updateCartItem").d("✅ 메뉴 상세 정보 가져옴: ${selectedDetailMenu.value}")
 
-            val menuDetail = selectedDetailMenu.value
-            if (menuDetail == null) {
-                Timber.tag("updateCartItem").e("메뉴 상세 정보를 가져오지 못했습니다.")
-                return@launch
-            }
+            val menuDetail = selectedDetailMenu.value ?: return@launch
 
             val menuPrice = menuDetail.menuPrice
             val sizePrice = sizePriceMap[size] ?: 0
 
-            // ✅ `optionPrice`를 `OptionsModel`에서 가져오기
-            val extraOptionPrice = extraOptions.entries.sumOf { (optionId, count) ->
+            val filteredExtraOptions = extraOptions.mapValues { (optionValueId, count) ->
                 val optionModel = menuDetail.options.find { option ->
-                    option.optionsValueGroup.any { it.optionValueId == optionId }
+                    option.optionsValueGroup.any { it.optionValueId == optionValueId }
                 }
 
-                val optionPrice = optionModel?.optionPrice ?: 0 // ✅ `OptionsModel`에서 `optionPrice` 가져오기
+                val optionType = optionModel?.optionType ?: "Unknown"
+                val optionValue = optionModel?.optionsValueGroup?.find { it.optionValueId == optionValueId }?.optionValue ?: "Unknown"
 
+                // ✅ "Extra" 옵션만 표시 (Common 옵션 등 제외)
+                if (optionType == "Extra") {
+                    optionValue to count
+                } else {
+                    "" to 0 // Common 옵션 등은 표시하지 않음
+                }
+            }
+
+            val extraOptionPrice = filteredExtraOptions.entries.sumOf { (_, pair) ->
+                val (optionValue, count) = pair
+                val optionModel = menuDetail.options.find { option ->
+                    option.optionsValueGroup.any { it.optionValue == optionValue }
+                }
+
+                val optionPrice = optionModel?.optionPrice ?: 0
                 optionPrice * count
             }
 
@@ -246,7 +259,7 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                             cartItem.copy(
                                 size = size,
                                 temperature = temperature,
-                                extraOptions = extraOptions.mapValues { (_, count) -> "" to count },
+                                extraOptions = filteredExtraOptions,
                                 price = newTotalPrice
                             )
                         } else {
@@ -260,7 +273,29 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         }
     }
 
+    fun getOptionTypeByOptionValueId(optionValueId: Long): String {
+        var retryCount = 0
+        var optionType: String? = null
 
+        while (retryCount < 3) {
+            optionType = selectedDetailMenu.value?.options
+                ?.find { optionModel ->
+                    optionModel.optionsValueGroup.any { it.optionValueId == optionValueId }
+                }?.optionType
+
+            if (optionType != null) break
+            retryCount++
+        }
+
+        return optionType ?: "Unknown"
+    }
+
+    private fun getOptionValueById(optionValueId: Long): String {
+        return selectedDetailMenu.value?.options
+            ?.flatMap { it.optionsValueGroup }
+            ?.find { it.optionValueId == optionValueId }
+            ?.optionValue ?: "Unknown"
+    }
 
     fun openDeleteDialog(cartItem: CartItem) {
         _selectedCartItem.value = cartItem
