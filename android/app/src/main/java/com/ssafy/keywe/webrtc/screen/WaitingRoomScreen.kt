@@ -6,12 +6,14 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -62,6 +64,8 @@ fun WaitingRoomScreen(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val isLoading by remember { mutableStateOf(true) }
 
     if (message != null) {
         Text(text = "Received message: ${message}")
@@ -134,27 +138,58 @@ fun WaitingRoomScreen(
         )
     }) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding), verticalArrangement = Arrangement.Center
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("$text")
-            CountdownTimer(navController)
+            if (isLoading) {
+                // 🔄 로딩 중일 때 스피너 표시
+                CircularProgressIndicator()
+                Text(
+                    text = "연결 중...",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            } else {
+                // 로딩이 끝난 후 표시할 UI
+                Text(text = "연결 완료!")
+                CountdownTimer(navController)
+            }
         }
-
     }
 }
 
 @Composable
 fun CountdownTimer(navController: NavHostController) {
-    var seconds by remember { mutableIntStateOf(3) }
+    var seconds by remember { mutableIntStateOf(5) }
+
+//    LaunchedEffect(Unit) {
+//        while (seconds > 0) {
+//            delay(1000) // 1초 대기
+//            seconds--  // 초 감소
+//        }
+//    }
+//    LaunchedEffect(seconds) {
+//        if (seconds == 0) {
+//            Log.d("CountdownTimer", "타이머 종료")
+//            navController.navigate(BottomRoute.HomeRoute, builder = {
+//                popUpTo(BottomRoute.HomeRoute) {
+//                    inclusive = true
+//                }
+//            })
+//        }
+//    }
+
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        while (seconds > 0) {
-            delay(1000) // 1초 대기
-            seconds--  // 초 감소
-        }
-    }
-    LaunchedEffect(seconds) {
-        if (seconds == 0) {
+        scope.launch {
+            while (seconds > 0) {
+                delay(1000)
+                seconds--
+            }
             Log.d("CountdownTimer", "타이머 종료")
 //            navController.navigate(BottomRoute.HomeRoute, builder = {
 //                popUpTo(BottomRoute.HomeRoute) {

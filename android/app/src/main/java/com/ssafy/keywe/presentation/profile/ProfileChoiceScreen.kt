@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,10 +49,15 @@ fun ProfileChoiceScreen(
     isJoinApp: Boolean,
     profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
-    val profiles by profileViewModel.profiles.collectAsStateWithLifecycle()
+    val profiles by profileViewModel.profiles.collectAsStateWithLifecycle() // 프로필뷰모델에서 프로필 목록을 자동으로 업데이트하기
     val parentProfiles = profiles.filter { it.role == PARENT }
     val childProfiles = profiles.filter { it.role == CHILD }
 //    val token by PushNotificationManager.token.collectAsStateWithLifecycle()
+
+    //화면이 다시 나타날떄마다 api 다시 조회
+    LaunchedEffect(Unit) {
+        profileViewModel.refreshProfileList()
+    }
 
     Scaffold(
         topBar = { DefaultAppBar(title = "계정 관리", navController = navController) },
@@ -110,7 +116,7 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, navController
                                 )
-//                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
+                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
@@ -134,7 +140,7 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, navController
                                 )
-//                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
+                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }

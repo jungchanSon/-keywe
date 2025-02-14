@@ -61,7 +61,6 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.SplashRoute
-import com.ssafy.keywe.common.WaitingRoomRoute
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.menuGraph
 import com.ssafy.keywe.common.profileGraph
@@ -71,7 +70,9 @@ import com.ssafy.keywe.data.websocket.SignalType
 import com.ssafy.keywe.domain.fcm.NotificationData
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
+import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.presentation.splash.SplashScreen
 import com.ssafy.keywe.ui.theme.KeyWeTheme
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
@@ -183,7 +184,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 NavControllerHolder.navController!!.navigate(
-                    WaitingRoomRoute(
+                    Route.MenuBaseRoute.WaitingRoomRoute(
                         it.storeId, it.kioskUserId, it.sessionId
                     )
                 )
@@ -209,7 +210,7 @@ class MainActivity : ComponentActivity() {
                     delay(500)
                 }
                 NavControllerHolder.navController!!.navigate(
-                    WaitingRoomRoute(
+                    Route.MenuBaseRoute.WaitingRoomRoute(
                         it.storeId, it.kioskUserId, it.sessionId
                     )
                 )
@@ -262,6 +263,7 @@ fun MyApp(
     }
 
     val menuCartViewModel: MenuCartViewModel = hiltViewModel()
+    val appBarViewModel: OrderAppBarViewModel = hiltViewModel()
 
     val state by navController.currentBackStackEntryAsState()
     // splash 와 login 은 topAppBar 없음
@@ -294,7 +296,8 @@ fun MyApp(
                 SignUpScreen(navController)
             }
             profileGraph(navController, tokenManager)
-            menuGraph(navController, menuCartViewModel)
+            menuGraph(navController, menuCartViewModel, appBarViewModel)
+//            kioskGraph(navController)
             composable<SharingRoute> {
                 ScreenSharing()
             }
@@ -308,15 +311,15 @@ fun MyApp(
                     Log.d("Helper Back", "interceptor Back")
                 })
             }
-            composable<WaitingRoomRoute> {
-                val arg = it.toRoute<WaitingRoomRoute>()
-                WaitingRoomScreen(
-                    navController = navController,
-                    sessionId = arg.sessionId,
-                    storeId = arg.storeId,
-                    kioskUserId = arg.kioskUserId
-                )
-            }
+//            composable<Route.MenuBaseRoute.WaitingRoomRoute> {
+//                val arg = it.toRoute<Route.MenuBaseRoute.WaitingRoomRoute>()
+//                WaitingRoomScreen(
+//                    navController = navController,
+//                    sessionId = arg.sessionId,
+//                    storeId = arg.storeId,
+//                    kioskUserId = arg.kioskUserId
+//                )
+//            }
 //            kioskGraph(navController)
         }
 
@@ -372,19 +375,19 @@ fun HomeScreen(
             }
         }) {
             Text(text = "토큰 초기화")
-            Button(onClick = {
-                navController.navigate(Route.MenuBaseRoute.MenuRoute)
+        }
+        Button(onClick = {
+            navController.navigate(Route.MenuBaseRoute.MenuRoute)
 //                navController.navigate(Route.KioskBaseRoute.KioskPhoneNumberRoute)
-            }) {
-                Text("메뉴 라우팅")
-            }
+        }) {
+            Text("메뉴 라우팅")
         }
         TextButton(onClick = {
 //            val intent = Intent(context, SignalService::class.java)
 //            intent.action = SignalType.CONNECT.name
 //            context.startService(intent)
             navController.navigate(
-                WaitingRoomRoute(
+                Route.MenuBaseRoute.WaitingRoomRoute(
                     sessionId = sessionId.toString(),
                     storeId = storeId.toString(),
                     kioskUserId = kioskUserId.toString()
@@ -424,6 +427,19 @@ fun HomeScreen(
             )
             context.startService(intent)
         }) { Text("주문 종료") }
+        Button(onClick = {
+//            navController.navigate(Route.MenuBaseRoute.MenuRoute)
+                navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
+        }) {
+            Text("키오스크")
+        }
+        Button(onClick = {
+//            navController.navigate(Route.MenuBaseRoute.MenuRoute)
+//            navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
+            navController.navigate((Route.MenuBaseRoute.KioskHomeRoute))
+        }) {
+            Text("키오스크 시작 단계")
+        }
     }
 }
 

@@ -82,7 +82,10 @@ fun EditMemberScreen(
         DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
             TextButton(onClick = {
                 viewModel.updateProfile(profileViewModel)
-                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false))
+                navController.popBackStack(
+                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
+                    false
+                )
             }) {
                 Text("완료", color = primaryColor)
             }

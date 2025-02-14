@@ -91,13 +91,13 @@ fun MenuCartBottomOrderButton(
         content = "결제하기",
         onClick = {
             val phoneNumber = "01012345678"
-            val orderModel = viewModel.createOrderModel("010-1234-5678")
+            val orderModel = viewModel.createOrderModel(phoneNumber)
 
             viewModel.postOrder(orderModel) { result ->  // ✅ 주문 요청 실행
                 result.onSuccess { response ->
-//                    Log.d("주문 완료", "ID: ${it.orderId}")
+                    Log.d("주문 완료", "ID: ${response.orderId}")
                 }.onFailure { error ->
-//                    Log.d("주문 실패", "${it.message}")
+                    Log.d("주문 실패", "${error.message}")
                 }
             }
         },

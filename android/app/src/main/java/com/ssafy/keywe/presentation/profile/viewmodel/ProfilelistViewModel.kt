@@ -116,6 +116,7 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+    
 
     private fun saveToken(model: SelectProfileModel) {
         val token = PushNotificationManager.token.value

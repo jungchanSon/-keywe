@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order
 
+import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,17 +18,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.app.DefaultOrderAppBar
 import com.ssafy.keywe.domain.order.OptionsModel
+import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
 import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
 import com.ssafy.keywe.presentation.order.component.MenuDetailExtraOption
@@ -35,6 +40,7 @@ import com.ssafy.keywe.presentation.order.component.MenuDetailMenu
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @Composable
@@ -42,11 +48,11 @@ fun MenuDetailScreen(
     navController: NavController,
     menuDetailViewModel: MenuDetailViewModel,
     menuCartViewModel: MenuCartViewModel,
+    appBarViewModel: OrderAppBarViewModel,
     menuId: Long
 ) {
     Log.d("Menu Detail", ":$menuId")
 
-//    val menu = viewModel.fetchMenuDetailById(menuId)
     val menu by menuDetailViewModel.selectedDetailMenu.collectAsState()
 
     // 데이터 가져오기
@@ -67,15 +73,17 @@ fun MenuDetailScreen(
 
     val menuPrice = menu?.menuPrice ?: 0
 
-    val selectedSize = remember { mutableStateOf("Tall") }
-    val selectedTemperature = remember { mutableStateOf("Hot") }
-    val extraOptions = remember { mutableStateMapOf<String, Int>() }
+    var selectedSize = remember { mutableStateOf("Tall") }
+    var selectedTemperature = remember { mutableStateOf("Hot") }
+
+    val extraOptions = remember { mutableStateMapOf<Long, Pair<String, Int>>() }
     val totalPrice = remember(menuPrice) { mutableStateOf(menuPrice) }
     Log.d("MenuDetail Menu totalPrice", "${totalPrice.value}")
 
     val commonOptionList = menu?.options?.filter { it.optionType == "Common" } ?: emptyList()
     val sizeOptions = commonOptionList.find { it.optionName.equals("size", ignoreCase = true) }
-    val temperatureOptions = commonOptionList.find { it.optionName.contains("temp", ignoreCase = true) }
+    val temperatureOptions =
+        commonOptionList.find { it.optionName.contains("temp", ignoreCase = true) }
 
     val sizePriceMap = if (sizeOptions != null) {
         mapOf(
@@ -87,10 +95,12 @@ fun MenuDetailScreen(
         mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000) // 기본 가격
     }
 
-    val sizeValues = sizeOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Tall", "Grande", "Venti")
-    val temperatureValues = temperatureOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Hot", "Ice")
+    val sizeValues =
+        sizeOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Tall", "Grande", "Venti")
+    val temperatureValues =
+        temperatureOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Hot", "Ice")
 
-    val extraOptionList = menu?.options ?.filter { it.optionType == "Extra" } ?: emptyList()
+    val extraOptionList = menu?.options?.filter { it.optionType == "Extra" } ?: emptyList()
 
     val sortedExtraOptions = extraOptionList.sortedWith(compareBy<OptionsModel> { it.optionType }
         .thenBy {
@@ -99,10 +109,34 @@ fun MenuDetailScreen(
         }
     )
 
-//    val options = remember { viewModel.getExtraOptions() }
+    val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
+
+    Box(
+        modifier = Modifier
+            .zIndex(1f)
+            .fillMaxSize()
+            .background(
+                color = if (isStopCallingDialogOpen) titleTextColor.copy(
+                    alpha = 0.5f
+                ) else Color.Transparent
+            )
+    ){
+        // 통화 종료 다이얼로그
+        if (isStopCallingDialogOpen) {
+            MenuCartDeleteDialog(
+                title = "통화 종료",
+                description = "통화를 종료하시겠습니까?",
+                onCancel = { appBarViewModel.toggleUnconnect() },
+                onConfirm = {
+                    /* 너의 action */
+                    appBarViewModel.toggleUnconnect()
+                }
+            )
+        }
+    }
 
     Scaffold(
-        topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
+        topBar = { DefaultOrderAppBar(title = "주문하기", navController = navController, viewModel = appBarViewModel) },
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -128,9 +162,10 @@ fun MenuDetailScreen(
                             menuPrice = totalPrice.value,
                             menuDetailViewModel
                         )
-                        Spacer(modifier = Modifier
-                            .height(12.dp)
-                            .background(greyBackgroundColor)
+                        Spacer(
+                            modifier = Modifier
+                                .height(12.dp)
+                                .background(greyBackgroundColor)
                         )
                     }
 
@@ -138,41 +173,45 @@ fun MenuDetailScreen(
                         MenuDetailCommonOption(
                             sizeOptions = sizeValues,
                             temperatureOptions = temperatureValues,
+                            selectedSize = selectedSize.value, // 🔹 MutableState<String> 자체를 전달
+                            selectedTemperature = selectedTemperature.value,
                             onSizeSelected = { size ->
-//                                val oldSizePrice = sizePriceMap[selectedSize.value] ?: 0
-                                val newSizePrice = sizePriceMap[size] ?: 0
-
                                 selectedSize.value = size
-
-                                totalPrice.value =  menuPrice + newSizePrice +
-                                        extraOptions.entries.sumOf { (optionName, quantity) ->
-                                            quantity * (extraOptionList.find {
-                                                it.optionsValueGroup.firstOrNull()?.optionValue == optionName
-                                            }?.optionPrice ?: 0)
+                                totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value] ?: 0) +
+                                        extraOptions.entries.sumOf { (optionId, pair) ->
+                                            val optionPrice = extraOptionList.find { option ->
+                                                option.optionsValueGroup.any { it.optionValueId == optionId }
+                                            }?.optionPrice ?: 0
+                                            optionPrice * pair.second
                                         }
                             },
                             onTemperatureSelected = { temp -> selectedTemperature.value = temp }
                         )
-                        Spacer(modifier = Modifier
-                            .height(12.dp)
-                            .fillMaxWidth()
-                            .background(greyBackgroundColor)
+                        Spacer(
+                            modifier = Modifier
+                                .height(12.dp)
+                                .fillMaxWidth()
+                                .background(greyBackgroundColor)
                         )
                     }
 
                     item {
+
                         MenuDetailExtraOption(
                             options = sortedExtraOptions,
-                            onOptionSelected = { name, newAmount, optionPrice ->
-                                extraOptions[name] = newAmount
-                                totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value] ?: 0) +
-                                        extraOptions.entries.sumOf { (optionName, quantity) ->
-                                            quantity * (extraOptionList.find {
-                                                it.optionsValueGroup.firstOrNull()?.optionValue == optionName
-                                            }?.optionPrice ?: 0)
-                                        }
+                            onOptionSelected = { id, name, newAmount ->
+                                if (newAmount == 0) extraOptions.remove(id)
+                                else extraOptions[id] = name to newAmount
                             }
                         )
+
+                        totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value] ?: 0) +
+                                extraOptions.entries.sumOf { (optionId, pair) ->
+                                    val optionPrice = extraOptionList.find { option ->
+                                        option.optionsValueGroup.any { it.optionValueId == optionId }
+                                    }?.optionPrice ?: 0
+                                    optionPrice * pair.second
+                                }
                     }
                 }
             }
@@ -187,7 +226,7 @@ fun MenuDetailScreen(
                     menuId = menuId,
                     selectedSize = selectedSize.value,
                     selectedTemperature = selectedTemperature.value,
-                    extraOptions = extraOptions.toMap(),
+                    extraOptions = extraOptions.mapValues { it.value },
                     totalPrice = totalPrice.value,
                     navController = navController,
                     menuCartViewModel = menuCartViewModel

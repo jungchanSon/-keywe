@@ -18,6 +18,8 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -25,27 +27,60 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
-import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.app.DefaultOrderAppBar
+import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
 import com.ssafy.keywe.presentation.order.component.MenuSubCategory
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
+import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
+import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(
-    navController: NavController, menuViewModel: MenuViewModel = hiltViewModel(), menuCartViewModel: MenuCartViewModel
+    navController: NavController,
+    menuViewModel: MenuViewModel = hiltViewModel(),
+    menuCartViewModel: MenuCartViewModel,
+    appBarViewModel: OrderAppBarViewModel = hiltViewModel()
 ) {
-//    val cartViewModel: MenuCartViewModel = hiltViewModel()
+    val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
 
-    Scaffold(topBar = { DefaultAppBar(title = "주문하기", navController = navController) },
+    Box(
+        modifier = Modifier
+            .zIndex(1f)
+            .fillMaxSize()
+            .background(
+                color = if (isStopCallingDialogOpen) titleTextColor.copy(
+                    alpha = 0.5f
+                ) else Color.Transparent
+            )
+    ){
+        // 통화 종료 다이얼로그
+        if (isStopCallingDialogOpen) {
+            MenuCartDeleteDialog(
+                title = "통화 종료",
+                description = "통화를 종료하시겠습니까?",
+                onCancel = { appBarViewModel.toggleUnconnect() },
+                onConfirm = {
+                    /* 너의 action */
+                    appBarViewModel.toggleUnconnect()
+                }
+            )
+        }
+    }
+
+    Scaffold(topBar = { DefaultOrderAppBar(title = "주문하기", navController = navController, viewModel = appBarViewModel) },
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingCartButton(navController, menuCartViewModel)
