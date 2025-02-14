@@ -1,6 +1,7 @@
 package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
+import com.kiosk.server.image.service.UploadImageService;
 import com.kiosk.server.store.controller.dto.CreateMenuRequest;
 import com.kiosk.server.store.controller.dto.CreateMenuResponse;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
@@ -8,7 +9,6 @@ import com.kiosk.server.store.domain.CategoryRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.CreateMenuService;
-import com.kiosk.server.store.service.UploadImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,7 +56,7 @@ public class CreateMenuServiceImpl implements CreateMenuService {
 
         // 이미지 존재하면 이미지 저장
         if (image != null && !image.isEmpty()) {
-            uploadImageService.doService(userId, menuId, image);
+            uploadImageService.doService(userId, menuId, image, "menu");
             log.info("이미지 업로드 완료 - userId={}, menuId={}", userId, menuId);
         }
 
