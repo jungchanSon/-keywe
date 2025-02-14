@@ -70,7 +70,6 @@ import com.ssafy.keywe.data.websocket.SignalType
 import com.ssafy.keywe.domain.fcm.NotificationData
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
-import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.presentation.splash.SplashScreen
@@ -79,8 +78,6 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.HelperScreen
 import com.ssafy.keywe.webrtc.ScreenSharing
 import com.ssafy.keywe.webrtc.ScreenSizeManager
-import com.ssafy.keywe.webrtc.data.ScreenSize
-import com.ssafy.keywe.webrtc.screen.WaitingRoomScreen
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -140,7 +137,7 @@ class MainActivity : ComponentActivity() {
             val imeHeightPx = with(density) { imeInsets.getBottom(density) }
 
             val usableHeightPx = screenHeightPx - statusBarHeightPx - navBarHeightPx
-            
+
             screenSizeManager.updateSystemSize(statusBarHeightPx)
 
             Log.d("ScreenSize", "navBarHeightPx: $statusBarHeightPx x $navBarHeightPx")
@@ -184,7 +181,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 NavControllerHolder.navController!!.navigate(
-                    Route.MenuBaseRoute.WaitingRoomRoute(
+                    Route.MenuBaseRoute.HelperWaitingRoomRoute(
                         it.storeId, it.kioskUserId, it.sessionId
                     )
                 )
@@ -210,7 +207,7 @@ class MainActivity : ComponentActivity() {
                     delay(500)
                 }
                 NavControllerHolder.navController!!.navigate(
-                    Route.MenuBaseRoute.WaitingRoomRoute(
+                    Route.MenuBaseRoute.HelperWaitingRoomRoute(
                         it.storeId, it.kioskUserId, it.sessionId
                     )
                 )
@@ -387,7 +384,7 @@ fun HomeScreen(
 //            intent.action = SignalType.CONNECT.name
 //            context.startService(intent)
             navController.navigate(
-                Route.MenuBaseRoute.WaitingRoomRoute(
+                Route.MenuBaseRoute.HelperWaitingRoomRoute(
                     sessionId = sessionId.toString(),
                     storeId = storeId.toString(),
                     kioskUserId = kioskUserId.toString()
@@ -429,7 +426,7 @@ fun HomeScreen(
         }) { Text("주문 종료") }
         Button(onClick = {
 //            navController.navigate(Route.MenuBaseRoute.MenuRoute)
-                navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
+            navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
         }) {
             Text("키오스크")
         }

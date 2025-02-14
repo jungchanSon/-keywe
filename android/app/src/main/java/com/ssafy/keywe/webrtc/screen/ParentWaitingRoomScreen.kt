@@ -12,11 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +26,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.websocket.SignalService
 import com.ssafy.keywe.data.websocket.SignalType
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
@@ -51,11 +50,8 @@ private fun subscribeSTOMP(context: Context, profileId: String) {
 }
 
 @Composable
-fun WaitingRoomScreen(
+fun ParentWaitingRoomScreen(
     navController: NavHostController,
-    sessionId: String,
-    storeId: String,
-    kioskUserId: String,
     viewModel: SignalViewModel = hiltViewModel(),
 ) {
     // 초기 값은 null일 수 있으므로 안전하게 처리
@@ -64,6 +60,8 @@ fun WaitingRoomScreen(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val profileId by ProfileIdManager.profileId.collectAsStateWithLifecycle()
 
     val isLoading by remember { mutableStateOf(true) }
 
@@ -81,50 +79,54 @@ fun WaitingRoomScreen(
     }
 
     LaunchedEffect(message) {
-        message?.let {
-            when (it.type) {
-                STOMPTYPE.REQUESTED -> {
-                    // 연결 완료 후 구독
-                    subscribeSTOMP(context, "677367955509677381")
-                    Log.d("WaitingRoomScreen", "구독 중입니다.")
-                    text = "구독 중입니다."
-                }
-
-                STOMPTYPE.WAITING -> {
-                    Log.d(
-                        "WaitingRoomScreen", "알림 ${it.data!!.success}개 성공 ${it.data!!.failure}개 실패."
-                    )
-                    text = "알림을 보냈습니다."
-                }
-
-                STOMPTYPE.ACCEPTED -> {
-                    scope.launch {
-                        delay(3000)
+        if (profileId != null) {
+            message?.let {
+                when (it.type) {
+                    STOMPTYPE.REQUESTED -> {
+                        // 연결 완료 후 구독
+                        subscribeSTOMP(context, profileId.toString())
+                        Log.d("WaitingRoomScreen", "구독 중입니다.")
+                        text = "구독 중입니다."
                     }
 
-                    navController.navigate(Route.MenuBaseRoute.MenuRoute) {
-                        navBackStackEntry?.destination?.route?.let { route ->
-                            popUpTo(route) {
-                                inclusive = true
-                            }
+                    STOMPTYPE.WAITING -> {
+                        Log.d(
+                            "WaitingRoomScreen",
+                            "알림 ${it.data!!.success}개 성공 ${it.data!!.failure}개 실패."
+                        )
+                        text = "알림을 보냈습니다."
+                    }
+
+                    STOMPTYPE.ACCEPTED -> {
+                        scope.launch {
+                            delay(3000)
                         }
-                        launchSingleTop = true
-                        restoreState = true
+
+                        navController.navigate(Route.MenuBaseRoute.MenuRoute) {
+                            navBackStackEntry?.destination?.route?.let { route ->
+                                popUpTo(route) {
+                                    inclusive = true
+                                }
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
-                }
 
-                STOMPTYPE.TIMEOUT -> {
+                    STOMPTYPE.TIMEOUT -> {
 
-                }
+                    }
 
-                STOMPTYPE.END -> {
+                    STOMPTYPE.END -> {
 
-                }
+                    }
 
-                STOMPTYPE.ERROR -> {
+                    STOMPTYPE.ERROR -> {
 
+                    }
                 }
             }
+
         }
 
     }
@@ -159,50 +161,4 @@ fun WaitingRoomScreen(
             }
         }
     }
-}
-
-@Composable
-fun CountdownTimer(navController: NavHostController) {
-    var seconds by remember { mutableIntStateOf(5) }
-
-//    LaunchedEffect(Unit) {
-//        while (seconds > 0) {
-//            delay(1000) // 1초 대기
-//            seconds--  // 초 감소
-//        }
-//    }
-//    LaunchedEffect(seconds) {
-//        if (seconds == 0) {
-//            Log.d("CountdownTimer", "타이머 종료")
-//            navController.navigate(BottomRoute.HomeRoute, builder = {
-//                popUpTo(BottomRoute.HomeRoute) {
-//                    inclusive = true
-//                }
-//            })
-//        }
-//    }
-
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        scope.launch {
-            while (seconds > 0) {
-                delay(1000)
-                seconds--
-            }
-            Log.d("CountdownTimer", "타이머 종료")
-//            navController.navigate(BottomRoute.HomeRoute, builder = {
-//                popUpTo(BottomRoute.HomeRoute) {
-//                    inclusive = true
-//                }
-//            })
-        }
-    }
-
-    Text(
-        text = if (seconds > 0) "${seconds}초 후에 00이 됩니다." else "00",
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(16.dp)
-    )
 }

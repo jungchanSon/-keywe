@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -28,7 +27,8 @@ import com.ssafy.keywe.presentation.profile.EditMemberScreen
 import com.ssafy.keywe.presentation.profile.EmailVerification
 import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
-import com.ssafy.keywe.webrtc.screen.WaitingRoomScreen
+import com.ssafy.keywe.webrtc.screen.HelperWaitingRoomScreen
+import com.ssafy.keywe.webrtc.screen.ParentWaitingRoomScreen
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -70,11 +70,14 @@ sealed interface Route {
         data object KioskPasswordRoute : Route
 
         @Serializable
-        data class WaitingRoomRoute(
+        data class HelperWaitingRoomRoute(
             val storeId: String,
             val kioskUserId: String,
             val sessionId: String,
         ) : Route
+
+        @Serializable
+        data object ParentWaitingRoomRoute : Route
     }
 
     @Serializable
@@ -147,14 +150,17 @@ fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager:
         composable<Route.ProfileBaseRoute.ProfileAddRoute> { AddMemberScreen(navController) }
         composable<Route.ProfileBaseRoute.ProfileScreenRoute> {
             ProfileScreen(
-                navController,
-                tokenManager
+                navController, tokenManager
             )
         }
     }
 }
 
-fun NavGraphBuilder.menuGraph(navController: NavHostController, menuCartViewModel: MenuCartViewModel, appBarViewModel: OrderAppBarViewModel) {
+fun NavGraphBuilder.menuGraph(
+    navController: NavHostController,
+    menuCartViewModel: MenuCartViewModel,
+    appBarViewModel: OrderAppBarViewModel,
+) {
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
             KioskHomeScreen(navController, menuCartViewModel, appBarViewModel)
@@ -167,7 +173,9 @@ fun NavGraphBuilder.menuGraph(navController: NavHostController, menuCartViewMode
             val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
             val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
             Log.d("Detail Navigator", ":$arg.id")
-            MenuDetailScreen(navController, menuDetailViewModel, menuCartViewModel, appBarViewModel, arg.id)
+            MenuDetailScreen(
+                navController, menuDetailViewModel, menuCartViewModel, appBarViewModel, arg.id
+            )
         }
         composable<Route.MenuBaseRoute.MenuCartRoute> {
             MenuCartScreen(navController, menuCartViewModel, appBarViewModel)
@@ -185,9 +193,17 @@ fun NavGraphBuilder.menuGraph(navController: NavHostController, menuCartViewMode
             )
         }
 
-        composable<Route.MenuBaseRoute.WaitingRoomRoute> {
-            WaitingRoomScreen(
-                navController, "1", "1", "1"
+        composable<Route.MenuBaseRoute.HelperWaitingRoomRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.HelperWaitingRoomRoute>()
+            HelperWaitingRoomScreen(
+                navController, arg.sessionId, arg.storeId, arg.kioskUserId
+            )
+        }
+
+        composable<Route.MenuBaseRoute.ParentWaitingRoomRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.ParentWaitingRoomRoute>()
+            ParentWaitingRoomScreen(
+                navController,
             )
         }
     }
