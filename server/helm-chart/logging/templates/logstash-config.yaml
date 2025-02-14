@@ -9,38 +9,3 @@ data:
   logstash.yml: |
     http.host: "127.0.0.0"
     path.config: /usr/share/logstash/pipeline
-  log_gateway.conf: |
-    input {
-      kafka {
-        bootstrap_servers => "kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092"
-        topics => ["log-gateway"]
-        consumer_threads => 1
-        decorate_events => true
-      }
-    }
-
-    filter {
-      json {
-        source => "message"
-      }
-
-      mutate {
-        rename => { "timestamp" => "log_timestamp" }
-      }
-
-      date {
-        match => ["log_timestamp", "ISO8601"]
-        target => "@timestamp"
-        remove_field => ["log_timestamp"]
-      }
-    }
-
-    output {
-      elasticsearch {
-        hosts => ["elasticsearch:9200"]
-        user => "${ELASTIC_USERNAME}"
-        password => "${ELASTIC_PASSWORD}"
-        index => "logs-gateway-%{+YYYY.MM.dd}"
-        action => "create"
-      }
-    }
