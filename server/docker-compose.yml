@@ -48,6 +48,8 @@ services:
       - CONFIG_SERVICE_URL=config-service-app
       - NOTIFICATION_SERVICE_URL=notification-service-app
       - DOMAIN_NAME=i12a404.p.ssafy.io
+      - USER_SERVICE_REDIS_NAME=kiwi-redis-user
+      - USER_SERVICE_REDIS_PORT=6379
     deploy:
       replicas: 1
     networks:
