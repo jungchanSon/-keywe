@@ -39,18 +39,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
+import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.presentation.profile.viewmodel.EditMemberViewModel
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
-import com.ssafy.keywe.ui.theme.body1
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
@@ -58,123 +58,99 @@ import com.ssafy.keywe.ui.theme.primaryColor
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
-fun EditMember(
-    navController: NavController, viewModel: EditMemberViewModel = hiltViewModel(),
+fun EditMemberScreen(
+    navController: NavController,
+    viewModel: EditMemberViewModel = hiltViewModel(),
     profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    // 프로필 이미지 선택
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { viewModel.updateProfileImage(it) }
     }
+    val profileId by ProfileIdManager.profileId.collectAsStateWithLifecycle()
+    // 기존 프로필 정보 불러오기
+    LaunchedEffect(Unit) {
+        viewModel.loadProfile()
+    }
 
-    Scaffold(
-        topBar = {
-            DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
-                TextButton(onClick = {
-//                    viewModel.updateProfile(profileViewModel)
-                    navController.popBackStack()
-                }
-                ) {
-                    Text("완료", color = primaryColor)
-                }
-            })
-        },
+    Scaffold(topBar = {
+        DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
+            TextButton(onClick = {
+                viewModel.updateProfile(profileViewModel)
+                navController.popBackStack(
+                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
+                    false
+                )
+            }) {
+                Text("완료", color = primaryColor)
+            }
+        })
+    },
         modifier = Modifier
             .fillMaxSize()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
+            .clickable(interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = { focusManager.clearFocus() } // 빈 공간 클릭 시 포커스 제거
-            )
-    ) { paddingValues ->
+            )) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 24.dp)
-                    .clickable { imagePicker.launch("image/*") }
-            ) {
-                // 프로필 이미지
-                Image(
-                    painter = painterResource(id = R.drawable.humanimage),
-                    contentDescription = "프로필 이미지",
-                    modifier = Modifier.fillMaxSize()
-                )
+            Box(modifier = Modifier
+                .size(150.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 24.dp)
+                .clickable { imagePicker.launch("image/*") })
+            // 프로필 이미지 섹션
+            ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
 
-                // 수정하기 버튼
-                Image(
-                    painter = painterResource(id = R.drawable.edit),
-                    contentDescription = "프로필 수정하기 버튼",
-                    modifier = Modifier
-                        .size(13.dp)
-                        .align(Alignment.BottomEnd)
-                        .clickable { /*프로필 이미지 수정하기 페이지*/ }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 이름 입력 필드
+            DefaultTextFormField(label = "이름",
+                placeholder = state.name,
+                text = state.name,
+                onValueChange = { viewModel.onNameChange(it) })
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 부모일 경우 추가 필드
+            if (state.role == "PARENT") {
+                PhoneNumberInput(viewModel = viewModel)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                DefaultTextFormField(
+                    label = "간편 비밀번호",
+                    placeholder = "비밀번호 숫자 4자리를 입력해주세요.",
+                    text = state.password,
+                    onValueChange = { viewModel.onSimplePasswordChange(it) },
+                    isPassword = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
 
-            // 기존 이름 탭, 부모 표시
-            Text(
-                text = "김동철",  //state.name
-                style = body1,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            // 이름 입력
-            DefaultTextFormField(
-                label = "이름",
-                placeholder = state.name, //기존에 저장한 이름 넣기
-                text = state.name,
-                onValueChange = { viewModel.onNameChange(it) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 휴대폰 번호
-            PhoneNumberInput(viewModel = viewModel)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 간편 비밀번호
-            DefaultTextFormField(
-                label = "간편 비밀번호",
-                placeholder = "간편 비밀번호 숫자 4자리를 입력해주세요.",
-                text = state.password,
-                onValueChange = { viewModel.onSimplePasswordChange(it) },
-                isPassword = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
-
             Spacer(modifier = Modifier.weight(1f))
 
-            // 프로필 삭제하기 버튼
+            // 삭제 버튼
             TextButton(
+
                 onClick = {
-                    AlertDialog.Builder(context)
-                        .setTitle("프로필 삭제")
-                        .setMessage("정말로 이 프로필을 삭제하시겠습니까?")
-                        .setPositiveButton("삭제") { _, _ ->
-                            viewModel.deleteProfile()
-                            navController.navigateUp()
-                        }
-                        .setNegativeButton("취소", null)
-                        .show()
-                },
-                modifier = Modifier
+                    profileId?.let {
+                        AlertDialog.Builder(context).setTitle("프로필 삭제")
+                            .setMessage("정말로 이 프로필을 삭제하시겠습니까?").setPositiveButton("삭제") { _, _ ->
+                                viewModel.deleteProfile(it)
+                                navController.navigateUp() // 삭제 후 이전 화면으로 이동
+                            }.setNegativeButton("취소", null).show()
+                    }
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp)
             ) {
@@ -186,6 +162,30 @@ fun EditMember(
     }
 }
 
+// 📌 프로필 이미지 선택기
+@Composable
+fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) {
+    Box(modifier = Modifier
+        .size(150.dp)
+        .padding(vertical = 24.dp)
+        .clickable { imagePicker() }) {
+        // 기본 프로필 이미지
+        Image(
+            painter = painterResource(id = R.drawable.humanimage),
+            contentDescription = "프로필 이미지",
+            modifier = Modifier.fillMaxSize()
+//                .align(Alignment.BottomEnd)
+        )
+
+        // 수정 버튼 아이콘
+        Image(painter = painterResource(id = R.drawable.edit),
+            contentDescription = "프로필 수정 버튼",
+            modifier = Modifier
+                .size(20.dp)
+                .align(Alignment.BottomEnd)
+                .clickable { imagePicker() })
+    }
+}
 
 @Composable
 fun PhoneNumberInput(viewModel: EditMemberViewModel) {
@@ -232,3 +232,4 @@ fun PhoneNumberInput(viewModel: EditMemberViewModel) {
         )
     }
 }
+

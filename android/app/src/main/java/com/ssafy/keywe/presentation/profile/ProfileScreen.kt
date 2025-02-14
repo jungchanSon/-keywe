@@ -11,15 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
@@ -27,6 +29,7 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.component.OrderStaticsBox
+import com.ssafy.keywe.presentation.profile.viewmodel.ProfileDetailViewModel
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.subtitle1
 import kotlinx.coroutines.launch
@@ -36,8 +39,12 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     navController: NavController,
     tokenManager: TokenManager,
+    viewModel: ProfileDetailViewModel = hiltViewModel()
+) {
+//    val profileData by viewModel.profileData.collectAsStateWithLifecycle()
 
-    ) {
+    val profileData = viewModel.profileData.collectAsState()
+
     Scaffold(
         topBar = { DefaultAppBar(title = "프로필", navController = navController) },
 //        modifier = Modifier.fillMaxSize()
@@ -66,11 +73,21 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "김동철", style = h6sb, modifier = Modifier.padding(top = 8.dp)
+                        text = profileData.value?.name ?: "",
+                        style = h6sb,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                     Text(
-                        text = "Keywe@ssafy.com", style = subtitle1, color = Color.Gray
+                        text = profileData.value?.role ?: "",
+                        style = subtitle1,
+                        color = Color.Gray
                     )
+//                    Text(
+//                        text = "김동철", style = h6sb, modifier = Modifier.padding(top = 8.dp)
+//                    )
+//                    Text(
+//                        text = "Keywe@ssafy.com", style = subtitle1, color = Color.Gray
+//                    )
                 }
             }
 

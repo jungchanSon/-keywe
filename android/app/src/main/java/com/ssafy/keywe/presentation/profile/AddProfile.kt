@@ -76,16 +76,35 @@ fun AddMemberScreen(
 ) {
     val backStackEntry =
         navController.getBackStackEntry<Route.ProfileBaseRoute.ProfileChoiceRoute>()
+    val isJoinApp = backStackEntry?.arguments?.getBoolean("isJoinApp") ?: false
     val profileViewModel = hiltViewModel<ProfileViewModel>(backStackEntry)
 
     val state = viewModel.state.collectAsState().value
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(Unit) {
-        viewModel.profileAddedEvent.collect {
-            navController.popBackStack()
-        }
-    }
+
+    //화면열때마다 api 갱신(추가하기 버튼에 해놨지롱)
+//    LaunchedEffect(Unit) {
+//        viewModel.profileAddedEvent.collect {
+//            Log.d("AddMemberScreen", "Add Routing")
+//
+//            profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
+//
+//            if (isJoinApp) {
+//                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = true))
+//                {
+//                    popUpTo(0) {
+//                        inclusive = false
+//                    }  // 기존 스택을 유지할지 여부 설정, true로 이동하면서 popupto로 스택정리
+//                }
+//            } else {
+//                // false로 popbackstack 사용하여 이동
+//                navController.popBackStack(
+//                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+//                )
+//            }
+//        }
+//    }
 
 
     Scaffold(
@@ -231,11 +250,27 @@ fun AddMemberScreen(
             // 추가하기 버튼
             Button(
                 onClick = {
-                    viewModel.postProfile()
-                    navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = false))
-//                    {
-//                        popUpTo(Route.ProfileBaseRoute) { inclusive = false }  // 기존 스택을 유지할지 여부 설정
-//                    }
+                    viewModel.postProfile(
+                        onSuccess = {
+                            profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
+
+                            if (isJoinApp) {
+                                // profileChoiceScreen(true)로 이동하면서 스택 정리
+                                navController.navigate(
+                                    Route.ProfileBaseRoute.ProfileChoiceRoute(
+                                        isJoinApp = true
+                                    )
+                                ) {
+                                    popUpTo(0) { inclusive = false }
+                                }
+                            } else {
+                                // profileChoiceScreen(false)로 popBackStack() 사용하여 이동
+                                navController.popBackStack(
+                                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+                                )
+                            }
+                        }
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -246,213 +281,41 @@ fun AddMemberScreen(
                 Text("추가하기")
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-        }
-    }
-}
 
-//@Composable
-//fun AddMemberScreen(
-//    navController: NavController,
-//    viewModel: AddMemberViewModel = hiltViewModel(),
-//    profileViewModel: ProfileViewModel = hiltViewModel()
-////    viewModel: AddMemberViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-//) {
-//    val state = viewModel.state.collectAsState().value
-//    val focusManager = LocalFocusManager.current
-//
-//    Scaffold(
-//        topBar = { DefaultAppBar(title = "구성원 추가", navController = navController) },
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .clickable(
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = null,
-//                onClick = {
-//                    focusManager.clearFocus()
-//                }
-//            )
-//    ) { innerPadding ->
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(innerPadding)
-//                .padding(horizontal = 24.dp)
-//        ) {
-//            // 프로필 이미지
-//            Box(
-//                modifier = Modifier
-//                    .size(150.dp)
-//                    .align(Alignment.CenterHorizontally)
-//            ) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.humanimage),
-//                    contentDescription = "프로필 이미지",
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .clickable { /*프로필 이미지 확대*/ }
-//                )
-//                Image(
-//                    painter = painterResource(id = R.drawable.edit),
-//                    contentDescription = "프로필 수정하기 버튼",
-//                    modifier = Modifier
-//                        .size(13.dp)
-//                        .align(Alignment.BottomEnd)
-//                        .clickable { /*프로필 이미지 수정*/ }
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.height(24.dp))
-//
-//            // 부모/자녀 토글
-//            ParentChildToggle(
-//                selectedTab = state.selectedTab,
-//                onTabSelected = { viewModel.onTabSelect(it) },
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//
-//            Spacer(modifier = Modifier.height(24.dp))
-//
-//            // 이름 입력 (항상 표시)
-//            DefaultTextFormField(
-//                label = "이름",
-//                placeholder = "이름을 입력해주세요.",
-//                text = state.name,
-//                onValueChange = { viewModel.onNameChange(it) },
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//
-//            // 부모님일 경우에만 추가 필드들 표시
-//            if (state.selectedTab == 0) {
-//                Spacer(modifier = Modifier.height(16.dp))
-//
-//                PhoneNumberInput(viewModel)
-//
-//                Spacer(modifier = Modifier.height(16.dp))
-//
-//
-//                // 인증번호 필드
-//                Column(modifier = Modifier.fillMaxWidth()) {
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Text(
-//                            text = "인증번호",
-//                            style = button,
-//                            modifier = Modifier.padding(bottom = 8.dp)
-//                        )
-//                        if (state.verificationStatus != VerificationStatus.NONE) {
-//                            Text(
-//                                text = when (state.verificationStatus) {
-//                                    VerificationStatus.SUCCESS -> "인증 성공"
-//                                    VerificationStatus.FAILURE -> "인증 실패"
-//                                    else -> "인증번호 전송"
-//                                },
-//                                style = overline,
-//                                modifier = Modifier.padding(bottom = 8.dp)
-//                            )
-//                        }
-//                    }
-//
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Box(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .height(52.dp)
-//                                .background(greyBackgroundColor, shape = RoundedCornerShape(8.dp)),
-//                            contentAlignment = Alignment.Center
-//                        ) {
-//                            BasicTextField(
-//                                value = state.verificationCode,
-//                                onValueChange = {
-//                                    if (it.length <= 6 && it.all { char -> char.isDigit() }) {
-//                                        viewModel.onVerificationCodeChange(it)
-//                                    }
-//                                },
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-//                                textStyle = body2,
-//                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//                                singleLine = true
-//                            )
-//                            if (state.verificationCode.isEmpty()) {
-//                                Text(
-//                                    text = "인증번호를 입력해주세요",
-//                                    style = body2.copy(color = Color.Gray),
-//                                    modifier = Modifier
-//                                        .padding(horizontal = 16.dp)
-//                                        .align(Alignment.CenterStart)
-//                                )
-//                            }
-//                        }
-//
-//                        Spacer(modifier = Modifier.width(8.dp))
-//
-//                        Button(
-//                            onClick = { viewModel.sendVerification() },
-//                            modifier = Modifier
-//                                .height(52.dp)
-//                                .width(120.dp),
-//                            colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-//                            enabled = state.isPhoneValid && !state.isVerificationSent
-//                        ) {
-//                            Text(text = "확인")
-//                        }
-//                    }
-//                }
-//
-//
-//                Spacer(modifier = Modifier.height(16.dp))
-//
-//                // 간편 비밀번호
-//                DefaultTextFormField(
-//                    label = "간편 비밀번호",
-//                    placeholder = "간편 비밀번호 숫자자리를 입력해주세요.",
-//                    text = state.simplePassword,
-//                    onValueChange = { viewModel.onSimplePasswordChange(it) },
-//                    isPassword = true,
-//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//                    modifier = Modifier.fillMaxWidth()
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.weight(1f))
-//
 //            // 추가하기 버튼
 //            Button(
 //                onClick = {
-//                    viewModel.addMember()
-//                    navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute) {
-//                        popUpTo(Route.ProfileBaseRoute.ProfileChoiceRoute) { inclusive = true }
-//                    }
+//                    viewModel.postProfile(
+//                        onSuccess = {
+//                            navController.popBackStack(
+//                                Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+//                            )
+//                        }
+//                    )
+////                    viewModel.postProfile()
+////                    val backstack =
+////                        navController.getBackStackEntry<Route.ProfileBaseRoute.ProfileAddRoute>()
+//
+////                    viewModel.postProfile()
+//
+////                    navController.popBackStack()
+////                    backstack.destination
+//
+////                    Log.d("NavBackStack", "현재화면 : $currentRoute")
 //                },
 //                modifier = Modifier
 //                    .fillMaxWidth()
 //                    .height(48.dp),
 //                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-//                enabled = if (state.selectedTab == 0) {
-//                    state.name.isNotEmpty() &&
-//                            state.isPhoneValid &&
-//                            state.isVerificationValid &&
-//                            state.simplePassword.length == 4
-//                } else {
-//                    state.name.isNotEmpty()
-//                }
+//                enabled = viewModel.isAddButtonEnabled.collectAsState().value
 //            ) {
 //                Text("추가하기")
 //            }
-//
-//            Spacer(modifier = Modifier.height(32.dp))
-//        }
-//    }
-//}
+
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
 
 
 // 부모, 자녀 토글
@@ -549,18 +412,6 @@ fun PhoneNumberInput(viewModel: AddMemberViewModel) {
     }
 }
 
-//@Composable
-//fun rememberImagePicker(
-//    viewModel: AddMemberViewModel
-//): ActivityResultLauncher<String> {
-//    val launcher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.GetContent()
-//    ) { uri: Uri? ->
-//        uri?.let { viewModel.updateProfileImage(it) }
-//    }
-//
-//    return launcher
-//}
 
 @Composable
 fun ProfileImagePicker(

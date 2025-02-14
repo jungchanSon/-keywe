@@ -10,5 +10,5 @@ interface AuthRepository {
     suspend fun login(loginRequest: LoginRequest): ResponseResult<LoginModel>
     suspend fun ceoLogin(ceoLoginRequest: CEOLoginRequest): ResponseResult<CEOLoginModel>
     suspend fun selectProfile(selectProfileRequest: SelectProfileRequest): ResponseResult<SelectProfileModel>
-    suspend fun signUp(signUpRequest: SignUpRequest): ResponseResult<SignUpModel>
+    suspend fun signUp(signUpRequest: SignUpRequest): ResponseResult<Unit>
 }

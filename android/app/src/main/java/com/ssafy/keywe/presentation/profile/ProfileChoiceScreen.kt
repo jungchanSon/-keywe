@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Text
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,15 +52,22 @@ fun ProfileChoiceScreen(
     profileViewModel: ProfileViewModel = hiltViewModel(),
     fcmViewModel: FCMViewModel = hiltViewModel(),
 ) {
-    val profiles by profileViewModel.profiles.collectAsStateWithLifecycle()
+    val profiles by profileViewModel.profiles.collectAsStateWithLifecycle() // 프로필뷰모델에서 프로필 목록을 자동으로 업데이트하기
     val parentProfiles = profiles.filter { it.role == PARENT }
     val childProfiles = profiles.filter { it.role == CHILD }
-    val token by PushNotificationManager.token.collectAsStateWithLifecycle()
+    val token by PushNotificationManager.token.collectAsStateWithLifecycle() // 프로필 id도 해야함
+
+    //화면이 다시 나타날떄마다 api 다시 조회
+    LaunchedEffect(Unit) {
+        profileViewModel.refreshProfileList()
+    }
 
     Scaffold(
         topBar = { DefaultAppBar(title = "계정 관리", navController = navController) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
+
+
         if (profiles.isEmpty()) {
             // 프로필이 없을 때의 UI
             Column(
@@ -69,6 +77,7 @@ fun ProfileChoiceScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Text("isJoin $isJoinApp")
                 Box(
                     modifier = Modifier
                         .size(120.dp)
@@ -97,6 +106,7 @@ fun ProfileChoiceScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 24.dp)
             ) {
+                Text("isJoin $isJoinApp")
                 // 부모 프로필 섹션
                 if (parentProfiles.isNotEmpty()) {
                     Text(
@@ -111,14 +121,12 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, token, fcmViewModel, navController
                                 )
+                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
 
                         },
-//                        , onAddClick = {
-//                        navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
-//                    },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -137,6 +145,7 @@ fun ProfileChoiceScreen(
                                 joinHome(
                                     profileViewModel, profile, token, fcmViewModel, navController
                                 )
+                                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }

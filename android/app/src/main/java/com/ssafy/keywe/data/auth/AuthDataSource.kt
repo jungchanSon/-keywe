@@ -8,11 +8,10 @@ import com.ssafy.keywe.data.dto.auth.LoginResponse
 import com.ssafy.keywe.data.dto.auth.SelectProfileRequest
 import com.ssafy.keywe.data.dto.auth.SelectProfileResponse
 import com.ssafy.keywe.data.dto.auth.SignUpRequest
-import com.ssafy.keywe.data.dto.auth.SignUpResponse
 
 interface AuthDataSource {
     suspend fun requestLogin(loginRequest: LoginRequest): ResponseResult<LoginResponse>
     suspend fun requestCeoLogin(ceoLoginRequest: CEOLoginRequest): ResponseResult<CEOLoginResponse>
     suspend fun requestSelectProfile(selectProfileRequest: SelectProfileRequest): ResponseResult<SelectProfileResponse>
-    suspend fun requestSignUp(signUpRequest: SignUpRequest): ResponseResult<SignUpResponse>
+    suspend fun requestSignUp(signUpRequest: SignUpRequest): ResponseResult<Unit>
 }

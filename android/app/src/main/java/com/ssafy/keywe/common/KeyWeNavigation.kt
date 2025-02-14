@@ -24,7 +24,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.presentation.profile.AddMemberScreen
-import com.ssafy.keywe.presentation.profile.EditMember
+import com.ssafy.keywe.presentation.profile.EditMemberScreen
 import com.ssafy.keywe.presentation.profile.EmailVerification
 import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
@@ -91,6 +91,9 @@ sealed interface Route {
 
         @Serializable
         data object ProfileEmailVerifyRoute : Route
+
+        @Serializable
+        data object ProfileScreenRoute : Route
     }
 
 //    @Serializable
@@ -137,11 +140,17 @@ fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager:
         composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
         composable<Route.ProfileBaseRoute.ProfileChoiceRoute> {
             val args = it.toRoute<Route.ProfileBaseRoute.ProfileChoiceRoute>()
-            ProfileChoiceScreen(navController, args.isJoinApp)  
+            ProfileChoiceScreen(navController, args.isJoinApp)
         }
-        composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMember(navController) }
+        composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMemberScreen(navController) }
         composable<Route.ProfileBaseRoute.ProfileEmailVerifyRoute> { EmailVerification(navController) }
         composable<Route.ProfileBaseRoute.ProfileAddRoute> { AddMemberScreen(navController) }
+        composable<Route.ProfileBaseRoute.ProfileScreenRoute> {
+            ProfileScreen(
+                navController,
+                tokenManager
+            )
+        }
     }
 }
 
@@ -183,18 +192,3 @@ fun NavGraphBuilder.menuGraph(navController: NavHostController, menuCartViewMode
         }
     }
 }
-
-//fun NavGraphBuilder.kioskGraph(navController: NavHostController) {
-//    navigation<Route.KioskBaseRoute>(startDestination = Route.KioskBaseRoute.KioskPhoneNumberRoute) {
-//        composable<Route.KioskBaseRoute.KioskPhoneNumberRoute> {
-//            InputPhoneNumberScreen(
-//                navController
-//            )
-//        }
-//        composable<Route.KioskBaseRoute.KioskPasswordRoute> {
-//            InputPasswordScreen(
-//                navController
-//            )
-//        }
-//    }
-//}
