@@ -83,13 +83,25 @@ fun AddMemberScreen(
     val focusManager = LocalFocusManager.current
 
 
+    //화면열때마다 api 갱신(추가하기 버튼에 해놨지롱)
 //    LaunchedEffect(Unit) {
 //        viewModel.profileAddedEvent.collect {
 //            Log.d("AddMemberScreen", "Add Routing")
 //
-//            navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = true))
-//            {
-//                popUpTo(0) { inclusive = false }  // 기존 스택을 유지할지 여부 설정
+//            profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
+//
+//            if (isJoinApp) {
+//                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = true))
+//                {
+//                    popUpTo(0) {
+//                        inclusive = false
+//                    }  // 기존 스택을 유지할지 여부 설정, true로 이동하면서 popupto로 스택정리
+//                }
+//            } else {
+//                // false로 popbackstack 사용하여 이동
+//                navController.popBackStack(
+//                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+//                )
 //            }
 //        }
 //    }
@@ -240,21 +252,25 @@ fun AddMemberScreen(
                 onClick = {
                     viewModel.postProfile(
                         onSuccess = {
-                            navController.popBackStack(
-                                Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
-                            )
+                            profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
+
+                            if (isJoinApp) {
+                                // profileChoiceScreen(true)로 이동하면서 스택 정리
+                                navController.navigate(
+                                    Route.ProfileBaseRoute.ProfileChoiceRoute(
+                                        isJoinApp = true
+                                    )
+                                ) {
+                                    popUpTo(0) { inclusive = false }
+                                }
+                            } else {
+                                // profileChoiceScreen(false)로 popBackStack() 사용하여 이동
+                                navController.popBackStack(
+                                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+                                )
+                            }
                         }
                     )
-//                    viewModel.postProfile()
-//                    val backstack =
-//                        navController.getBackStackEntry<Route.ProfileBaseRoute.ProfileAddRoute>()
-
-//                    viewModel.postProfile()
-
-//                    navController.popBackStack()
-//                    backstack.destination
-
-//                    Log.d("NavBackStack", "현재화면 : $currentRoute")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -264,6 +280,37 @@ fun AddMemberScreen(
             ) {
                 Text("추가하기")
             }
+
+
+//            // 추가하기 버튼
+//            Button(
+//                onClick = {
+//                    viewModel.postProfile(
+//                        onSuccess = {
+//                            navController.popBackStack(
+//                                Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+//                            )
+//                        }
+//                    )
+////                    viewModel.postProfile()
+////                    val backstack =
+////                        navController.getBackStackEntry<Route.ProfileBaseRoute.ProfileAddRoute>()
+//
+////                    viewModel.postProfile()
+//
+////                    navController.popBackStack()
+////                    backstack.destination
+//
+////                    Log.d("NavBackStack", "현재화면 : $currentRoute")
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(48.dp),
+//                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+//                enabled = viewModel.isAddButtonEnabled.collectAsState().value
+//            ) {
+//                Text("추가하기")
+//            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }
