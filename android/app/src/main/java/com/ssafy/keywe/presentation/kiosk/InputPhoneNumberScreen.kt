@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +68,14 @@ fun InputPhoneNumberScreen(
     val isCheckProfileDialogOpen by kioskViewModel.isCheckProfileDialogOpen.collectAsStateWithLifecycle()
     val phoneNumber by kioskViewModel.phoneNumber.collectAsStateWithLifecycle()
 
-    val isPhoneNumberValid = phoneNumber1.length == 3 && phoneNumber2.length == 4 && phoneNumber3.length == 4
+    val isPhoneNumberValid =
+        phoneNumber1.length == 3 && phoneNumber2.length == 4 && phoneNumber3.length == 4
+
+    LaunchedEffect(isCheckProfileDialogOpen) {
+        if (!isCheckProfileDialogOpen) {
+
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -81,8 +89,7 @@ fun InputPhoneNumberScreen(
     ) {
         // 개별 삭제 다이얼로그
         if (isCheckProfileDialogOpen) {
-            NoTitleTwoButtonDialog(
-                description = "김노인 님이 맞습니까?\n$phoneNumber",
+            NoTitleTwoButtonDialog(description = "김노인 님이 맞습니까?\n$phoneNumber",
                 onCancel = { kioskViewModel.closeCheckProfileDialog() },
                 onConfirm = {
                     kioskViewModel.closeCheckProfileDialog()
@@ -109,45 +116,42 @@ fun InputPhoneNumberScreen(
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(modifier = Modifier.padding(top = 40.dp, bottom = 10.dp),
-                        text = "본인 휴대폰 번호를 입력해주세요.", style = h6.copy(letterSpacing = 0.sp)
+                    Text(
+                        modifier = Modifier.padding(top = 40.dp, bottom = 10.dp),
+                        text = "본인 휴대폰 번호를 입력해주세요.",
+                        style = h6.copy(letterSpacing = 0.sp)
                     )
                 }
 
                 PhoneNumberDisplay(phoneNumber1, phoneNumber2, phoneNumber3)
 
-                KeypadScreen(
-                    onNumberClick = { number ->
-                        if (number == "Backspace") return@KeypadScreen
+                KeypadScreen(onNumberClick = { number ->
+                    if (number == "Backspace") return@KeypadScreen
 
-                        if (phoneNumber1.length < 3) {
-                            phoneNumber1 += number
-                        } else if (phoneNumber2.length < 4) {
-                            phoneNumber2 += number
-                        } else if (phoneNumber3.length < 4) {
-                            phoneNumber3 += number
-                        }
-                    },
-                    onBackspaceClick = {
-                        when {
-                            phoneNumber3.isNotEmpty() -> phoneNumber3 = phoneNumber3.dropLast(1)
-                            phoneNumber2.isNotEmpty() -> phoneNumber2 = phoneNumber2.dropLast(1)
-                            phoneNumber1.isNotEmpty() -> phoneNumber1 = phoneNumber1.dropLast(1)
-                        }
-                    },
-                    onConfirmClick = {
-                        if (isPhoneNumberValid) {
-                            kioskViewModel.clearInputPassword()
-                            val fullNumber = "${phoneNumber1}-${phoneNumber2}-${phoneNumber3}"
-                            kioskViewModel.updatePhoneNumber(fullNumber) // ViewModel에 저장
-                            kioskViewModel.openCheckProfileDialog()
-                        }
+                    if (phoneNumber1.length < 3) {
+                        phoneNumber1 += number
+                    } else if (phoneNumber2.length < 4) {
+                        phoneNumber2 += number
+                    } else if (phoneNumber3.length < 4) {
+                        phoneNumber3 += number
+                    }
+                }, onBackspaceClick = {
+                    when {
+                        phoneNumber3.isNotEmpty() -> phoneNumber3 = phoneNumber3.dropLast(1)
+                        phoneNumber2.isNotEmpty() -> phoneNumber2 = phoneNumber2.dropLast(1)
+                        phoneNumber1.isNotEmpty() -> phoneNumber1 = phoneNumber1.dropLast(1)
+                    }
+                }, onConfirmClick = {
+                    if (isPhoneNumberValid) {
+                        kioskViewModel.clearInputPassword()
+                        val fullNumber = "${phoneNumber1}-${phoneNumber2}-${phoneNumber3}"
+                        kioskViewModel.updatePhoneNumber(fullNumber) // ViewModel에 저장
+                        kioskViewModel.openCheckProfileDialog()
+                    }
 
-                    },
-                    onBackClick = {
-                        navController.popBackStack()
-                    },
-                    isConfirmEnabled = isPhoneNumberValid
+                }, onBackClick = {
+                    navController.popBackStack()
+                }, isConfirmEnabled = isPhoneNumberValid
                 )
             }
         }
