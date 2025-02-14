@@ -1,6 +1,7 @@
 package com.kiosk.server.user.controller;
 
 import com.kiosk.server.user.controller.dto.*;
+import com.kiosk.server.user.service.CeoLoginService;
 import com.kiosk.server.user.service.FindUserProfileByIdService;
 import com.kiosk.server.user.service.KioskUserLoginService;
 import com.kiosk.server.user.service.UserLoginService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final CeoLoginService ceoLoginService;
     private final UserLoginService userLoginService;
     private final KioskUserLoginService kioskUserLoginService;
     private final FindUserProfileByIdService findUserProfileByIdService;
@@ -34,7 +36,7 @@ public class AuthController {
     public ResponseEntity<ProfileLoginResponse> getUserProfile(@RequestHeader("userId") Long userId, @Validated @RequestBody UserProfileRequest request) {
         log.info("Request User Profile Id: {}", request.profileId());
         String authToken = findUserProfileByIdService.doService(userId, request.profileId());
-        ProfileLoginResponse response = new ProfileLoginResponse(authToken, String.valueOf(userId));
+        ProfileLoginResponse response = new ProfileLoginResponse(authToken);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -48,4 +50,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResult);
     }
 
+    @PostMapping("/ceo/login")
+    public ResponseEntity<CeoLoginResult> ceoLogin(@RequestBody UserLoginRequest request) {
+        log.info("Request Ceo Login email: {}", request.email());
+        CeoLoginResult ceoLoginResult = ceoLoginService.doService(request.email(), request.password());
+        return ResponseEntity.status(HttpStatus.OK).body(ceoLoginResult);
+    }
 }
