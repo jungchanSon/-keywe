@@ -5,9 +5,11 @@ import com.kiosk.order.application.port.outbound.OrderMenuCommandPort;
 import com.kiosk.order.application.service.order.vo.OrderVO;
 import com.kiosk.order.domain.mapper.OrderMenuMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderMenuWriter implements OrderMenuCommand {
@@ -19,6 +21,10 @@ public class OrderMenuWriter implements OrderMenuCommand {
     @Override
     @Transactional
     public long create(OrderVO.OrderMenu orderMenu, long orderId) {
-        return orderMenuCommandPort.create(orderMenuMapper.toDomain(orderMenu, orderId));
+        log.info("[TRANSACTION-SUB2-START]");
+        long orderMenuId = orderMenuCommandPort.create(orderMenuMapper.toDomain(orderMenu, orderId));
+        log.info("[TRANSACTION-SUB2-END]");
+
+        return orderMenuId;
     }
 }

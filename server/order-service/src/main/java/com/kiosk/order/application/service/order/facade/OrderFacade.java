@@ -6,9 +6,11 @@ import com.kiosk.order.application.service.order.OrderMenuWriter;
 import com.kiosk.order.application.service.order.OrderWriter;
 import com.kiosk.order.application.service.order.vo.OrderVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderFacade implements OrderUseCase {
@@ -20,7 +22,7 @@ public class OrderFacade implements OrderUseCase {
     @Override
     @Transactional
     public long commandOrder(OrderVO.save order) {
-
+        log.info("[TRANSACTION-START] 주문하기, shopId={}, phoneNumber={}", order.shopId(), order.phoneNumber());
         long orderId = orderWriter.create(order);
 
         order.menuList().forEach(
@@ -28,7 +30,7 @@ public class OrderFacade implements OrderUseCase {
                     long orderMenuId = orderMenuWriter.create(orderMenu, orderId);
                     saveOptionInMenu(orderMenu, orderId, orderMenuId);
                 });
-
+        log.info("[TRANSACTION-END] 주문하기, shopId={}, phoneNumber={}", order.shopId(), order.phoneNumber());
         return orderId;
     }
 
