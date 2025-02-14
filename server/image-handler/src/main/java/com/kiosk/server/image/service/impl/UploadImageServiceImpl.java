@@ -1,9 +1,10 @@
-package com.kiosk.server.store.service.impl;
+package com.kiosk.server.image.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
-import com.kiosk.server.store.domain.MenuImageRepository;
-import com.kiosk.server.store.domain.MenuImage;
-import com.kiosk.server.store.service.UploadImageService;
+import com.kiosk.server.image.domain.Image;
+import com.kiosk.server.image.repository.MenuImageRepository;
+import com.kiosk.server.image.repository.ProfileImageRepository;
+import com.kiosk.server.image.service.UploadImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,15 +19,17 @@ import java.util.Set;
 public class UploadImageServiceImpl implements UploadImageService {
 
     private final MenuImageRepository menuImageRepository;
+    private final ProfileImageRepository profileImageRepository;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png");
 
+
     @Override
-    public void doService(long userId, long menuId, MultipartFile file) {
-        log.info("UploadImageService: userId={}, menuId={}, fileName={}", userId, menuId, file != null ? file.getOriginalFilename() : "null");
+    public void doService(long userId, long targetId, MultipartFile file, String type) {
+        log.info("UploadImageService: userId={}, menuId={}, fileName={}, type={}", userId, targetId, file != null ? file.getOriginalFilename() : "null", type);
 
         // 파일 존재 여부 확인
         if (file == null || file.isEmpty()) {
-            log.warn("이미지 업로드 실패 - 파일 없음, userId={}, menuId={}", userId, menuId);
+            log.warn("이미지 업로드 실패 - 파일 없음, userId={}, menuId={}", userId, targetId);
             throw new BadRequestException("파일이 선택되지 않았습니다. 업로드할 파일을 선택해 주세요.");
         }
 
@@ -38,12 +41,16 @@ public class UploadImageServiceImpl implements UploadImageService {
             byte[] imageBytes = file.getBytes();
 
             // 이미지 정보 DB 저장
-            MenuImage image = MenuImage.create(userId, menuId, imageBytes);
-            menuImageRepository.insert(image);
+            Image image = Image.create(userId, targetId, imageBytes);
+            if(type.equals("menu")){
+                menuImageRepository.insert(image);
+            } else{
+                profileImageRepository.insert(image);
+            }
 
-            log.info("이미지 업로드 완료 - userId={}, menuId={}, fileSize={} bytes", userId, menuId, imageBytes.length);
+            log.info("이미지 업로드 완료 - userId={}, menuId={}, fileSize={} bytes", userId, targetId, imageBytes.length);
         } catch (IOException e) {
-            log.error("이미지 파일 처리 중 오류 발생 - userId={}, menuId={}, error={}", userId, menuId, e.getMessage(), e);
+            log.error("이미지 파일 처리 중 오류 발생 - userId={}, menuId={}, error={}", userId, targetId, e.getMessage(), e);
             throw new RuntimeException("이미지 파일 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
         }
     }
