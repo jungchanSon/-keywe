@@ -1,6 +1,7 @@
 package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
+import com.kiosk.server.user.controller.dto.LoginResponse;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
 import com.kiosk.server.user.service.UserLoginService;
@@ -19,7 +20,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     private final UserRepository userRepository;
 
     @Override
-    public String doService(String email, String inputPassword) {
+    public LoginResponse doService(String email, String inputPassword) {
         log.info("UserLoginService: email={}", email);
 
         User foundUser = userRepository.findByEmail(email);
@@ -37,9 +38,11 @@ public class UserLoginServiceImpl implements UserLoginService {
             throw new UnauthorizedException("인증에 실패했습니다. 올바른 비밀번호를 입력해 주세요.");
         }
 
-        log.info("로그인 성공 - userId={}", foundUser.getUserId());
-
-        return tokenUtil.createTemporaryToken(foundUser.getUserId());
-
+        if(Boolean.FALSE.equals(foundUser.getVerified())) {
+            return new LoginResponse("", false);
+        } else {
+            String accessToken = tokenUtil.createTemporaryToken(foundUser.getUserId());
+            return new LoginResponse(accessToken, true);
+        }
     }
 }

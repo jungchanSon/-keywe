@@ -1,4 +1,4 @@
 package com.kiosk.server.user.controller.dto;
 
-public record LoginResponse(String accessToken) {
+public record LoginResponse(String accessToken, Boolean emailVerified) {
 }
