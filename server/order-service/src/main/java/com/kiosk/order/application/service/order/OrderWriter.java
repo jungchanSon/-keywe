@@ -7,9 +7,11 @@ import com.kiosk.order.application.port.outbound.OrderMenuOptionCommandPort;
 import com.kiosk.order.application.service.order.vo.OrderVO;
 import com.kiosk.order.domain.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderWriter implements OrderCommand {
@@ -21,6 +23,9 @@ public class OrderWriter implements OrderCommand {
     @Override
     @Transactional
     public long create(OrderVO.save order) {
-        return orderCommandPort.create(orderMapper.toDomain(order));
+        log.info("[TRANSACTION-SUB1-START]");
+        long orderId = orderCommandPort.create(orderMapper.toDomain(order));
+        log.info("[TRANSACTION-SUB1-END]");
+        return orderId;
     }
 }
