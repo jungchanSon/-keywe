@@ -35,7 +35,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         verifyFormat(email, password);
 
         User user = User.create(email, password);
-        String verificationToken = String.valueOf(IdUtil.create());
+        String verificationToken = createVerificationToken();
 
         try {
             // 사용자 등록 먼저 진행
@@ -71,6 +71,14 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             
             본 인증 링크는 30분간 유효합니다.
             """, verificationLink);
+    }
+
+    private String createVerificationToken() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<3; i++) {
+            sb.append(IdUtil.create());
+        }
+        return sb.toString();
     }
 
     // 이메일 중복 체크
