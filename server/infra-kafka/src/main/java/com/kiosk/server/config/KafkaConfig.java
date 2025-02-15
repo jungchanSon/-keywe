@@ -17,7 +17,8 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private String servers = "kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092";
+    @Value("${kafka.url}")
+    private String servers;
 
     @Bean
     public ProducerFactory<String, String> producerFactory() {
