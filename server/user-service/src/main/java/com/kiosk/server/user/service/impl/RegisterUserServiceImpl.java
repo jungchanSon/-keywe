@@ -5,6 +5,7 @@ import com.kiosk.server.client.feign.dto.SendEmailRequest;
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.ConflictException;
 import com.kiosk.server.common.util.IdUtil;
+import com.kiosk.server.kafka.event.mapper.UserEventMapper;
 import com.kiosk.server.user.domain.EmailAuthenticationRepository;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
@@ -12,6 +13,7 @@ import com.kiosk.server.user.service.RegisterUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,9 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
     @Value("${url.server}")
     private String SERVER_BASE_URL;
+
+    private final UserEventMapper userEventMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final UserRepository userRepository;
     private final NotificationServiceClient notificationServiceClient;
@@ -36,6 +41,8 @@ public class RegisterUserServiceImpl implements RegisterUserService {
 
         User user = User.create(email, password);
         String verificationToken = createVerificationToken();
+
+        eventPublisher.publishEvent(userEventMapper.toUserCreatedEvent(user));
 
         try {
             // 사용자 등록 먼저 진행
