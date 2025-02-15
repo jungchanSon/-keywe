@@ -1,0 +1,13 @@
+image:
+  repository: rnrmf
+  name: kiwi-banking-service
+  pullPolicy: IfNotPresent
+  tag: latest
+replicaCount: 1
+containerPort: 8300
+protocol: TCP
+service:
+  type: ClusterIP
+  port: 8300
+namespace: banking
+banking_mysql_url: mysql-0.mysql.banking.svc.cluster.local
