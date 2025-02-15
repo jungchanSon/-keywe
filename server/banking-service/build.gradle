@@ -22,7 +22,7 @@ dependencies {
 
     api project(":common-http")
     api project(":infra-kafka")
-//    api project(":infra-logging")
+    api project(":infra-logging")
 }
 
 repositories {
