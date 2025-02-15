@@ -121,3 +121,24 @@ services:
       - --skip-character-set-client-handshake
     networks:
       - kiwi-service-network
+
+  kiwi-db-banking:
+    container_name: kiwi-db-banking
+    image: mysql:8.0.30
+    volumes:
+      - ./banking/conf.d:/etc/mysql/conf.d
+      - ./banking/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3366:3306"
+    environment:
+      - MYSQL_DATABASE=banking
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network
