@@ -32,4 +32,6 @@ public interface UserProfileRepository {
     UserProfile findByProfileId(long profileId);
 
     UserProfile findByPhoneAndPassword(@Param("phone") String phone, @Param("password") String password);
+
+    List<UserProfile> findByUserId(long userId);
 }

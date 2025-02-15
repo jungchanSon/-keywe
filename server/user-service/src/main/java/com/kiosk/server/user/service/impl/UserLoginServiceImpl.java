@@ -4,6 +4,7 @@ import com.kiosk.server.common.exception.custom.UnauthorizedException;
 import com.kiosk.server.user.controller.dto.LoginResponse;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
+import com.kiosk.server.user.domain.UserRole;
 import com.kiosk.server.user.service.UserLoginService;
 import com.kiosk.server.user.util.HashUtil;
 import com.kiosk.server.user.util.TokenUtil;
@@ -42,6 +43,7 @@ public class UserLoginServiceImpl implements UserLoginService {
             return new LoginResponse("", false);
         } else {
             String accessToken = tokenUtil.createTemporaryToken(foundUser.getUserId());
+            log.info("로그인 성공 - userId={}", foundUser.getUserId());
             return new LoginResponse(accessToken, true);
         }
     }
