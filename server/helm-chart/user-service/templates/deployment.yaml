@@ -23,3 +23,7 @@ spec:
               value: config-server-app-service.config.svc.cluster.local
             - name: USER_MYSQL_URL
               value: {{ .Values.springEnv.userMysqlUrl}}
+            - name: PROFILE
+              value: prod
+            - name: KAFKAURL
+              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local

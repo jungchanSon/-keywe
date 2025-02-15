@@ -2,6 +2,7 @@ package com.kiosk.server.config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -16,7 +17,8 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private String servers = "kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092";
+    @Value("${kafka.url}")
+    private String servers;
 
     @Bean
     public ProducerFactory<String, String> producerFactory() {

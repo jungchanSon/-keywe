@@ -25,4 +25,7 @@ spec:
               value: config-server-app-service.config.svc.cluster.local
             - name: REMOTE_SERVICE_REDIS
               value: redis-0.redis.remote.svc.cluster.local
-
+            - name: PROFILE
+              value: prod
+            - name: KAFKAURL
+              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local
