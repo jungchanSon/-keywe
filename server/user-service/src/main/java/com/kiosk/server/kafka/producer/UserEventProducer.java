@@ -1,6 +1,7 @@
 package com.kiosk.server.kafka.producer;
 
 import com.kiosk.server.kafka.event.UserEvent;
+import com.kiosk.server.util.KafkaEventMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -22,6 +23,6 @@ public class UserEventProducer {
     public void sendUserCreatedEvent(UserEvent.UserCreatedEvent userEvent) {
 
         log.info("회원가입 성공 이벤트 발행: userId:{}", userEvent.memberId());
-        kafkaTemplate.send(TOPIC, userEvent.toString());
+        kafkaTemplate.send(TOPIC, KafkaEventMapper.toEvent(userEvent.toString()));
     }
 }
