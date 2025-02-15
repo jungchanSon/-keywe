@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    default: ${PROFILE:local}
   application:
     name: banking
   config:

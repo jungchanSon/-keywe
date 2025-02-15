@@ -1,1 +1,1 @@
-logging.config: classpath:logback-${spring.application.name}-${spring.profiles.default}.xml
+logging.config: classpath:logback-${spring.application.name}-${profile}.xml
