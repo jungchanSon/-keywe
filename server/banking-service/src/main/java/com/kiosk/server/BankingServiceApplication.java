@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 public class BankingServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(BankingServiceApplication.class, args);
+        SpringApplication.run(BankingServiceApplication.class, args);;
     }
 }
