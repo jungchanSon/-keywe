@@ -5,3 +5,5 @@ spring:
     import:
       - optional:configserver:http://${CONFIG_SERVICE_URL:localhost}:8888
       - config-log.yml
+  kafka:
+    bootstrap-servers: bootstrap.servers=kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
