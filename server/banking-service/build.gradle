@@ -21,8 +21,8 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     api project(":common-http")
-    implementation project(":infra-kafka")
-    implementation project(":infra-logging")
+    api project(":infra-kafka")
+    api project(":infra-logging")
 }
 
 repositories {
