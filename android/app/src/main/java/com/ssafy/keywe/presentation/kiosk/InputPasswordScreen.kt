@@ -46,8 +46,6 @@ fun InputPasswordScreen(
 ) {
     val inputPassword by kioskViewModel.inputPassword.collectAsStateWithLifecycle()
 
-    val isCertificationNumberValid: Boolean = (inputPassword.length == 4)
-
     LaunchedEffect(Unit) {
         kioskViewModel.clearInputPassword() // 화면이 새로 열릴 때 초기화
     }
@@ -77,7 +75,6 @@ fun InputPasswordScreen(
                         style = h6.copy(letterSpacing = 0.sp)
                     )
                 }
-                // 인증번호 입력 필드
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

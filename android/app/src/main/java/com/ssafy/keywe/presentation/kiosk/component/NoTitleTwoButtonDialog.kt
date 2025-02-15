@@ -33,15 +33,12 @@ fun NoTitleTwoButtonDialog(
     description: String, onCancel: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-
-
     BasicAlertDialog(
         onDismissRequest = onCancel, properties = DialogProperties(
             dismissOnBackPress = false,
         )
     ) {
         Card(
-//            modifier = Modifier.padding(20.dp),
             colors = CardColors(
                 containerColor = whiteBackgroundColor,
                 contentColor = titleTextColor,

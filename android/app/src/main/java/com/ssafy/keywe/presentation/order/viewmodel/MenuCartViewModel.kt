@@ -107,7 +107,6 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                 return@launch
             }
 
-            // ✅ size와 temperature의 optionValueId 찾기
             val sizeOptionId = menuData.options
                 .flatMap { it.optionsValueGroup }
                 .find { it.optionValue == size }?.optionValueId
@@ -119,7 +118,6 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
             Timber.tag("addToCart")
                 .d("✅ 찾은 $size 의 sizeOptionId: $sizeOptionId, $temperature 의 temperatureOptionId: $temperatureOptionId")
 
-            // ✅ size와 temperature를 extraOptions에 추가
             val updatedSelectedOptions = selectedOptions.toMutableMap()
             sizeOptionId?.let { updatedSelectedOptions[it] = 1 }
             temperatureOptionId?.let { updatedSelectedOptions[it] = 1 }
@@ -131,9 +129,6 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                 optionName to count
             }
 
-            Timber.tag("addToCart")
-                .d("메뉴 추가됨: ${menuData.menuName}, $size, $temperature, 추가 옵션: $cartExtraOptions")
-
             val currentCart = _cartItems.value.toMutableList()
 
             val existingItemIndex = currentCart.indexOfFirst {
@@ -144,7 +139,6 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
             }
 
             if (existingItemIndex != -1) {
-                // ✅ 기존 아이템 수량 증가
                 currentCart[existingItemIndex] = currentCart[existingItemIndex].copy(
                     quantity = currentCart[existingItemIndex].quantity + 1
                 )
@@ -165,7 +159,6 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                         extraOptions = cartExtraOptions
                     )
                 )
-                Timber.tag("addToCart").d("🆕 새로운 아이템 추가됨")
             }
 
             // ✅ 업데이트 반영
@@ -273,29 +266,29 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         }
     }
 
-    fun getOptionTypeByOptionValueId(optionValueId: Long): String {
-        var retryCount = 0
-        var optionType: String? = null
+//    fun getOptionTypeByOptionValueId(optionValueId: Long): String {
+//        var retryCount = 0
+//        var optionType: String? = null
+//
+//        while (retryCount < 3) {
+//            optionType = selectedDetailMenu.value?.options
+//                ?.find { optionModel ->
+//                    optionModel.optionsValueGroup.any { it.optionValueId == optionValueId }
+//                }?.optionType
+//
+//            if (optionType != null) break
+//            retryCount++
+//        }
+//
+//        return optionType ?: "Unknown"
+//    }
 
-        while (retryCount < 3) {
-            optionType = selectedDetailMenu.value?.options
-                ?.find { optionModel ->
-                    optionModel.optionsValueGroup.any { it.optionValueId == optionValueId }
-                }?.optionType
-
-            if (optionType != null) break
-            retryCount++
-        }
-
-        return optionType ?: "Unknown"
-    }
-
-    private fun getOptionValueById(optionValueId: Long): String {
-        return selectedDetailMenu.value?.options
-            ?.flatMap { it.optionsValueGroup }
-            ?.find { it.optionValueId == optionValueId }
-            ?.optionValue ?: "Unknown"
-    }
+//    private fun getOptionValueById(optionValueId: Long): String {
+//        return selectedDetailMenu.value?.options
+//            ?.flatMap { it.optionsValueGroup }
+//            ?.find { it.optionValueId == optionValueId }
+//            ?.optionValue ?: "Unknown"
+//    }
 
     fun openDeleteDialog(cartItem: CartItem) {
         _selectedCartItem.value = cartItem

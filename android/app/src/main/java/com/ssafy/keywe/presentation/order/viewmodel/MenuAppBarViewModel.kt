@@ -16,11 +16,22 @@ class OrderAppBarViewModel @Inject constructor() : ViewModel() {
     private val _isStopCallingDialogOpen = MutableStateFlow(false)
     val isStopCallingDialogOpen: StateFlow<Boolean> = _isStopCallingDialogOpen.asStateFlow()
 
+    private val _isKiWiMatching = MutableStateFlow(false)
+    val isKiWiMatching: StateFlow<Boolean> = _isKiWiMatching.asStateFlow()
+
     fun toggleSpeaker() {
         _speakerSound.update { !it }
     }
 
     fun toggleUnconnect() {
         _isStopCallingDialogOpen.update { !it }
+    }
+
+    fun setKiWiMatching() {
+        _isKiWiMatching.update { true }
+    }
+
+    fun cutKiWiMatching() {
+        _isKiWiMatching.update { false }
     }
 }

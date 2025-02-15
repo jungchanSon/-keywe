@@ -75,6 +75,7 @@ fun MenuScreen(
                 onConfirm = {
                     /* 너의 action */
                     appBarViewModel.toggleUnconnect()
+                    appBarViewModel.cutKiWiMatching()
                 }
             )
         }

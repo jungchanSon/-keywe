@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -33,13 +35,6 @@ fun KioskHomeScreen(
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel,
 ) {
-//    val systemUiController = rememberSystemUiController()
-
-    // 시스템 UI 숨기기
-//    SideEffect {
-//        systemUiController.isSystemBarsVisible = false
-//    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,7 +75,9 @@ fun KioskHomeScreen(
             description = "1회용 컵\n자원 재활용법에 따라 매장 내 일회용 컵 사용이 금지되어 있습니다.",
             imageRes = R.drawable.americano,
             backgroundColor = Color(0xFFF8B991),
-            onClick = { navController.navigate(Route.MenuBaseRoute.MenuRoute) }
+            onClick = {
+                navController.navigate(Route.MenuBaseRoute.MenuRoute)
+            }
         )
 
         SelectOptionCard(
@@ -96,7 +93,10 @@ fun KioskHomeScreen(
             description = "키오스크 대리주문\n자신 또는 제 3자에게 대리 주문이 가능합니다.",
             imageRes = R.drawable.kiwibird,
             backgroundColor = primaryColor,
-            onClick = { navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute) }
+            onClick = {
+                appBarViewModel.setKiWiMatching()
+                navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
+            }
         )
     }
 }

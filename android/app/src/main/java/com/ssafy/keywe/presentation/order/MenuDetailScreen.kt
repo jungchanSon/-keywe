@@ -130,6 +130,7 @@ fun MenuDetailScreen(
                 onConfirm = {
                     /* 너의 action */
                     appBarViewModel.toggleUnconnect()
+
                 }
             )
         }

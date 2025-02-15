@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -63,6 +64,7 @@ fun DefaultOrderAppBar(
     viewModel: OrderAppBarViewModel = hiltViewModel()
 ) {
     val speakerSound by viewModel.speakerSound.collectAsState()
+    val isKiWiMatching by viewModel.isKiWiMatching.collectAsState()
 
     TopAppBar(
         backgroundColor = whiteBackgroundColor,
@@ -83,18 +85,23 @@ fun DefaultOrderAppBar(
         },
         actions = {
             IconButton(onClick = { viewModel.toggleSpeaker() }) {
-                Icon(
-                    imageVector = if (speakerSound) Icons.AutoMirrored.Filled.VolumeUp else Icons.Filled.Headset,
-                    contentDescription = if (speakerSound) "스피커폰" else "이어폰"
-                )
+                val changeCallingTypeImageVector: ImageVector? = when {
+                    isKiWiMatching && speakerSound -> Icons.AutoMirrored.Filled.VolumeUp
+                    isKiWiMatching && !speakerSound -> Icons.Filled.Headset
+                    else -> null
+                }
+                changeCallingTypeImageVector?.let {
+                    Icon(imageVector = it, contentDescription = "스피커폰 / 헤드셋")
+                }
             }
             IconButton(onClick = {
                 viewModel.toggleUnconnect()
             }) {
-                Icon(
-                    imageVector = Icons.Filled.PhoneDisabled, // 예제 아이콘
-                    contentDescription = "통화 끊기"
-                )
+                val isConnectedImageVector: ImageVector? =
+                    if (isKiWiMatching) Icons.Filled.PhoneDisabled else null
+                isConnectedImageVector?.let {
+                    Icon(imageVector = it, contentDescription = "통화 끊기")
+                }
             }
             actions() // 기존에 전달된 actions도 추가
         }

@@ -71,11 +71,10 @@ fun InputPhoneNumberScreen(
     val isPhoneNumberValid =
         phoneNumber1.length == 3 && phoneNumber2.length == 4 && phoneNumber3.length == 4
 
-    LaunchedEffect(isCheckProfileDialogOpen) {
-        if (!isCheckProfileDialogOpen) {
-
-        }
-    }
+//    LaunchedEffect(isCheckProfileDialogOpen) {
+//        if (!isCheckProfileDialogOpen) {
+//        }
+//    }
 
     Box(
         modifier = Modifier
@@ -100,12 +99,10 @@ fun InputPhoneNumberScreen(
     }
 
     Scaffold(topBar = { CenteredAppBar(title = "키위 매칭", navController = navController) }
-//        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             Column(
                 modifier = Modifier
-//                    .padding(innerPadding)
                     .padding(horizontal = 24.dp)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
