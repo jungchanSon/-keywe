@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    default: ${PROFILE:local}
+  application:
+    name: banking
+  config:
+    import:
+      - optional:configserver:http://${CONFIG_SERVICE_URL:localhost}:8888
+      - config-log.yml

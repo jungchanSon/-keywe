@@ -6,6 +6,7 @@ include(
         "order-service",
         "remote-service",
         "notification-service",
+        "banking-service",
         "infra-gateway",
         "infra-config",
         "common",
