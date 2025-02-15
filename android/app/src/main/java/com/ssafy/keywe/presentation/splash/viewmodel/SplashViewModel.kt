@@ -76,8 +76,6 @@ class SplashViewModel @Inject constructor(
                 if (profileId != null) ProfileIdManager.updateProfileId(profileId)
 
                 _isLoading.value = false
-
-                profileDataStore.saveIsFirstJoin(true)
             }
         }
     }
