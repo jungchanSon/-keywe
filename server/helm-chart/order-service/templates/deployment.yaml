@@ -23,3 +23,7 @@ spec:
               value: config-server-app-service.config.svc.cluster.local
             - name: ORDER_MYSQL_URL
               value: {{ .Values.order_mysql_url}}
+            - name: PROFILE
+              value: prod
+            - name: KAFKAURL
+              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local
