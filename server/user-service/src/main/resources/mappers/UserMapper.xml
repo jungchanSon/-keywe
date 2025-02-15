@@ -6,8 +6,8 @@
 
     <!-- 회원가입 -->
     <insert id="registerUser" parameterType="User">
-        INSERT INTO users (user_id, role, email, password, salt, reg_date)
-        VALUES (#{userId}, #{role}, #{email}, #{password}, #{salt}, #{regDate});
+        INSERT INTO users (user_id, role, email, password, salt, reg_date, verified)
+        VALUES (#{userId}, #{role}, #{email}, #{password}, #{salt}, #{regDate}, #{verified});
     </insert>
 
     <!-- 이메일 중복 확인 -->
@@ -23,5 +23,12 @@
         SELECT * FROM users
         WHERE email = #{email};
     </select>
+
+    <!-- 이메일 인증 처리 -->
+    <update id="verifyEmail" parameterType="Long">
+        UPDATE users
+        SET verified = true
+        WHERE user_id = #{userId}
+    </update>
 
 </mapper>

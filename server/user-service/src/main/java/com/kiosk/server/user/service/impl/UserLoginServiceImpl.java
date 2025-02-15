@@ -39,12 +39,12 @@ public class UserLoginServiceImpl implements UserLoginService {
             throw new UnauthorizedException("인증에 실패했습니다. 올바른 비밀번호를 입력해 주세요.");
         }
 
-        log.info("로그인 성공 - userId={}", foundUser.getUserId());
-
-        String temporaryToken = tokenUtil.createTemporaryToken(foundUser.getUserId());
-
-        UserRole role = foundUser.getRole();
-
-        return new LoginResponse(temporaryToken, role);
+        if(Boolean.FALSE.equals(foundUser.getVerified())) {
+            return new LoginResponse("", false);
+        } else {
+            String accessToken = tokenUtil.createTemporaryToken(foundUser.getUserId());
+            log.info("로그인 성공 - userId={}", foundUser.getUserId());
+            return new LoginResponse(accessToken, true);
+        }
     }
 }

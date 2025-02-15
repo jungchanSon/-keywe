@@ -46,6 +46,14 @@ services:
     networks:
       - kiwi-service-network
 
+  kiwi-redis-user:
+    container_name: kiwi-redis-user
+    image: redis:7.0
+    ports:
+      - "6400:6379"
+    networks:
+      - kiwi-service-network
+
   kiwi-db-store:
     container_name: kiwi-db-store
     image: mysql:8.0.30

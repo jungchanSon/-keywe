@@ -1,21 +1,33 @@
 package com.kiosk.server.user.service.impl;
 
+import com.kiosk.server.client.feign.api.NotificationServiceClient;
+import com.kiosk.server.client.feign.dto.SendEmailRequest;
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.ConflictException;
+import com.kiosk.server.common.util.IdUtil;
+import com.kiosk.server.user.domain.EmailAuthenticationRepository;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
 import com.kiosk.server.user.service.RegisterUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RegisterUserServiceImpl implements RegisterUserService {
 
-    private final UserRepository userRepository;
+    @Value("${url.server}")
+    private String SERVER_BASE_URL;
 
+    private final UserRepository userRepository;
+    private final NotificationServiceClient notificationServiceClient;
+    private final EmailAuthenticationRepository emailAuthenticationRepository;
+
+    @Transactional
     public void doService(String email, String password) {
         log.info("RegisterUserService: email={}", email);
 
@@ -23,10 +35,50 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         verifyFormat(email, password);
 
         User user = User.create(email, password);
+        String verificationToken = createVerificationToken();
 
-        userRepository.registerUser(user);
-        log.info("사용자 등록 완료 - email={}", email);
+        try {
+            // 사용자 등록 먼저 진행
+            userRepository.registerUser(user);
 
+            // 인증 토큰 저장
+            emailAuthenticationRepository.saveAuthenticationCode(email, verificationToken);
+
+            // 인증 링크가 포함된 이메일 발송
+            notificationServiceClient.sendEmail(new SendEmailRequest(
+                email,
+                "회원가입 인증 메일",
+                createVerificationEmailContent(email, verificationToken)
+            ));
+
+            log.info("사용자 등록 완료 및 인증 메일 발송 - email={}", email);
+        } catch (Exception e) {
+            emailAuthenticationRepository.deleteAuthenticationCode(email);
+            log.error("회원가입 실패 - email={}", email, e);
+            throw new RuntimeException("회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.", e);
+        }
+    }
+
+    private String createVerificationEmailContent(String email, String token) {
+        String verificationLink = String.format(SERVER_BASE_URL + "/auth/verify-email?email=%s&token=%s",
+            email, token);
+
+        return String.format("""
+            안녕하세요.
+            회원가입을 완료하기 위해 아래 링크를 클릭해주세요.
+            
+            %s
+            
+            본 인증 링크는 30분간 유효합니다.
+            """, verificationLink);
+    }
+
+    private String createVerificationToken() {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<3; i++) {
+            sb.append(IdUtil.create());
+        }
+        return sb.toString();
     }
 
     // 이메일 중복 체크

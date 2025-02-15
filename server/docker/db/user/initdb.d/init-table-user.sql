@@ -9,7 +9,8 @@ create table if not exists users
     email    varchar(255) not null,
     password varchar(255) not null,
     salt     varchar(255) not null,
-    reg_date datetime     not null
+    reg_date datetime     not null,
+    verified boolean      not null default false
     );
 
 create table if not exists user_profile

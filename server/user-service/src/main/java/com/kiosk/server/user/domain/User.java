@@ -15,6 +15,7 @@ public class User {
     private String password;
     private String salt;
     private LocalDateTime regDate;
+    private Boolean verified;
 
     public static User create(String email, String password) {
         User user = new User();
@@ -24,6 +25,7 @@ public class User {
         user.salt = HashUtil.generateSalt();
         user.password = HashUtil.hashPassword(password, user.salt);
         user.regDate = LocalDateTime.now();
+        user.verified = false;
         return user;
     }
 
