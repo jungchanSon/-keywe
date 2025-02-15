@@ -1,8 +1,9 @@
 package com.ssafy.keywe.common
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -11,6 +12,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.presentation.auth.CeoLoginScreen
+import com.ssafy.keywe.presentation.auth.LoginScreen
+import com.ssafy.keywe.presentation.auth.SelectAppScreen
 import com.ssafy.keywe.presentation.kiosk.InputPasswordScreen
 import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.kiosk.KioskHomeScreen
@@ -27,10 +31,10 @@ import com.ssafy.keywe.presentation.profile.EditMemberScreen
 import com.ssafy.keywe.presentation.profile.EmailVerification
 import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
-import com.ssafy.keywe.webrtc.screen.ConnectingScreen
 import com.ssafy.keywe.webrtc.screen.HelperWaitingRoomScreen
 import com.ssafy.keywe.webrtc.screen.ParentWaitingRoomScreen
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
+import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -104,6 +108,19 @@ sealed interface Route {
         data object ProfileScreenRoute : Route
     }
 
+    @Serializable
+    data object AuthBaseRoute : Route {
+        @Serializable
+        data object SelectAppRoute
+
+        @Serializable
+        data object LoginRoute
+
+        @Serializable
+        data object CeoLoginRoute
+
+    }
+
 //    @Serializable
 //    data object KioskBaseRoute : Route {
 //
@@ -129,8 +146,9 @@ object SharingRoute
 @Serializable
 data class HelperRoute(val isKiosk: Boolean = false, val channelName: String)
 
+
 @Serializable
-data object LoginRoute
+data object PermissionRoute
 
 @Serializable
 object SignUpRoute
@@ -142,6 +160,18 @@ object SignUpRoute
 //    val kioskUserId: String,
 //    val sessionId: String,
 //)
+
+@SuppressLint("NewApi")
+fun NavGraphBuilder.authGraph(naveController: NavHostController, tokenManager: TokenManager) {
+    navigation<Route.AuthBaseRoute>(startDestination = Route.AuthBaseRoute.SelectAppRoute) {
+        composable<Route.AuthBaseRoute.SelectAppRoute> { SelectAppScreen(navController = naveController) }
+        composable<Route.AuthBaseRoute.LoginRoute> { LoginScreen(navController = naveController) }
+        composable<Route.AuthBaseRoute.CeoLoginRoute> { CeoLoginScreen(navController = naveController) }
+
+    }
+
+}
+
 
 fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager: TokenManager) {
     navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
@@ -165,38 +195,71 @@ fun NavGraphBuilder.menuGraph(
     navController: NavHostController,
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel,
-    keyWeViewModel: KeyWeViewModel,
+    signalViewModel: SignalViewModel,
+    tokenManager: TokenManager,
 ) {
+    // navigation()을 사용하여 menuGraph라는 그래프의 route를 "menuGraph"로 지정합니다.
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
-            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel)
+            KioskHomeScreen(navController)
         }
         composable<Route.MenuBaseRoute.MenuRoute> {
             val menuScreenViewModel: MenuViewModel = hiltViewModel()
+            // 여기서는 상위에서 전달받은 viewModel을 그대로 사용합니다.
             MenuScreen(
                 navController,
                 menuScreenViewModel,
                 menuCartViewModel,
                 appBarViewModel,
-                keyWeViewModel
+                // 아래에서 menuGraph 범위에 한정된 keyWeViewModel을 생성하는 방법을 적용합니다.
+                getScopedKeyWeViewModel(navController),
+                signalViewModel,
+                tokenManager,
             )
         }
         composable<Route.MenuBaseRoute.MenuDetailRoute> {
             val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
             val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
-            Log.d("Detail Navigator", ":$arg.id")
             MenuDetailScreen(
                 navController,
                 menuDetailViewModel,
                 menuCartViewModel,
                 appBarViewModel,
                 arg.id,
-                keyWeViewModel
+                getScopedKeyWeViewModel(navController),
+                signalViewModel,
+                tokenManager
             )
         }
         composable<Route.MenuBaseRoute.MenuCartRoute> {
-            MenuCartScreen(navController, menuCartViewModel, appBarViewModel, keyWeViewModel)
+            MenuCartScreen(
+                navController,
+                menuCartViewModel,
+                appBarViewModel,
+                getScopedKeyWeViewModel(navController),
+                signalViewModel,
+                tokenManager
+            )
         }
+        // 나머지 destination도 동일하게 getScopedKeyWeViewModel(navController)를 사용
+        composable<Route.MenuBaseRoute.HelperWaitingRoomRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.HelperWaitingRoomRoute>()
+            HelperWaitingRoomScreen(
+                navController,
+                arg.sessionId,
+                arg.storeId,
+                arg.kioskUserId,
+                signalViewModel,
+                getScopedKeyWeViewModel(navController),
+                tokenManager
+            )
+        }
+        composable<Route.MenuBaseRoute.ParentWaitingRoomRoute> {
+            ParentWaitingRoomScreen(
+                navController, signalViewModel, getScopedKeyWeViewModel(navController), tokenManager
+            )
+        }
+
         composable<Route.MenuBaseRoute.KioskPhoneNumberRoute> {
             val kioskViewModel: KioskViewModel = hiltViewModel()
             InputPhoneNumberScreen(
@@ -209,29 +272,15 @@ fun NavGraphBuilder.menuGraph(
                 navController, menuCartViewModel, appBarViewModel, kioskViewModel
             )
         }
-
-        composable<Route.MenuBaseRoute.HelperWaitingRoomRoute> {
-            val arg = it.toRoute<Route.MenuBaseRoute.HelperWaitingRoomRoute>()
-            HelperWaitingRoomScreen(
-                navController,
-                arg.sessionId,
-                arg.storeId,
-                arg.kioskUserId,
-                keyWeViewModel = keyWeViewModel
-            )
-        }
-
-        composable<Route.MenuBaseRoute.ParentWaitingRoomRoute> {
-            val arg = it.toRoute<Route.MenuBaseRoute.ParentWaitingRoomRoute>()
-            ParentWaitingRoomScreen(
-                navController, keyWeViewModel = keyWeViewModel
-            )
-        }
-
-        composable<Route.MenuBaseRoute.ConnectingScreenRoute> {
-            ConnectingScreen(
-                navController, menuCartViewModel, appBarViewModel
-            )
-        }
     }
+}
+
+// 별도의 함수로 menuGraph 범위에 한정된 keyWeViewModel을 생성하는 예시입니다.
+@SuppressLint("UnrememberedGetBackStackEntry")
+@Composable
+fun getScopedKeyWeViewModel(navController: NavHostController): KeyWeViewModel {
+    // "menuGraph"라는 route로 지정한 네비게이션 그래프의 BackStackEntry를 가져옵니다.
+    val parentEntry = remember { navController.getBackStackEntry(Route.MenuBaseRoute) }
+    // 이 BackStackEntry를 스코프로 하여 ViewModel을 생성하면, menuGraph 내에서만 생존하게 됩니다.
+    return hiltViewModel(parentEntry)
 }

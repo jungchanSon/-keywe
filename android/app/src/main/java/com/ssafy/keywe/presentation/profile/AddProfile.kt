@@ -93,7 +93,7 @@ fun AddMemberScreen(
 //            if (isJoinApp) {
 //                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = true))
 //                {
-//                    popUpTo(0) {
+//                    popUpTo(navController.graph.startDestinationId) {
 //                        inclusive = false
 //                    }  // 기존 스택을 유지할지 여부 설정, true로 이동하면서 popupto로 스택정리
 //                }
@@ -261,7 +261,9 @@ fun AddMemberScreen(
                                         isJoinApp = true
                                     )
                                 ) {
-                                    popUpTo(0) { inclusive = false }
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = false
+                                    }
                                 }
                             } else {
                                 // profileChoiceScreen(false)로 popBackStack() 사용하여 이동
@@ -321,7 +323,7 @@ fun AddMemberScreen(
 // 부모, 자녀 토글
 @Composable
 fun ParentChildToggle(
-    selectedTab: Int, onTabSelected: (Int) -> Unit, modifier: Modifier = Modifier
+    selectedTab: Int, onTabSelected: (Int) -> Unit, modifier: Modifier = Modifier,
 ) {
     val offsetXState = animateFloatAsState(
         targetValue = if (selectedTab == 0) 0f else 1f, label = "Toggle Animation"
@@ -415,7 +417,7 @@ fun PhoneNumberInput(viewModel: AddMemberViewModel) {
 
 @Composable
 fun ProfileImagePicker(
-    viewModel: AddMemberViewModel, modifier: Modifier = Modifier
+    viewModel: AddMemberViewModel, modifier: Modifier = Modifier,
 ) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current

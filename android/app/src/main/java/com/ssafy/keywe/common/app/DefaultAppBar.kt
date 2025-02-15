@@ -13,14 +13,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
+import io.agora.rtc2.Constants
 
 @SuppressLint("RestrictedApi", "StateFlowValueCalledInComposition")
 @Composable
@@ -60,19 +62,21 @@ fun DefaultOrderAppBar(
     title: String,
     actions: @Composable RowScope.() -> Unit = {},
     navController: NavController,
-    viewModel: OrderAppBarViewModel = hiltViewModel()
+    viewModel: OrderAppBarViewModel = hiltViewModel(),
+    keyWeViewModel: KeyWeViewModel,
+    isRoot: Boolean = false,
 ) {
-    val speakerSound by viewModel.speakerSound.collectAsState()
+    val audioRoute by keyWeViewModel.audioRoute.collectAsStateWithLifecycle()
 
-    TopAppBar(
-        backgroundColor = whiteBackgroundColor,
+    TopAppBar(backgroundColor = whiteBackgroundColor,
         elevation = 0.dp,
         windowInsets = WindowInsets(0, 0, 0, 0),
         title = { Text(text = title, style = h6) },
         navigationIcon = {
             if (!isOnlyCurrentOrderScreenInBackStack(navController)) {
                 IconButton(onClick = {
-                    navController.popBackStack()
+                    if (isRoot) viewModel.openDialog()
+                    else navController.popBackStack()
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
@@ -82,14 +86,16 @@ fun DefaultOrderAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { viewModel.toggleSpeaker() }) {
+            IconButton(onClick = {
+                keyWeViewModel.toggleAudio()
+            }) {
                 Icon(
-                    imageVector = if (speakerSound) Icons.AutoMirrored.Filled.VolumeUp else Icons.Filled.Headset,
-                    contentDescription = if (speakerSound) "스피커폰" else "이어폰"
+                    imageVector = if (audioRoute == Constants.AUDIO_ROUTE_SPEAKERPHONE) Icons.AutoMirrored.Filled.VolumeUp else Icons.Filled.Headset,
+                    contentDescription = if (audioRoute == Constants.AUDIO_ROUTE_SPEAKERPHONE) "스피커폰" else "이어폰"
                 )
             }
             IconButton(onClick = {
-                viewModel.toggleUnconnect()
+                viewModel.openDialog()
             }) {
                 Icon(
                     imageVector = Icons.Filled.PhoneDisabled, // 예제 아이콘
@@ -97,8 +103,7 @@ fun DefaultOrderAppBar(
                 )
             }
             actions() // 기존에 전달된 actions도 추가
-        }
-    )
+        })
 }
 
 fun isOnlyCurrentOrderScreenInBackStack(navController: NavController): Boolean {

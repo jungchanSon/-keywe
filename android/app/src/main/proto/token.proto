@@ -7,4 +7,5 @@ message TokenProto {
   string temp_token = 1;
   string access_token = 2;
   string refresh_token = 3;
+  string store_id = 4;
 }

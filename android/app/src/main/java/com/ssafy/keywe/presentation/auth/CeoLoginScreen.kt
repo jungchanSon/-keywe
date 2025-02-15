@@ -1,12 +1,8 @@
 package com.ssafy.keywe.presentation.auth
 
-import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.view.Surface
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.ssafy.keywe.common.HelperRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.app.BottomButton
@@ -50,7 +44,7 @@ import com.ssafy.keywe.ui.theme.primaryColor
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LoginScreen(
+fun CeoLoginScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
@@ -79,15 +73,12 @@ fun LoginScreen(
 
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            val toRoute = Route.ProfileBaseRoute.ProfileChoiceRoute(true)
-            navController.navigate(toRoute, builder = {
+            navController.navigate(Route.MenuBaseRoute.KioskHomeRoute, builder = {
                 popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
                 }
                 launchSingleTop = true
             })
-
-
         }
     }
 
@@ -107,6 +98,9 @@ fun LoginScreen(
                 color = primaryColor,
                 modifier = modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
+            )
+            Text(
+                "사장님", style = h6sb
             )
             Spacer(modifier = modifier.height(32.dp))
             Text(
@@ -142,7 +136,7 @@ fun LoginScreen(
             Spacer(modifier = modifier.height(32.dp))
             BottomButton(content = "로그인", onClick = {
                 onSearchExplicitlyTriggered()
-                viewModel.login()
+                viewModel.ceoLogin()
             }, enabled = validForm)
             Spacer(modifier = modifier.height(12.dp))
             Text(
@@ -156,63 +150,7 @@ fun LoginScreen(
                 style = caption,
                 textDecoration = TextDecoration.Underline
             )
-            ScreenCaptureButton(context, navController)
         }
     }
 
-}
-
-
-@Composable
-fun ScreenCaptureButton(context: Context, navController: NavHostController) {
-    val permissionLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions()) { grantedMap ->
-            val allGranted = grantedMap.values.all { it }
-            if (allGranted) {
-                // Permission is granted
-                Toast.makeText(context, "Permission Granted", Toast.LENGTH_LONG).show()
-//                navController.navigate(SharingRoute)
-                navController.navigate(HelperRoute(false, "test"))
-            } else {
-                // Permission is denied
-                Toast.makeText(context, "Permission Denied", Toast.LENGTH_LONG).show()
-            }
-        }
-
-
-    Button(onClick = {
-        permissionLauncher.launch(
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                arrayOf(
-                    Manifest.permission.RECORD_AUDIO,
-                )
-            } else {
-                arrayOf(
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                )
-            }
-        )
-    }) {
-        Text("키위 요청")
-    }
-
-    Button(onClick = {
-        permissionLauncher.launch(
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                arrayOf(
-                    Manifest.permission.RECORD_AUDIO,
-                )
-            } else {
-                arrayOf(
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                )
-            }
-        )
-    }) {
-        Text("채널 입장")
-    }
 }

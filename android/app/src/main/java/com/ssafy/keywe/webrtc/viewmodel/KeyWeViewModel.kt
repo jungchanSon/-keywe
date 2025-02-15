@@ -43,16 +43,13 @@ class KeyWeViewModel @Inject constructor(
     private val _rtcEngine = MutableStateFlow<RtcEngine?>(null)
     val rtcEngine = _rtcEngine.asStateFlow()
 
-    private val _isKiosk: Boolean = savedStateHandle["isKiosk"] ?: true
-
-
     private val _localStats = MutableStateFlow<AudioStatsInfo?>(null)
     val localStats = _localStats.asStateFlow()
 
     private val _remoteStats = MutableStateFlow<AudioStatsInfo?>(null)
     val remoteStats = _remoteStats.asStateFlow()
 
-    private val _audioRoute = MutableStateFlow<Int?>(Constants.AUDIO_ROUTE_EARPIECE)
+    private val _audioRoute = MutableStateFlow<Int?>(Constants.AUDIO_ROUTE_SPEAKERPHONE)
     val audioRoute = _audioRoute.asStateFlow()
 
     private var _systemUiHeight = screenSizeManager.statusBarHeightPx
@@ -68,6 +65,14 @@ class KeyWeViewModel @Inject constructor(
     private val _connected = MutableStateFlow<Boolean>(true)
     val connected = _connected.asStateFlow()
 
+    init {
+        Log.d("KeyWeViewModel", "init")
+    }
+
+    override fun onCleared() {
+        Log.d("KeyWeViewModel", "onCleared")
+        super.onCleared()
+    }
 
     val module = SerializersModule {
         polymorphic(MessageData::class) {
@@ -240,13 +245,6 @@ class KeyWeViewModel @Inject constructor(
 //        }
     }
 
-    fun exit() {
-        _rtcEngine.value?.leaveChannel()
-        RtcEngine.destroy()
-        _rtcEngine.value = null
-        _connected.update { false }
-    }
-
     fun sendClickGesture(gestureData: MessageData) {
         // JSON으로 직렬화
         val jsonString = json.encodeToString(gestureData)
@@ -264,6 +262,22 @@ class KeyWeViewModel @Inject constructor(
         } else {
             Log.d("sendGesture", "=======================메시지 전송 성공=======================")
         }
+    }
+
+    fun toggleAudio() {
+        if (_audioRoute.value == Constants.AUDIO_ROUTE_SPEAKERPHONE) {
+            _audioRoute.update { Constants.AUDIO_ROUTE_EARPIECE }
+        } else {
+            _audioRoute.update { Constants.AUDIO_ROUTE_SPEAKERPHONE }
+        }
+    }
+
+    fun exit() {
+        Log.d("KeyWeViewModel", "exit")
+        _rtcEngine.value?.leaveChannel()
+        RtcEngine.destroy()
+        _rtcEngine.value = null
+        _connected.update { false }
     }
 
     private fun sendScreenSize(streamId: Int?, it: RtcEngine?) {
@@ -299,4 +313,6 @@ class KeyWeViewModel @Inject constructor(
         intent.putExtra("y", convertOffset.y)
         applicationContext.startService(intent)
     }
+
+
 }

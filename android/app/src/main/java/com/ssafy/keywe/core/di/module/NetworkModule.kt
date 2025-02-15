@@ -4,7 +4,6 @@ import com.ssafy.keywe.data.AuthAuthenticator
 import com.ssafy.keywe.data.AuthInterceptor
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.webrtc.KeyWeWebSocket
-import com.ssafy.keywe.webrtc.SignalWebSocketListener
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,18 +28,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideWebSocketListener(): SignalWebSocketListener {
-        return SignalWebSocketListener()
-    }
-
-    @Provides
-    @Singleton
     fun provideSignalWebSocket(
-        webSocketListener: SignalWebSocketListener,
         @WebSocketClientQualifier okHttpClient: OkHttpClient,
-        tokenManager: TokenManager,
     ): KeyWeWebSocket {
-        return KeyWeWebSocket(webSocketListener, okHttpClient, tokenManager)
+        return KeyWeWebSocket(okHttpClient)
     }
 
     @Provides

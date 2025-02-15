@@ -22,10 +22,6 @@ enum class SignalType {
     CONNECT, SUBSCRIBE, REQUEST, ACCEPT, CLOSE,
 }
 
-enum class SignalState {
-    CONNECTING, CONNECTED, DISCONNECTED
-}
-
 @AndroidEntryPoint
 class SignalService : Service() {
     @Inject
@@ -40,12 +36,12 @@ class SignalService : Service() {
     private val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         intent?.let {
             when (it.action) {
                 SignalType.CONNECT.toString() -> {
                     scope.launch {
-                        when (keyWeWebSocket.connect()) {
+                        val token = it.getStringExtra("token")!!
+                        when (keyWeWebSocket.connect(token)) {
                             true -> {
                                 signalRepository.updateConnect(true)
                                 Log.d("SignalService", "WebSocket connected")
@@ -68,7 +64,7 @@ class SignalService : Service() {
                         keyWeWebSocket.subscribe(profileId).collect { frame ->
                             val message = moshi.adapter(WebSocketMessage::class.java)
                                 .fromJson(frame.bodyAsText)
-                            Log.d("SignalService", "Received message: $message")
+                            Log.d("SignalService", "${message?.type} Received message: $message")
                             message?.let { msg ->
                                 handleSTOMP(msg)
                             }
@@ -95,6 +91,7 @@ class SignalService : Service() {
                     scope.launch {
                         Log.d("SignalService", "WebSocket closed")
                         keyWeWebSocket.close()
+                        signalRepository.clear()
                         stopSelf()
                     }
                 }

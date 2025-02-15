@@ -6,7 +6,7 @@ data class LoginModel(
 
 data class CEOLoginModel(
     val accessToken: String,
-    val refreshToken: String
+    val storeId: String,
 )
 
 data class SelectProfileModel(

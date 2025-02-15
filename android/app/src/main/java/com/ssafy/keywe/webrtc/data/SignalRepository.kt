@@ -32,4 +32,9 @@ class SignalRepository @Inject constructor() {
         _subscribed.value = subscribed
     }
 
+    fun clear() {
+        _stompMessageFlow.value = null
+        _connected.value = false
+        _subscribed.value = false
+    }
 }

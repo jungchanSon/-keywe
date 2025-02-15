@@ -197,7 +197,7 @@ private fun joinHome(
 ) {
     profileViewModel.selectAccount(profile)
     navController.navigate(BottomRoute.HomeRoute, builder = {
-        popUpTo(0) {
+        popUpTo(navController.graph.startDestinationId) {
             inclusive = true
         }
         launchSingleTop = true

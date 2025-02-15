@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.ssafy.keywe.common.LoginRoute
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
@@ -47,8 +47,8 @@ fun SignUpScreen(
     val isSigned by viewModel.isSignIn.collectAsStateWithLifecycle()
     LaunchedEffect(isSigned) {
         if (isSigned) {
-            navController.navigate(LoginRoute) {
-                popUpTo(0) {
+            navController.navigate(Route.AuthBaseRoute.LoginRoute) {
+                popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
                 }
             }

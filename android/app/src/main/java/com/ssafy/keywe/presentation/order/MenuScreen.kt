@@ -1,6 +1,10 @@
 package com.ssafy.keywe.presentation.order
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,8 +36,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
+import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultOrderAppBar
+import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
@@ -43,8 +50,10 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.screen.closeSTOMP
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
+import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -54,9 +63,32 @@ fun MenuScreen(
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
     keyWeViewModel: KeyWeViewModel,
+    signalViewModel: SignalViewModel = hiltViewModel(),
+    tokenManager: TokenManager,
 ) {
+
+    val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
     val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    val isKiosk = tokenManager.isKiosk
+
+    BackHandler {
+        // 여기서 로컬에서는 아무 네비게이션 동작을 하지 않고,
+        // 원격 기기에 뒤로가기 명령을 전송합니다.
+        appBarViewModel.openDialog()
+    }
+
+    LaunchedEffect(message) {
+        message?.let {
+            if (it.type == STOMPTYPE.END) {
+                Log.d("WaitingRoomScreen", "종료")
+                disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
+            }
+        }
+    }
+
+
     Box(
         modifier = Modifier
             .zIndex(1f)
@@ -71,19 +103,21 @@ fun MenuScreen(
         if (isStopCallingDialogOpen) {
             MenuCartDeleteDialog(title = "통화 종료",
                 description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.toggleUnconnect() },
+                onCancel = { appBarViewModel.closeDialog() },
                 onConfirm = {
                     /* 너의 action */
-                    closeSTOMP(context)
-                    keyWeViewModel.exit()
-                    appBarViewModel.toggleUnconnect()
+                    disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
                 })
         }
     }
 
     Scaffold(topBar = {
         DefaultOrderAppBar(
-            title = "주문하기", navController = navController, viewModel = appBarViewModel
+            title = "주문하기",
+            navController = navController,
+            viewModel = appBarViewModel,
+            keyWeViewModel = keyWeViewModel,
+            isRoot = true
         )
     }, modifier = Modifier.fillMaxSize(), floatingActionButton = {
         FloatingCartButton(navController, menuCartViewModel)
@@ -97,6 +131,32 @@ fun MenuScreen(
             MenuMenuList(
                 navController = navController, menuViewModel, menuCartViewModel
             )
+        }
+    }
+}
+
+fun disConnect(
+    context: Context,
+    keyWeViewModel: KeyWeViewModel,
+    appBarViewModel: OrderAppBarViewModel,
+    isKiosk: Boolean,
+    navController: NavController,
+) {
+    closeSTOMP(context)
+    keyWeViewModel.exit()
+    appBarViewModel.closeDialog()
+    Log.d("MenuScreen", "종료")
+    Toast.makeText(context, "대리주문이 종료됩니다.", Toast.LENGTH_LONG).show()
+    // 키오스크
+    if (isKiosk) {
+        Log.d("Back", "Back")
+        navController.popBackStack()
+    } else {
+        // 사용자 홈으로
+        navController.navigate(BottomRoute.HomeRoute) {
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
         }
     }
 }

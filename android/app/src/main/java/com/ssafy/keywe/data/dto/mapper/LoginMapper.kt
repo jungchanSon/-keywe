@@ -11,5 +11,5 @@ fun LoginResponse.toDomain(): LoginModel = LoginModel(
 
 fun CEOLoginResponse.toDomain(): CEOLoginModel = CEOLoginModel(
     accessToken = this.accessToken,
-    refreshToken = this.refreshToken
+    storeId = this.storeId
 )

@@ -29,6 +29,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.app.DefaultOrderAppBar
+import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.domain.order.OptionsModel
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
 import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
@@ -41,8 +42,9 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
-import com.ssafy.keywe.webrtc.screen.closeSTOMP
+import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
+import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 
 @Composable
 fun MenuDetailScreen(
@@ -52,11 +54,15 @@ fun MenuDetailScreen(
     appBarViewModel: OrderAppBarViewModel,
     menuId: Long,
     keyWeViewModel: KeyWeViewModel,
+    signalViewModel: SignalViewModel,
+    tokenManager: TokenManager,
 ) {
     Log.d("Menu Detail", ":$menuId")
     val context = LocalContext.current
 
     val menu by menuDetailViewModel.selectedDetailMenu.collectAsState()
+    val isKiosk = tokenManager.isKiosk
+    val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
 
     // 데이터 가져오기
     LaunchedEffect(menuId) {
@@ -72,6 +78,15 @@ fun MenuDetailScreen(
         }
         return
     }
+    LaunchedEffect(message) {
+        message?.let {
+            if (it.type == STOMPTYPE.END) {
+                Log.d("WaitingRoomScreen", "종료")
+                disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
+            }
+        }
+    }
+
 
     val menuPrice = menu?.menuPrice ?: 0
 
@@ -126,12 +141,10 @@ fun MenuDetailScreen(
         if (isStopCallingDialogOpen) {
             MenuCartDeleteDialog(title = "통화 종료",
                 description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.toggleUnconnect() },
+                onCancel = { appBarViewModel.closeDialog() },
                 onConfirm = {
                     /* 너의 action */
-                    closeSTOMP(context)
-                    keyWeViewModel.exit()
-                    appBarViewModel.toggleUnconnect()
+                    disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
                 })
         }
     }
@@ -139,7 +152,10 @@ fun MenuDetailScreen(
     Scaffold(
         topBar = {
             DefaultOrderAppBar(
-                title = "주문하기", navController = navController, viewModel = appBarViewModel
+                title = "주문하기",
+                navController = navController,
+                viewModel = appBarViewModel,
+                keyWeViewModel = keyWeViewModel
             )
         },
     ) { innerPadding ->

@@ -1,6 +1,5 @@
 package com.ssafy.keywe.presentation.kiosk.component
 
-import com.ssafy.keywe.common.app.BottomButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
-import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.titleTextColor
@@ -33,11 +32,10 @@ fun NoTitleTwoButtonDialog(
     description: String, onCancel: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-
-
     BasicAlertDialog(
         onDismissRequest = onCancel, properties = DialogProperties(
             dismissOnBackPress = false,
+            dismissOnClickOutside = false
         )
     ) {
         Card(

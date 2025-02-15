@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,7 @@ import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultOrderAppBar
+import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.order.component.HorizontalDivider
 import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
@@ -51,8 +53,9 @@ import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
-import com.ssafy.keywe.webrtc.screen.closeSTOMP
+import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
+import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 
 
 @SuppressLint("UnrememberedGetBackStackEntry")
@@ -62,6 +65,8 @@ fun MenuCartScreen(
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
     keyWeViewModel: KeyWeViewModel,
+    signalViewModel: SignalViewModel = hiltViewModel(),
+    tokenManager: TokenManager,
 ) {
     val cartItems by menuCartViewModel.cartItems.collectAsState()
     Log.d("MenuCartScreen", "cartItems: $cartItems")
@@ -72,6 +77,19 @@ fun MenuCartScreen(
     val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
     val isAllDeleteDialogOpen = remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val isKiosk = tokenManager.isKiosk
+    val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(message) {
+        Log.d("MenuCartScreen", "message: $message")
+        message?.let {
+            if (it.type == STOMPTYPE.END) {
+                Log.d("WaitingRoomScreen", "종료")
+                disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -118,13 +136,11 @@ fun MenuCartScreen(
         if (isStopCallingDialogOpen) {
             MenuCartDeleteDialog(title = "통화 종료",
                 description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.toggleUnconnect() },
+                onCancel = { appBarViewModel.closeDialog() },
                 onConfirm = {
 
                     /* 너의 action */
-                    closeSTOMP(context)
-                    keyWeViewModel.exit()
-                    appBarViewModel.toggleUnconnect()
+                    disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
                 })
         }
 
@@ -132,7 +148,10 @@ fun MenuCartScreen(
     Scaffold(
         topBar = {
             DefaultOrderAppBar(
-                title = "장바구니", navController = navController, viewModel = appBarViewModel
+                title = "장바구니",
+                navController = navController,
+                viewModel = appBarViewModel,
+                keyWeViewModel = keyWeViewModel
             )
         }, modifier = Modifier.fillMaxSize()
     ) { innerPadding ->

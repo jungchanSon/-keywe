@@ -53,22 +53,23 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.HelperRoute
-import com.ssafy.keywe.common.LoginRoute
 import com.ssafy.keywe.common.MyBottomNavigation
 import com.ssafy.keywe.common.PermissionDialog
+import com.ssafy.keywe.common.PermissionRoute
 import com.ssafy.keywe.common.RationaleDialog
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.SplashRoute
 import com.ssafy.keywe.common.app.DefaultAppBar
+import com.ssafy.keywe.common.authGraph
 import com.ssafy.keywe.common.menuGraph
 import com.ssafy.keywe.common.profileGraph
+import com.ssafy.keywe.common.screen.PermissionScreen
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.websocket.SignalService
 import com.ssafy.keywe.data.websocket.SignalType
 import com.ssafy.keywe.domain.fcm.NotificationData
-import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
@@ -160,8 +161,8 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 tokenManager.tokenClearedEvent.collect {
                     // 로그인 화면으로 이동
-                    navController.navigate(LoginRoute) {
-                        popUpTo(0) { inclusive = true }
+                    navController.navigate(Route.AuthBaseRoute.SelectAppRoute) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
                 }
             }
@@ -240,29 +241,17 @@ class MainActivity : ComponentActivity() {
 fun MyApp(
     navController: NavHostController,
     tokenManager: TokenManager,
-//    fcmViewModel: FCMViewModel = hiltViewModel(),
 ) {
 
 
-//    val client = StreamVideoBuilder(
-//        context = context,
-//        apiKey = "pqyd87b8sraa",
-//        geo = GEO.GlobalEdgeNetwork,
-//        user = user,
-//        token = token,
-//    ).build()
-//
-//    val call = client.call("default", "123")
-//    val joinResult = call.join(create = true)
-
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        RequestNotificationPermissionDialog()
-    }
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//        RequestNotificationPermissionDialog()
+//    }
 
     val menuCartViewModel: MenuCartViewModel = hiltViewModel()
     val appBarViewModel: OrderAppBarViewModel = hiltViewModel()
     val keyWeViewModel: KeyWeViewModel = hiltViewModel()
+    val signalViewModel: SignalViewModel = hiltViewModel()
 
     val state by navController.currentBackStackEntryAsState()
     // splash 와 login 은 topAppBar 없음
@@ -290,13 +279,14 @@ fun MyApp(
                 HomeScreen(navController, tokenManager)
 //                InputPhoneNumberScreen(navController)
             }
-            composable<LoginRoute> { LoginScreen(navController) }
+//            composable<Route.AuthBaseRoute.LoginRoute> { LoginScreen(navController) }
             composable<SignUpRoute> {
                 SignUpScreen(navController)
             }
+            authGraph(navController, tokenManager)
             profileGraph(navController, tokenManager)
             menuGraph(
-                navController, menuCartViewModel, appBarViewModel, keyWeViewModel
+                navController, menuCartViewModel, appBarViewModel, signalViewModel, tokenManager,
             )
 //            kioskGraph(navController)
             composable<SharingRoute> {
@@ -312,16 +302,10 @@ fun MyApp(
                     Log.d("Helper Back", "interceptor Back")
                 })
             }
-//            composable<Route.MenuBaseRoute.WaitingRoomRoute> {
-//                val arg = it.toRoute<Route.MenuBaseRoute.WaitingRoomRoute>()
-//                WaitingRoomScreen(
-//                    navController = navController,
-//                    sessionId = arg.sessionId,
-//                    storeId = arg.storeId,
-//                    kioskUserId = arg.kioskUserId
-//                )
-//            }
-//            kioskGraph(navController)
+
+            composable<PermissionRoute> {
+                PermissionScreen(navController)
+            }
         }
 
     }

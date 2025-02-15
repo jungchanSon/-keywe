@@ -35,7 +35,7 @@ data class LoginResponse(
 @Serializable
 data class CEOLoginResponse(
     @SerialName("accessToken") val accessToken: String,
-    @SerialName("refreshToken") val refreshToken: String,
+    @SerialName("storeId") val storeId: String,
 )
 
 @Serializable

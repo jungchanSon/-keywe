@@ -14,11 +14,11 @@ import javax.inject.Singleton
 class TokenManager @Inject constructor(
     private val dataStore: DataStore<TokenProto>,
 ) {
-
-
     private var cachedTempToken: String? = null
     private var cachedAccessToken: String? = null
     private var cachedRefreshToken: String? = null
+    private var storeId: String? = null
+    var isKiosk: Boolean = false
 
     // 이벤트를 알리기 위한 SharedFlow
     private val _tokenClearedEvent = MutableSharedFlow<Unit>()
@@ -66,6 +66,16 @@ class TokenManager @Inject constructor(
         }
     }
 
+    suspend fun getStoreId(): String? {
+        return if (storeId == null) {
+            dataStore.data.map { token ->
+                token.storeId.takeIf { it.isNotEmpty() }
+            }.first()
+        } else {
+            storeId
+        }
+    }
+
     suspend fun saveTempToken(token: String) {
         cachedTempToken = token
         dataStore.updateData { currentToken ->
@@ -87,6 +97,20 @@ class TokenManager @Inject constructor(
             currentToken.toBuilder().setRefreshToken(token).build()
         }
     }
+
+    suspend fun saveStoreId(storeId: String) {
+        this.storeId = storeId
+        dataStore.updateData { currentToken ->
+            currentToken.toBuilder().setStoreId(storeId).build()
+        }
+    }
+
+    suspend fun clearStoreId() {
+        dataStore.updateData {
+            it.toBuilder().clearStoreId().build()
+        }
+    }
+
 
     suspend fun clearTempToken() {
         dataStore.updateData {

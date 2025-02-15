@@ -18,7 +18,7 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 enum class SplashRouteType {
-    HOME, LOGIN, PROFILE
+    HOME, SELECTAPP, PROFILE, PERMISSION, KIOSK
 }
 
 @HiltViewModel
@@ -31,7 +31,7 @@ class SplashViewModel @Inject constructor(
     private val _isLoading = mutableStateOf(true)
     val isLoading: State<Boolean> = _isLoading
 
-    private val _splashRouteType = mutableStateOf(SplashRouteType.LOGIN)
+    private val _splashRouteType = mutableStateOf(SplashRouteType.SELECTAPP)
     val splashRouteType: State<SplashRouteType> = _splashRouteType
 
     init {
@@ -42,14 +42,29 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             runBlocking {
                 val token = tokenManager.getToken()
+                val storeId = tokenManager.getStoreId()
                 Log.d("Token Route", "token = $token")
-                if (token == null) {
-                    _splashRouteType.value = SplashRouteType.LOGIN
+
+                val isFirstJoin = profileDataStore.isFirstJoinFlow.map { isJoinFirst ->
+                    isJoinFirst.takeIf {
+                        it != null
+                    }
+                }.first()
+
+                if (isFirstJoin == null) {
+                    _splashRouteType.value = SplashRouteType.PERMISSION
+                } else if (token == null) {
+                    _splashRouteType.value = SplashRouteType.SELECTAPP
                 } else {
-                    if (JWTUtil.isTempToken(token.split(" ")[1])) {
+                    if (storeId != null) {
+                        _splashRouteType.value = SplashRouteType.KIOSK
+                        tokenManager.isKiosk = true
+                    } else if (JWTUtil.isTempToken(token.split(" ")[1])) {
                         _splashRouteType.value = SplashRouteType.PROFILE
+                        tokenManager.isKiosk = false
                     } else {
                         _splashRouteType.value = SplashRouteType.HOME
+                        tokenManager.isKiosk = false
                     }
                 }
                 val profileId = profileDataStore.profileIdFlow.map { profileId ->
@@ -61,6 +76,8 @@ class SplashViewModel @Inject constructor(
                 if (profileId != null) ProfileIdManager.updateProfileId(profileId)
 
                 _isLoading.value = false
+
+                profileDataStore.saveIsFirstJoin(true)
             }
         }
     }

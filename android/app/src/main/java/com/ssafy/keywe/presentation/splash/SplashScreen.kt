@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ssafy.keywe.common.BottomRoute
-import com.ssafy.keywe.common.LoginRoute
+import com.ssafy.keywe.common.PermissionRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SplashRoute
 import com.ssafy.keywe.presentation.splash.viewmodel.SplashRouteType
@@ -45,8 +45,8 @@ fun SplashScreen(
             scope.launch {
                 delay(1500)
                 when (viewModel.splashRouteType.value) {
-                    SplashRouteType.LOGIN -> {
-                        navController.navigate(LoginRoute) {
+                    SplashRouteType.SELECTAPP -> {
+                        navController.navigate(Route.AuthBaseRoute.SelectAppRoute) {
                             popUpTo(SplashRoute) { inclusive = true }
                         }
                     }
@@ -59,6 +59,18 @@ fun SplashScreen(
 
                     SplashRouteType.HOME -> {
                         navController.navigate(BottomRoute.HomeRoute) {
+                            popUpTo(SplashRoute) { inclusive = true }
+                        }
+                    }
+
+                    SplashRouteType.PERMISSION -> {
+                        navController.navigate(PermissionRoute) {
+                            popUpTo(SplashRoute) { inclusive = true }
+                        }
+                    }
+
+                    SplashRouteType.KIOSK -> {
+                        navController.navigate(Route.MenuBaseRoute.KioskHomeRoute) {
                             popUpTo(SplashRoute) { inclusive = true }
                         }
                     }

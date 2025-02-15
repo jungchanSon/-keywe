@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,21 +16,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
-import com.ssafy.keywe.ui.theme.primaryColor
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.presentation.kiosk.component.SelectOptionCard
-import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
+import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 
 @Composable
 fun KioskHomeScreen(
     navController: NavController,
-    menuCartViewModel: MenuCartViewModel,
-    appBarViewModel: OrderAppBarViewModel,
 ) {
 //    val systemUiController = rememberSystemUiController()
 

@@ -13,11 +13,11 @@ data class LoginRequest(
 
 @Serializable
 data class CEOLoginRequest(
-    @SerialName("id") val id: Long,
+    @SerialName("email") val email: String,
     @SerialName("password") val password: String,
 )
 
 @Serializable
 data class SelectProfileRequest(
-    @SerialName("profileId") val profileId: Long
+    @SerialName("profileId") val profileId: Long,
 )

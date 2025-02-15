@@ -8,8 +8,10 @@ import com.ssafy.keywe.data.ApiResponseHandler.onServerError
 import com.ssafy.keywe.data.ApiResponseHandler.onSuccess
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.dto.Status
+import com.ssafy.keywe.data.dto.auth.CEOLoginRequest
 import com.ssafy.keywe.data.dto.auth.LoginRequest
 import com.ssafy.keywe.domain.auth.AuthRepository
+import com.ssafy.keywe.domain.auth.CEOLoginModel
 import com.ssafy.keywe.domain.auth.LoginModel
 import com.ssafy.keywe.util.RegUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,6 +64,17 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun ceoLogin() {
+        val loginRequest = CEOLoginRequest(
+            email = _email.value, password = password.value
+        )
+        viewModelScope.launch {
+            repository.ceoLogin(loginRequest).onSuccess(::saveCeoToken).onServerError(::handleError)
+                .onException(::handleException)
+        }
+    }
+
+
     private fun validateForm() {
         _validForm.value =
             Regex(RegUtil.EMAIL_REG).matches(_email.value) && _password.value.isNotEmpty()
@@ -75,6 +88,21 @@ class LoginViewModel @Inject constructor(
 //        JWTUtil.isTempToken(newToken.accessToken)
         viewModelScope.launch {
             tokenManager.saveTempToken(newToken.accessToken)
+            tokenManager.clearStoreId()
+            tokenManager.isKiosk = false
+        }
+    }
+
+    private fun saveCeoToken(
+        model: CEOLoginModel,
+    ) {
+        _isLoggedIn.value = true
+        Log.d("token", model.toString())
+//        JWTUtil.isTempToken(newToken.accessToken)
+        viewModelScope.launch {
+            tokenManager.saveAccessToken(model.accessToken)
+            tokenManager.saveStoreId(model.storeId)
+            tokenManager.isKiosk = true
         }
     }
 
@@ -96,4 +124,5 @@ class LoginViewModel @Inject constructor(
     suspend fun logout() {
         tokenManager.clearTokens()
     }
+
 }
