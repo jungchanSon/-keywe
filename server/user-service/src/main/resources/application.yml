@@ -1,6 +1,8 @@
 server:
   port: 8090
 spring:
+  profiles:
+    default: ${PROFILE:local}
   application:
     name: user
   config:
