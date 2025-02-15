@@ -23,6 +23,6 @@ public class UserEventProducer {
     public void sendUserCreatedEvent(UserEvent.UserCreatedEvent userEvent) {
 
         log.info("회원가입 성공 이벤트 발행: userId:{}", userEvent.memberId());
-        kafkaTemplate.send(TOPIC, KafkaEventMapper.toEvent(userEvent.toString()));
+        kafkaTemplate.send(TOPIC, KafkaEventMapper.toEvent(userEvent));
     }
 }
