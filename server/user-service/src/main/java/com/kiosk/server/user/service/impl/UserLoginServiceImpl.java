@@ -1,8 +1,10 @@
 package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.UnauthorizedException;
+import com.kiosk.server.user.controller.dto.LoginResponse;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
+import com.kiosk.server.user.domain.UserRole;
 import com.kiosk.server.user.service.UserLoginService;
 import com.kiosk.server.user.util.HashUtil;
 import com.kiosk.server.user.util.TokenUtil;
@@ -19,7 +21,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     private final UserRepository userRepository;
 
     @Override
-    public String doService(String email, String inputPassword) {
+    public LoginResponse doService(String email, String inputPassword) {
         log.info("UserLoginService: email={}", email);
 
         User foundUser = userRepository.findByEmail(email);
@@ -39,7 +41,10 @@ public class UserLoginServiceImpl implements UserLoginService {
 
         log.info("로그인 성공 - userId={}", foundUser.getUserId());
 
-        return tokenUtil.createTemporaryToken(foundUser.getUserId());
+        String temporaryToken = tokenUtil.createTemporaryToken(foundUser.getUserId());
 
+        UserRole role = foundUser.getRole();
+
+        return new LoginResponse(temporaryToken, role);
     }
 }

@@ -1,5 +1,6 @@
 package com.kiosk.server.store.controller;
 
+import com.kiosk.server.image.service.DeleteImageService;
 import com.kiosk.server.store.controller.dto.*;
 import com.kiosk.server.store.service.*;
 import lombok.RequiredArgsConstructor;
@@ -123,7 +124,7 @@ public class MenuController {
     @DeleteMapping("/{menuId}/image")
     public ResponseEntity<Void> deleteImage(@RequestHeader("userId") Long userId, @PathVariable long menuId) {
         log.info("Request: userId={}, menuId={}", userId, menuId);
-        deleteImageService.doService(userId, menuId);
+        deleteImageService.doService(userId, menuId,"menu");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

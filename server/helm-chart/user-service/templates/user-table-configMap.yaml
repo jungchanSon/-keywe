@@ -6,27 +6,41 @@ data:
   initdb.sql: |
     CREATE SCHEMA IF NOT EXISTS `users` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
 
-    USE `users` ;
-
-    CREATE TABLE `users` (
-                             `user_id` bigint NOT NULL,
-                             `role` varchar(50) NOT NULL,
-                             `email` varchar(255) NOT NULL,
-                             `password` varchar(255) DEFAULT NULL,
-                             `salt` varchar(255) NOT NULL,
-                             `reg_date` datetime NOT NULL,
-                             PRIMARY KEY (`user_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-    CREATE TABLE `user_profile` (
-                                    `profile_id` bigint NOT NULL,
-                                    `user_id` bigint NOT NULL,
-                                    `profile_name` varchar(255) NOT NULL,
-                                    `profile_role` varchar(50) NOT NULL,
-                                    `phone_number` varchar(50) NOT NULL,
-                                    `profile_pass` varchar(10) DEFAULT NULL,
-                                    `reg_date` datetime NOT NULL,
-                                    PRIMARY KEY (`profile_id`),
-                                    KEY `user_profile_fk` (`user_id`),
-                                    CONSTRAINT `user_profile_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+    USE users;
+    
+    create table if not exists users
+    (
+    user_id  bigint       not null
+    primary key,
+    role     varchar(50)  not null,
+    email    varchar(255) not null,
+    password varchar(255) not null,
+    salt     varchar(255) not null,
+    reg_date datetime     not null
+    );
+    
+    create table if not exists user_profile
+    (
+    profile_id   bigint       not null
+    primary key,
+    user_id      bigint       not null,
+    profile_name varchar(255) not null,
+    profile_role varchar(50)  not null,
+    phone_number varchar(50)  null,
+    profile_pass varchar(10)  null,
+    reg_date     datetime     not null,
+    constraint user_profile_fk
+    foreign key (user_id) references users (user_id)
+    on update cascade on delete cascade
+    );
+    
+    create table if not exists profile_image
+    (
+    image_id    bigint     not null
+    primary key,
+    user_id     bigint     not null,
+    profile_id  bigint     not null,
+    image_bytes mediumblob not null,
+    created_at  datetime   not null
+    );
+  

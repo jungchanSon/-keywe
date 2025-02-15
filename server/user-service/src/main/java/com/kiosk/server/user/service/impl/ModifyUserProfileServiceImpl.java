@@ -2,6 +2,9 @@ package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
+import com.kiosk.server.image.service.DeleteImageService;
+import com.kiosk.server.image.service.UploadImageService;
+import com.kiosk.server.user.controller.dto.PatchProfileRequest;
 import com.kiosk.server.user.controller.dto.PatchProfileResponse;
 import com.kiosk.server.user.domain.ProfileRole;
 import com.kiosk.server.user.domain.UserProfile;
@@ -12,6 +15,7 @@ import com.kiosk.server.user.util.UserValidateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -23,9 +27,11 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
     private final UserProfileUtil userProfileUtil;
     private final UserValidateUtil userValidateUtil;
     private final UserProfileRepository userProfileRepository;
+    private final UploadImageService uploadImageService;
+    private final DeleteImageService deleteImageService;
 
     @Override
-    public PatchProfileResponse doService(long userId, long profileId, String profileName, String phoneNumber, String profilePass) {
+    public PatchProfileResponse doService(long userId, long profileId, PatchProfileRequest request, MultipartFile image) {
         log.info("ModifyUserProfileService: userId={}, profileId={}", userId, profileId);
 
         // userProfile 조회
@@ -34,8 +40,8 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
         ProfileRole role = userProfile.getProfileRole();
         log.info("조회된 프로필 - userId={}, profileId={}, role={}", userId, profileId, role);
 
-        String updatedName = profileName != null ? profileName : userProfile.getProfileName();
-        String updatedPhone = phoneNumber != null ? phoneNumber : userProfile.getPhoneNumber();
+        String updatedName = request.name() != null ? request.name() : userProfile.getProfileName();
+        String updatedPhone = request.phone() != null ? request.phone() : userProfile.getPhoneNumber();
 
         // Role에 따라 필요한 필드를  처리
         Map<String, Object> updateProfileParam = userProfileUtil.createProfileParams(userId, profileId, updatedName, updatedPhone);
@@ -43,8 +49,8 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
         // 역할에 따른 처리
         if (role.equals(ProfileRole.PARENT)) {
             userValidateUtil.validatePhoneNumber(updatedPhone);
-            userValidateUtil.validateProfilePass(profilePass);
-            updateProfileParam.put("profilePass", profilePass);
+            userValidateUtil.validateProfilePass(request.password());
+            updateProfileParam.put("profilePass", request.password());
             userProfileRepository.updateParentProfile(updateProfileParam);
             log.info("부모 프로필 업데이트 완료 - userId={}, profileId={}", userId, profileId);
 
@@ -56,6 +62,14 @@ public class ModifyUserProfileServiceImpl implements ModifyUserProfileService {
         } else {
             log.warn("잘못된 프로필 역할 - userId={}, profileId={}, role={}", userId, profileId, role);
             throw new BadRequestException("프로필 역할이 선택되지 않았습니다. 올바른 프로필 역할을 선택해주세요.");
+        }
+
+
+        // 이미지 존재하면 이미지 저장
+        if (image != null && !image.isEmpty()) {
+            deleteImageService.doService(userId, profileId, "profile");
+            uploadImageService.doService(userId, profileId, image, "profile");
+            log.info("프로필 이미지 업데이트 완료 - userId={}, menuId={}", userId, profileId);
         }
 
         UserProfile user = userProfileUtil.getUserProfileById(userId, profileId);

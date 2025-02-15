@@ -64,4 +64,10 @@
         AND profile_pass = #{password}
     </select>
 
+    <!-- 전체 프로필 조회 -->
+    <select id="findByUserId" parameterType="java.lang.Long" resultType="UserProfile">
+        SELECT * FROM user_profile
+        WHERE user_id = #{userId};
+    </select>
+
 </mapper>

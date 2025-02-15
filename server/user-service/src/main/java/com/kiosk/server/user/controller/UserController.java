@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -34,9 +35,9 @@ public class UserController {
 
     // 프로필 목록 조회
     @GetMapping("/profile/list")
-    public ResponseEntity<List<UserProfileResponse>> getUserProfileList(@RequestHeader("userId") Long userId) {
+    public ResponseEntity<List<UserProfileListResponse>> getUserProfileList(@RequestHeader("userId") Long userId) {
         log.info("Request: userId={}", userId);
-        List<UserProfileResponse> userProfileList = getUserProfileListService.doService(userId);
+        List<UserProfileListResponse> userProfileList = getUserProfileListService.doService(userId);
         return ResponseEntity.ok(userProfileList);
     }
 
@@ -50,21 +51,26 @@ public class UserController {
 
     // 프로필 생성
     @PostMapping("/profile")
-    public ResponseEntity<CreateProfileResponse> createProfile(@RequestHeader("userId") Long userId, @RequestBody CreateProfileRequest request) {
+    public ResponseEntity<CreateProfileResponse> createProfile(
+        @RequestHeader("userId") Long userId,
+        @RequestPart("profile") CreateProfileRequest request,
+        @RequestPart(required = false) MultipartFile image
+    ) {
         log.info("Request: userId={}, name={}, role={}", userId, request.name(), request.role());
-        CreateProfileResponse response = createUserProfileService.doService(userId, request.name(), request.role(), request.phone(), request.password());
+        CreateProfileResponse response = createUserProfileService.doService(userId, request, image);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // 프로필 수정
     @PatchMapping("/profile")
     public ResponseEntity<PatchProfileResponse> modifyUserProfile(
-            @RequestHeader("userId") Long userId,
-            @RequestHeader("profileId") Long profileId,
-            @RequestBody PatchProfileRequest request
+        @RequestHeader("userId") Long userId,
+        @RequestHeader("profileId") Long profileId,
+        @RequestPart("profile")  PatchProfileRequest request,
+        @RequestPart(required = false) MultipartFile image
     ) {
         log.info("Request: userId={}, profileId={}, name={}, phone={}", userId, profileId, request.name(), request.phone());
-        PatchProfileResponse response = modifyUserProfileService.doService(userId, profileId, request.name(), request.phone(), request.password());
+        PatchProfileResponse response = modifyUserProfileService.doService(userId, profileId, request, image);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

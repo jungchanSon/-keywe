@@ -1,9 +1,9 @@
 package com.kiosk.server.store.service.impl;
 
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
+import com.kiosk.server.image.repository.MenuImageRepository;
 import com.kiosk.server.store.controller.dto.MenuDetailResponse;
 import com.kiosk.server.store.controller.dto.OptionGroupResponse;
-import com.kiosk.server.store.domain.MenuImageRepository;
 import com.kiosk.server.store.domain.MenuRepository;
 import com.kiosk.server.store.domain.StoreMenu;
 import com.kiosk.server.store.service.FindMenuDetailService;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class FindMenuDetailServiceImpl implements FindMenuDetailService {
 
     private final MenuRepository menuRepository;
-    private final MenuImageRepository menuImageRepository;
+    private final MenuImageRepository imageRepository;
     private final OptionServiceImpl optionService;
 
     @Override
@@ -38,10 +38,10 @@ public class FindMenuDetailServiceImpl implements FindMenuDetailService {
 
         // 메뉴 이미지 조회 & Base64 변환
         Map<String, Object> params = new HashMap<>();
-        params.put("menuId", menuId);
+        params.put("targetId", menuId);
         params.put("userId", userId);
 
-        byte[] imageBytes = (byte[]) menuImageRepository.findImageBytesById(params);
+        byte[] imageBytes = (byte[]) imageRepository.findImageBytesById(params);
         String image = (imageBytes != null && imageBytes.length > 0)
                 ? "data:image/png;base64," + Base64.getUrlEncoder().withoutPadding().encodeToString(imageBytes)
                 : null;

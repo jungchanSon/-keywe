@@ -13,5 +13,6 @@ include(
         "common-http",
         "swagger",
         "infra-logging",
-        "infra-kafka"
+        "infra-kafka",
+        "image-handler"
 )
