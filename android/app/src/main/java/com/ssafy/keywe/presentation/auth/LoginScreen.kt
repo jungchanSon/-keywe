@@ -8,15 +8,20 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -25,7 +30,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -36,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
+import com.ssafy.keywe.R
 import com.ssafy.keywe.common.HelperRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SignUpRoute
@@ -109,9 +119,24 @@ fun LoginScreen(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = modifier.height(32.dp))
-            Text(
-                "키위로 더 간단하고\n" + "스마트한 하루를 시작하세요.", style = h6sb
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "이용자님\n\n키위로 더 간단하고\n" + "스마트한 하루를 시작하세요.", style = h6sb
+                )
+                Image(
+                    painter = rememberAsyncImagePainter(model = R.drawable.user),
+                    contentDescription = "Default Image",
+                    modifier = modifier
+                        .width(100.dp)
+                        .height(100.dp)
+                        .background(color = Color.Transparent),
+                    contentScale = ContentScale.Fit
+                )
+            }
             Spacer(modifier = modifier.height(40.dp))
             DefaultTextFormField(
                 label = "이메일",
@@ -156,7 +181,7 @@ fun LoginScreen(
                 style = caption,
                 textDecoration = TextDecoration.Underline
             )
-            ScreenCaptureButton(context, navController)
+//            ScreenCaptureButton(context, navController)
         }
     }
 
