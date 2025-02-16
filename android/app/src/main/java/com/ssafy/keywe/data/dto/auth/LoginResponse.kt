@@ -20,16 +20,17 @@ import kotlinx.serialization.Serializable
     }
  */
 @Serializable
-data class MITIResponse<T>(
+data class KeyWeResponse<T>(
     @SerialName("status_code") val statusCode: Int,
     @SerialName("message") val message: String,
     @SerialName("data") val data: T?,
 )
 
-
 @Serializable
 data class LoginResponse(
     @SerialName("accessToken") val accessToken: String,
+    @SerialName("emailVerified") val emailVerified: Boolean,
+    @SerialName("role") val role: String
 )
 
 @Serializable

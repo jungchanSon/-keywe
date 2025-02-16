@@ -36,12 +36,15 @@ class LoginViewModel @Inject constructor(
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
+    private val _emailVerificationRequired = MutableStateFlow(false)
+    val emailVerificationRequired: StateFlow<Boolean> = _emailVerificationRequired.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     private val _validForm = MutableStateFlow<Boolean>(false)
     val validForm: StateFlow<Boolean> = _validForm.asStateFlow()
+
 
     fun onEmailChanged(email: String) {
         _email.value = email
@@ -59,7 +62,12 @@ class LoginViewModel @Inject constructor(
             email = _email.value, password = password.value
         )
         viewModelScope.launch {
-            repository.login(loginRequest).onSuccess(::saveUserToken).onServerError(::handleError)
+            repository.login(loginRequest)
+                .onSuccess { loginResponse ->
+                    val loginModel = loginResponse // ✅ 변환 적용
+                    handleLoginSuccess(loginModel)
+                }
+                .onServerError(::handleError)
                 .onException(::handleException)
         }
     }
@@ -75,11 +83,35 @@ class LoginViewModel @Inject constructor(
     }
 
 
+
+//    fun login() {
+//        val loginRequest = LoginRequest(
+//            email = _email.value, password = password.value
+//        )
+//        viewModelScope.launch {
+//            repository.login(loginRequest)
+//                .onSuccess(::handleLoginSuccess)
+////               .onSuccess(::saveUserToken)
+//                .onServerError(::handleError)
+//                .onException(::handleException)
+//        }
+//    }
+
     private fun validateForm() {
         _validForm.value =
             Regex(RegUtil.EMAIL_REG).matches(_email.value) && _password.value.isNotEmpty()
     }
 
+    private fun handleLoginSuccess(loginModel: LoginModel) {
+        Log.d("LoginModel", "로그인 성공:${loginModel}")
+
+        if (loginModel.emailVerified) {
+            _isLoggedIn.value = true
+            viewModelScope.launch {
+                tokenManager.saveTempToken(loginModel.accessToken)
+            }
+        } else {
+            _emailVerificationRequired.value = true
     private fun saveUserToken(
         newToken: LoginModel,
     ) {
@@ -105,6 +137,17 @@ class LoginViewModel @Inject constructor(
             tokenManager.isKiosk = true
         }
     }
+
+//    private fun saveUserToken(
+//        newToken: LoginModel,
+//    ) {
+//        _isLoggedIn.value = true
+//        Log.d("token", newToken.toString())
+////        JWTUtil.isTempToken(newToken.accessToken)
+//        viewModelScope.launch {
+//            tokenManager.saveTempToken(newToken.accessToken)
+//        }
+//    }
 
     private fun handleError(
         status: Status,

@@ -58,7 +58,7 @@ import com.ssafy.keywe.ui.theme.logo
 import com.ssafy.keywe.ui.theme.primaryColor
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+//@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -83,6 +83,8 @@ fun LoginScreen(
 //        onSearchTriggered(searchQuery)
     }
 
+    val emailVerificationRequired by viewModel.emailVerificationRequired.collectAsStateWithLifecycle()
+
 
     val context: Context = LocalContext.current
 
@@ -100,6 +102,13 @@ fun LoginScreen(
 
         }
     }
+
+    LaunchedEffect(emailVerificationRequired) {
+        if (emailVerificationRequired) {
+            navController.navigate("email_verification?email=${email}")
+        }
+    }
+
 
     Box(modifier = modifier
 //        .windowInsetsPadding(WindowInsets.systemBars)

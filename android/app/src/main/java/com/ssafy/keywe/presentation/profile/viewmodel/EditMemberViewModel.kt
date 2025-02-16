@@ -6,6 +6,8 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.datastore.ProfileDataStore
@@ -138,13 +140,15 @@ class EditMemberViewModel @Inject constructor(
     }
 
     //수정 업데이트 정보 담기
-    fun updateProfile(profileViewModel: ProfileViewModel) {
+    fun updateProfile(profileViewModel: ProfileViewModel, navController: NavController) {
         viewModelScope.launch {
 
             val request = if (state.value.role == "PARENT") {
                 val formattedPhone = state.value.phone.replace("-", "")
                 UpdateProfileRequest(
-                    name = state.value.name, phone = formattedPhone, password = state.value.password
+                    name = state.value.name,
+                    phone = formattedPhone,
+                    password = state.value.password
                 )
             } else {
                 UpdateProfileRequest(
@@ -156,7 +160,11 @@ class EditMemberViewModel @Inject constructor(
                 is ResponseResult.Success -> {
                     Log.d("EditProfile", "프로필 수정 성공")
                     _state.update { it.copy(isModified = false) }
-                    profileViewModel.refreshProfileList()
+
+                    profileViewModel.refreshProfileList() //최신 프로필 목록 가져오기
+                    loadProfile()// 최신 프로필 정보 가져오기
+
+                    navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute)
                 }
 
                 is ResponseResult.ServerError -> {
@@ -174,8 +182,11 @@ class EditMemberViewModel @Inject constructor(
     fun deleteProfile(profileId: Long) {
         viewModelScope.launch {
             when (val result = repository.deleteProfile(profileId)) {
-                is ResponseResult.Success -> ProfileIdManager.clearProfileId()// 삭제 완료 처리
-                else -> Log.e("EditProfile", "프로필 삭제 실패")// 에러 처리
+//                is ResponseResult.Success -> ProfileIdManager.clearProfileId()// 삭제 완료 처리
+                is ResponseResult.Success ->
+                    Log.d("deleteProfile", "삭제됨")
+
+                else -> Log.e("deleteProfile", "프로필 삭제 실패")// 에러 처리
             }
         }
     }
