@@ -76,7 +76,7 @@ sealed interface Route {
         data class MenuRoute(val storeId: Long) : Route
 
         @Serializable
-        data class MenuDetailRoute(val id: Long) : Route
+        data class MenuDetailRoute(val id: Long, val storeId: Long) : Route
 
         @Serializable
         data class MenuCartRoute(val storeId: Long) : Route
@@ -240,10 +240,7 @@ fun NavGraphBuilder.menuGraph(
             val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
             val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
             DefaultMenuDetailScreen(
-                navController,
-                menuDetailViewModel,
-                menuCartViewModel,
-                arg.id,
+                navController, menuDetailViewModel, menuCartViewModel, arg.id, arg.storeId
             )
         }
         composable<Route.MenuBaseRoute.DefaultMenuCartRoute> {
@@ -274,7 +271,8 @@ fun NavGraphBuilder.menuGraph(
                 arg.id,
                 getScopedKeyWeViewModel(navController),
                 signalViewModel,
-                tokenManager
+                tokenManager,
+                arg.storeId
             )
         }
         composable<Route.MenuBaseRoute.MenuCartRoute> {

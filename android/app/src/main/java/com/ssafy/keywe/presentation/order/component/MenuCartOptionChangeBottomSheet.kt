@@ -44,14 +44,17 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OptionChangeBottomSheet(
-    cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewModel, onDismiss: () -> Unit
+    cartItem: MenuCartViewModel.CartItem,
+    viewModel: MenuCartViewModel,
+    onDismiss: () -> Unit,
+    storeId: Long,
 ) {
 
     val menu by viewModel.selectedDetailMenu.collectAsState()
 
     // 데이터 가져오기
     LaunchedEffect(cartItem.menuId) {
-        viewModel.fetchMenuDetailById(cartItem.menuId)
+        viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -68,9 +71,12 @@ fun OptionChangeBottomSheet(
 
     val commonOptionList = menu?.options?.filter { it.optionType == "Common" } ?: emptyList()
     val sizeOptions = commonOptionList.find { it.optionName.equals("size", ignoreCase = true) }
-    val temperatureOptions = commonOptionList.find { it.optionName.contains("temp", ignoreCase = true) }
-    val sizeValues = sizeOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Tall", "Grande", "Venti")
-    val temperatureValues = temperatureOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Hot", "Ice")
+    val temperatureOptions =
+        commonOptionList.find { it.optionName.contains("temp", ignoreCase = true) }
+    val sizeValues =
+        sizeOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Tall", "Grande", "Venti")
+    val temperatureValues =
+        temperatureOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Hot", "Ice")
 
     val extraOptionList = menu?.options?.filter { it.optionType == "Extra" } ?: emptyList()
 
@@ -145,16 +151,12 @@ fun OptionChangeBottomSheet(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        MenuDetailCommonOptionRow(
-                            sizeValues,
+                        MenuDetailCommonOptionRow(sizeValues,
                             selectedSize.value,
-                            onSelect = { selectedSize.value = it }
-                        )
-                        MenuDetailCommonOptionRow(
-                            temperatureValues,
+                            onSelect = { selectedSize.value = it })
+                        MenuDetailCommonOptionRow(temperatureValues,
                             selectedTemperature.value,
-                            onSelect = { selectedTemperature.value = it }
-                        )
+                            onSelect = { selectedTemperature.value = it })
                     }
                 }
             }
@@ -170,23 +172,24 @@ fun OptionChangeBottomSheet(
                     ) {
                         extraOptionList.forEach { option ->
                             option.optionsValueGroup.forEach { optionValue ->
-                                val optionId = optionValue.optionValueId // ✅ optionId가 아니라 optionValueId 사용
+                                val optionId =
+                                    optionValue.optionValueId // ✅ optionId가 아니라 optionValueId 사용
                                 val optionName = optionValue.optionValue
 
-                                OptionBox(
-                                    id = optionId, // ✅ optionValueId를 id로 설정
+                                OptionBox(id = optionId, // ✅ optionValueId를 id로 설정
                                     name = optionName,
                                     optionPrice = option.optionPrice,
                                     extraOptions = extraOptions,
                                     onOptionSelected = { id, _, count ->
-                                        val optionValue = extraOptionList
-                                            .flatMap { it.optionsValueGroup }
-                                            .find { it.optionValueId == id }?.optionValue ?: "Unknown"
+                                        val optionValue =
+                                            extraOptionList.flatMap { it.optionsValueGroup }
+                                                .find { it.optionValueId == id }?.optionValue
+                                                ?: "Unknown"
 
                                         if (count == 0) extraOptions.remove(id)
-                                        else extraOptions[id] = optionValue to count // ✅ optionValue 저장
-                                    }
-                                )
+                                        else extraOptions[id] =
+                                            optionValue to count // ✅ optionValue 저장
+                                    })
                             }
                         }
                     }
@@ -205,10 +208,8 @@ fun OptionChangeBottomSheet(
                 modifier = Modifier
                     .height(36.dp)
                     .background(
-                        color = greyBackgroundColor,
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
+                        color = greyBackgroundColor, shape = RoundedCornerShape(8.dp)
+                    ), contentAlignment = Alignment.Center
             ) {
                 Row(
                     modifier = Modifier
@@ -217,14 +218,10 @@ fun OptionChangeBottomSheet(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "가격",
-                        style = subtitle1,
-                        color = contentTextColor
+                        text = "가격", style = subtitle1, color = contentTextColor
                     )
                     Text(
-                        text = "${totalPrice.value}원",
-                        style = subtitle2,
-                        color = contentTextColor
+                        text = "${totalPrice.value}원", style = subtitle2, color = contentTextColor
                     )
                 }
             }
@@ -266,7 +263,8 @@ fun OptionChangeBottomSheet(
                         cartItem.menuId,
                         selectedSize.value,
                         selectedTemperature.value,
-                        extraOptions.mapValues { (_, pair) -> pair.second }
+                        extraOptions.mapValues { (_, pair) -> pair.second },
+                        storeId
                     )
                     sheetState.hide()
                     onDismiss()

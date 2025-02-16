@@ -22,10 +22,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
-import com.ssafy.keywe.domain.order.OptionsValueGroupModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -36,9 +34,14 @@ import kotlinx.coroutines.delay
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
 fun MenuDetailBottom(
-    menuId: Long, selectedSize: String, selectedTemperature: String, extraOptions: Map<Long, Pair<String, Int>>,
+    menuId: Long,
+    selectedSize: String,
+    selectedTemperature: String,
+    extraOptions: Map<Long, Pair<String, Int>>,
     totalPrice: Int,
-    navController: NavController, menuCartViewModel: MenuCartViewModel
+    navController: NavController,
+    menuCartViewModel: MenuCartViewModel,
+    storeId: Long,
 ) {
     val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
     val viewModel = hiltViewModel<MenuDetailViewModel>(parentBackStackEntry)
@@ -59,7 +62,8 @@ fun MenuDetailBottom(
                     extraOptions = extraOptions,
                     totalPrice = totalPrice,
                     navController = navController,
-                    menuCartViewModel = menuCartViewModel
+                    menuCartViewModel = menuCartViewModel,
+                    storeId = storeId
                 )
             }
             Box(modifier = Modifier.weight(1f)) {
@@ -78,7 +82,8 @@ fun MenuDetailBottomBackButton(
     extraOptions: Map<Long, Pair<String, Int>>,
     totalPrice: Int,
     navController: NavController,
-    menuCartViewModel: MenuCartViewModel
+    menuCartViewModel: MenuCartViewModel,
+    storeId: Long,
 ) {
     val selectedOptions = if (extraOptions.isNotEmpty()) {
         extraOptions.mapValues { (_, pair) -> pair.second }
@@ -99,14 +104,14 @@ fun MenuDetailBottomBackButton(
                 size = selectedSize,
                 temperature = selectedTemperature,
                 selectedOptions = selectedOptions,
-                totalPrice = totalPrice
+                totalPrice = totalPrice,
+                storeId = storeId
             )
             addToCartTrigger = true
 
             navController.popBackStack()
 //            navController.navigate(Route.MenuBaseRoute.MenuRoute)
-        }, modifier = Modifier
-            .fillMaxWidth(), colors = ButtonColors(
+        }, modifier = Modifier.fillMaxWidth(), colors = ButtonColors(
             containerColor = whiteBackgroundColor,
             contentColor = titleTextColor,
             disabledContentColor = polishedSteelColor,
@@ -117,7 +122,10 @@ fun MenuDetailBottomBackButton(
     LaunchedEffect(addToCartTrigger) {
         if (addToCartTrigger) {
             delay(100) // 업데이트 반영 기다리기
-            Log.d("MenuDetailBottomBackButton", "🛒 addToCart 이후 장바구니 상태: ${menuCartViewModel.cartItems.value}")
+            Log.d(
+                "MenuDetailBottomBackButton",
+                "🛒 addToCart 이후 장바구니 상태: ${menuCartViewModel.cartItems.value}"
+            )
             addToCartTrigger = false // 다시 초기화
         }
     }
@@ -130,13 +138,9 @@ fun MenuDetailBottomCartButton(
     enabled: Boolean = true,
 ) {
     BottomButton(
-        content = content,
-        onClick = onClick,
-        enabled = enabled,
-        modifier = Modifier
+        content = content, onClick = onClick, enabled = enabled, modifier = Modifier
 
-            .fillMaxWidth(),
-        colors = ButtonColors(
+            .fillMaxWidth(), colors = ButtonColors(
             containerColor = primaryColor,
             contentColor = whiteBackgroundColor,
             disabledContentColor = polishedSteelColor,

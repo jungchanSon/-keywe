@@ -11,7 +11,7 @@ interface OrderRepository {
     suspend fun postMenu(menuPostModel: MenuModel): ResponseResult<MenuModel>
     suspend fun updateMenu(menuId: Long, menuPatchModel: MenuModel): ResponseResult<Unit>
     suspend fun getAllMenu(storeId: Long): ResponseResult<List<MenuSimpleModel>>
-    suspend fun getDetailMenu(menuId: Long): ResponseResult<MenuDetailModel>
+    suspend fun getDetailMenu(menuId: Long, storeId: Long): ResponseResult<MenuDetailModel>
     suspend fun getCategoryMenu(
         categoryId: Long,
         storeId: Long,

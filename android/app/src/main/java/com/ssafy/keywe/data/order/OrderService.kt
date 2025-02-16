@@ -69,6 +69,7 @@ interface OrderService {
     @GET(MENU_GET_PATCH_DELETE_PATH)
     suspend fun getDetailMenu(
         @Path("menuId") menuId: Long,
+        @Query("sid") storeId: Long,
     ): Response<MenuDetailResponse>
 
     @GET(MENU_POST_GET_PATH)

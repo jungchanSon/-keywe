@@ -42,6 +42,7 @@ fun DefaultMenuDetailScreen(
     menuCartViewModel: MenuCartViewModel,
 //    appBarViewModel: OrderAppBarViewModel,
     menuId: Long,
+    storeId: Long,
 ) {
     Log.d("Menu Detail", ":$menuId")
     val context = LocalContext.current
@@ -50,7 +51,7 @@ fun DefaultMenuDetailScreen(
 
     // 데이터 가져오기
     LaunchedEffect(menuId) {
-        menuDetailViewModel.fetchMenuDetailById(menuId)
+        menuDetailViewModel.fetchMenuDetailById(menuId, storeId)
     }
 
     if (menu == null) {
@@ -135,7 +136,9 @@ fun DefaultMenuDetailScreen(
                             modifier = Modifier.fillMaxWidth(),
                             menuId = menuId,
                             menuPrice = totalPrice.value,
-                            menuDetailViewModel
+                            menuDetailViewModel,
+                            storeId
+
                         )
                         Spacer(
                             modifier = Modifier
@@ -200,7 +203,8 @@ fun DefaultMenuDetailScreen(
                     extraOptions = extraOptions.mapValues { it.value },
                     totalPrice = totalPrice.value,
                     navController = navController,
-                    menuCartViewModel = menuCartViewModel
+                    menuCartViewModel = menuCartViewModel, storeId
+
                 )
             }
         }

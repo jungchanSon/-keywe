@@ -42,6 +42,7 @@ fun MenuMenuList(
     viewModel: MenuViewModel,
     menuCartViewModel: MenuCartViewModel,
     isKeyWe: Boolean = false,
+    storeId: Long,
 ) {
     val filteredMenuList by viewModel.filteredMenuItems.collectAsState()
     val listState = rememberLazyGridState() // 스크롤 상태 관리
@@ -70,9 +71,13 @@ fun MenuMenuList(
                 Log.d("menu data", "$menu")
                 MenuMenuScreen(
                     menuId = menu.menuId, selectItem = {
-                        if (isKeyWe) navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(menu.menuId))
+                        if (isKeyWe) navController.navigate(
+                            Route.MenuBaseRoute.MenuDetailRoute(
+                                menu.menuId, storeId
+                            )
+                        )
                         else navController.navigate(Route.MenuBaseRoute.DefaultMenuDetailRoute(menu.menuId))
-                    }, viewModel, menuCartViewModel
+                    }, viewModel, menuCartViewModel, storeId
                 )
             }
         }
@@ -85,8 +90,8 @@ fun MenuMenuScreen(
     selectItem: () -> Unit,
     viewModel: MenuViewModel,
     menuCartViewModel: MenuCartViewModel,
-
-    ) {
+    storeId: Long,
+) {
     Log.d("Menu ID", "$menuId")
 
     Box(
@@ -108,7 +113,7 @@ fun MenuMenuScreen(
             Log.d("menu Column", "$menuId")
             MenuImage(menuId, viewModel)
 
-            MenuDescription(menuId, viewModel, menuCartViewModel)
+            MenuDescription(menuId, viewModel, menuCartViewModel, storeId)
         }
 
         val density = LocalDensity.current.density // Density 가져오기

@@ -46,7 +46,7 @@ fun DefaultMenuScreen(
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
-                navController = navController, menuViewModel, menuCartViewModel
+                navController = navController, menuViewModel, menuCartViewModel, storeId = storeId
             )
         }
     }

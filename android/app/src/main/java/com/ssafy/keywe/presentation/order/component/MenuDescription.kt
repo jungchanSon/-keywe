@@ -28,7 +28,8 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 fun MenuDescription(
     menuId: Long,
     viewModel: MenuViewModel = hiltViewModel(),
-    menuCartViewModel: MenuCartViewModel
+    menuCartViewModel: MenuCartViewModel,
+    storeId: Long,
 ) {
     val menu = viewModel.getMenuSimpleModelById(menuId)
 
@@ -80,7 +81,7 @@ fun MenuDescription(
         }
         MenuPlusButton({
             menuCartViewModel.addToCart(
-                menuId, "Tall", "Hot", emptyMap(), menuPrice
+                menuId, "Tall", "Hot", emptyMap(), menuPrice, storeId
             )
         })
     }

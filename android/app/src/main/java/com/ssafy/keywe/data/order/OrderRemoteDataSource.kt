@@ -40,13 +40,11 @@ class OrderRemoteDataSource @Inject constructor(
     override suspend fun requestUpdateCategory(
         categoryId: Long,
         categoryRequest: CategoryRequest,
-    ): ResponseResult<Unit> =
-        handleApiResponse {
-            orderService.updateCategory(
-                categoryId,
-                categoryRequest
-            )
-        }
+    ): ResponseResult<Unit> = handleApiResponse {
+        orderService.updateCategory(
+            categoryId, categoryRequest
+        )
+    }
 
     override suspend fun requestDeleteCategory(categoryId: Long): ResponseResult<Unit> =
         handleApiResponse {
@@ -80,50 +78,47 @@ class OrderRemoteDataSource @Inject constructor(
         }
 
 
-    override suspend fun requestGetDetailMenu(menuId: Long): ResponseResult<MenuDetailResponse> =
-        handleApiResponse {
-            val result = orderService.getDetailMenu(menuId)
-            Log.d("Test", result.body().toString())
-            result
-        }
+    override suspend fun requestGetDetailMenu(
+        menuId: Long,
+        storeId: Long,
+    ): ResponseResult<MenuDetailResponse> = handleApiResponse {
+        val result = orderService.getDetailMenu(menuId, storeId)
+        Log.d("Test", result.body().toString())
+        result
+    }
 
     override suspend fun requestGetCategoryMenu(
         categoryId: Long,
         storeId: Long,
-    ): ResponseResult<List<MenuSimpleResponse>> =
-        handleApiResponse {
-            orderService.getCategoryMenu(categoryId, storeId)
-        }
+    ): ResponseResult<List<MenuSimpleResponse>> = handleApiResponse {
+        orderService.getCategoryMenu(categoryId, storeId)
+    }
 
-    override suspend fun requestDeleteMenu(menuId: Long): ResponseResult<Unit> =
-        handleApiResponse {
-            orderService.deleteMenu(menuId)
-        }
+    override suspend fun requestDeleteMenu(menuId: Long): ResponseResult<Unit> = handleApiResponse {
+        orderService.deleteMenu(menuId)
+    }
 
     override suspend fun requestPostOption(
         menuId: Long,
         optionRequest: OptionPostRequest,
-    ): ResponseResult<MenuOptionResponse> =
-        handleApiResponse {
-            orderService.postOption(menuId, optionRequest)
-        }
+    ): ResponseResult<MenuOptionResponse> = handleApiResponse {
+        orderService.postOption(menuId, optionRequest)
+    }
 
     override suspend fun requestUpdateOption(
         menuId: Long,
         optionValueId: Long,
         optionRequest: OptionPostRequest,
-    ): ResponseResult<MenuOptionResponse> =
-        handleApiResponse {
-            orderService.updateOption(menuId, optionValueId, optionRequest)
-        }
+    ): ResponseResult<MenuOptionResponse> = handleApiResponse {
+        orderService.updateOption(menuId, optionValueId, optionRequest)
+    }
 
     override suspend fun requestDeleteOption(
         menuId: Long,
         optionValueId: Long,
-    ): ResponseResult<Unit> =
-        handleApiResponse {
-            orderService.deleteOption(menuId, optionValueId)
-        }
+    ): ResponseResult<Unit> = handleApiResponse {
+        orderService.deleteOption(menuId, optionValueId)
+    }
 
     override suspend fun requestPostOrder(postOrderRequest: PostOrderRequest): ResponseResult<PostOrderResponse> =
         handleApiResponse {

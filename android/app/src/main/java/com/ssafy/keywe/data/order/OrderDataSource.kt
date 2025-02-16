@@ -38,7 +38,11 @@ interface OrderDataSource {
     ): ResponseResult<Unit>
 
     suspend fun requestGetAllMenu(storeId: Long): ResponseResult<List<MenuSimpleResponse>>
-    suspend fun requestGetDetailMenu(menuId: Long): ResponseResult<MenuDetailResponse>
+    suspend fun requestGetDetailMenu(
+        menuId: Long,
+        storeId: Long,
+    ): ResponseResult<MenuDetailResponse>
+
     suspend fun requestGetCategoryMenu(
         categoryId: Long,
         storeId: Long,

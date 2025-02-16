@@ -1,18 +1,15 @@
 package com.ssafy.keywe.presentation.order.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.domain.order.MenuDetailModel
-import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,11 +21,11 @@ class MenuDetailViewModel @Inject constructor(
     private val _selectedDetailMenu = MutableStateFlow<MenuDetailModel?>(null)
     val selectedDetailMenu: StateFlow<MenuDetailModel?> = _selectedDetailMenu.asStateFlow()
 
-    fun fetchMenuDetailById(id: Long) {
+    fun fetchMenuDetailById(id: Long, storeId: Long) {
         Log.d("Fetch Menu", ":$id")
 
         viewModelScope.launch {
-            when (val result = repository.getDetailMenu(id)) {
+            when (val result = repository.getDetailMenu(id, storeId)) {
                 is ResponseResult.Success -> {
                     _selectedDetailMenu.value = result.data
                     println("getDetailMenu 결과: ${result.data}")

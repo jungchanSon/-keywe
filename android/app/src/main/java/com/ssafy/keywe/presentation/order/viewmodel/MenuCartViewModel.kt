@@ -31,7 +31,7 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         val image: String?,
         val size: String,
         val temperature: String,
-        val extraOptions: Map<Long, Pair<String, Int>>
+        val extraOptions: Map<Long, Pair<String, Int>>,
     )
 
     val sizePriceMap = mapOf("Tall" to 0, "Grande" to 500, "Venti" to 1000)
@@ -54,11 +54,11 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
     private val _selectedDetailMenu = MutableStateFlow<MenuDetailModel?>(null)
     val selectedDetailMenu: StateFlow<MenuDetailModel?> = _selectedDetailMenu.asStateFlow()
 
-    fun fetchMenuDetailById(id: Long): MenuDetailModel? {
+    fun fetchMenuDetailById(id: Long, storeId: Long): MenuDetailModel? {
         Timber.tag("Fetch Menu").d(":$id")
 
         viewModelScope.launch {
-            when (val result = repository.getDetailMenu(id)) {
+            when (val result = repository.getDetailMenu(id, storeId)) {
                 is ResponseResult.Success -> {
                     val menuDetail = result.data
                     _selectedDetailMenu.value = menuDetail
@@ -88,12 +88,13 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         size: String,
         temperature: String,
         selectedOptions: Map<Long, Int>,
-        totalPrice: Int
+        totalPrice: Int,
+        storeId: Long,
     ) {
         viewModelScope.launch {
             _selectedDetailMenu.value = null
 
-            fetchMenuDetailById(menuId)
+            fetchMenuDetailById(menuId, storeId)
 
             var retryCount = 0
             while (selectedDetailMenu.value == null && retryCount < 6) {
@@ -107,12 +108,10 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                 return@launch
             }
 
-            val sizeOptionId = menuData.options
-                .flatMap { it.optionsValueGroup }
+            val sizeOptionId = menuData.options.flatMap { it.optionsValueGroup }
                 .find { it.optionValue == size }?.optionValueId
 
-            val temperatureOptionId = menuData.options
-                .flatMap { it.optionsValueGroup }
+            val temperatureOptionId = menuData.options.flatMap { it.optionsValueGroup }
                 .find { it.optionValue == temperature }?.optionValueId
 
             Timber.tag("addToCart")
@@ -132,10 +131,7 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
             val currentCart = _cartItems.value.toMutableList()
 
             val existingItemIndex = currentCart.indexOfFirst {
-                it.name == menuData.menuName &&
-                        it.size == size &&
-                        it.temperature == temperature &&
-                        it.extraOptions == cartExtraOptions
+                it.name == menuData.menuName && it.size == size && it.temperature == temperature && it.extraOptions == cartExtraOptions
             }
 
             if (existingItemIndex != -1) {
@@ -172,13 +168,15 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         cartItemMenuId: Long,
         size: String,
         temperature: String,
-        extraOptions: Map<Long, Int>
+        extraOptions: Map<Long, Int>,
+        storeId: Long,
     ) {
-        Timber.tag("updateCartItem").d("updateCartItem 호출됨: id=$cartItemId, menuId=$cartItemMenuId") // ✅ 함수 호출 로그 추가
+        Timber.tag("updateCartItem")
+            .d("updateCartItem 호출됨: id=$cartItemId, menuId=$cartItemMenuId") // ✅ 함수 호출 로그 추가
 
         viewModelScope.launch {
             Timber.tag("updateCartItem").d("✅ fetchMenuDetailById 호출 전")
-            fetchMenuDetailById(cartItemMenuId)
+            fetchMenuDetailById(cartItemMenuId, storeId)
             Timber.tag("updateCartItem").d("✅ fetchMenuDetailById 호출 후")
 
             var retryCount = 0
@@ -206,7 +204,9 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                 }
 
                 val optionType = optionModel?.optionType ?: "Unknown"
-                val optionValue = optionModel?.optionsValueGroup?.find { it.optionValueId == optionValueId }?.optionValue ?: "Unknown"
+                val optionValue =
+                    optionModel?.optionsValueGroup?.find { it.optionValueId == optionValueId }?.optionValue
+                        ?: "Unknown"
 
                 // ✅ "Extra" 옵션만 표시 (Common 옵션 등 제외)
                 if (optionType == "Extra") {
@@ -231,11 +231,7 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
             _cartItems.update { currentCart ->
                 Timber.tag("Cart Update").d("기존 장바구니: $currentCart")
                 val existingItemIndex = currentCart.indexOfFirst {
-                    it.menuId == cartItemMenuId &&
-                            it.size == size &&
-                            it.temperature == temperature &&
-                            it.extraOptions == extraOptions &&
-                            it.id != cartItemId
+                    it.menuId == cartItemMenuId && it.size == size && it.temperature == temperature && it.extraOptions == extraOptions && it.id != cartItemId
                 }
 
                 val updatedCart = currentCart.toMutableList()
@@ -306,8 +302,7 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
 
     fun removeFromCart(cartItemId: Long) {
         _cartItems.update { currentCart ->
-            val updatedCart = currentCart.filter { it.id != cartItemId }
-                .toList()
+            val updatedCart = currentCart.filter { it.id != cartItemId }.toList()
             updatedCart
         }
         closeDeleteDialog()
@@ -325,11 +320,11 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         }
     }
 
-    private val _orderResponse = MutableStateFlow<OrderResponseModel?> (null)
+    private val _orderResponse = MutableStateFlow<OrderResponseModel?>(null)
     val orderResponse: StateFlow<OrderResponseModel?> = _orderResponse
 
     fun postOrder(orderModel: OrderModel, onResult: (Result<OrderResponseModel>) -> Unit) {
-        viewModelScope.launch{
+        viewModelScope.launch {
             Timber.tag("postOrder OrderModel 확인").d("$orderModel")
             when (val result = repository.postOrder(orderModel)) {
                 is ResponseResult.Success -> {
@@ -367,23 +362,20 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
 
     fun createOrderModel(phoneNumber: String): OrderModel {
         val menuList = _cartItems.value.map { cartItem ->
-            OrderMenuItemModel(
-                menuId = cartItem.menuId,
+            OrderMenuItemModel(menuId = cartItem.menuId,
                 menuCount = cartItem.quantity,
                 optionList = cartItem.extraOptions.map { (optionValueId, pair) ->  // ✅ 옵션 ID 기반
                     OrderOptionItemModel(
                         optionValueId = optionValueId, // ✅ 옵션 ID 그대로 사용
                         optionCount = pair.second  // ✅ 옵션 개수 사용
                     )
-                }
-            )
+                })
         }
 
         Timber.tag("createOrderModel").d("생성된 주문 모델: $menuList")
 
         return OrderModel(
-            phoneNumber = phoneNumber,
-            menuList = menuList
+            phoneNumber = phoneNumber, menuList = menuList
         )
     }
 

@@ -63,6 +63,7 @@ fun MenuDetailScreen(
     keyWeViewModel: KeyWeViewModel,
     signalViewModel: SignalViewModel,
     tokenManager: TokenManager,
+    storeId: Long,
 ) {
     Log.d("Menu Detail", ":$menuId")
     val context = LocalContext.current
@@ -73,7 +74,7 @@ fun MenuDetailScreen(
 
     // 데이터 가져오기
     LaunchedEffect(menuId) {
-        menuDetailViewModel.fetchMenuDetailById(menuId)
+        menuDetailViewModel.fetchMenuDetailById(menuId, storeId)
     }
 
     if (menu == null) {
@@ -90,12 +91,7 @@ fun MenuDetailScreen(
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
                 disConnect(
-                    context,
-                    keyWeViewModel,
-                    appBarViewModel,
-                    isKiosk,
-                    navController,
-                    tokenManager
+                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
                 )
             }
         }
@@ -170,54 +166,49 @@ fun MenuDetailScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            DefaultOrderAppBar(
-                title = "주문하기",
-                navController = navController,
-                viewModel = appBarViewModel,
-                keyWeViewModel = keyWeViewModel
-            )
-        },
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInteropFilter { motionEvent ->
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
+    Scaffold(topBar = {
+        DefaultOrderAppBar(
+            title = "주문하기",
+            navController = navController,
+            viewModel = appBarViewModel,
+            keyWeViewModel = keyWeViewModel
+        )
+    }, modifier = Modifier
+        .fillMaxSize()
+        .pointerInteropFilter { motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
 //                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
 //                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
 
-                        Log.d(
-                            "sendGesture",
-                            "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
-                        )
+                    Log.d(
+                        "sendGesture",
+                        "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
+                    )
 //                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-                        if (!isKiosk)
-                            keyWeViewModel.sendClickGesture(
-                                Touch(
-                                    MessageType.Touch, motionEvent.x, motionEvent.y,
-                                )
-                            )
-                        println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
-                    }
-
-                    MotionEvent.ACTION_MOVE -> {
-                        if (!isKiosk)
-                            keyWeViewModel.sendClickGesture(
-                                Drag(
-                                    MessageType.Drag, motionEvent.x, motionEvent.y,
-                                )
-                            )
-                        println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
-                    }
-
-                    else -> {
-                        Log.d("MotionEvent", "click")
-                    }
+                    if (!isKiosk) keyWeViewModel.sendClickGesture(
+                        Touch(
+                            MessageType.Touch, motionEvent.x, motionEvent.y,
+                        )
+                    )
+                    println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
                 }
-                false
+
+                MotionEvent.ACTION_MOVE -> {
+                    if (!isKiosk) keyWeViewModel.sendClickGesture(
+                        Drag(
+                            MessageType.Drag, motionEvent.x, motionEvent.y,
+                        )
+                    )
+                    println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
+                }
+
+                else -> {
+                    Log.d("MotionEvent", "click")
+                }
             }
-    ) { innerPadding ->
+            false
+        }) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -239,7 +230,8 @@ fun MenuDetailScreen(
                             modifier = Modifier.fillMaxWidth(),
                             menuId = menuId,
                             menuPrice = totalPrice.value,
-                            menuDetailViewModel
+                            menuDetailViewModel,
+                            storeId,
                         )
                         Spacer(
                             modifier = Modifier
@@ -304,7 +296,8 @@ fun MenuDetailScreen(
                     extraOptions = extraOptions.mapValues { it.value },
                     totalPrice = totalPrice.value,
                     navController = navController,
-                    menuCartViewModel = menuCartViewModel
+                    menuCartViewModel = menuCartViewModel,
+                    storeId
                 )
             }
         }

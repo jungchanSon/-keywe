@@ -185,7 +185,11 @@ fun MenuScreen(
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
-                navController = navController, menuViewModel, menuCartViewModel, isKeyWe = true
+                navController = navController,
+                menuViewModel,
+                menuCartViewModel,
+                isKeyWe = true,
+                storeId
             )
         }
     }

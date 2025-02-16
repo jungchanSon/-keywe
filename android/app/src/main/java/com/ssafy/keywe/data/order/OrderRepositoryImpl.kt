@@ -158,9 +158,12 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getDetailMenu(menuId: Long): ResponseResult<MenuDetailModel> {
+    override suspend fun getDetailMenu(
+        menuId: Long,
+        storeId: Long,
+    ): ResponseResult<MenuDetailModel> {
         return runCatching {
-            when (val result = orderDataSource.requestGetDetailMenu(menuId)) {
+            when (val result = orderDataSource.requestGetDetailMenu(menuId, storeId)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain()) // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
@@ -275,8 +278,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun verificationUser(verificationUserModel: VerificationUserModel): ResponseResult<VerificationUserResponseModel> {
         val verificationUserRequest = VerificationUserRequest(
-            phone = verificationUserModel.phone,
-            password = verificationUserModel.password
+            phone = verificationUserModel.phone, password = verificationUserModel.password
         )
 
         return runCatching {
@@ -284,8 +286,7 @@ class OrderRepositoryImpl @Inject constructor(
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain()) // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
-                    result.e,
-                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
                 )
             }
         }.getOrElse {

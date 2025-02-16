@@ -247,7 +247,7 @@ fun MenuCartScreen(
                 ) {
                     items(cartItems, key = { it.id }) { item ->
                         MenuCartMenuBox(
-                            cartItem = item, viewModel = menuCartViewModel
+                            cartItem = item, viewModel = menuCartViewModel, storeId
                         )
 
                         Box(

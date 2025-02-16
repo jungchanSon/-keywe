@@ -23,27 +23,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
-import timber.log.Timber
 
 @Composable
 fun MenuCartMenuBox(
     cartItem: MenuCartViewModel.CartItem,
     viewModel: MenuCartViewModel,
+    storeId: Long,
 ) {
     Box {
         Column {
@@ -72,13 +69,17 @@ fun MenuCartMenuBox(
                 }
             }
             // 이미지 + 이름 + 가격
-            MenuCartMenu(cartItem, viewModel)
+            MenuCartMenu(cartItem, viewModel, storeId)
         }
     }
 }
 
 @Composable
-fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewModel) {
+fun MenuCartMenu(
+    cartItem: MenuCartViewModel.CartItem,
+    viewModel: MenuCartViewModel,
+    storeId: Long,
+) {
     val cartItems by viewModel.cartItems.collectAsState()
     val updatedCartItem = cartItems.find { it.id == cartItem.id }
     val quantity = updatedCartItem?.quantity ?: cartItem.quantity
@@ -87,7 +88,7 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
     val name = cartItem.name
     val price = cartItem.price
     val size = cartItem.size
-    val image = cartItem.image?: ""
+    val image = cartItem.image ?: ""
     val temperature = cartItem.temperature
     val extraOptions = remember(cartItem) {
         mutableStateMapOf<Long, Pair<String, Int>>().apply {
@@ -99,12 +100,11 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
     Log.d("extraOptions", "$extraOptions")
 
     LaunchedEffect(cartItem.menuId) {
-        viewModel.fetchMenuDetailById(cartItem.menuId)
+        viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
@@ -113,7 +113,10 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val modifierCartImage = Modifier.height(60.dp).width(60.dp).clip(CircleShape)
+            val modifierCartImage = Modifier
+                .height(60.dp)
+                .width(60.dp)
+                .clip(CircleShape)
 
             Base64Image(modifier = modifierCartImage, image)
 
@@ -135,10 +138,8 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = name,
-                            style = subtitle2.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.sp
+                            text = name, style = subtitle2.copy(
+                                fontWeight = FontWeight.Bold, letterSpacing = 0.sp
                             )
                         )
 
@@ -146,11 +147,9 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "크기: $size, 온도: $temperature",
-                                style = caption.copy(
+                                text = "크기: $size, 온도: $temperature", style = caption.copy(
                                     letterSpacing = 0.sp
-                                ),
-                                color = polishedSteelColor
+                                ), color = polishedSteelColor
                             )
 
                             extraOptions.forEach { (optionValueId, value) ->
@@ -174,50 +173,38 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
                             verticalAlignment = Alignment.Bottom
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .height(18.12.dp),
+                                modifier = Modifier.height(18.12.dp),
                                 horizontalArrangement = Arrangement.spacedBy(
-                                    14.dp,
-                                    Alignment.CenterHorizontally
+                                    14.dp, Alignment.CenterHorizontally
                                 ),
                                 verticalAlignment = Alignment.Bottom
                             ) {
                                 Text(
-                                    text = "${price}원",
-                                    style = subtitle2.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        letterSpacing = 0.em
+                                    text = "${price}원", style = subtitle2.copy(
+                                        fontWeight = FontWeight.Bold, letterSpacing = 0.em
                                     )
                                 )
                                 VerticalDivider()
-                                Text(
-                                    text = "옵션 변경",
+                                Text(text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
                                     modifier = Modifier.noRippleClickable {
                                         isOptionChangeSheetOpen.value = true
-                                    }
-                                )
+                                    })
                             }
 
                             Box(modifier = Modifier.height(24.dp)) {
-                                CartMenuAmount(
-                                    optionAmount = quantity,
-                                    onDecrease = {
-                                        if (quantity > 1) {
-                                            viewModel.updateCartQuantity(
-                                                cartItem.id,
-                                                quantity - 1
-                                            ) // 업데이트 로직 호출
-                                        }
-                                    },
-                                    onIncrease = {
+                                CartMenuAmount(optionAmount = quantity, onDecrease = {
+                                    if (quantity > 1) {
                                         viewModel.updateCartQuantity(
-                                            cartItem.id,
-                                            quantity + 1
+                                            cartItem.id, quantity - 1
                                         ) // 업데이트 로직 호출
                                     }
-                                )
+                                }, onIncrease = {
+                                    viewModel.updateCartQuantity(
+                                        cartItem.id, quantity + 1
+                                    ) // 업데이트 로직 호출
+                                })
                             }
                         }
                     }
@@ -230,7 +217,8 @@ fun MenuCartMenu(cartItem: MenuCartViewModel.CartItem, viewModel: MenuCartViewMo
         OptionChangeBottomSheet(
             cartItem = cartItem,
             viewModel = viewModel,
-            onDismiss = { isOptionChangeSheetOpen.value = false }
+            onDismiss = { isOptionChangeSheetOpen.value = false },
+            storeId
         )
     }
 
@@ -254,8 +242,7 @@ fun CartMenuAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> 
             contentDescription = "minus in circle"
         )
         Text(
-            text = "$optionAmount",
-            style = subtitle1
+            text = "$optionAmount", style = subtitle1
         )
         Image(
             modifier = Modifier
