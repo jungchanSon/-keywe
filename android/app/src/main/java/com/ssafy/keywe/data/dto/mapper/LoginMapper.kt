@@ -6,7 +6,9 @@ import com.ssafy.keywe.domain.auth.CEOLoginModel
 import com.ssafy.keywe.domain.auth.LoginModel
 
 fun LoginResponse.toDomain(): LoginModel = LoginModel(
-    accessToken
+    accessToken = this.accessToken,
+    emailVerified = this.emailVerified
+
 )
 
 fun CEOLoginResponse.toDomain(): CEOLoginModel = CEOLoginModel(

@@ -7,7 +7,6 @@ import android.view.Surface
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,7 +47,7 @@ import com.ssafy.keywe.ui.theme.logo
 import com.ssafy.keywe.ui.theme.primaryColor
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+//@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun LoginScreen(
     navController: NavHostController,
@@ -73,6 +72,8 @@ fun LoginScreen(
 //        onSearchTriggered(searchQuery)
     }
 
+    val emailVerificationRequired by viewModel.emailVerificationRequired.collectAsStateWithLifecycle()
+
 
     val context: Context = LocalContext.current
 
@@ -90,6 +91,13 @@ fun LoginScreen(
 
         }
     }
+
+    LaunchedEffect(emailVerificationRequired) {
+        if (emailVerificationRequired) {
+            navController.navigate("email_verification?email=${email}")
+        }
+    }
+
 
     Box(modifier = modifier
 //        .windowInsetsPadding(WindowInsets.systemBars)

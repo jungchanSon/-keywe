@@ -11,6 +11,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.kiosk.InputPasswordScreen
 import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.kiosk.KioskHomeScreen
@@ -24,7 +25,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.presentation.profile.AddMemberScreen
 import com.ssafy.keywe.presentation.profile.EditMemberScreen
-import com.ssafy.keywe.presentation.profile.EmailVerification
+import com.ssafy.keywe.presentation.profile.EmailVerificationScreen
 import com.ssafy.keywe.presentation.profile.ProfileChoiceScreen
 import com.ssafy.keywe.presentation.profile.ProfileScreen
 import com.ssafy.keywe.webrtc.screen.HelperWaitingRoomScreen
@@ -99,6 +100,18 @@ sealed interface Route {
         data object ProfileScreenRoute : Route
     }
 
+    companion object {
+        // ✅ 문자열 기반의 EmailVerificationRoute 추가
+        fun EmailVerificationRoute(email: String): String {
+            return "email_verification?email=$email"
+        }
+
+        fun LoginRoute(): String {
+            return "login"
+        }
+    }
+
+
 //    @Serializable
 //    data object KioskBaseRoute : Route {
 //
@@ -130,6 +143,9 @@ data object LoginRoute
 @Serializable
 object SignUpRoute
 
+//@Serializable
+//data class EmailVerificationRoute(val email: String)
+
 
 //@Serializable
 //data class WaitingRoomRoute(
@@ -138,25 +154,60 @@ object SignUpRoute
 //    val sessionId: String,
 //)
 
+//fun NavGraphBuilder.profileGraph(
+//    navController: NavHostController,
+//    tokenManager: TokenManager,
+////    profileDataStore: ProfileDataStore
+//) {
+//    navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
+//        composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
+//        composable<Route.ProfileBaseRoute.ProfileChoiceRoute> {
+//            val args = it.toRoute<Route.ProfileBaseRoute.ProfileChoiceRoute>()
+//            val profileDataStore: ProfileDataStore = hiltViewModel()
+//            ProfileChoiceScreen(navController, args.isJoinApp)
+//        }
+//        composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMemberScreen(navController) }
+////        composable<Route.ProfileBaseRoute.ProfileEmailVerifyRoute> {
+////            EmailVerificationScreen(
+////                navController
+////            )
+//        }
+//        composable<Route.ProfileBaseRoute.ProfileAddRoute> { AddMemberScreen(navController) }
+//        composable<Route.ProfileBaseRoute.ProfileScreenRoute> {
+//            ProfileScreen(
+//                navController, tokenManager
+//            )
+//        }
+//
+//    }
+//}
+
 fun NavGraphBuilder.profileGraph(
     navController: NavHostController,
-    tokenManager: TokenManager,
-//    profileDataStore: ProfileDataStore
+    tokenManager: TokenManager
 ) {
     navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
         composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
         composable<Route.ProfileBaseRoute.ProfileChoiceRoute> {
             val args = it.toRoute<Route.ProfileBaseRoute.ProfileChoiceRoute>()
-//            val profileDataStore: ProfileDataStore = hiltViewModel()
             ProfileChoiceScreen(navController, args.isJoinApp)
         }
         composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMemberScreen(navController) }
-        composable<Route.ProfileBaseRoute.ProfileEmailVerifyRoute> { EmailVerification(navController) }
         composable<Route.ProfileBaseRoute.ProfileAddRoute> { AddMemberScreen(navController) }
         composable<Route.ProfileBaseRoute.ProfileScreenRoute> {
             ProfileScreen(
-                navController, tokenManager
+                navController,
+                tokenManager
             )
+        }
+
+        // ✅ 이메일 인증 화면 추가
+        composable("email_verification?email={email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            EmailVerificationScreen(navController, email)
+        }
+        composable("login") {
+            LoginScreen(navController)
         }
     }
 }
