@@ -55,9 +55,14 @@ public class MenuController {
 
     // 메뉴 단건 상세조회
     @GetMapping("/{menuId}")
-    public ResponseEntity<MenuDetailResponse> getMenuDetail(@RequestHeader("userId") Long userId, @PathVariable long menuId) {
-        log.info("Request: userId={}, findMenuId={}", userId, menuId);
-        MenuDetailResponse response = findMenuDetailService.doService(userId, menuId);
+    public ResponseEntity<MenuDetailResponse> getMenuDetail(
+        @RequestHeader("userId") Long userId,
+        @PathVariable long menuId,
+        @RequestParam(value="sid", required = false) Long storeId
+    ) {
+        log.info("Request: userId={}, findMenuId={}, storeId={}", userId, menuId, storeId);
+        Long actualStoreId = storeId != null ? storeId : userId;
+        MenuDetailResponse response = findMenuDetailService.doService(actualStoreId, menuId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
