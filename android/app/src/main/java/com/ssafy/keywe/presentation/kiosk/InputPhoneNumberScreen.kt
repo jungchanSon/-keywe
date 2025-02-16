@@ -59,8 +59,10 @@ fun InputPhoneNumberScreen(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
-    kioskViewModel: KioskViewModel
 ) {
+
+    val kioskViewModel: KioskViewModel = hiltViewModel()
+
     var phoneNumber1 by remember { mutableStateOf("") }
     var phoneNumber2 by remember { mutableStateOf("") }
     var phoneNumber3 by remember { mutableStateOf("") }
@@ -141,9 +143,10 @@ fun InputPhoneNumberScreen(
                 }, onConfirmClick = {
                     if (isPhoneNumberValid) {
                         kioskViewModel.clearInputPassword()
-                        val fullNumber = "${phoneNumber1}-${phoneNumber2}-${phoneNumber3}"
-                        kioskViewModel.updatePhoneNumber(fullNumber) // ViewModel에 저장
-                        kioskViewModel.openCheckProfileDialog()
+                        val fullNumber = "${phoneNumber1}${phoneNumber2}${phoneNumber3}"
+
+                        kioskViewModel.updatePhoneNumber(fullNumber)  // 그냥 호출 가능
+                        navController.navigate(Route.MenuBaseRoute.KioskPasswordRoute)  // 업데이트 후 화면 이동
                     }
 
                 }, onBackClick = {

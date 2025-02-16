@@ -9,6 +9,8 @@ import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
 import com.ssafy.keywe.data.dto.order.PostOrderRequest
 import com.ssafy.keywe.data.dto.order.PostOrderResponse
+import com.ssafy.keywe.data.dto.order.VerificationUserRequest
+import com.ssafy.keywe.data.dto.order.VerificationUserResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -103,6 +105,11 @@ interface OrderService {
         @Body postOrderRequest: PostOrderRequest
     ): Response<PostOrderResponse>
 
+    @POST(VERIFICATE_POST_PATH)
+    suspend fun verificationUser(
+        @Body verificationUserRequest: VerificationUserRequest
+    ): Response<VerificationUserResponse>
+
     companion object {
         private const val CATEGORY_POST_GET_PATH = "/category"
         private const val CATEGORY_PATCH_DELETE_PATH = "/category/{categoryId}"
@@ -111,5 +118,6 @@ interface OrderService {
         private const val OPTION_POST_PATH = "/menu/{menuId}/options"
         private const val OPTION_PATCH_DELETE_PATH = "/menu/{menuId}/options/{optionValueId}"
         private const val ORDER_POST_PATH = "/order"
+        private const val VERIFICATE_POST_PATH = "/auth/user/kiosk-login"
     }
 }

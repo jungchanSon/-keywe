@@ -3,6 +3,7 @@ package com.ssafy.keywe.common
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -167,7 +168,8 @@ fun NavGraphBuilder.menuGraph(
 ) {
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
-            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel)
+            val kioskViewModel: KioskViewModel = hiltViewModel() // ✅ 한 번만 생성
+            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel, kioskViewModel)
         }
         composable<Route.MenuBaseRoute.MenuRoute> {
             val menuScreenViewModel: MenuViewModel = hiltViewModel()
@@ -185,16 +187,10 @@ fun NavGraphBuilder.menuGraph(
             MenuCartScreen(navController, menuCartViewModel, appBarViewModel)
         }
         composable<Route.MenuBaseRoute.KioskPhoneNumberRoute> {
-            val kioskViewModel: KioskViewModel = hiltViewModel()
-            InputPhoneNumberScreen(
-                navController, menuCartViewModel, appBarViewModel, kioskViewModel
-            )
+            InputPhoneNumberScreen(navController, menuCartViewModel, appBarViewModel)
         }
         composable<Route.MenuBaseRoute.KioskPasswordRoute> {
-            val kioskViewModel: KioskViewModel = hiltViewModel()
-            InputPasswordScreen(
-                navController, menuCartViewModel, appBarViewModel, kioskViewModel
-            )
+            InputPasswordScreen(navController, menuCartViewModel, appBarViewModel)
         }
 
         composable<Route.MenuBaseRoute.HelperWaitingRoomRoute> {

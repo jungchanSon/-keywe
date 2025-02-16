@@ -1,5 +1,6 @@
 package com.ssafy.keywe.data.dto.order
 
+import com.ssafy.keywe.Token
 import okhttp3.MultipartBody
 
 data class MenuPostRequest(
@@ -50,4 +51,9 @@ data class OrderMenuItem(
 data class OrderOptionItem(
     val optionValueId: Long,
     val optionCount: Int
+)
+
+data class VerificationUserRequest(
+    val phone: String,
+    val password: String
 )

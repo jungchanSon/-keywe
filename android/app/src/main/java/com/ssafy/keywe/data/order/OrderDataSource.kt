@@ -10,6 +10,8 @@ import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
 import com.ssafy.keywe.data.dto.order.PostOrderRequest
 import com.ssafy.keywe.data.dto.order.PostOrderResponse
+import com.ssafy.keywe.data.dto.order.VerificationUserRequest
+import com.ssafy.keywe.data.dto.order.VerificationUserResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -32,4 +34,5 @@ interface OrderDataSource {
     suspend fun requestDeleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit>
 
     suspend fun requestPostOrder(postOrderRequest: PostOrderRequest): ResponseResult<PostOrderResponse>
+    suspend fun requestVerificationUser(verificationUserRequest: VerificationUserRequest): ResponseResult<VerificationUserResponse>
 }

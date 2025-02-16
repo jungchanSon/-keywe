@@ -23,6 +23,7 @@ import com.ssafy.keywe.ui.theme.primaryColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.presentation.kiosk.component.SelectOptionCard
+import com.ssafy.keywe.presentation.kiosk.viewmodel.KioskViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
@@ -34,6 +35,7 @@ fun KioskHomeScreen(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel,
+    kioskViewModel: KioskViewModel
 ) {
     Column(
         modifier = Modifier

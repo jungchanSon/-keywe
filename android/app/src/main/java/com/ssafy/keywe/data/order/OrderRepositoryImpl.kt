@@ -7,6 +7,7 @@ import com.ssafy.keywe.data.dto.mapper.toPatchRequest
 import com.ssafy.keywe.data.dto.mapper.toRequest
 import com.ssafy.keywe.data.dto.mapper.toSimpleDomain
 import com.ssafy.keywe.data.dto.order.CategoryRequest
+import com.ssafy.keywe.data.dto.order.VerificationUserRequest
 import com.ssafy.keywe.domain.order.OrderRepository
 import com.ssafy.keywe.domain.order.CategoryModel
 import com.ssafy.keywe.domain.order.MenuDetailModel
@@ -16,6 +17,8 @@ import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OptionPostModel
 import com.ssafy.keywe.domain.order.OrderModel
 import com.ssafy.keywe.domain.order.OrderResponseModel
+import com.ssafy.keywe.domain.order.VerificationUserModel
+import com.ssafy.keywe.domain.order.VerificationUserResponseModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
@@ -241,6 +244,23 @@ class OrderRepositoryImpl @Inject constructor(
         return runCatching {
             when (val result = orderDataSource.requestPostOrder(request)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())
+                is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
+                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+            }
+        }.getOrElse {
+            ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
+        }
+    }
+
+    override suspend fun verificationUser(verificationUserModel: VerificationUserModel): ResponseResult<VerificationUserResponseModel> {
+        val verificationUserRequest = VerificationUserRequest(
+            phone = verificationUserModel.phone,
+            password = verificationUserModel.password
+        )
+
+        return runCatching {
+            when (val result = orderDataSource.requestVerificationUser(verificationUserRequest)) {
+                is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain()) // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
             }
