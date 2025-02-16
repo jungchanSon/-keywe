@@ -15,7 +15,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
@@ -37,19 +36,19 @@ interface OrderService {
     @PATCH(CATEGORY_PATCH_DELETE_PATH)
     suspend fun updateCategory(
         @Path("categoryId") categoryId: Long,
-        @Body categoryRequest: CategoryRequest
+        @Body categoryRequest: CategoryRequest,
     ): Response<Unit>
 
     @DELETE(CATEGORY_PATCH_DELETE_PATH)
     suspend fun deleteCategory(
-        @Path("categoryId") categoryId: Long
+        @Path("categoryId") categoryId: Long,
     ): Response<Unit>
 
     @Multipart
     @POST(MENU_POST_GET_PATH)
     suspend fun postMenu(
         @Part("menu") menu: RequestBody,
-        @Part menuImage: MultipartBody.Part?
+        @Part menuImage: MultipartBody.Part?,
     ): Response<MenuPostResponse>
 
     @Multipart
@@ -57,50 +56,52 @@ interface OrderService {
     suspend fun updateMenu(
         @Path("menuId") menuId: Long,
         @Part("menu") menu: RequestBody,
-        @Part menuImage: MultipartBody.Part?
+        @Part menuImage: MultipartBody.Part?,
     ): Response<Unit>
 
     @GET(MENU_POST_GET_PATH)
     suspend fun getMenuAll(
+        @Query("sid") storeId: Long,
     ): Response<List<MenuSimpleResponse>>
 
     @GET(MENU_GET_PATCH_DELETE_PATH)
     suspend fun getDetailMenu(
-        @Path("menuId") menuId: Long
+        @Path("menuId") menuId: Long,
     ): Response<MenuDetailResponse>
 
     @GET(MENU_POST_GET_PATH)
     suspend fun getCategoryMenu(
-        @Query("cid") categoryId: Long
+        @Query("sid") storeId: Long,
+        @Query("cid") categoryId: Long,
     ): Response<List<MenuSimpleResponse>>
 
     @DELETE(MENU_GET_PATCH_DELETE_PATH)
     suspend fun deleteMenu(
-        @Path("menuId") menuId: Long
+        @Path("menuId") menuId: Long,
     ): Response<Unit>
 
     @POST(OPTION_POST_PATH)
     suspend fun postOption(
         @Path("menuId") menuId: Long,
-        @Body optionRequest: OptionPostRequest
+        @Body optionRequest: OptionPostRequest,
     ): Response<MenuOptionResponse>
 
     @PATCH(OPTION_PATCH_DELETE_PATH)
     suspend fun updateOption(
         @Path("menuId") menuId: Long,
         @Path("optionValueId") optionValueId: Long,
-        @Body optionRequest: OptionPostRequest
+        @Body optionRequest: OptionPostRequest,
     ): Response<MenuOptionResponse>
 
     @DELETE(OPTION_PATCH_DELETE_PATH)
     suspend fun deleteOption(
         @Path("menuId") menuId: Long,
-        @Path("optionValueId") optionValueId: Long
+        @Path("optionValueId") optionValueId: Long,
     ): Response<Unit>
 
     @POST(ORDER_POST_PATH)
     suspend fun postOrder(
-        @Body postOrderRequest: PostOrderRequest
+        @Body postOrderRequest: PostOrderRequest,
     ): Response<PostOrderResponse>
 
     companion object {

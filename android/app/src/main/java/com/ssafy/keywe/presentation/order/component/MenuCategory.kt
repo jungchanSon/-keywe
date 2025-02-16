@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun MenuCategoryScreen(
-    viewModel: MenuViewModel = hiltViewModel()
+    viewModel: MenuViewModel = hiltViewModel(),
+    storeId: Long,
 //    viewModel: HiltViewModel
 ) {
 
@@ -32,8 +32,7 @@ fun MenuCategoryScreen(
     val filteredMenuItems by viewModel.filteredMenuItems.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        ScrollableTabRow(
-            selectedTabIndex = menuCategoryList.indexOfFirst { it.categoryName == selectedCategory },
+        ScrollableTabRow(selectedTabIndex = menuCategoryList.indexOfFirst { it.categoryName == selectedCategory },
             containerColor = Color.Transparent,
             contentColor = primaryColor,
             edgePadding = 16.dp,
@@ -48,19 +47,16 @@ fun MenuCategoryScreen(
                             .background(primaryColor)
                     )
                 }
-            }
-        ) {
+            }) {
             menuCategoryList.forEach { category ->
-                Tab(
-                    selected = selectedCategory == category.categoryName,
-                    onClick = { viewModel.setSelectedCategory(category.categoryName) },
+                Tab(selected = selectedCategory == category.categoryName,
+                    onClick = { viewModel.setSelectedCategory(category.categoryName, storeId) },
                     text = {
                         Text(
                             text = category.categoryName,
                             color = if (selectedCategory == category.categoryName) primaryColor else Color.Gray
                         )
-                    }
-                )
+                    })
             }
         }
     }

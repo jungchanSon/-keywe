@@ -61,13 +61,13 @@ sealed interface Route {
         data object KioskHomeRoute : Route
 
         @Serializable
-        data object MenuRoute : Route
+        data class MenuRoute(val storeId: Long) : Route
 
         @Serializable
         data class MenuDetailRoute(val id: Long) : Route
 
         @Serializable
-        data object MenuCartRoute : Route
+        data class MenuCartRoute(val storeId: Long) : Route
 
         @Serializable
         data object KioskPhoneNumberRoute : Route
@@ -201,20 +201,17 @@ fun NavGraphBuilder.menuGraph(
     // navigation()을 사용하여 menuGraph라는 그래프의 route를 "menuGraph"로 지정합니다.
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
-            KioskHomeScreen(navController)
+            KioskHomeScreen(navController, tokenManager)
         }
         composable<Route.MenuBaseRoute.MenuRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.MenuRoute>()
+
             val menuScreenViewModel: MenuViewModel = hiltViewModel()
             // 여기서는 상위에서 전달받은 viewModel을 그대로 사용합니다.
             MenuScreen(
-                navController,
-                menuScreenViewModel,
-                menuCartViewModel,
-                appBarViewModel,
+                navController, menuScreenViewModel, menuCartViewModel, appBarViewModel,
                 // 아래에서 menuGraph 범위에 한정된 keyWeViewModel을 생성하는 방법을 적용합니다.
-                getScopedKeyWeViewModel(navController),
-                signalViewModel,
-                tokenManager,
+                getScopedKeyWeViewModel(navController), signalViewModel, tokenManager, arg.storeId
             )
         }
         composable<Route.MenuBaseRoute.MenuDetailRoute> {
@@ -232,13 +229,15 @@ fun NavGraphBuilder.menuGraph(
             )
         }
         composable<Route.MenuBaseRoute.MenuCartRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.MenuCartRoute>()
             MenuCartScreen(
                 navController,
                 menuCartViewModel,
                 appBarViewModel,
                 getScopedKeyWeViewModel(navController),
                 signalViewModel,
-                tokenManager
+                tokenManager,
+                arg.storeId
             )
         }
         // 나머지 destination도 동일하게 getScopedKeyWeViewModel(navController)를 사용

@@ -103,6 +103,7 @@ fun ParentWaitingRoomScreen(
 
     val rtcConnected by keyWeViewModel.connected.collectAsStateWithLifecycle()
 
+    val storeId = tokenManager.cachedStoreId
 
     var isConnected by remember { mutableStateOf(false) }
     var dotCount by remember { mutableStateOf(1) }
@@ -168,7 +169,11 @@ fun ParentWaitingRoomScreen(
                         keyWeViewModel.remoteStats.collect { state ->
                             if (state != null) {
                                 Log.d("WaitingRoomScreen", "connect remote")
-                                navController.navigate(Route.MenuBaseRoute.MenuRoute) {
+                                navController.navigate(
+                                    Route.MenuBaseRoute.MenuRoute(
+                                        storeId ?: 0
+                                    )
+                                ) {
                                     popUpTo(Route.MenuBaseRoute.KioskHomeRoute)
                                     launchSingleTop = true
                                 }

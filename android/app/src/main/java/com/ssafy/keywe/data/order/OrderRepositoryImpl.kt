@@ -7,7 +7,6 @@ import com.ssafy.keywe.data.dto.mapper.toPatchRequest
 import com.ssafy.keywe.data.dto.mapper.toRequest
 import com.ssafy.keywe.data.dto.mapper.toSimpleDomain
 import com.ssafy.keywe.data.dto.order.CategoryRequest
-import com.ssafy.keywe.domain.order.OrderRepository
 import com.ssafy.keywe.domain.order.CategoryModel
 import com.ssafy.keywe.domain.order.MenuDetailModel
 import com.ssafy.keywe.domain.order.MenuModel
@@ -15,6 +14,7 @@ import com.ssafy.keywe.domain.order.MenuOptionModel
 import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OptionPostModel
 import com.ssafy.keywe.domain.order.OrderModel
+import com.ssafy.keywe.domain.order.OrderRepository
 import com.ssafy.keywe.domain.order.OrderResponseModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -42,8 +42,7 @@ class OrderRepositoryImpl @Inject constructor(
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
-                    result.e,
-                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
                 )
             }
         }.getOrElse {
@@ -57,8 +56,7 @@ class OrderRepositoryImpl @Inject constructor(
                 is ResponseResult.Success -> ResponseResult.Success(result.data.map { it.toDomain() })
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
-                    result.e,
-                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
                 )
             }
         }.getOrElse {
@@ -68,7 +66,7 @@ class OrderRepositoryImpl @Inject constructor(
 
     override suspend fun updateCategory(
         categoryId: Long,
-        categoryName: String
+        categoryName: String,
     ): ResponseResult<Unit> {
         val categoryRequest = CategoryRequest(categoryName)
 
@@ -77,8 +75,7 @@ class OrderRepositoryImpl @Inject constructor(
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
-                    result.e,
-                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
                 )
             }
         }.getOrElse {
@@ -92,8 +89,7 @@ class OrderRepositoryImpl @Inject constructor(
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
-                    result.e,
-                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
                 )
             }
         }.getOrElse {
@@ -106,13 +102,17 @@ class OrderRepositoryImpl @Inject constructor(
 
         val gson = Gson()
         val menuJson = gson.toJson(menuRequest.menu)
-        val menuRequestBody = menuJson.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val menuRequestBody =
+            menuJson.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 
         return runCatching {
-            when (val result = orderDataSource.requestPostMenu(menuRequestBody, menuRequest.menuImage)) {
+            when (val result =
+                orderDataSource.requestPostMenu(menuRequestBody, menuRequest.menuImage)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())  // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
             }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -124,27 +124,30 @@ class OrderRepositoryImpl @Inject constructor(
 
         val gson = Gson()
         val menuJson = gson.toJson(menuRequest.menu)
-        val menuRequestBody = menuJson.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val menuRequestBody =
+            menuJson.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 
         return runCatching {
-            when (val result = orderDataSource.requestUpdateMenu(menuId, menuRequestBody, menuRequest.menuImage)) {
+            when (val result =
+                orderDataSource.requestUpdateMenu(menuId, menuRequestBody, menuRequest.menuImage)) {
                 is ResponseResult.Success -> result
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
             }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
         }
     }
 
-    override suspend fun getAllMenu(): ResponseResult<List<MenuSimpleModel>> {
+    override suspend fun getAllMenu(storeId: Long): ResponseResult<List<MenuSimpleModel>> {
         return runCatching {
-            when (val result = orderDataSource.requestGetAllMenu()) {
+            when (val result = orderDataSource.requestGetAllMenu(storeId)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.map { it.toSimpleDomain() })
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
-                    result.e,
-                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
                 )
             }
         }.getOrElse {
@@ -158,8 +161,7 @@ class OrderRepositoryImpl @Inject constructor(
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain()) // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
                 is ResponseResult.Exception -> ResponseResult.Exception(
-                    result.e,
-                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
                 )
             }
         }.getOrElse {
@@ -167,12 +169,17 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCategoryMenu(categoryId: Long): ResponseResult<List<MenuSimpleModel>> {
+    override suspend fun getCategoryMenu(
+        categoryId: Long,
+        storeId: Long,
+    ): ResponseResult<List<MenuSimpleModel>> {
         return runCatching {
-            when (val result = orderDataSource.requestGetCategoryMenu(categoryId)) {
+            when (val result = orderDataSource.requestGetCategoryMenu(categoryId, storeId)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.map { it.toSimpleDomain() })
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
             }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -193,28 +200,40 @@ class OrderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postOption(menuId: Long, option: OptionPostModel): ResponseResult<MenuOptionModel> {
+    override suspend fun postOption(
+        menuId: Long,
+        option: OptionPostModel,
+    ): ResponseResult<MenuOptionModel> {
         val optionRequest = option.toRequest()
 
         return runCatching {
             when (val result = orderDataSource.requestPostOption(menuId, optionRequest)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
             }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
         }
     }
 
-    override suspend fun updateOption(menuId: Long, optionValueId: Long, option: OptionPostModel): ResponseResult<MenuOptionModel> {
+    override suspend fun updateOption(
+        menuId: Long,
+        optionValueId: Long,
+        option: OptionPostModel,
+    ): ResponseResult<MenuOptionModel> {
         val optionRequest = option.toRequest()
 
         return runCatching {
-            when (val result = orderDataSource.requestUpdateOption(menuId, optionValueId, optionRequest)) {
+            when (val result =
+                orderDataSource.requestUpdateOption(menuId, optionValueId, optionRequest)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
             }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
@@ -242,7 +261,9 @@ class OrderRepositoryImpl @Inject constructor(
             when (val result = orderDataSource.requestPostOrder(request)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain())
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
             }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)

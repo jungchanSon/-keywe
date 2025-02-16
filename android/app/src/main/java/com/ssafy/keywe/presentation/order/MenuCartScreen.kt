@@ -67,6 +67,7 @@ fun MenuCartScreen(
     keyWeViewModel: KeyWeViewModel,
     signalViewModel: SignalViewModel = hiltViewModel(),
     tokenManager: TokenManager,
+    storeId: Long,
 ) {
     val cartItems by menuCartViewModel.cartItems.collectAsState()
     Log.d("MenuCartScreen", "cartItems: $cartItems")
@@ -128,7 +129,7 @@ fun MenuCartScreen(
         if (isCompleteOrder) {
             MenuCartFinishDialog(title = "주문 완료", description = "주문이 정상적으로 완료되었습니다.", onConfirm = {
                 menuCartViewModel.closeCompleteOrderDialog()
-                navController.navigate(Route.MenuBaseRoute.MenuRoute)
+                navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId))
             })
         }
 

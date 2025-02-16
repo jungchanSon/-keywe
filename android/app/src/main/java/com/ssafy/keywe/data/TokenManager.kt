@@ -18,6 +18,7 @@ class TokenManager @Inject constructor(
     private var cachedAccessToken: String? = null
     private var cachedRefreshToken: String? = null
     private var storeId: String? = null
+    var cachedStoreId: Long? = null
     var isKiosk: Boolean = false
 
     // 이벤트를 알리기 위한 SharedFlow
@@ -72,6 +73,7 @@ class TokenManager @Inject constructor(
                 token.storeId.takeIf { it.isNotEmpty() }
             }.first()
         } else {
+            cachedStoreId = storeId!!.toLong()
             storeId
         }
     }
@@ -100,6 +102,7 @@ class TokenManager @Inject constructor(
 
     suspend fun saveStoreId(storeId: String) {
         this.storeId = storeId
+        cachedStoreId = storeId.toLong()
         dataStore.updateData { currentToken ->
             currentToken.toBuilder().setStoreId(storeId).build()
         }
@@ -109,6 +112,7 @@ class TokenManager @Inject constructor(
         dataStore.updateData {
             it.toBuilder().clearStoreId().build()
         }
+        cachedStoreId = null
     }
 
 

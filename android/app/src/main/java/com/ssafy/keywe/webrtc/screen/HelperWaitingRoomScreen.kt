@@ -150,7 +150,7 @@ fun HelperWaitingRoomScreen(
                         keyWeViewModel.remoteStats.collect { state ->
                             if (state != null) {
                                 Log.d("WaitingRoomScreen", "connect remote")
-                                navController.navigate(Route.MenuBaseRoute.MenuRoute) {
+                                navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId.toLong())) {
                                     popUpTo(navController.graph.startDestinationId)
                                     launchSingleTop = true
                                 }

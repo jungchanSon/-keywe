@@ -59,9 +59,6 @@ private fun isAccessibilityServiceEnabled(
 }
 
 fun openAccessibilitySettings(context: Context) {
-//    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-//    context.startActivity(intent)
-
     if (!isAccessibilityServiceEnabled(context, RemoteControlService::class.java)) {
         val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         context.startActivity(intent)

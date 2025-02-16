@@ -362,7 +362,7 @@ fun HomeScreen(
             Text(text = "토큰 초기화")
         }
         Button(onClick = {
-            navController.navigate(Route.MenuBaseRoute.MenuRoute)
+            navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId = storeId))
 //                navController.navigate(Route.KioskBaseRoute.KioskPhoneNumberRoute)
         }) {
             Text("메뉴 라우팅")

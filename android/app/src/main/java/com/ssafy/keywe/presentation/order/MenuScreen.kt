@@ -3,6 +3,7 @@ package com.ssafy.keywe.presentation.order
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -24,9 +25,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -50,11 +53,15 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.Drag
+import com.ssafy.keywe.webrtc.data.MessageType
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
+import com.ssafy.keywe.webrtc.data.Touch
 import com.ssafy.keywe.webrtc.screen.closeSTOMP
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MenuScreen(
@@ -65,6 +72,7 @@ fun MenuScreen(
     keyWeViewModel: KeyWeViewModel,
     signalViewModel: SignalViewModel = hiltViewModel(),
     tokenManager: TokenManager,
+    storeId: Long,
 ) {
 
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
@@ -111,6 +119,9 @@ fun MenuScreen(
         }
     }
 
+
+
+
     Scaffold(topBar = {
         DefaultOrderAppBar(
             title = "주문하기",
@@ -119,13 +130,48 @@ fun MenuScreen(
             keyWeViewModel = keyWeViewModel,
             isRoot = true
         )
-    }, modifier = Modifier.fillMaxSize(), floatingActionButton = {
-        FloatingCartButton(navController, menuCartViewModel)
+    }, modifier = Modifier
+        .fillMaxSize()
+        .pointerInteropFilter { motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+//                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
+//                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
+
+                    Log.d(
+                        "sendGesture",
+                        "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
+                    )
+//                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
+                    keyWeViewModel.sendClickGesture(
+                        Touch(
+                            MessageType.Touch, motionEvent.x, motionEvent.y,
+                        )
+                    )
+                    println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    keyWeViewModel.sendClickGesture(
+                        Drag(
+                            MessageType.Drag, motionEvent.x, motionEvent.y,
+                        )
+                    )
+                    println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
+                }
+
+                else -> {
+                    Log.d("MotionEvent", "click")
+                }
+            }
+            false
+        }, floatingActionButton = {
+        FloatingCartButton(navController, menuCartViewModel, storeId)
     }) {
         Column(
             modifier = Modifier.fillMaxHeight()
         ) {
-            MenuCategoryScreen(menuViewModel)
+            MenuCategoryScreen(menuViewModel, storeId)
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
@@ -165,6 +211,7 @@ fun disConnect(
 fun FloatingCartButton(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel = hiltViewModel(),
+    storeId: Long,
 ) {
 //    val cartItemCount by viewModel.cartItemCount.collectAsState()
     val cartItems by menuCartViewModel.cartItems.collectAsState()
@@ -178,7 +225,7 @@ fun FloatingCartButton(
             .shadow(4.dp, CircleShape, clip = false)
     ) {
         FloatingActionButton(
-            onClick = { navController.navigate(Route.MenuBaseRoute.MenuCartRoute) },
+            onClick = { navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId)) },
             containerColor = Color.White,
             contentColor = Color.White,
             shape = CircleShape,

@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +39,7 @@ import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
 import com.ssafy.keywe.webrtc.RemoteControlService
 
-private fun isAccessibilityServiceEnabled(
+fun isAccessibilityServiceEnabled(
     context: Context,
     service: Class<out AccessibilityService>,
 ): Boolean {
@@ -61,12 +60,14 @@ private fun isAccessibilityServiceEnabled(
     return false
 }
 
-fun openAccessibilitySettings(context: Context) {
-    if (!isAccessibilityServiceEnabled(context, RemoteControlService::class.java)) {
+fun openAccessibilitySettingsAndGranted(context: Context): Boolean {
+    return if (!isAccessibilityServiceEnabled(context, RemoteControlService::class.java)) {
         val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         context.startActivity(intent)
+        isAccessibilityServiceEnabled(context, RemoteControlService::class.java)
     } else {
         Log.d("MainActivity", "Accessibility Service already enabled")
+        true
     }
 }
 
@@ -81,22 +82,14 @@ fun PermissionScreen(
     val permissionLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions()) { grantedMap ->
             val allGranted = grantedMap.values.all { it }
-            if (allGranted) {
-                // Permission is granted
-                Toast.makeText(context, "Permission Granted", Toast.LENGTH_LONG).show()
-                navController.navigate(Route.AuthBaseRoute.SelectAppRoute)
-            } else {
-                // Permission is denied
-                Toast.makeText(context, "Permission Denied", Toast.LENGTH_LONG).show()
-            }
+            navController.navigate(Route.AuthBaseRoute.SelectAppRoute)
         }
 
 
 
     Scaffold { innerPadding ->
         Box(
-            modifier = Modifier
-                .padding(innerPadding)
+            modifier = Modifier.padding(innerPadding)
         ) {
             Column(
                 modifier = Modifier
@@ -157,7 +150,7 @@ fun PermissionScreen(
                             )
                         }
                     )
-                    openAccessibilitySettings(context)
+                    openAccessibilitySettingsAndGranted(context)
 
                     viewModel.saveIsFirstJoin(true)
 

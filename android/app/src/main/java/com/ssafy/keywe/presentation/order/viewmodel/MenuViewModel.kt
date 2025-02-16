@@ -6,17 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.domain.order.CategoryModel
-import com.ssafy.keywe.domain.order.MenuDetailModel
 import com.ssafy.keywe.domain.order.MenuSimpleModel
 import com.ssafy.keywe.domain.order.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,12 +22,12 @@ data class MenuData(
     val recipe: String,
     val price: Int,
     val description: String,
-    val image: String
+    val image: String,
 )
 
 data class MenuCategory(
     val id: Long,
-    val name: String
+    val name: String,
 )
 
 //data class CartItem(
@@ -54,12 +49,15 @@ data class MenuCategory(
 
 @HiltViewModel
 class MenuViewModel @Inject constructor(
-    private val repository: OrderRepository
+    private val repository: OrderRepository,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
+    private val storeId: Long = savedStateHandle["storeId"] ?: 0L
+
     init {
-            getAllCategories()
-            getMenuByCategory("전체")
+        getAllCategories()
+        getMenuByCategory("전체", storeId)
     }
 
     private val _categories = MutableStateFlow(listOf(CategoryModel(0, "전체")))
@@ -91,16 +89,16 @@ class MenuViewModel @Inject constructor(
         }
     }
 
-    fun setSelectedCategory(category: String) {
+    fun setSelectedCategory(category: String, storeId: Long) {
         _selectedCategory.value = category
-        getMenuByCategory(category)
+        getMenuByCategory(category, storeId)
     }
 
-    private fun getMenuByCategory(category: String) {
+    private fun getMenuByCategory(category: String, storeId: Long) {
         viewModelScope.launch {
             if (category == "전체") {
                 // 전체 카테고리 선택 시 모든 메뉴 가져오기
-                when (val result = repository.getAllMenu()) {
+                when (val result = repository.getAllMenu(storeId)) {
                     is ResponseResult.Success -> {
                         _filteredMenuItems.value = result.data
                         println("getAllMenu 결과: ${result.data}")
@@ -120,7 +118,7 @@ class MenuViewModel @Inject constructor(
                     _categories.value.find { it.categoryName == category }?.categoryId ?: 0
                 Log.d("Category Selected Screen", "${categories.value}")
 
-                when (val result = repository.getCategoryMenu(categoryId)) {
+                when (val result = repository.getCategoryMenu(categoryId, storeId)) {
                     is ResponseResult.Success -> {
                         _filteredMenuItems.value = result.data
                         println("getCategoryMenu 결과: ${result.data}")

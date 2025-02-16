@@ -179,7 +179,6 @@ fun ScreenCaptureButton(context: Context, navController: NavHostController) {
             }
         }
 
-
     Button(onClick = {
         permissionLauncher.launch(
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
@@ -188,6 +187,7 @@ fun ScreenCaptureButton(context: Context, navController: NavHostController) {
                 )
             } else {
                 arrayOf(
+                    Manifest.permission.POST_NOTIFICATIONS,
                     Manifest.permission.RECORD_AUDIO,
                     Manifest.permission.READ_PHONE_STATE,
                     Manifest.permission.BLUETOOTH_CONNECT,

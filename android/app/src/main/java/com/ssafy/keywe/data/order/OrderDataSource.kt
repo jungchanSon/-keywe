@@ -17,18 +17,44 @@ import okhttp3.RequestBody
 interface OrderDataSource {
     suspend fun requestPostCategory(categoryRequest: CategoryRequest): ResponseResult<Unit>
     suspend fun requestGetCategory(): ResponseResult<List<CategoryResponse>>
-    suspend fun requestUpdateCategory(categoryId: Long, categoryRequest: CategoryRequest): ResponseResult<Unit>
+    suspend fun requestUpdateCategory(
+        categoryId: Long,
+        categoryRequest: CategoryRequest,
+    ): ResponseResult<Unit>
+
     suspend fun requestDeleteCategory(categoryId: Long): ResponseResult<Unit>
 
-    suspend fun requestPostMenu(menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<MenuPostResponse>
-    suspend fun requestUpdateMenu(menuId: Long, menu: RequestBody, menuImage: MultipartBody.Part?): ResponseResult<Unit>
-    suspend fun requestGetAllMenu(): ResponseResult<List<MenuSimpleResponse>>
+    suspend fun requestPostMenu(
+        menu: RequestBody,
+        menuImage: MultipartBody.Part?,
+    ): ResponseResult<MenuPostResponse>
+
+    suspend fun requestUpdateMenu(
+        menuId: Long,
+        menu: RequestBody,
+        menuImage: MultipartBody.Part?,
+    ): ResponseResult<Unit>
+
+    suspend fun requestGetAllMenu(storeId: Long): ResponseResult<List<MenuSimpleResponse>>
     suspend fun requestGetDetailMenu(menuId: Long): ResponseResult<MenuDetailResponse>
-    suspend fun requestGetCategoryMenu(categoryId: Long): ResponseResult<List<MenuSimpleResponse>>
+    suspend fun requestGetCategoryMenu(
+        categoryId: Long,
+        storeId: Long,
+    ): ResponseResult<List<MenuSimpleResponse>>
+
     suspend fun requestDeleteMenu(menuId: Long): ResponseResult<Unit>
 
-    suspend fun requestPostOption(menuId: Long, optionRequest: OptionPostRequest): ResponseResult<MenuOptionResponse>
-    suspend fun requestUpdateOption(menuId: Long, optionValueId: Long, optionRequest: OptionPostRequest): ResponseResult<MenuOptionResponse>
+    suspend fun requestPostOption(
+        menuId: Long,
+        optionRequest: OptionPostRequest,
+    ): ResponseResult<MenuOptionResponse>
+
+    suspend fun requestUpdateOption(
+        menuId: Long,
+        optionValueId: Long,
+        optionRequest: OptionPostRequest,
+    ): ResponseResult<MenuOptionResponse>
+
     suspend fun requestDeleteOption(menuId: Long, optionValueId: Long): ResponseResult<Unit>
 
     suspend fun requestPostOrder(postOrderRequest: PostOrderRequest): ResponseResult<PostOrderResponse>
