@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 public class UserValidateUtil {
 
     private final UserProfileRepository userProfileRepository;
+    private static final String PHONE_NUMBER_REGEX = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$";
+    private static final String PROFILE_PASSWORD_REGEX = "^\\d{4}$";
 
     // 이름 중복 여부
     public void validateName(long userId, String profileName) {
@@ -33,20 +35,25 @@ public class UserValidateUtil {
             throw new BadRequestException("휴대폰 번호를 입력해 주세요.");
         }
 
-        String phoneRegex = "^01[016789]\\d{7,8}$";
-
         // 휴대폰번호 검증
-        if (phoneNumber.length() != 11 && !phoneNumber.matches(phoneRegex)) {
+        if (phoneNumber.length() != 11 && !phoneNumber.matches(PHONE_NUMBER_REGEX)) {
             throw new BadRequestException("유효한 휴대폰 번호 형식이 아닙니다. 올바른 번호를 입력해 주세요.");
         }
     }
 
+    // 휴대폰 번호 마스킹 처리
+    public String maskPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.length() < 4) {
+            return "유효하지 않은 번호";
+        }
+        return phoneNumber.substring(0,3) + "****" + phoneNumber.substring(phoneNumber.length() - 4);
+    }
+
     // 인증 비밀번호 검증
     public void validateProfilePass(String profilePass) {
-        if (profilePass == null || !profilePass.matches("^\\d{4}$")) {
+        if (profilePass == null || !profilePass.matches(PROFILE_PASSWORD_REGEX)) {
             throw new BadRequestException("비밀번호는 4자리 숫자로 입력해 주세요.");
         }
     }
-
 
 }
