@@ -1,7 +1,10 @@
 package com.kiosk.server.user.controller;
 
 import com.kiosk.server.user.controller.dto.*;
+import com.kiosk.server.user.handler.SmsVerificationHandler;
 import com.kiosk.server.user.service.*;
+import com.kiosk.server.user.util.UserValidateUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,8 @@ public class UserController {
     private final ModifyUserProfileService modifyUserProfileService;
     private final DeleteUserProfileService deleteUserProfileService;
     private final RegisterUserService registerUserService;
+    private final SmsVerificationHandler smsVerificationHandler;
+    private final UserValidateUtil userValidateUtil;
 
     // 회원가입
     @PostMapping
@@ -85,5 +90,20 @@ public class UserController {
         deleteUserProfileService.doService(userId, originProfileId, request.profileId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-}
 
+    // SMS 인증번호 전송
+    @PostMapping("/profile/sms/send")
+    public ResponseEntity<Void> sendSms(@RequestBody @Valid SmsRequest request){
+        log.info("SMS 인증번호 전송 요청: {}", userValidateUtil.maskPhoneNumber(request.phone()));
+        smsVerificationHandler.sendVerificationSms(request.phone());
+        return ResponseEntity.ok().build();
+    }
+
+    // SMS 인증번호 검증
+    @PostMapping("profile/sms/verify")
+    public ResponseEntity<Boolean> verifySms(@RequestBody @Valid SmsVerifyRequest request) {
+        log.info("SMS 인증번호 검증 요청. 전화번호: {}", userValidateUtil.maskPhoneNumber(request.phone()));
+        boolean isVerified = smsVerificationHandler.verifySmsCode(request.phone(), request.verificationCode());
+        return ResponseEntity.ok(isVerified);
+    }
+}
