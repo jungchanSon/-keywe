@@ -36,7 +36,7 @@ public class KioskUserLoginServiceImpl implements KioskUserLoginService {
         String accessToken = tokenUtil.createAuthenticationToken(profile.getUserId(), profile.getProfileId());
         log.info("로그인 성공 - userId={}, profileId={}", profile.getUserId(), profile.getProfileId());
 
-        return new KioskUserLoginResult(accessToken, String.valueOf(profile.getUserId()));
+        return new KioskUserLoginResult(accessToken, String.valueOf(profile.getProfileId()));
     }
 
     private void validatePhoneNumber(String phone) {
