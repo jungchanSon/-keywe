@@ -19,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,11 +44,14 @@ fun InputPasswordScreen(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
-    kioskViewModel: KioskViewModel = hiltViewModel(),
 ) {
-    val inputPassword by kioskViewModel.inputPassword.collectAsStateWithLifecycle()
+    val parentEntry = remember(navController) {
+        navController.previousBackStackEntry // ✅ 이전 화면의 ViewModel 가져오기
+    }
+    val kioskViewModel: KioskViewModel = hiltViewModel(parentEntry!!)
 
-    val isCertificationNumberValid: Boolean = (inputPassword.length == 4)
+    val inputPassword by kioskViewModel.inputPassword.collectAsStateWithLifecycle()
+    val verificationError by kioskViewModel.verificationError.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         kioskViewModel.clearInputPassword() // 화면이 새로 열릴 때 초기화
@@ -77,7 +82,15 @@ fun InputPasswordScreen(
                         style = h6.copy(letterSpacing = 0.sp)
                     )
                 }
-                // 인증번호 입력 필드
+
+                verificationError?.let {
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -116,9 +129,7 @@ fun InputPasswordScreen(
                     }
                 }, onConfirmClick = {
                     if (inputPassword.length == 4) {
-                        navController.navigate(
-                            Route.MenuBaseRoute.ParentWaitingRoomRoute
-                        )
+                        kioskViewModel.verifyUser(navController)
                     }
                 }, onBackClick = {
                     navController.popBackStack()

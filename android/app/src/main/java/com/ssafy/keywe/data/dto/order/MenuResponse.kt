@@ -53,3 +53,8 @@ data class MenuOptionResponse(
 data class PostOrderResponse(
     val orderId: String
 )
+
+data class VerificationUserResponse(
+    val accessToken: String,
+    val profileId: String
+)

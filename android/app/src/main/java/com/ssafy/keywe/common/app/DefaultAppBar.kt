@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,6 +67,8 @@ fun DefaultOrderAppBar(
     keyWeViewModel: KeyWeViewModel,
     isRoot: Boolean = false,
 ) {
+    val speakerSound by viewModel.speakerSound.collectAsState()
+    val isKiWiMatching by viewModel.isKiWiMatching.collectAsState()
     val audioRoute by keyWeViewModel.audioRoute.collectAsStateWithLifecycle()
 
     TopAppBar(backgroundColor = whiteBackgroundColor,

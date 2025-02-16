@@ -96,7 +96,6 @@ fun KeypadButton(
 ) {
     Box(
         modifier = modifier
-//            .aspectRatio(1f) // 정사각형 유지
             .width(88.dp).height(88.dp)
             .background(greyBackgroundColor, shape = RoundedCornerShape(20.dp))
             .clickable { onClick() },
@@ -110,7 +109,6 @@ fun KeypadButton(
 fun BackspaceButton(modifier: Modifier, onClick: () -> Unit) {
     Box(
         modifier = modifier
-//            .aspectRatio(1f)
             .width(88.dp).height(88.dp)
             .background(greyBackgroundColor, shape = RoundedCornerShape(20.dp))
             .clickable { onClick() },

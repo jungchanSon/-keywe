@@ -76,3 +76,13 @@ data class OrderOptionItemModel(
 data class OrderResponseModel(
     val orderId: String
 )
+
+data class VerificationUserModel(
+    val phone: String,
+    val password: String
+)
+
+data class VerificationUserResponseModel(
+    val accessToken: String,
+    val profileId: String
+)

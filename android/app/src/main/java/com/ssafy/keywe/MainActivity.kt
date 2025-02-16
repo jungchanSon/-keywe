@@ -428,28 +428,28 @@ fun HomeScreen(
 }
 
 
-@Composable
-fun ScreenCaptureView(onSurfaceReady: (Surface) -> Unit) {
-    AndroidView(modifier = Modifier.fillMaxSize(), factory = { context ->
-        SurfaceView(context).apply {
-            holder.addCallback(object : SurfaceHolder.Callback {
-                override fun surfaceCreated(holder: SurfaceHolder) {
-                    onSurfaceReady(holder.surface) // Surface 준비되면 콜백 호출
-                }
-
-                override fun surfaceChanged(
-                    holder: SurfaceHolder,
-                    format: Int,
-                    width: Int,
-                    height: Int,
-                ) {
-                }
-
-                override fun surfaceDestroyed(holder: SurfaceHolder) {}
-            })
-        }
-    })
-}
+//@Composable
+//fun ScreenCaptureView(onSurfaceReady: (Surface) -> Unit) {
+//    AndroidView(modifier = Modifier.fillMaxSize(), factory = { context ->
+//        SurfaceView(context).apply {
+//            holder.addCallback(object : SurfaceHolder.Callback {
+//                override fun surfaceCreated(holder: SurfaceHolder) {
+//                    onSurfaceReady(holder.surface) // Surface 준비되면 콜백 호출
+//                }
+//
+//                override fun surfaceChanged(
+//                    holder: SurfaceHolder,
+//                    format: Int,
+//                    width: Int,
+//                    height: Int,
+//                ) {
+//                }
+//
+//                override fun surfaceDestroyed(holder: SurfaceHolder) {}
+//            })
+//        }
+//    })
+//}
 
 //@OptIn(ExperimentalMaterial3Api::class)
 //@Composable

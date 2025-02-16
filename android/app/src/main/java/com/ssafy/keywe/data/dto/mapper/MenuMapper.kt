@@ -16,6 +16,7 @@ import com.ssafy.keywe.data.dto.order.OrderMenuItem
 import com.ssafy.keywe.data.dto.order.OrderOptionItem
 import com.ssafy.keywe.data.dto.order.PostOrderRequest
 import com.ssafy.keywe.data.dto.order.PostOrderResponse
+import com.ssafy.keywe.data.dto.order.VerificationUserResponse
 import com.ssafy.keywe.domain.order.MenuDetailModel
 import com.ssafy.keywe.domain.order.MenuModel
 import com.ssafy.keywe.domain.order.MenuOptionModel
@@ -27,6 +28,7 @@ import com.ssafy.keywe.domain.order.OrderMenuItemModel
 import com.ssafy.keywe.domain.order.OrderModel
 import com.ssafy.keywe.domain.order.OrderOptionItemModel
 import com.ssafy.keywe.domain.order.OrderResponseModel
+import com.ssafy.keywe.domain.order.VerificationUserResponseModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -199,5 +201,12 @@ fun OrderOptionItemModel.toRequest(): OrderOptionItem {
 fun PostOrderResponse.toDomain(): OrderResponseModel {
     return OrderResponseModel(
         orderId = this.orderId
+    )
+}
+
+fun VerificationUserResponse.toDomain(): VerificationUserResponseModel {
+    return VerificationUserResponseModel(
+        accessToken = this.accessToken,
+        profileId = this.profileId
     )
 }

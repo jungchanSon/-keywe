@@ -130,6 +130,7 @@ fun MenuCartScreen(
             MenuCartFinishDialog(title = "주문 완료", description = "주문이 정상적으로 완료되었습니다.", onConfirm = {
                 menuCartViewModel.closeCompleteOrderDialog()
                 navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId))
+                navController.navigate(Route.MenuBaseRoute.KioskHomeRoute)
             })
         }
 

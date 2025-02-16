@@ -202,6 +202,8 @@ fun NavGraphBuilder.menuGraph(
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
             KioskHomeScreen(navController, tokenManager)
+            val kioskViewModel: KioskViewModel = hiltViewModel() // ✅ 한 번만 생성
+            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel, kioskViewModel)
         }
         composable<Route.MenuBaseRoute.MenuRoute> {
             val arg = it.toRoute<Route.MenuBaseRoute.MenuRoute>()
@@ -260,16 +262,10 @@ fun NavGraphBuilder.menuGraph(
         }
 
         composable<Route.MenuBaseRoute.KioskPhoneNumberRoute> {
-            val kioskViewModel: KioskViewModel = hiltViewModel()
-            InputPhoneNumberScreen(
-                navController, menuCartViewModel, appBarViewModel, kioskViewModel
-            )
+            InputPhoneNumberScreen(navController, menuCartViewModel, appBarViewModel)
         }
         composable<Route.MenuBaseRoute.KioskPasswordRoute> {
-            val kioskViewModel: KioskViewModel = hiltViewModel()
-            InputPasswordScreen(
-                navController, menuCartViewModel, appBarViewModel, kioskViewModel
-            )
+            InputPasswordScreen(navController, menuCartViewModel, appBarViewModel)
         }
     }
 }

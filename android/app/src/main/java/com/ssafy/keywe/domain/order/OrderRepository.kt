@@ -30,4 +30,6 @@ interface OrderRepository {
 
     suspend fun postOrder(orderModel: OrderModel): ResponseResult<OrderResponseModel>
 
+    suspend fun verificationUser(verificationUserModel: VerificationUserModel): ResponseResult<VerificationUserResponseModel>
+
 }

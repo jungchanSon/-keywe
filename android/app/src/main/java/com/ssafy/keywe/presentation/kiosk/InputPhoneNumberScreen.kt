@@ -59,8 +59,10 @@ fun InputPhoneNumberScreen(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
     appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
-    kioskViewModel: KioskViewModel
 ) {
+
+    val kioskViewModel: KioskViewModel = hiltViewModel()
+
     var phoneNumber1 by remember { mutableStateOf("") }
     var phoneNumber2 by remember { mutableStateOf("") }
     var phoneNumber3 by remember { mutableStateOf("") }
@@ -71,11 +73,10 @@ fun InputPhoneNumberScreen(
     val isPhoneNumberValid =
         phoneNumber1.length == 3 && phoneNumber2.length == 4 && phoneNumber3.length == 4
 
-    LaunchedEffect(isCheckProfileDialogOpen) {
-        if (!isCheckProfileDialogOpen) {
-
-        }
-    }
+//    LaunchedEffect(isCheckProfileDialogOpen) {
+//        if (!isCheckProfileDialogOpen) {
+//        }
+//    }
 
     Box(
         modifier = Modifier
@@ -100,12 +101,10 @@ fun InputPhoneNumberScreen(
     }
 
     Scaffold(topBar = { CenteredAppBar(title = "키위 매칭", navController = navController) }
-//        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             Column(
                 modifier = Modifier
-//                    .padding(innerPadding)
                     .padding(horizontal = 24.dp)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
@@ -144,9 +143,10 @@ fun InputPhoneNumberScreen(
                 }, onConfirmClick = {
                     if (isPhoneNumberValid) {
                         kioskViewModel.clearInputPassword()
-                        val fullNumber = "${phoneNumber1}-${phoneNumber2}-${phoneNumber3}"
-                        kioskViewModel.updatePhoneNumber(fullNumber) // ViewModel에 저장
-                        kioskViewModel.openCheckProfileDialog()
+                        val fullNumber = "${phoneNumber1}${phoneNumber2}${phoneNumber3}"
+
+                        kioskViewModel.updatePhoneNumber(fullNumber)  // 그냥 호출 가능
+                        navController.navigate(Route.MenuBaseRoute.KioskPasswordRoute)  // 업데이트 후 화면 이동
                     }
 
                 }, onBackClick = {

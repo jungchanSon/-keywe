@@ -39,7 +39,6 @@ fun NoTitleTwoButtonDialog(
         )
     ) {
         Card(
-//            modifier = Modifier.padding(20.dp),
             colors = CardColors(
                 containerColor = whiteBackgroundColor,
                 contentColor = titleTextColor,

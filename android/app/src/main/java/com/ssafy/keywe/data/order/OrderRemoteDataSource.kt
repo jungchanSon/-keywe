@@ -13,6 +13,8 @@ import com.ssafy.keywe.data.dto.order.MenuSimpleResponse
 import com.ssafy.keywe.data.dto.order.OptionPostRequest
 import com.ssafy.keywe.data.dto.order.PostOrderRequest
 import com.ssafy.keywe.data.dto.order.PostOrderResponse
+import com.ssafy.keywe.data.dto.order.VerificationUserRequest
+import com.ssafy.keywe.data.dto.order.VerificationUserResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -126,6 +128,11 @@ class OrderRemoteDataSource @Inject constructor(
     override suspend fun requestPostOrder(postOrderRequest: PostOrderRequest): ResponseResult<PostOrderResponse> =
         handleApiResponse {
             orderService.postOrder(postOrderRequest)
+        }
+
+    override suspend fun requestVerificationUser(verificationUserRequest: VerificationUserRequest): ResponseResult<VerificationUserResponse> =
+        handleApiResponse {
+            orderService.verificationUser(verificationUserRequest)
         }
 
 

@@ -32,23 +32,6 @@ fun CenteredAppBar(
                 Text(text = title, style = h6)
             }
         },
-//        navigationIcon = {
-//            if (!isOnlyCurrentScreenInBackStack(navController)) {
-//                IconButton(onClick = {
-//                    navController.popBackStack()
-//                }) {
-//                    Icon(
-//                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-//                        contentDescription = null
-//                    )
-//                }
-//            }
-//        },
         actions = {
-//            Spacer(modifier = Modifier.fillMaxWidth()) // 오른쪽 여백을 균형 맞추기 위해 추가
         })
 }
-
-//fun isOnlyCurrentScreenInBackStack(navController: NavController): Boolean {
-//    return navController.previousBackStackEntry == null
-//}
