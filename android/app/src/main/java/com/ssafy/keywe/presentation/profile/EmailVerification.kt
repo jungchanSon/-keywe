@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.ssafy.keywe.common.LoginRoute
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.h6sb
 
@@ -110,7 +110,7 @@ import com.ssafy.keywe.ui.theme.h6sb
 @Composable
 fun EmailVerificationScreen(
     navController: NavHostController,
-    email: String
+    email: String,
 ) {
     Column(modifier = Modifier.padding(24.dp)) {
         Text("이메일 인증 필요", style = h6sb)
@@ -125,7 +125,7 @@ fun EmailVerificationScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { navController.navigate(LoginRoute) }) {
+        Button(onClick = { navController.navigate(Route.AuthBaseRoute.LoginRoute) }) {
             Text("로그인 페이지로 돌아가기")
         }
     }

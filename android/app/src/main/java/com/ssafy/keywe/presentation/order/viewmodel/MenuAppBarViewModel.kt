@@ -13,9 +13,6 @@ class OrderAppBarViewModel @Inject constructor() : ViewModel() {
     private val _isStopCallingDialogOpen = MutableStateFlow(false)
     val isStopCallingDialogOpen: StateFlow<Boolean> = _isStopCallingDialogOpen.asStateFlow()
 
-    private val _isKiWiMatching = MutableStateFlow(false)
-    val isKiWiMatching: StateFlow<Boolean> = _isKiWiMatching.asStateFlow()
-
     fun closeDialog() {
         _isStopCallingDialogOpen.value = false
     }

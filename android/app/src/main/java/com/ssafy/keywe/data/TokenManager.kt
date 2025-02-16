@@ -21,6 +21,8 @@ class TokenManager @Inject constructor(
     var cachedStoreId: Long? = null
     var isKiosk: Boolean = false
 
+    private var _keyWeToken: String? = null
+
     // 이벤트를 알리기 위한 SharedFlow
     private val _tokenClearedEvent = MutableSharedFlow<Unit>()
     val tokenClearedEvent: SharedFlow<Unit> = _tokenClearedEvent
@@ -78,6 +80,10 @@ class TokenManager @Inject constructor(
         }
     }
 
+    fun getKeyWeToken(): String? {
+        return _keyWeToken
+    }
+
     suspend fun saveTempToken(token: String) {
         cachedTempToken = token
         dataStore.updateData { currentToken ->
@@ -91,7 +97,6 @@ class TokenManager @Inject constructor(
             currentToken.toBuilder().setAccessToken(token).build()
         }
     }
-
 
     suspend fun saveRefreshToken(token: String) {
         cachedRefreshToken = token
@@ -133,12 +138,20 @@ class TokenManager @Inject constructor(
         _tokenClearedEvent.emit(Unit)
     }
 
+    fun clearKeyWeToken() {
+        _keyWeToken = null
+    }
+
     suspend fun hasValidToken(): Boolean {
         return !getToken().isNullOrEmpty()
     }
 
     fun saveCacheAccessToken(token: String) {
         cachedAccessToken = token
+    }
+
+    fun saveKeyWeToken(token: String) {
+        _keyWeToken = token
     }
 
 }

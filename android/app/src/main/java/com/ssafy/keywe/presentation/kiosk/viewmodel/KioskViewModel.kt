@@ -5,11 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
+import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.domain.order.OrderRepository
 import com.ssafy.keywe.domain.order.VerificationUserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class KioskViewModel @Inject constructor(
-    private val repository: OrderRepository
+    private val repository: OrderRepository,
+    private val tokenManager: TokenManager,
 ) : ViewModel() {
 
     private val _phoneNumber = MutableStateFlow("")
@@ -72,6 +74,12 @@ class KioskViewModel @Inject constructor(
 
                 if (response is ResponseResult.Success) {
                     Log.d("KioskViewModel", "API 응답 성공: ${response.data}")
+                    val profileId = response.data.profileId
+                    val token = response.data.accessToken
+
+                    tokenManager.saveKeyWeToken(token)
+                    ProfileIdManager.updateProfileId(profileId.toLong())
+
                     navController.navigate(Route.MenuBaseRoute.ParentWaitingRoomRoute)
                 } else {
                     Log.e("KioskViewModel", "API 응답 실패")
@@ -83,7 +91,6 @@ class KioskViewModel @Inject constructor(
             }
         }
     }
-
 
 
 }

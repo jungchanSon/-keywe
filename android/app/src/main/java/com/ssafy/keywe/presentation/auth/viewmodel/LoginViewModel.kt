@@ -83,20 +83,6 @@ class LoginViewModel @Inject constructor(
     }
 
 
-
-//    fun login() {
-//        val loginRequest = LoginRequest(
-//            email = _email.value, password = password.value
-//        )
-//        viewModelScope.launch {
-//            repository.login(loginRequest)
-//                .onSuccess(::handleLoginSuccess)
-////               .onSuccess(::saveUserToken)
-//                .onServerError(::handleError)
-//                .onException(::handleException)
-//        }
-//    }
-
     private fun validateForm() {
         _validForm.value =
             Regex(RegUtil.EMAIL_REG).matches(_email.value) && _password.value.isNotEmpty()
@@ -109,19 +95,11 @@ class LoginViewModel @Inject constructor(
             _isLoggedIn.value = true
             viewModelScope.launch {
                 tokenManager.saveTempToken(loginModel.accessToken)
+                tokenManager.clearStoreId()
+                tokenManager.isKiosk = false
             }
         } else {
             _emailVerificationRequired.value = true
-    private fun saveUserToken(
-        newToken: LoginModel,
-    ) {
-        _isLoggedIn.value = true
-        Log.d("token", newToken.toString())
-//        JWTUtil.isTempToken(newToken.accessToken)
-        viewModelScope.launch {
-            tokenManager.saveTempToken(newToken.accessToken)
-            tokenManager.clearStoreId()
-            tokenManager.isKiosk = false
         }
     }
 
@@ -137,17 +115,6 @@ class LoginViewModel @Inject constructor(
             tokenManager.isKiosk = true
         }
     }
-
-//    private fun saveUserToken(
-//        newToken: LoginModel,
-//    ) {
-//        _isLoggedIn.value = true
-//        Log.d("token", newToken.toString())
-////        JWTUtil.isTempToken(newToken.accessToken)
-//        viewModelScope.launch {
-//            tokenManager.saveTempToken(newToken.accessToken)
-//        }
-//    }
 
     private fun handleError(
         status: Status,

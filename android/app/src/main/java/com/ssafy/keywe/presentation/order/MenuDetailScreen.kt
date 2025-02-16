@@ -82,7 +82,14 @@ fun MenuDetailScreen(
         message?.let {
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
-                disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
+                disConnect(
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager
+                )
             }
         }
     }
@@ -144,7 +151,14 @@ fun MenuDetailScreen(
                 onCancel = { appBarViewModel.closeDialog() },
                 onConfirm = {
                     /* 너의 action */
-                    disConnect(context, keyWeViewModel, appBarViewModel, isKiosk, navController)
+                    disConnect(
+                        context,
+                        keyWeViewModel,
+                        appBarViewModel,
+                        isKiosk,
+                        navController,
+                        tokenManager
+                    )
                 })
         }
     }

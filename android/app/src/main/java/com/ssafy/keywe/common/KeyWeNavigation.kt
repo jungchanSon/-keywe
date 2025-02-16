@@ -15,7 +15,6 @@ import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.auth.CeoLoginScreen
 import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SelectAppScreen
-import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.kiosk.InputPasswordScreen
 import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.kiosk.KioskHomeScreen
@@ -168,14 +167,6 @@ object SignUpRoute
 //@Serializable
 //data class EmailVerificationRoute(val email: String)
 
-
-//@Serializable
-//data class WaitingRoomRoute(
-//    val storeId: String,
-//    val kioskUserId: String,
-//    val sessionId: String,
-//)
-
 @SuppressLint("NewApi")
 fun NavGraphBuilder.authGraph(naveController: NavHostController, tokenManager: TokenManager) {
     navigation<Route.AuthBaseRoute>(startDestination = Route.AuthBaseRoute.SelectAppRoute) {
@@ -188,38 +179,9 @@ fun NavGraphBuilder.authGraph(naveController: NavHostController, tokenManager: T
 }
 
 
-fun NavGraphBuilder.profileGraph(navController: NavHostController, tokenManager: TokenManager) {
-//fun NavGraphBuilder.profileGraph(
-//    navController: NavHostController,
-//    tokenManager: TokenManager,
-////    profileDataStore: ProfileDataStore
-//) {
-//    navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
-//        composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
-//        composable<Route.ProfileBaseRoute.ProfileChoiceRoute> {
-//            val args = it.toRoute<Route.ProfileBaseRoute.ProfileChoiceRoute>()
-//            val profileDataStore: ProfileDataStore = hiltViewModel()
-//            ProfileChoiceScreen(navController, args.isJoinApp)
-//        }
-//        composable<Route.ProfileBaseRoute.ProfileEditRoute> { EditMemberScreen(navController) }
-////        composable<Route.ProfileBaseRoute.ProfileEmailVerifyRoute> {
-////            EmailVerificationScreen(
-////                navController
-////            )
-//        }
-//        composable<Route.ProfileBaseRoute.ProfileAddRoute> { AddMemberScreen(navController) }
-//        composable<Route.ProfileBaseRoute.ProfileScreenRoute> {
-//            ProfileScreen(
-//                navController, tokenManager
-//            )
-//        }
-//
-//    }
-//}
-
 fun NavGraphBuilder.profileGraph(
     navController: NavHostController,
-    tokenManager: TokenManager
+    tokenManager: TokenManager,
 ) {
     navigation<Route.ProfileBaseRoute>(startDestination = BottomRoute.ProfileRoute) {
         composable<BottomRoute.ProfileRoute> { ProfileScreen(navController, tokenManager) }
@@ -231,8 +193,7 @@ fun NavGraphBuilder.profileGraph(
         composable<Route.ProfileBaseRoute.ProfileAddRoute> { AddMemberScreen(navController) }
         composable<Route.ProfileBaseRoute.ProfileScreenRoute> {
             ProfileScreen(
-                navController,
-                tokenManager
+                navController, tokenManager
             )
         }
 
@@ -240,9 +201,6 @@ fun NavGraphBuilder.profileGraph(
         composable("email_verification?email={email}") { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
             EmailVerificationScreen(navController, email)
-        }
-        composable("login") {
-            LoginScreen(navController)
         }
     }
 }

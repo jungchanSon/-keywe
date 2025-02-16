@@ -112,7 +112,7 @@ fun ParentWaitingRoomScreen(
 
     LaunchedEffect(Unit) {
         Log.d("WaitingRoomScreen", "LaunchedEffect Connect")
-        val token = tokenManager.getToken()!!
+        val token = tokenManager.getKeyWeToken()!!
         connectSTOMP(context, token)
     }
 
