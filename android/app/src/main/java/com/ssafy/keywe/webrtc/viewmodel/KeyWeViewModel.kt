@@ -271,12 +271,16 @@ class KeyWeViewModel @Inject constructor(
     }
 
     fun toggleAudio() {
+        Log.d(
+            "_rtcEngine.value?.audioDeviceInfo",
+            "_rtcEngine.value?.audioDeviceInfo = ${_rtcEngine.value?.audioDeviceInfo}"
+        )
         if (_audioRoute.value == Constants.AUDIO_ROUTE_SPEAKERPHONE) {
-            val ret =
-                _rtcEngine.value?.setRouteInCommunicationMode(Constants.AUDIO_ROUTE_EARPIECE)
+            _rtcEngine.value?.setEnableSpeakerphone(false)
+            val ret = _rtcEngine.value?.setRouteInCommunicationMode(Constants.AUDIO_ROUTE_HEADSET)
             if (ret != Constants.ERR_OK) {
-                _rtcEngine.value?.setEnableSpeakerphone(false)
-                _audioRoute.update { Constants.AUDIO_ROUTE_EARPIECE }
+//                _rtcEngine.value?.setEnableSpeakerphone(false)
+                _audioRoute.update { Constants.AUDIO_ROUTE_HEADSET }
             }
         } else {
             val ret =
