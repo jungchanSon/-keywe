@@ -65,7 +65,7 @@ class KeyWeWebSocket @Inject constructor(
     }
 
     suspend fun sendRequest(storeId: String) {
-        val requestMessage = RequestMessage("storeId")
+        val requestMessage = RequestMessage(storeId)
         val json = Json.encodeToString(requestMessage)
         Log.d("sendRequest", "$json")
         val receipt = session!!.send(

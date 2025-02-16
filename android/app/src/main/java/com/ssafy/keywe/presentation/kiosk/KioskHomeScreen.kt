@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.kiosk
 
 import android.Manifest
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +41,8 @@ fun KioskHomeScreen(
 ) {
     val storeId = tokenManager.cachedStoreId
 
+
+    Log.d("kioskHome", "storeId = $storeId")
 //    val systemUiController = rememberSystemUiController()
 
     // 시스템 UI 숨기기
@@ -104,13 +107,25 @@ fun KioskHomeScreen(
             description = "1회용 컵\n자원 재활용법에 따라 매장 내 일회용 컵 사용이 금지되어 있습니다.",
             imageRes = R.drawable.americano,
             backgroundColor = Color(0xFFF8B991),
-            onClick = { navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId ?: 0)) })
+            onClick = {
+                navController.navigate(
+                    Route.MenuBaseRoute.DefaultMenuRoute(
+                        storeId ?: 0
+                    )
+                )
+            })
 
         SelectOptionCard(title = "매장에서 먹을게요",
             description = "다회용 컵 제공",
             imageRes = R.drawable.espresso,
             backgroundColor = Color(0xFFF9CB75),
-            onClick = { navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId ?: 0)) })
+            onClick = {
+                navController.navigate(
+                    Route.MenuBaseRoute.DefaultMenuRoute(
+                        storeId ?: 0
+                    )
+                )
+            })
 
         SelectOptionCard(title = "키위 매칭",
             description = "키오스크 대리주문\n자신 또는 제 3자에게 대리 주문이 가능합니다.",

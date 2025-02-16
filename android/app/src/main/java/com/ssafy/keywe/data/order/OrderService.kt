@@ -73,8 +73,8 @@ interface OrderService {
 
     @GET(MENU_POST_GET_PATH)
     suspend fun getCategoryMenu(
-        @Query("sid") storeId: Long,
         @Query("cid") categoryId: Long,
+        @Query("sid") storeId: Long,
     ): Response<List<MenuSimpleResponse>>
 
     @DELETE(MENU_GET_PATCH_DELETE_PATH)
@@ -108,7 +108,7 @@ interface OrderService {
 
     @POST(VERIFICATE_POST_PATH)
     suspend fun verificationUser(
-        @Body verificationUserRequest: VerificationUserRequest
+        @Body verificationUserRequest: VerificationUserRequest,
     ): Response<VerificationUserResponse>
 
     companion object {

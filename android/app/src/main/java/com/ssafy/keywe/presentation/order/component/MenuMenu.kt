@@ -40,7 +40,8 @@ import kotlinx.coroutines.launch
 fun MenuMenuList(
     navController: NavController,
     viewModel: MenuViewModel,
-    menuCartViewModel: MenuCartViewModel
+    menuCartViewModel: MenuCartViewModel,
+    isKeyWe: Boolean = false,
 ) {
     val filteredMenuList by viewModel.filteredMenuItems.collectAsState()
     val listState = rememberLazyGridState() // 스크롤 상태 관리
@@ -68,12 +69,10 @@ fun MenuMenuList(
             items(filteredMenuList) { menu ->
                 Log.d("menu data", "$menu")
                 MenuMenuScreen(
-                    menuId = menu.menuId,
-                    selectItem = {
-                        navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(menu.menuId))
-                    },
-                    viewModel,
-                    menuCartViewModel
+                    menuId = menu.menuId, selectItem = {
+                        if (isKeyWe) navController.navigate(Route.MenuBaseRoute.MenuDetailRoute(menu.menuId))
+                        else navController.navigate(Route.MenuBaseRoute.DefaultMenuDetailRoute(menu.menuId))
+                    }, viewModel, menuCartViewModel
                 )
             }
         }
@@ -85,9 +84,9 @@ fun MenuMenuScreen(
     menuId: Long,
     selectItem: () -> Unit,
     viewModel: MenuViewModel,
-    menuCartViewModel: MenuCartViewModel
+    menuCartViewModel: MenuCartViewModel,
 
-) {
+    ) {
     Log.d("Menu ID", "$menuId")
 
     Box(
@@ -95,8 +94,7 @@ fun MenuMenuScreen(
             .fillMaxWidth()
             .padding(bottom = 24.dp)
             .wrapContentHeight()
-            .noRippleClickable { selectItem() },
-        contentAlignment = Alignment.BottomCenter
+            .noRippleClickable { selectItem() }, contentAlignment = Alignment.BottomCenter
     ) {
         Column(
             modifier = Modifier

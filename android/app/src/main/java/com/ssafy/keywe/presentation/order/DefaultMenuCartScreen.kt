@@ -2,7 +2,6 @@ package com.ssafy.keywe.presentation.order
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,60 +19,41 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
-import com.ssafy.keywe.common.app.DefaultOrderAppBar
-import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.order.component.HorizontalDivider
 import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
 import com.ssafy.keywe.presentation.order.component.MenuCartFinishDialog
 import com.ssafy.keywe.presentation.order.component.MenuCartMenuBox
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
-import com.ssafy.keywe.webrtc.data.Drag
-import com.ssafy.keywe.webrtc.data.MessageType
-import com.ssafy.keywe.webrtc.data.STOMPTYPE
-import com.ssafy.keywe.webrtc.data.Touch
-import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
-import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
-fun MenuCartScreen(
+fun DefaultMenuCartScreen(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
-    appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
-    keyWeViewModel: KeyWeViewModel,
-    signalViewModel: SignalViewModel = hiltViewModel(),
-    tokenManager: TokenManager,
     storeId: Long,
 ) {
     val cartItems by menuCartViewModel.cartItems.collectAsState()
@@ -82,36 +62,17 @@ fun MenuCartScreen(
     val isCompleteOrder by menuCartViewModel.isCompleteOrder.collectAsState()
     val selectedCartItem by menuCartViewModel.selectedCartItem.collectAsState()
 
-    val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
     val isAllDeleteDialogOpen = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val isKiosk = tokenManager.isKiosk
-    val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
 
 
-    LaunchedEffect(message) {
-        Log.d("MenuCartScreen", "message: $message")
-        message?.let {
-            if (it.type == STOMPTYPE.END) {
-                Log.d("WaitingRoomScreen", "종료")
-                disConnect(
-                    context,
-                    keyWeViewModel,
-                    appBarViewModel,
-                    isKiosk,
-                    navController,
-                    tokenManager
-                )
-            }
-        }
-    }
 
     Box(
         modifier = Modifier
             .zIndex(1f)
             .fillMaxSize()
             .background(
-                color = if (isDeleteDialogOpen || isAllDeleteDialogOpen.value || isCompleteOrder || isStopCallingDialogOpen) titleTextColor.copy(
+                color = if (isDeleteDialogOpen || isAllDeleteDialogOpen.value || isCompleteOrder) titleTextColor.copy(
                     alpha = 0.5f
                 ) else Color.Transparent
             )
@@ -148,72 +109,19 @@ fun MenuCartScreen(
             })
         }
 
-        // 통화 종료 다이얼로그
-        if (isStopCallingDialogOpen) {
-            MenuCartDeleteDialog(title = "통화 종료",
-                description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.closeDialog() },
-                onConfirm = {
-
-                    /* 너의 action */
-                    disConnect(
-                        context,
-                        keyWeViewModel,
-                        appBarViewModel,
-                        isKiosk,
-                        navController,
-                        tokenManager
-                    )
-                })
-        }
 
     }
     Scaffold(
-        topBar = {
-            DefaultOrderAppBar(
-                title = "장바구니",
-                navController = navController,
-                viewModel = appBarViewModel,
-                keyWeViewModel = keyWeViewModel
-            )
-        }, modifier = Modifier
-            .fillMaxSize()
-            .pointerInteropFilter { motionEvent ->
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-//                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
-//                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
+//        topBar = {
+//            DefaultOrderAppBar(
+//                title = "장바구니",
+//                navController = navController,
+//                viewModel = appBarViewModel,
+//                keyWeViewModel = keyWeViewModel
+//            )
+//        },
 
-                        Log.d(
-                            "sendGesture",
-                            "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
-                        )
-//                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-                        if (!isKiosk)
-                            keyWeViewModel.sendClickGesture(
-                                Touch(
-                                    MessageType.Touch, motionEvent.x, motionEvent.y,
-                                )
-                            )
-                        println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
-                    }
-
-                    MotionEvent.ACTION_MOVE -> {
-                        if (!isKiosk)
-                            keyWeViewModel.sendClickGesture(
-                                Drag(
-                                    MessageType.Drag, motionEvent.x, motionEvent.y,
-                                )
-                            )
-                        println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
-                    }
-
-                    else -> {
-                        Log.d("MotionEvent", "click")
-                    }
-                }
-                false
-            }
+        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Box(
             modifier = Modifier

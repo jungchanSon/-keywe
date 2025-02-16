@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,14 +53,11 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.SharingRoute
 import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.SplashRoute
-import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.authGraph
 import com.ssafy.keywe.common.menuGraph
 import com.ssafy.keywe.common.profileGraph
 import com.ssafy.keywe.common.screen.PermissionScreen
 import com.ssafy.keywe.data.TokenManager
-import com.ssafy.keywe.data.websocket.SignalService
-import com.ssafy.keywe.data.websocket.SignalType
 import com.ssafy.keywe.domain.fcm.NotificationData
 import com.ssafy.keywe.presentation.auth.SignUpScreen
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
@@ -348,77 +342,77 @@ fun HomeScreen(
     val kioskUserId = 677367955509677381
 
     Column {
-        DefaultAppBar(title = "title", navController = navController)
-        TextButton(onClick = {
-            scope.launch {
-                tokenManager.clearTokens()
-            }
-        }) {
-            Text(text = "토큰 초기화")
-        }
-        Button(onClick = {
-            navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId = storeId))
-//                navController.navigate(Route.KioskBaseRoute.KioskPhoneNumberRoute)
-        }) {
-            Text("메뉴 라우팅")
-        }
-        TextButton(onClick = {
+//        DefaultAppBar(title = "title", navController = navController)
+//        TextButton(onClick = {
+//            scope.launch {
+//                tokenManager.clearTokens()
+//            }
+//        }) {
+//            Text(text = "토큰 초기화")
+//        }
+//        Button(onClick = {
+//            navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId = storeId))
+////                navController.navigate(Route.KioskBaseRoute.KioskPhoneNumberRoute)
+//        }) {
+//            Text("메뉴 라우팅")
+//        }
+//        TextButton(onClick = {
+////            val intent = Intent(context, SignalService::class.java)
+////            intent.action = SignalType.CONNECT.name
+////            context.startService(intent)
+//            navController.navigate(
+//                Route.MenuBaseRoute.HelperWaitingRoomRoute(
+//                    sessionId = sessionId.toString(),
+//                    storeId = storeId.toString(),
+//                    kioskUserId = kioskUserId.toString()
+//                )
+//            )
+//        }) { Text("키위 요청") }
+//        TextButton(onClick = {
 //            val intent = Intent(context, SignalService::class.java)
-//            intent.action = SignalType.CONNECT.name
+//            intent.putExtra(
+//                "profileId", profileId.toString()
+//            )
 //            context.startService(intent)
-            navController.navigate(
-                Route.MenuBaseRoute.HelperWaitingRoomRoute(
-                    sessionId = sessionId.toString(),
-                    storeId = storeId.toString(),
-                    kioskUserId = kioskUserId.toString()
-                )
-            )
-        }) { Text("키위 요청") }
-        TextButton(onClick = {
-            val intent = Intent(context, SignalService::class.java)
-            intent.putExtra(
-                "profileId", profileId.toString()
-            )
-            context.startService(intent)
-        }) { Text("구독 연결") }
-
-        TextButton(onClick = {
-            val intent = Intent(context, SignalService::class.java)
-            intent.action = SignalType.REQUEST.name
-            intent.putExtra(
-                "storeId", storeId.toString()
-            )
-            context.startService(intent)
-        }) { Text("원격 연결") }
-        TextButton(onClick = {
-            val intent = Intent(context, SignalService::class.java)
-            intent.action = SignalType.ACCEPT.name
-            intent.putExtra(
-                "sessionId", sessionId.toString()
-            )
-            context.startService(intent)
-        }) { Text("주문 수락") }
-        TextButton(onClick = {
-            val intent = Intent(context, SignalService::class.java)
-            intent.action = SignalType.CLOSE.name
-            intent.putExtra(
-                "sessionId", sessionId.toString()
-            )
-            context.startService(intent)
-        }) { Text("주문 종료") }
-        Button(onClick = {
-//            navController.navigate(Route.MenuBaseRoute.MenuRoute)
-            navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
-        }) {
-            Text("키오스크")
-        }
-        Button(onClick = {
-//            navController.navigate(Route.MenuBaseRoute.MenuRoute)
+//        }) { Text("구독 연결") }
+//
+//        TextButton(onClick = {
+//            val intent = Intent(context, SignalService::class.java)
+//            intent.action = SignalType.REQUEST.name
+//            intent.putExtra(
+//                "storeId", storeId.toString()
+//            )
+//            context.startService(intent)
+//        }) { Text("원격 연결") }
+//        TextButton(onClick = {
+//            val intent = Intent(context, SignalService::class.java)
+//            intent.action = SignalType.ACCEPT.name
+//            intent.putExtra(
+//                "sessionId", sessionId.toString()
+//            )
+//            context.startService(intent)
+//        }) { Text("주문 수락") }
+//        TextButton(onClick = {
+//            val intent = Intent(context, SignalService::class.java)
+//            intent.action = SignalType.CLOSE.name
+//            intent.putExtra(
+//                "sessionId", sessionId.toString()
+//            )
+//            context.startService(intent)
+//        }) { Text("주문 종료") }
+//        Button(onClick = {
+////            navController.navigate(Route.MenuBaseRoute.MenuRoute)
 //            navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
-            navController.navigate((Route.MenuBaseRoute.KioskHomeRoute))
-        }) {
-            Text("키오스크 시작 단계")
-        }
+//        }) {
+//            Text("키오스크")
+//        }
+//        Button(onClick = {
+////            navController.navigate(Route.MenuBaseRoute.MenuRoute)
+////            navController.navigate(Route.MenuBaseRoute.KioskPhoneNumberRoute)
+//            navController.navigate((Route.MenuBaseRoute.KioskHomeRoute))
+//        }) {
+//            Text("키오스크 시작 단계")
+//        }
     }
 }
 

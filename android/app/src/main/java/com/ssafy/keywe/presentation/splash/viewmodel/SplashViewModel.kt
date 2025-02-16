@@ -43,8 +43,6 @@ class SplashViewModel @Inject constructor(
             runBlocking {
                 val token = tokenManager.getToken()
                 val storeId = tokenManager.getStoreId()
-                Log.d("Token Route", "token = $token")
-
                 val isFirstJoin = profileDataStore.isFirstJoinFlow.map { isJoinFirst ->
                     isJoinFirst.takeIf {
                         it != null

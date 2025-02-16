@@ -75,6 +75,7 @@ fun MenuScreen(
     storeId: Long,
 ) {
 
+    Log.d("MenuSCreen", "storeId = $storeId")
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
     val isStopCallingDialogOpen by appBarViewModel.isStopCallingDialogOpen.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -152,7 +153,7 @@ fun MenuScreen(
                         "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
                     )
 //                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-                    keyWeViewModel.sendClickGesture(
+                    if (!isKiosk) keyWeViewModel.sendClickGesture(
                         Touch(
                             MessageType.Touch, motionEvent.x, motionEvent.y,
                         )
@@ -161,7 +162,7 @@ fun MenuScreen(
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    keyWeViewModel.sendClickGesture(
+                    if (!isKiosk) keyWeViewModel.sendClickGesture(
                         Drag(
                             MessageType.Drag, motionEvent.x, motionEvent.y,
                         )
@@ -184,7 +185,7 @@ fun MenuScreen(
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
-                navController = navController, menuViewModel, menuCartViewModel
+                navController = navController, menuViewModel, menuCartViewModel, isKeyWe = true
             )
         }
     }
@@ -207,7 +208,11 @@ fun disConnect(
     // 키오스크
     if (isKiosk) {
         Log.d("Back", "Back")
-        navController.popBackStack()
+        navController.navigate(Route.MenuBaseRoute.KioskHomeRoute) {
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
+        }
     } else {
         // 사용자 홈으로
         navController.navigate(BottomRoute.HomeRoute) {

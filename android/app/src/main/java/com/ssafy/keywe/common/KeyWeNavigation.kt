@@ -18,6 +18,9 @@ import com.ssafy.keywe.presentation.auth.SelectAppScreen
 import com.ssafy.keywe.presentation.kiosk.InputPasswordScreen
 import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.kiosk.KioskHomeScreen
+import com.ssafy.keywe.presentation.order.DefaultMenuCartScreen
+import com.ssafy.keywe.presentation.order.DefaultMenuDetailScreen
+import com.ssafy.keywe.presentation.order.DefaultMenuScreen
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
@@ -58,6 +61,16 @@ sealed interface Route {
     data object MenuBaseRoute : Route {
         @Serializable
         data object KioskHomeRoute : Route
+
+        @Serializable
+        data class DefaultMenuRoute(val storeId: Long) : Route
+
+        @Serializable
+        data class DefaultMenuDetailRoute(val id: Long) : Route
+
+        @Serializable
+        data class DefaultMenuCartRoute(val storeId: Long) : Route
+
 
         @Serializable
         data class MenuRoute(val storeId: Long) : Route
@@ -215,10 +228,30 @@ fun NavGraphBuilder.menuGraph(
     // navigation()을 사용하여 menuGraph라는 그래프의 route를 "menuGraph"로 지정합니다.
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
-//            val kioskViewModel: KioskViewModel = hiltViewModel() // ✅ 한 번만 생성
             KioskHomeScreen(navController, tokenManager)
-//            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel, kioskViewModel)
         }
+        composable<Route.MenuBaseRoute.DefaultMenuRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.MenuRoute>()
+            DefaultMenuScreen(
+                navController, menuCartViewModel = menuCartViewModel, storeId = arg.storeId
+            )
+        }
+        composable<Route.MenuBaseRoute.DefaultMenuDetailRoute> {
+            val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
+            val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
+            DefaultMenuDetailScreen(
+                navController,
+                menuDetailViewModel,
+                menuCartViewModel,
+                arg.id,
+            )
+        }
+        composable<Route.MenuBaseRoute.DefaultMenuCartRoute> {
+            val arg = it.toRoute<Route.MenuBaseRoute.MenuCartRoute>()
+            DefaultMenuCartScreen(navController, menuCartViewModel, storeId = arg.storeId)
+        }
+
+
         composable<Route.MenuBaseRoute.MenuRoute> {
             val arg = it.toRoute<Route.MenuBaseRoute.MenuRoute>()
 

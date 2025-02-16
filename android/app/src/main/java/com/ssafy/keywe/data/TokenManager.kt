@@ -71,9 +71,13 @@ class TokenManager @Inject constructor(
 
     suspend fun getStoreId(): String? {
         return if (storeId == null) {
-            dataStore.data.map { token ->
+            val sId = dataStore.data.map { token ->
                 token.storeId.takeIf { it.isNotEmpty() }
             }.first()
+            if (sId != null) {
+                cachedStoreId = sId.toLong()
+            }
+            sId
         } else {
             cachedStoreId = storeId!!.toLong()
             storeId
