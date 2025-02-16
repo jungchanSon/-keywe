@@ -28,7 +28,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -125,7 +124,11 @@ fun EditMemberScreen(
 
             // 부모일 경우 추가 필드
             if (state.role == "PARENT") {
-                PhoneNumberInput(viewModel = viewModel)
+                PhoneNumberInput(
+                    phone = state.phone, // ✅ 기존에 저장된 핸드폰 번호를 전달
+                    onPhoneChange = { viewModel.onPhoneChange(it) }, // ✅ 핸드폰 번호 변경 함수 전달
+                    isPhoneValid = state.isPhoneValid
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 DefaultTextFormField(
@@ -190,8 +193,11 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
 }
 
 @Composable
-fun PhoneNumberInput(viewModel: EditMemberViewModel) {
-    val phoneText = viewModel.phoneTextFieldValue.collectAsState().value
+fun PhoneNumberInput(
+    phone: String, // ✅ 기존에 저장된 핸드폰 번호를 불러오도록 수정
+    onPhoneChange: (String) -> Unit, // ✅ 핸드폰 번호 변경 함수 전달
+    isPhoneValid: Boolean // ✅ 유효성 검사 상태 전달
+) {
     val interactionSource = remember { MutableInteractionSource() }
     var isFocused by remember { mutableStateOf(false) }
 
@@ -204,15 +210,16 @@ fun PhoneNumberInput(viewModel: EditMemberViewModel) {
             }
         }
     }
+
     Column {
         Text(text = "휴대폰 번호", style = button, modifier = Modifier.padding(bottom = 8.dp))
 
         OutlinedTextField(
-            value = phoneText,
-            onValueChange = { viewModel.onPhoneChange(it) },
+            value = phone, // ✅ 기존에 저장된 핸드폰 번호 표시
+            onValueChange = { onPhoneChange(it) }, // ✅ 값이 변경될 때 `onPhoneChange` 호출
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             interactionSource = interactionSource,
-            isError = !viewModel.state.collectAsState().value.isPhoneValid,
+            isError = !isPhoneValid, // ✅ 유효성 검사 반영
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp), // 기존 필드와 동일한 높이

@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.profile.viewmodel
 
+//import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.text.TextRange
@@ -11,7 +12,6 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.datastore.ProfileDataStore
-//import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
 import com.ssafy.keywe.domain.profile.ProfileRepository
 import com.ssafy.keywe.presentation.profile.state.EditMemberState
@@ -65,8 +65,8 @@ class EditMemberViewModel @Inject constructor(
         }
     }
 
-    fun onPhoneChange(input: TextFieldValue) {
-        val numbersOnly = input.text.filter { it.isDigit() }
+    fun onPhoneChange(phone: String) {
+        val numbersOnly = phone.filter { it.isDigit() }
 
         if (numbersOnly.length <= 11) {
             val formatted = when {
@@ -103,28 +103,27 @@ class EditMemberViewModel @Inject constructor(
         }
     }
 
-    // 기존 데이터 로드
     fun loadProfile() {
         viewModelScope.launch {
-//            val profileId = _profileId.value
-//            if (profileId == null || profileId == -1L) {
-//                Log.e("EditProfile", "프로필 ID가 없습니다.")
-//                return@launch
-//            } 프로필 아디이 사용할 경우
             ProfileIdManager.profileId.value?.let { profileId ->
                 when (val result = repository.getProfileDetail(profileId)) {
                     is ResponseResult.Success -> {
                         val profile = result.data
+                        val formattedPhone = profile.phone ?: ""
+
                         _state.update {
                             it.copy(
                                 id = profile.id,
                                 name = profile.name,
                                 role = profile.role ?: "PARENT",
-                                phone = profile.phone ?: "",
-                                password = "", //profile.password ?:
+                                phone = formattedPhone,
+                                password = "", // profile.password ?: ""  비밀번호는 보안 상 불러오지 않음
                                 isModified = false
                             )
                         }
+
+                        // ✅ 기존 핸드폰 번호를 `_phoneTextFieldValue`에도 반영
+                        _phoneTextFieldValue.value = TextFieldValue(text = formattedPhone)
                     }
 
                     is ResponseResult.ServerError -> {
@@ -138,6 +137,44 @@ class EditMemberViewModel @Inject constructor(
             }
         }
     }
+
+
+//    // 기존 데이터 로드
+//    fun loadProfile() {
+//        viewModelScope.launch {
+////            val profileId = _profileId.value
+////            if (profileId == null || profileId == -1L) {
+////                Log.e("EditProfile", "프로필 ID가 없습니다.")
+////                return@launch
+////            } 프로필 아디이 사용할 경우
+//            ProfileIdManager.profileId.value?.let { profileId ->
+//                when (val result = repository.getProfileDetail(profileId)) {
+//                    is ResponseResult.Success -> {
+//                        val profile = result.data
+//                        _state.update {
+//                            it.copy(
+//                                id = profile.id,
+//                                name = profile.name,
+//                                role = profile.role ?: "PARENT",
+//                                phone = profile.phone ?: "",
+//                                password = "", //profile.password ?:
+//                                isModified = false
+//                            )
+//
+//                        }
+//                    }
+//
+//                    is ResponseResult.ServerError -> {
+//                        Log.e("EditProfile", "서버 오류")
+//                    }
+//
+//                    is ResponseResult.Exception -> {
+//                        Log.e("EditProfile", "네트워크 오류: ${result.message}")
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     //수정 업데이트 정보 담기
     fun updateProfile(profileViewModel: ProfileViewModel, navController: NavController) {
