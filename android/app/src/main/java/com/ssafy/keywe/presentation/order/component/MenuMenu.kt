@@ -76,7 +76,11 @@ fun MenuMenuList(
                                 menu.menuId, storeId
                             )
                         )
-                        else navController.navigate(Route.MenuBaseRoute.DefaultMenuDetailRoute(menu.menuId))
+                        else navController.navigate(
+                            Route.MenuBaseRoute.DefaultMenuDetailRoute(
+                                menu.menuId, storeId
+                            )
+                        )
                     }, viewModel, menuCartViewModel, storeId
                 )
             }

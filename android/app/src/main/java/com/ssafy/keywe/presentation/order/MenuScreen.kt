@@ -9,6 +9,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,8 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -142,6 +148,40 @@ fun MenuScreen(
         )
     }, modifier = Modifier
         .fillMaxSize()
+        .pointerInput(Unit) {
+            awaitEachGesture {
+                // 첫 터치 다운 이벤트를 감지하되, 소비하지 않음 (requireUnconsumed = false)
+                val down = awaitFirstDown(requireUnconsumed = false)
+                val startPosition = down.position
+                Log.d("ParentGesture", "Down at: $startPosition")
+                var isDragging = false
+
+                // 터치가 계속되는 동안 이벤트를 관찰
+                do {
+                    // Initial 패스로 이벤트를 관찰 (이벤트 소비 X)
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    event.changes.forEach { change ->
+                        // 터치 이동이 발생하면 드래그로 판단
+                        val delta = change.positionChange()
+                        if (delta != Offset.Zero) {
+                            isDragging = true
+                            Log.d(
+                                "ParentGesture",
+                                "Dragging: current x=${change.position.x}, y=${change.position.y}, delta=(${
+                                    delta.x
+                                }, ${delta.y})"
+                            )
+                        }
+                    }
+                    // 터치가 여전히 진행 중이면 반복
+                } while (event.changes.any { it.pressed })
+
+                // 드래그가 없었으면 클릭으로 간주
+                if (!isDragging) {
+                    Log.d("ParentGesture", "Click detected at: $startPosition")
+                }
+            }
+        }
         .pointerInteropFilter { motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -175,9 +215,12 @@ fun MenuScreen(
                 }
             }
             false
-        }, floatingActionButton = {
-        FloatingCartButton(navController, menuCartViewModel, storeId)
-    }) {
+        },
+
+
+        floatingActionButton = {
+            FloatingCartButton(navController, menuCartViewModel, storeId)
+        }) {
         Column(
             modifier = Modifier.fillMaxHeight()
         ) {

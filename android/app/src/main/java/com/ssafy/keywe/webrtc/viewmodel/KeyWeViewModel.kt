@@ -272,8 +272,12 @@ class KeyWeViewModel @Inject constructor(
 
     fun toggleAudio() {
         if (_audioRoute.value == Constants.AUDIO_ROUTE_SPEAKERPHONE) {
+            _rtcEngine.value?.enableInEarMonitoring(true)
+            _rtcEngine.value?.setInEarMonitoringVolume((100).toInt())
             _audioRoute.update { Constants.AUDIO_ROUTE_EARPIECE }
         } else {
+            _rtcEngine.value?.enableInEarMonitoring(false)
+            _rtcEngine.value?.setEnableSpeakerphone(true)
             _audioRoute.update { Constants.AUDIO_ROUTE_SPEAKERPHONE }
         }
     }

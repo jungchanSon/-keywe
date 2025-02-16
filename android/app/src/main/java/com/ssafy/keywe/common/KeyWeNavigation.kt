@@ -66,7 +66,7 @@ sealed interface Route {
         data class DefaultMenuRoute(val storeId: Long) : Route
 
         @Serializable
-        data class DefaultMenuDetailRoute(val id: Long) : Route
+        data class DefaultMenuDetailRoute(val id: Long, val storeId: Long) : Route
 
         @Serializable
         data class DefaultMenuCartRoute(val storeId: Long) : Route
