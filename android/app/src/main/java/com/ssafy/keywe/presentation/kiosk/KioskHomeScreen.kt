@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
@@ -30,10 +27,6 @@ import com.ssafy.keywe.common.screen.openAccessibilitySettingsAndGranted
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.kiosk.component.SelectOptionCard
 import com.ssafy.keywe.ui.theme.primaryColor
-import com.ssafy.keywe.presentation.kiosk.viewmodel.KioskViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 
@@ -41,9 +34,9 @@ import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 fun KioskHomeScreen(
     navController: NavController,
     tokenManager: TokenManager,
-    menuCartViewModel: MenuCartViewModel,
-    appBarViewModel: OrderAppBarViewModel,
-    kioskViewModel: KioskViewModel
+//    menuCartViewModel: MenuCartViewModel,
+//    appBarViewModel: OrderAppBarViewModel,
+//    kioskViewModel: KioskViewModel,
 ) {
     val storeId = tokenManager.cachedStoreId
 

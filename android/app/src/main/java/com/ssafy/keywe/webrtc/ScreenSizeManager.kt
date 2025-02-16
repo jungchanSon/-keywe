@@ -14,7 +14,7 @@ class ScreenSizeManager @Inject constructor(
 //    private val context: Context,
 //    private val density: Density,
 ) {
-    var screenSize: ScreenSize = ScreenSize(MessageType.ScreenSize, 0f, 0f)
+    var screenSize: ScreenSize = ScreenSize(MessageType.ScreenSize, 0f, 0f, 0f, 0f)
         private set
 
     var statusBarHeightPx: Int = 0
@@ -44,7 +44,10 @@ class ScreenSizeManager @Inject constructor(
         Log.d("Screen Size DP", "width: $width, height: $height")
 //        Log.d("Screen Size DP", "Float width: ${width.value}, height: ${height.value}")
         screenSize = ScreenSize(
-            MessageType.ScreenSize, metrics.widthPixels.toFloat(), metrics.heightPixels.toFloat()
+            MessageType.ScreenSize,
+            metrics.widthPixels.toFloat(),
+            metrics.heightPixels.toFloat(),
+            density.density,
         )
 //        screenSize = ScreenSize(
 //            MessageType.ScreenSize, width.value, height.value

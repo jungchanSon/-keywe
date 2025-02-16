@@ -201,6 +201,12 @@ class KeyWeViewModel @Inject constructor(
                                 // todo 점유 할 때만 작동
                                 if (_localScreenSize != null) handleRemoteControl(gestureData)
 
+                                val screenSizeData = gestureData as? ScreenSize
+                                if (screenSizeData != null) {
+                                    // screenSizeData를 사용하여 ScreenSize 관련 데이터를 처리할 수 있습니다.
+                                } else {
+                                    // gestureData가 ScreenSize가 아닌 경우에 대한 처리를 합니다.
+                                }
                             } catch (e: Exception) {
                                 Log.e("sendGesture", "JSON 파싱 오류: ${e.message}")
                             }

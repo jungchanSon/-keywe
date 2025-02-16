@@ -145,6 +145,8 @@ data class ScreenSize(
     override val messageType: MessageType,
     override val x: Float,
     override val y: Float,
+    val density: Float,
+    val aspectRatio: Float = y.toFloat() / x,
 ) : MessageData() {
     fun convertGestureToAnotherScreen(
         remoteScreen: ScreenSize,    // B 화면

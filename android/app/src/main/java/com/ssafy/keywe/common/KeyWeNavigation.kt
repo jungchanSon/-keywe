@@ -18,7 +18,6 @@ import com.ssafy.keywe.presentation.auth.SelectAppScreen
 import com.ssafy.keywe.presentation.kiosk.InputPasswordScreen
 import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
 import com.ssafy.keywe.presentation.kiosk.KioskHomeScreen
-import com.ssafy.keywe.presentation.kiosk.viewmodel.KioskViewModel
 import com.ssafy.keywe.presentation.order.MenuCartScreen
 import com.ssafy.keywe.presentation.order.MenuDetailScreen
 import com.ssafy.keywe.presentation.order.MenuScreen
@@ -201,9 +200,9 @@ fun NavGraphBuilder.menuGraph(
     // navigation()을 사용하여 menuGraph라는 그래프의 route를 "menuGraph"로 지정합니다.
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
+//            val kioskViewModel: KioskViewModel = hiltViewModel() // ✅ 한 번만 생성
             KioskHomeScreen(navController, tokenManager)
-            val kioskViewModel: KioskViewModel = hiltViewModel() // ✅ 한 번만 생성
-            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel, kioskViewModel)
+//            KioskHomeScreen(navController, menuCartViewModel, appBarViewModel, kioskViewModel)
         }
         composable<Route.MenuBaseRoute.MenuRoute> {
             val arg = it.toRoute<Route.MenuBaseRoute.MenuRoute>()

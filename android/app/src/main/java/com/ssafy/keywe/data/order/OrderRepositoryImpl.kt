@@ -8,7 +8,6 @@ import com.ssafy.keywe.data.dto.mapper.toRequest
 import com.ssafy.keywe.data.dto.mapper.toSimpleDomain
 import com.ssafy.keywe.data.dto.order.CategoryRequest
 import com.ssafy.keywe.data.dto.order.VerificationUserRequest
-import com.ssafy.keywe.domain.order.OrderRepository
 import com.ssafy.keywe.domain.order.CategoryModel
 import com.ssafy.keywe.domain.order.MenuDetailModel
 import com.ssafy.keywe.domain.order.MenuModel
@@ -284,7 +283,10 @@ class OrderRepositoryImpl @Inject constructor(
             when (val result = orderDataSource.requestVerificationUser(verificationUserRequest)) {
                 is ResponseResult.Success -> ResponseResult.Success(result.data.toDomain()) // ✅ 변환 적용
                 is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
-                is ResponseResult.Exception -> ResponseResult.Exception(result.e, EXCEPTION_NETWORK_ERROR_MESSAGE)
+                is ResponseResult.Exception -> ResponseResult.Exception(
+                    result.e,
+                    EXCEPTION_NETWORK_ERROR_MESSAGE
+                )
             }
         }.getOrElse {
             ResponseResult.Exception(it, EXCEPTION_NETWORK_ERROR_MESSAGE)
