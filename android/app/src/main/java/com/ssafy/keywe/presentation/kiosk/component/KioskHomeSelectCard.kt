@@ -60,19 +60,32 @@ fun SelectOptionCard(
                     .clip(RoundedCornerShape(8.dp))
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(text = description, fontSize = 12.sp, color = Color.Black)
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    lineHeight = 20.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = description,
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp,
+                    letterSpacing = 0.15.sp,
+                    color = Color.Black,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
 
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
                 contentDescription = null,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
     }

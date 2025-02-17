@@ -42,8 +42,11 @@ fun MenuDetailBottom(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
     storeId: Long,
+    isKeyWe: Boolean = false,
 ) {
-    val parentBackStackEntry = navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
+    val parentBackStackEntry =
+        if (isKeyWe) navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
+        else navController.getBackStackEntry<Route.MenuBaseRoute.DefaultMenuRoute>()
     val viewModel = hiltViewModel<MenuDetailViewModel>(parentBackStackEntry)
 
 
@@ -111,7 +114,8 @@ fun MenuDetailBottomBackButton(
 
             navController.popBackStack()
 //            navController.navigate(Route.MenuBaseRoute.MenuRoute)
-        }, modifier = Modifier.fillMaxWidth(), colors = ButtonColors(
+        }, modifier = Modifier
+            .fillMaxWidth(), colors = ButtonColors(
             containerColor = whiteBackgroundColor,
             contentColor = titleTextColor,
             disabledContentColor = polishedSteelColor,
@@ -138,9 +142,13 @@ fun MenuDetailBottomCartButton(
     enabled: Boolean = true,
 ) {
     BottomButton(
-        content = content, onClick = onClick, enabled = enabled, modifier = Modifier
+        content = content,
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier
 
-            .fillMaxWidth(), colors = ButtonColors(
+            .fillMaxWidth(),
+        colors = ButtonColors(
             containerColor = primaryColor,
             contentColor = whiteBackgroundColor,
             disabledContentColor = polishedSteelColor,

@@ -1,7 +1,9 @@
 package com.ssafy.keywe.common
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -228,23 +230,28 @@ fun NavGraphBuilder.menuGraph(
     // navigation()을 사용하여 menuGraph라는 그래프의 route를 "menuGraph"로 지정합니다.
     navigation<Route.MenuBaseRoute>(startDestination = Route.MenuBaseRoute.KioskHomeRoute) {
         composable<Route.MenuBaseRoute.KioskHomeRoute> {
+            LaunchedEffect(Unit) {
+                menuCartViewModel.clearCart()
+            }
             KioskHomeScreen(navController, tokenManager)
         }
         composable<Route.MenuBaseRoute.DefaultMenuRoute> {
-            val arg = it.toRoute<Route.MenuBaseRoute.MenuRoute>()
+            val arg = it.toRoute<Route.MenuBaseRoute.DefaultMenuRoute>()
             DefaultMenuScreen(
                 navController, menuCartViewModel = menuCartViewModel, storeId = arg.storeId
             )
         }
         composable<Route.MenuBaseRoute.DefaultMenuDetailRoute> {
             val menuDetailViewModel: MenuDetailViewModel = hiltViewModel()
-            val arg = it.toRoute<Route.MenuBaseRoute.MenuDetailRoute>()
+            val arg = it.toRoute<Route.MenuBaseRoute.DefaultMenuDetailRoute>()
+            Log.d("Navigation Debug", "Received id in DefaultMenuDetailRoute: ${arg.id}")
+
             DefaultMenuDetailScreen(
                 navController, menuDetailViewModel, menuCartViewModel, arg.id, arg.storeId
             )
         }
         composable<Route.MenuBaseRoute.DefaultMenuCartRoute> {
-            val arg = it.toRoute<Route.MenuBaseRoute.MenuCartRoute>()
+            val arg = it.toRoute<Route.MenuBaseRoute.DefaultMenuCartRoute>()
             DefaultMenuCartScreen(navController, menuCartViewModel, storeId = arg.storeId)
         }
 

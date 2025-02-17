@@ -87,7 +87,7 @@ fun InputPasswordScreen(
                     Text(
                         text = it,
                         color = Color.Red,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 24.dp)
                     )
                 }
 

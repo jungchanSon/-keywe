@@ -91,7 +91,12 @@ fun MenuDetailScreen(
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
                 disConnect(
-                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager
                 )
             }
         }
@@ -297,7 +302,8 @@ fun MenuDetailScreen(
                     totalPrice = totalPrice.value,
                     navController = navController,
                     menuCartViewModel = menuCartViewModel,
-                    storeId
+                    storeId = storeId,
+                    isKeyWe = true
                 )
             }
         }

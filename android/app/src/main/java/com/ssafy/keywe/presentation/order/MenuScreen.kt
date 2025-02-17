@@ -73,7 +73,7 @@ import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 fun MenuScreen(
     navController: NavController,
     menuViewModel: MenuViewModel = hiltViewModel(),
-    menuCartViewModel: MenuCartViewModel,
+    menuCartViewModel: MenuCartViewModel = hiltViewModel(),
     appBarViewModel: OrderAppBarViewModel = hiltViewModel(),
     keyWeViewModel: KeyWeViewModel,
     signalViewModel: SignalViewModel = hiltViewModel(),
