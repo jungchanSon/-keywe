@@ -50,7 +50,7 @@ public class SmsVerificationHandler {
     }
 
     // SMS 인증 코드 검증
-    public boolean verifySmsCode(String phone, String inputCode) {
+    public boolean verifySmsCode(long userId, String phone, String inputCode) {
         log.info("휴대폰 번호 {}의 인증번호를 검증합니다.", userValidateUtil.maskPhoneNumber(phone));
 
         // 저장된 인증번호 조회
@@ -63,6 +63,7 @@ public class SmsVerificationHandler {
         boolean isVerified = storedCode.equals(inputCode);
         if (isVerified) {
             smsAuthenticationRepository.deleteAuthenticationCode(phone);
+            smsAuthenticationRepository.markPhoneNumberAsVerified(userId, phone);
             log.info("휴대폰 번호 {}의 인증이 성공적으로 완료되었습니다.", userValidateUtil.maskPhoneNumber(phone));
         } else {
             log.warn("휴대폰 번호 {}의 잘못된 인증번호가 입력되었습니다.", userValidateUtil.maskPhoneNumber(phone));
