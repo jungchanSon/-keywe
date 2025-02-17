@@ -7,28 +7,36 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.SignUpRoute
 import com.ssafy.keywe.common.screen.openAccessibilitySettingsAndGranted
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.kiosk.component.SelectOptionCard
+import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -40,6 +48,7 @@ fun KioskHomeScreen(
 //    kioskViewModel: KioskViewModel,
 ) {
     val storeId = tokenManager.cachedStoreId
+    val scope = rememberCoroutineScope()
 
 
     Log.d("kioskHome", "storeId = $storeId")
@@ -147,5 +156,23 @@ fun KioskHomeScreen(
                     }
                 )
             })
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            text = "키오스크 사장님 로그아웃",
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .clickable {
+                    scope.launch {
+                        tokenManager.clearTokens()
+                    }
+                    navController.navigate(Route.AuthBaseRoute.SelectAppRoute)
+                },
+            textAlign = TextAlign.Center,
+            style = caption,
+            textDecoration = TextDecoration.Underline
+        )
     }
 }
