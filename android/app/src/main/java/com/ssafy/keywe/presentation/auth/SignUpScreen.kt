@@ -8,16 +8,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +39,12 @@ import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
 import com.ssafy.keywe.presentation.auth.viewmodel.SignUpViewModel
+import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.polishedSteelColor
+import com.ssafy.keywe.ui.theme.primaryColor
+import com.ssafy.keywe.ui.theme.subtitle2
+import com.ssafy.keywe.ui.theme.titleTextColor
+import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -45,6 +62,9 @@ fun SignUpScreen(
     val valid by viewModel.validForm.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
     val isSigned by viewModel.isSignIn.collectAsStateWithLifecycle()
+
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
     LaunchedEffect(isSigned) {
         if (isSigned) {
             navController.navigate(Route.AuthBaseRoute.LoginRoute) {
@@ -110,13 +130,62 @@ fun SignUpScreen(
                 Box(
                     modifier = Modifier.padding(bottom = 32.dp)
                 ) {
-                    BottomButton(content = "회원가입", onClick = {
-                        focusManager.clearFocus()
-                        viewModel.signUp()
-                    }, enabled = valid)
+//                    SignUpBottomButton(content = "회원가입", onClick = {
+//                        focusManager.clearFocus()
+//                        viewModel.signUp()
+//                    }, enabled = valid)
+                    SignUpBottomButton(
+                        content = if (isLoading) "가입중..." else "회원가입",
+                        onClick = {
+                            focusManager.clearFocus()
+                            viewModel.signUp()
+                        },
+                        enabled = valid,
+                        isLoading = isLoading
+                    )
                 }
             }
         }
     }
 
+}
+
+@Composable
+fun SignUpBottomButton(
+    content: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    isLoading: Boolean = false,  // 로딩 상태 추가
+    modifier: Modifier = Modifier
+        .height(52.dp)
+        .fillMaxWidth()
+        .semantics { contentDescription = "$content button" },
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = primaryColor,
+        contentColor = whiteBackgroundColor,
+        disabledContentColor = polishedSteelColor,
+        disabledContainerColor = greyBackgroundColor
+    ),
+) {
+    Button(
+        enabled = enabled, // 로딩 중이면 버튼 비활성화
+        onClick = onClick,
+        modifier = modifier,
+        colors = colors,
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Text(
+            text = content,
+            style = subtitle2.copy(fontWeight = FontWeight.Bold),
+            color = whiteBackgroundColor)
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(20.dp)
+                    .padding(end = 8.dp),
+                color = whiteBackgroundColor,
+                strokeWidth = 2.dp
+            )
+        }
+    }
 }
