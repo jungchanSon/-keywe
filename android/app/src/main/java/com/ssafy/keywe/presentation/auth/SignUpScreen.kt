@@ -1,6 +1,7 @@
 package com.ssafy.keywe.presentation.auth
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +25,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -39,6 +44,7 @@ import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
 import com.ssafy.keywe.presentation.auth.viewmodel.SignUpViewModel
+import com.ssafy.keywe.presentation.kiosk.component.NoTitleOneButtonDialog
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -65,16 +71,40 @@ fun SignUpScreen(
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
+    val showDialog = remember { mutableStateOf(false) }
+
     LaunchedEffect(isSigned) {
         if (isSigned) {
-            navController.navigate(Route.AuthBaseRoute.LoginRoute) {
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true
-                }
-            }
-
+            showDialog.value = true
         }
     }
+
+    Box(
+        modifier = Modifier
+            .zIndex(1f)
+            .fillMaxSize()
+            .background(
+                color = if (showDialog.value) titleTextColor.copy(
+                    alpha = 0.5f
+                ) else Color.Transparent
+            )
+    ){
+        if (showDialog.value) {
+            NoTitleOneButtonDialog(
+                description = "회원가입이 완료되었습니다.",
+                onConfirm = {
+                    showDialog.value = false
+                    navController.navigate(Route.AuthBaseRoute.LoginRoute) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+
     Scaffold(topBar = {
         DefaultAppBar(title = "회원가입", navController = navController)
     }) {
