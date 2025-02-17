@@ -256,14 +256,14 @@ fun disConnect(
     if (isKiosk) {
         Log.d("Back", "Back")
         navController.navigate(Route.MenuBaseRoute.KioskHomeRoute) {
-            popUpTo(navController.graph.startDestinationId) {
+            popUpTo(Route.MenuBaseRoute.KioskHomeRoute) {
                 inclusive = true
             }
         }
     } else {
         // 사용자 홈으로
         navController.navigate(BottomRoute.ProfileRoute) {
-            popUpTo(navController.graph.startDestinationId) {
+            popUpTo(BottomRoute.ProfileRoute) {
                 inclusive = true
             }
         }
