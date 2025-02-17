@@ -34,6 +34,7 @@ import com.ssafy.keywe.presentation.kiosk.component.KeypadScreen
 import com.ssafy.keywe.presentation.kiosk.viewmodel.KioskViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
+import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.formFillColor
 import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.titleTextColor
@@ -63,7 +64,10 @@ fun InputPasswordScreen(
             navController = navController
         )
     }) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box(modifier = Modifier
+            .padding(top = 50.dp)
+//            .padding(innerPadding)
+        ) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
@@ -83,12 +87,26 @@ fun InputPasswordScreen(
                     )
                 }
 
-                verificationError?.let {
-                    Text(
-                        text = it,
-                        color = Color.Red,
-                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 24.dp)
-                    )
+                Box(
+                    modifier = Modifier
+                        .height(30.dp) // 고정된 높이 설정
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    val errorText = verificationError // 로컬 변수로 저장
+                    if (errorText != null) {
+                        Text(
+                            text = errorText,
+                            style = caption,
+                            color = Color.Red,
+                            modifier = Modifier.padding(
+//                                vertical = 8.dp,
+                                horizontal = 24.dp
+                            )
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(30.dp)) // 같은 높이의 빈 공간 유지
+                    }
                 }
 
                 Row(
