@@ -58,7 +58,7 @@ fun SplashScreen(
                     }
 
                     SplashRouteType.HOME -> {
-                        navController.navigate(BottomRoute.HomeRoute) {
+                        navController.navigate(BottomRoute.ProfileRoute) {
                             popUpTo(SplashRoute) { inclusive = true }
                         }
                     }

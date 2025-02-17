@@ -262,7 +262,7 @@ fun disConnect(
         }
     } else {
         // 사용자 홈으로
-        navController.navigate(BottomRoute.HomeRoute) {
+        navController.navigate(BottomRoute.ProfileRoute) {
             popUpTo(navController.graph.startDestinationId) {
                 inclusive = true
             }

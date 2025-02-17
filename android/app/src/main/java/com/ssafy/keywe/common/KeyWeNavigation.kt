@@ -47,7 +47,7 @@ fun currentBottomRoute(navController: NavHostController): BottomRoute? {
     val route = navBackStackEntry?.destination?.route // string
     return route?.let {
         return when (route.split(".").last()) {
-            BottomRoute.HomeRoute::class.simpleName -> BottomRoute.HomeRoute
+//            BottomRoute.HomeRoute::class.simpleName -> BottomRoute.HomeRoute
             BottomRoute.ProfileRoute::class.simpleName -> BottomRoute.ProfileRoute
             else -> null
         }
@@ -162,8 +162,8 @@ sealed interface BottomRoute {
     @Serializable
     data object ProfileRoute : BottomRoute
 
-    @Serializable
-    data object HomeRoute : BottomRoute
+//    @Serializable
+//    data object HomeRoute : BottomRoute
 }
 
 @Serializable

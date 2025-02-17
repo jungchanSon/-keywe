@@ -15,9 +15,9 @@ sealed class BottomNavItem(
 ) {
     abstract val name: String
 
-    data object Home : BottomNavItem(R.string.home, Icons.Default.Home, BottomRoute.HomeRoute) {
-        override val name: String = "홈"
-    }
+//    data object Home : BottomNavItem(R.string.home, Icons.Default.Home, BottomRoute.HomeRoute) {
+//        override val name: String = "홈"
+//    }
 
     data object Profile :
         BottomNavItem(R.string.profile, Icons.Default.PersonOutline, BottomRoute.ProfileRoute) {
