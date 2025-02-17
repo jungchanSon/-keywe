@@ -58,7 +58,7 @@ fun MenuDetailBottom(
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 MenuDetailBottomBackButton(
-                    "담기",
+                    content = "담기",
                     menuId = menuId,
                     selectedSize = selectedSize,
                     selectedTemperature = selectedTemperature,
@@ -70,7 +70,18 @@ fun MenuDetailBottom(
                 )
             }
             Box(modifier = Modifier.weight(1f)) {
-                MenuDetailBottomCartButton("주문하기", onClick = {})
+                MenuDetailBottomCartButton(
+                    content = "주문하기",
+                    menuId = menuId,
+                    selectedSize = selectedSize,
+                    selectedTemperature = selectedTemperature,
+                    extraOptions = extraOptions,
+                    totalPrice = totalPrice,
+                    navController = navController,
+                    menuCartViewModel = menuCartViewModel,
+                    storeId = storeId,
+                    isKeyWe = isKeyWe
+                )
             }
         }
     }
@@ -135,24 +146,89 @@ fun MenuDetailBottomBackButton(
     }
 }
 
+//@Composable
+//fun MenuDetailBottomCartButton(
+//    content: String,
+//    onClick: () -> Unit,
+//    enabled: Boolean = true,
+//) {
+//    BottomButton(
+//        content = content,
+//        onClick = onClick,
+//        enabled = enabled,
+//        modifier = Modifier
+//
+//            .fillMaxWidth(),
+//        colors = ButtonColors(
+//            containerColor = primaryColor,
+//            contentColor = whiteBackgroundColor,
+//            disabledContentColor = polishedSteelColor,
+//            disabledContainerColor = greyBackgroundColor
+//        )
+//    )
+//}
+
 @Composable
 fun MenuDetailBottomCartButton(
     content: String,
-    onClick: () -> Unit,
-    enabled: Boolean = true,
+    menuId: Long,
+    selectedSize: String,
+    selectedTemperature: String,
+    extraOptions: Map<Long, Pair<String, Int>>,
+    totalPrice: Int,
+    navController: NavController,
+    menuCartViewModel: MenuCartViewModel,
+    storeId: Long,
+    isKeyWe: Boolean
 ) {
-    BottomButton(
-        content = content,
-        onClick = onClick,
-        enabled = enabled,
-        modifier = Modifier
+    val selectedOptions = if (extraOptions.isNotEmpty()) {
+        extraOptions.mapValues { (_, pair) -> pair.second }
+    } else {
+        mapOf() // 기본값 설정
+    }
 
-            .fillMaxWidth(),
-        colors = ButtonColors(
+    Log.d("MenuDetailBottomBackButton", "🔥 extraOptions: $extraOptions")
+    Log.d("MenuDetailBottomBackButton", "🔥 selectedOptions: $selectedOptions")
+
+    var addToCartTrigger by remember { mutableStateOf(false) }
+
+    BottomButton(
+        content = content, onClick = {
+            Log.d("MenuDetailBottomBackButton", "🛒 addToCart 호출됨!")
+            menuCartViewModel.addToCart(
+                menuId = menuId,
+                size = selectedSize,
+                temperature = selectedTemperature,
+                selectedOptions = selectedOptions,
+                totalPrice = totalPrice,
+                storeId = storeId
+            )
+            addToCartTrigger = true
+
+//            navController.popBackStack()
+            if (isKeyWe) {
+                navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId))
+            } else {
+                navController.navigate(Route.MenuBaseRoute.DefaultMenuCartRoute(storeId))
+            }
+
+        }, modifier = Modifier
+            .fillMaxWidth(), colors = ButtonColors(
             containerColor = primaryColor,
             contentColor = whiteBackgroundColor,
             disabledContentColor = polishedSteelColor,
             disabledContainerColor = greyBackgroundColor
         )
     )
+
+    LaunchedEffect(addToCartTrigger) {
+        if (addToCartTrigger) {
+            delay(100) // 업데이트 반영 기다리기
+            Log.d(
+                "MenuDetailBottomBackButton",
+                "🛒 addToCart 이후 장바구니 상태: ${menuCartViewModel.cartItems.value}"
+            )
+            addToCartTrigger = false // 다시 초기화
+        }
+    }
 }

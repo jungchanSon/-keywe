@@ -203,8 +203,9 @@ fun DefaultMenuDetailScreen(
                     extraOptions = extraOptions.mapValues { it.value },
                     totalPrice = totalPrice.value,
                     navController = navController,
-                    menuCartViewModel = menuCartViewModel, storeId
-
+                    menuCartViewModel = menuCartViewModel,
+                    storeId = storeId,
+                    isKeyWe = false
                 )
             }
         }
