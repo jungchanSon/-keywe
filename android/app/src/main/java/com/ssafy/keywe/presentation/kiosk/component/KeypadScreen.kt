@@ -79,7 +79,9 @@ fun KeypadScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             ActionButton("뒤로가기", Modifier, greyBackgroundColor, titleTextColor, true, onBackClick)

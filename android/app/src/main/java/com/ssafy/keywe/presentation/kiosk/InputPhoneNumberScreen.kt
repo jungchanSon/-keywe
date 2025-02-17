@@ -102,7 +102,10 @@ fun InputPhoneNumberScreen(
 
     Scaffold(topBar = { CenteredAppBar(title = "키위 매칭", navController = navController) }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+        Box(modifier = Modifier
+            .padding(top = 50.dp)
+//            .padding(innerPadding)
+        ) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
@@ -121,6 +124,8 @@ fun InputPhoneNumberScreen(
                         style = h6.copy(letterSpacing = 0.sp)
                     )
                 }
+
+                Spacer(modifier = Modifier.height(30.dp))
 
                 PhoneNumberDisplay(phoneNumber1, phoneNumber2, phoneNumber3)
 
