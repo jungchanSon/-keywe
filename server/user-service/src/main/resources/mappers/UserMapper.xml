@@ -13,8 +13,7 @@
     <!-- 이메일 중복 확인 -->
     <select id="existsByEmail" parameterType="String" resultType="boolean">
         SELECT EXISTS (
-        SELECT 1 FROM users
-        WHERE email = #{email}
+            SELECT 1 FROM users WHERE email = #{email} LIMIT 1
         );
     </select>
 
