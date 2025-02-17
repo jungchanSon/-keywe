@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import com.ssafy.keywe.util.TouchCoordinateConverter
+import com.ssafy.keywe.util.initializeMetrics
 import com.ssafy.keywe.webrtc.data.MessageType
 import com.ssafy.keywe.webrtc.data.ScreenSize
 import javax.inject.Inject
@@ -17,6 +19,9 @@ class ScreenSizeManager @Inject constructor(
     var screenSize: ScreenSize = ScreenSize(MessageType.ScreenSize, 0f, 0f, 0f, 0f)
         private set
 
+    var screenMetrics: TouchCoordinateConverter.ScreenMetrics =
+        TouchCoordinateConverter.ScreenMetrics(0, 0, 0f, 0f)
+
     var statusBarHeightPx: Int = 0
 
 //    init {
@@ -25,6 +30,10 @@ class ScreenSizeManager @Inject constructor(
 
     fun updateSystemSize(statusHeight: Int) {
         statusBarHeightPx = statusHeight
+    }
+
+    fun updateScreenMetrics(context: Context) {
+        screenMetrics = initializeMetrics(context)
     }
 
     fun updateScreenSize(context: Context, density: Density) {

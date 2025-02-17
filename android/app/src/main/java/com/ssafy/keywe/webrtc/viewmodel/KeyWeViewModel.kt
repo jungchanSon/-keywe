@@ -8,6 +8,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import com.ssafy.keywe.BuildConfig
+import com.ssafy.keywe.util.TouchCoordinateConverter
 import com.ssafy.keywe.webrtc.RemoteControlService
 import com.ssafy.keywe.webrtc.ScreenSizeManager
 import com.ssafy.keywe.webrtc.data.ChannelData
@@ -201,12 +202,7 @@ class KeyWeViewModel @Inject constructor(
                                 // todo 점유 할 때만 작동
                                 if (_localScreenSize != null) handleRemoteControl(gestureData)
 
-                                val screenSizeData = gestureData as? ScreenSize
-                                if (screenSizeData != null) {
-                                    // screenSizeData를 사용하여 ScreenSize 관련 데이터를 처리할 수 있습니다.
-                                } else {
-                                    // gestureData가 ScreenSize가 아닌 경우에 대한 처리를 합니다.
-                                }
+
                             } catch (e: Exception) {
                                 Log.e("sendGesture", "JSON 파싱 오류: ${e.message}")
                             }
@@ -271,10 +267,6 @@ class KeyWeViewModel @Inject constructor(
     }
 
     fun toggleAudio() {
-        Log.d(
-            "_rtcEngine.value?.audioDeviceInfo",
-            "_rtcEngine.value?.audioDeviceInfo = ${_rtcEngine.value?.audioDeviceInfo}"
-        )
         if (_audioRoute.value == Constants.AUDIO_ROUTE_SPEAKERPHONE) {
             _rtcEngine.value?.setEnableSpeakerphone(false)
             val ret = _rtcEngine.value?.setRouteInCommunicationMode(Constants.AUDIO_ROUTE_HEADSET)
@@ -303,7 +295,15 @@ class KeyWeViewModel @Inject constructor(
     private fun sendScreenSize(streamId: Int?, it: RtcEngine?) {
         streamId?.also { id ->
 //            val message = _localScreenSize?.toMessage()
-            val jsonString = json.encodeToString(_localScreenSize)
+            val localMetrics = screenSizeManager.screenMetrics
+
+            val size = ScreenSize(
+                MessageType.ScreenSize,
+                localMetrics.width.toFloat(),
+                localMetrics.height.toFloat(),
+                localMetrics.density
+            )
+            val jsonString = json.encodeToString(size)
             val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
             Log.d("sendGesture", "send local Screen Size $jsonString")
             it?.sendStreamMessage(id, messageBytes)
@@ -312,6 +312,16 @@ class KeyWeViewModel @Inject constructor(
 
 
     private fun handleRemoteControl(gestureData: MessageData) {
+        val screenSizeData = gestureData as? ScreenSize
+        if (screenSizeData != null) {
+            // screenSizeData를 사용하여 ScreenSize 관련 데이터를 처리할 수 있습니다.
+            Log.d("sendGesture", "상대방 스크린 사이즈: $screenSizeData")
+        } else {
+            // gestureData가 ScreenSize가 아닌 경우에 대한 처리를 합니다.
+            Log.d("sendGesture", "gesture")
+        }
+
+
         // 상대방에서 터치한 offset 수신
         val convertOffset = _localScreenSize!!.convertGestureToAnotherScreen(
             _remoteScreenSize!!, Offset(gestureData.x, gestureData.y + _systemUiHeight)
@@ -323,14 +333,29 @@ class KeyWeViewModel @Inject constructor(
             is ScreenSize -> MessageType.ScreenSize.name
         }
 
+        val localMetrics = screenSizeManager.screenMetrics
+        val remoteMetrics = TouchCoordinateConverter.ScreenMetrics(
+            _remoteScreenSize!!.x.toInt(),
+            _remoteScreenSize!!.y.toInt(),
+            _remoteScreenSize!!.density,
+            _remoteScreenSize!!.aspectRatio,
+        )
+
+        val offset = TouchCoordinateConverter.convertCoordinates(
+            gestureData.x, gestureData.y + _systemUiHeight, remoteMetrics, localMetrics
+        )
+
 //        intent.action = gestureData.type.name
 
 //        ScreenRatioUtil.dpToPixel(convertOffset.x)
 
 //        intent.putExtra("x", gestureData.x)
 //        intent.putExtra("y", gestureData.y)
-        intent.putExtra("x", convertOffset.x)
-        intent.putExtra("y", convertOffset.y)
+//        intent.putExtra("x", convertOffset.x)
+//        intent.putExtra("y", convertOffset.y)
+
+        intent.putExtra("x", offset.first)
+        intent.putExtra("y", offset.second)
         applicationContext.startService(intent)
     }
 
