@@ -2,6 +2,8 @@ package com.kiosk.server.user.handler;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
+import com.kiosk.server.common.exception.custom.SmsException;
+import com.kiosk.server.user.controller.dto.SmsResponse;
 import com.kiosk.server.user.domain.SmsAuthenticationRepository;
 import com.kiosk.server.user.service.VerifySmsService;
 import com.kiosk.server.user.util.UserValidateUtil;
@@ -21,7 +23,7 @@ public class SmsVerificationHandler {
     private final SecureRandom random = new SecureRandom();
 
     // SMS 인증 코드 생성 및 전송
-    public void sendVerificationSms(String phone) {
+    public SmsResponse sendVerificationSms(String phone) {
         // 전화번호 마스킹 로깅
         log.info("휴대폰 번호 {}로 인증번호 전송을 시작합니다.", userValidateUtil.maskPhoneNumber(phone));
 
@@ -42,15 +44,16 @@ public class SmsVerificationHandler {
             verifySmsService.doService(phone, verificationCode);
             log.info("휴대폰 번호 {}로 인증번호 전송이 완료되었습니다.", userValidateUtil.maskPhoneNumber(phone));
 
+            return new SmsResponse("인증번호가 전송되었습니다.");
         } catch (Exception e) {
             log.error("휴대폰 번호 {}로 인증번호 전송에 실패했습니다: {}",
                     userValidateUtil.maskPhoneNumber(phone), e.getMessage(), e);
-            throw new BadRequestException("SMS 전송에 실패했습니다.");
+            throw new SmsException("SMS 전송에 실패했습니다.");
         }
     }
 
     // SMS 인증 코드 검증
-    public boolean verifySmsCode(String phone, String inputCode) {
+    public SmsResponse verifySmsCode(long userId, String phone, String inputCode) {
         log.info("휴대폰 번호 {}의 인증번호를 검증합니다.", userValidateUtil.maskPhoneNumber(phone));
 
         // 저장된 인증번호 조회
@@ -63,12 +66,14 @@ public class SmsVerificationHandler {
         boolean isVerified = storedCode.equals(inputCode);
         if (isVerified) {
             smsAuthenticationRepository.deleteAuthenticationCode(phone);
+            smsAuthenticationRepository.markPhoneNumberAsVerified(userId, phone);
             log.info("휴대폰 번호 {}의 인증이 성공적으로 완료되었습니다.", userValidateUtil.maskPhoneNumber(phone));
+            return new SmsResponse("인증이 완료되었습니다.");
         } else {
             log.warn("휴대폰 번호 {}의 잘못된 인증번호가 입력되었습니다.", userValidateUtil.maskPhoneNumber(phone));
+            return new SmsResponse("잘못된 인증번호입니다. 다시 시도해주세요.");
         }
 
-        return isVerified;
     }
 
     // 6자리 인증코드 생성

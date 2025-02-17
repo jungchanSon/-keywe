@@ -93,17 +93,17 @@ public class UserController {
 
     // SMS 인증번호 전송
     @PostMapping("/profile/sms/send")
-    public ResponseEntity<Void> sendSms(@RequestBody @Valid SmsRequest request){
+    public ResponseEntity<SmsResponse> sendSms(@RequestBody @Valid SmsRequest request){
         log.info("SMS 인증번호 전송 요청: {}", userValidateUtil.maskPhoneNumber(request.phone()));
-        smsVerificationHandler.sendVerificationSms(request.phone());
-        return ResponseEntity.ok().build();
+        SmsResponse response = smsVerificationHandler.sendVerificationSms(request.phone());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // SMS 인증번호 검증
     @PostMapping("profile/sms/verify")
-    public ResponseEntity<Boolean> verifySms(@RequestBody @Valid SmsVerifyRequest request) {
+    public ResponseEntity<SmsResponse> verifySms(@RequestHeader("userId") Long userId, @RequestBody @Valid SmsVerifyRequest request) {
         log.info("SMS 인증번호 검증 요청. 전화번호: {}", userValidateUtil.maskPhoneNumber(request.phone()));
-        boolean isVerified = smsVerificationHandler.verifySmsCode(request.phone(), request.verificationCode());
-        return ResponseEntity.ok(isVerified);
+        SmsResponse response = smsVerificationHandler.verifySmsCode(userId, request.phone(), request.verificationCode());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

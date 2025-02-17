@@ -1,9 +1,6 @@
 package com.kiosk.server.config;
 
-import com.kiosk.server.common.exception.custom.BadRequestException;
-import com.kiosk.server.common.exception.custom.ConflictException;
-import com.kiosk.server.common.exception.custom.EntityNotFoundException;
-import com.kiosk.server.common.exception.custom.UnauthorizedException;
+import com.kiosk.server.common.exception.custom.*;
 import exception.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +21,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(SmsException.class)
+    public ResponseEntity<ErrorResponse> handleSmsException(SmsException e) {
+        ErrorResponse response = new ErrorResponse(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
