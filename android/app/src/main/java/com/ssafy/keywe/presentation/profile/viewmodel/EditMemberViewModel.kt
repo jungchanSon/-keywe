@@ -1,6 +1,7 @@
 package com.ssafy.keywe.presentation.profile.viewmodel
 
 //import com.ssafy.keywe.data.dto.profile.GetProfileRequest
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.text.TextRange
@@ -8,6 +9,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
@@ -20,11 +22,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class EditMemberViewModel @Inject constructor(
-    private val repository: ProfileRepository, private val profileDataStore: ProfileDataStore
+    private val repository: ProfileRepository,
+    private val profileDataStore: ProfileDataStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditMemberState())
@@ -118,6 +126,7 @@ class EditMemberViewModel @Inject constructor(
                                 role = profile.role ?: "PARENT",
                                 phone = formattedPhone,
                                 password = "", // profile.password ?: ""  비밀번호는 보안 상 불러오지 않음
+                                profileImage = profile.image,
                                 isModified = false
                             )
                         }
@@ -177,15 +186,17 @@ class EditMemberViewModel @Inject constructor(
 //    }
 
     //수정 업데이트 정보 담기
-    fun updateProfile(profileViewModel: ProfileViewModel, navController: NavController) {
+    fun updateProfile(
+        context: Context, profileViewModel: ProfileViewModel, navController: NavController
+    ) {
         viewModelScope.launch {
+
+            val gson = Gson()
 
             val request = if (state.value.role == "PARENT") {
                 val formattedPhone = state.value.phone.replace("-", "")
                 UpdateProfileRequest(
-                    name = state.value.name,
-                    phone = formattedPhone,
-                    password = state.value.password
+                    name = state.value.name, phone = formattedPhone, password = state.value.password
                 )
             } else {
                 UpdateProfileRequest(
@@ -193,7 +204,22 @@ class EditMemberViewModel @Inject constructor(
                 )
             }
 
-            when (val result = repository.updateProfile(request)) {
+            //json 문자열로 변환
+            val profileJsonString = gson.toJson(request)
+//            val profileBody = MultipartBody.Part.createFormData(
+//                "profile",
+//                null,
+//                profileJsonString.toRequestBody("application/json".toMediaTypeOrNull())
+//            )
+            val profileBody =
+                gson.toJson(request).toRequestBody("application/json".toMediaTypeOrNull())
+
+
+            val imageBody = _profileImageUri.value?.let { uri ->
+                createMultipartImage(context, uri)
+            }
+
+            when (val result = repository.updateProfile(request, context, _profileImageUri.value)) {
                 is ResponseResult.Success -> {
                     Log.d("EditProfile", "프로필 수정 성공")
                     _state.update { it.copy(isModified = false) }
@@ -215,13 +241,22 @@ class EditMemberViewModel @Inject constructor(
         }
     }
 
+    private fun createMultipartImage(context: Context, uri: Uri): MultipartBody.Part {
+        val file = File(context.cacheDir, "profile_image.jpg").apply {
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                outputStream().use { output -> input.copyTo(output) }
+            }
+        }
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData("image", file.name, requestFile)
+    }
+
 
     fun deleteProfile(profileId: Long) {
         viewModelScope.launch {
             when (val result = repository.deleteProfile(profileId)) {
 //                is ResponseResult.Success -> ProfileIdManager.clearProfileId()// 삭제 완료 처리
-                is ResponseResult.Success ->
-                    Log.d("deleteProfile", "삭제됨")
+                is ResponseResult.Success -> Log.d("deleteProfile", "삭제됨")
 
                 else -> Log.e("deleteProfile", "프로필 삭제 실패")// 에러 처리
             }

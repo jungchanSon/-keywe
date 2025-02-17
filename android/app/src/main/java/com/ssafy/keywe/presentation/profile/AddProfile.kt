@@ -82,6 +82,9 @@ fun AddMemberScreen(
     val state = viewModel.state.collectAsState().value
     val focusManager = LocalFocusManager.current
 
+    val imageUriState by viewModel.profileImageUri.collectAsState()
+    val context = LocalContext.current
+
 
     //화면열때마다 api 갱신(추가하기 버튼에 해놨지롱)
 //    LaunchedEffect(Unit) {
@@ -250,21 +253,22 @@ fun AddMemberScreen(
             // 추가하기 버튼
             Button(
                 onClick = {
+                    val imageUri = imageUriState
+                        ?: Uri.parse("android.resource://${context.packageName}/${R.drawable.humanimage}") // 기본 이미지 적용
+
                     viewModel.postProfile(
+                        context = context,
+//                        imageUri = imageUri,
                         onSuccess = {
                             profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
 
                             if (isJoinApp) {
-                                // profileChoiceScreen(true)로 이동하면서 스택 정리
                                 navController.navigate(
-                                    Route.ProfileBaseRoute.ProfileChoiceRoute(
-                                        isJoinApp = true
-                                    )
+                                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = true)
                                 ) {
                                     popUpTo(0) { inclusive = false }
                                 }
                             } else {
-                                // profileChoiceScreen(false)로 popBackStack() 사용하여 이동
                                 navController.popBackStack(
                                     Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
                                 )
@@ -280,6 +284,77 @@ fun AddMemberScreen(
             ) {
                 Text("추가하기")
             }
+
+//            Button(
+//                onClick = {
+//                    val imageUri = imageUriState
+//                        ?: Uri.parse("android.resource://${context.packageName}/${R.drawable.humanimage}")
+//                    if (imageUri != null) {
+//                        viewModel.postProfile(
+//                            context = context,
+//                            onSuccess = {
+//                                profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
+//
+//                                if (isJoinApp) {
+//                                    navController.navigate(
+//                                        Route.ProfileBaseRoute.ProfileChoiceRoute(
+//                                            isJoinApp = true
+//                                        )
+//                                    ) {
+//                                        popUpTo(0) { inclusive = false }
+//                                    }
+//                                } else {
+//                                    navController.popBackStack(
+//                                        Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+//                                    )
+//                                }
+//                            }
+//                        )
+//                    } else {
+//                        Log.e("Profile", "이미지가 선택되지 않았습니다.")
+//                    }
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(48.dp),
+//                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+//                enabled = viewModel.isAddButtonEnabled.collectAsState().value
+//            ) {
+//                Text("추가하기")
+//            }
+
+//            Button(
+//                onClick = {
+//                    viewModel.postProfile(
+//                        onSuccess = {
+//                            profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
+//
+//                            if (isJoinApp) {
+//                                // profileChoiceScreen(true)로 이동하면서 스택 정리
+//                                navController.navigate(
+//                                    Route.ProfileBaseRoute.ProfileChoiceRoute(
+//                                        isJoinApp = true
+//                                    )
+//                                ) {
+//                                    popUpTo(0) { inclusive = false }
+//                                }
+//                            } else {
+//                                // profileChoiceScreen(false)로 popBackStack() 사용하여 이동
+//                                navController.popBackStack(
+//                                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
+//                                )
+//                            }
+//                        }
+//                    )
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(48.dp),
+//                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+//                enabled = viewModel.isAddButtonEnabled.collectAsState().value
+//            ) {
+//                Text("추가하기")
+//            }
 
 
 //            // 추가하기 버튼
@@ -417,15 +492,17 @@ fun PhoneNumberInput(viewModel: AddMemberViewModel) {
 fun ProfileImagePicker(
     viewModel: AddMemberViewModel, modifier: Modifier = Modifier
 ) {
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+//    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val imageUri by viewModel.profileImageUri.collectAsState()
     val context = LocalContext.current
-
+    val defaultImage = R.drawable.humanimage
+    val imageModel = imageUri ?: R.drawable.humanimage
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            imageUri = it
-            viewModel.updateProfileImage(it)
+//            imageUri = it
+            viewModel.updateProfileImage(uri)
         }
     }
 
@@ -439,9 +516,13 @@ fun ProfileImagePicker(
         Box(modifier = Modifier
             .size(120.dp)
             .clickable { imagePicker.launch("image/*") }) {
+            val model: Any = imageUri ?: defaultImage
             AsyncImage(
-                model = ImageRequest.Builder(context).data(imageUri ?: R.drawable.humanimage)
-                    .crossfade(true).build(),
+                model = ImageRequest.Builder(context)
+                    .data(imageUri ?: R.drawable.humanimage)
+                    .crossfade(true)
+                    .build(),
+//                model = imageUri ?: defaultImage,
                 contentDescription = "프로필 이미지",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()

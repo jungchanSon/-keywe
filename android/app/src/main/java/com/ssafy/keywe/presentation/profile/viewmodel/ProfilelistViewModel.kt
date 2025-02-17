@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.PushNotificationManager
+import com.ssafy.keywe.R
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ApiResponseHandler.onException
 import com.ssafy.keywe.data.ApiResponseHandler.onServerError
@@ -101,11 +102,35 @@ class ProfileViewModel @Inject constructor(
 //
 //    }
 
+    //    fun refreshProfileList() {
+//        viewModelScope.launch {
+//            when (val result = profileRepository.getProfileList()) {
+//                is ResponseResult.Success -> {
+//                    _profiles.value = result.data
+//                    Log.d("refreshProfileList", "프로필 목록 새로고침 성공")
+//                }
+//
+//                is ResponseResult.ServerError -> {
+//                    Log.e("refreshProfileList", "서버 에러: ${result.status}")
+//                }
+//
+//                is ResponseResult.Exception -> {
+//                    Log.e("refreshProfileList", "예외 발생: ${result.e.message}")
+//                }
+//            }
+//        }
+//    }
     fun refreshProfileList() {
         viewModelScope.launch {
             when (val result = profileRepository.getProfileList()) {
                 is ResponseResult.Success -> {
-                    _profiles.value = result.data
+                    val processedProfiles = result.data.map { profile ->
+                        profile.copy(
+                            image = profile.image?.takeIf { it.isNotBlank() }
+                                ?: R.drawable.humanimage.toString() // 기본 이미지 적용
+                        )
+                    }
+                    _profiles.value = processedProfiles
                     Log.d("refreshProfileList", "프로필 목록 새로고침 성공")
                 }
 

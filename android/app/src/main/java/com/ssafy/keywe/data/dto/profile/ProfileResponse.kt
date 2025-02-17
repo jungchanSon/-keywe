@@ -26,7 +26,8 @@ import kotlinx.serialization.Serializable
 data class GetProfileListResponse(
     @SerialName("id") val id: String,
     @SerialName("name") val name: String,
-    @SerialName("role") val role: String
+    @SerialName("role") val role: String,
+    @SerialName("image") val image: String
 )
 
 @Serializable
@@ -34,7 +35,8 @@ data class GetProfileDetailResponse(
     @SerialName("id") val id: String,
     @SerialName("name") val name: String,
     @SerialName("role") val role: String,
-    @SerialName("phone") val phone: String?
+    @SerialName("phone") val phone: String?,
+    @SerialName("image") val image: String
 )
 
 @Serializable

@@ -5,10 +5,10 @@ import com.ssafy.keywe.data.ApiResponseHandler.handleApiResponse
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileListResponse
-import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
-import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
 import com.ssafy.keywe.data.dto.profile.UpdateProfileResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class ProfileRemoteDataSource @Inject constructor(private val profileService: ProfileService) :
@@ -24,19 +24,44 @@ class ProfileRemoteDataSource @Inject constructor(private val profileService: Pr
             profileService.getProfileDetail(profileId)
         }
 
-    override suspend fun requestPostProfile(postProfileRequest: PostProfileRequest): ResponseResult<PostProfileResponse> =
+    override suspend fun requestPostProfile(
+        profileBody: RequestBody,
+        profileImage: MultipartBody.Part?
+    ): ResponseResult<PostProfileResponse> =
         handleApiResponse {
-            profileService.postProfile(postProfileRequest)
+            profileService.postProfile(profileBody, profileImage)
         }
 
-    override suspend fun requestUpdateProfile(updateProfileRequest: UpdateProfileRequest): ResponseResult<UpdateProfileResponse> =
+    override suspend fun requestUpdateProfile(
+        profileBody: RequestBody,
+        profileImage: MultipartBody.Part?
+    ): ResponseResult<UpdateProfileResponse> =
         handleApiResponse {
-            profileService.updateProfile(updateProfileRequest)
+            profileService.updateProfile(profileBody, profileImage)
         }
 
     override suspend fun requestDeleteProfile(profileId: Long): ResponseResult<Unit> =
         handleApiResponse {
             profileService.deleteProfile(profileId)
         }
+
+    override suspend fun requestSendSmsVerification(phone: String): ResponseResult<Unit> =
+        handleApiResponse {
+            profileService.sendSmsVerification(mapOf("phone" to phone))
+        }
+
+    override suspend fun requestVerifySmsCode(
+        phone: String,
+        verificationCode: String
+    ): ResponseResult<Unit> =
+        handleApiResponse {
+            profileService.verifySmsCode(
+                mapOf(
+                    "phone" to phone,
+                    "verificationCode" to verificationCode
+                )
+            )
+        }
+
 
 }

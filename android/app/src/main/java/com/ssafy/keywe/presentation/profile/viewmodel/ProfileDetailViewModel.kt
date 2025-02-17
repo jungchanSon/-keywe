@@ -1,6 +1,8 @@
 package com.ssafy.keywe.presentation.profile.viewmodel
 
 //import com.ssafy.keywe.data.dto.profile.GetProfileRequest
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -73,7 +75,7 @@ class ProfileDetailViewModel @Inject constructor(
         }
     }
 
-    fun updateProfile(profileViewModel: ProfileViewModel) {
+    fun updateProfile(context: Context, profileViewModel: ProfileViewModel, imageUri: Uri?) {
         viewModelScope.launch {
             val currentState = state.value ?: return@launch  // state가 null이면 즉시 종료, 없어도 되긴할거각ㅌㅇ
             val passwordValue = password.value
@@ -94,7 +96,7 @@ class ProfileDetailViewModel @Inject constructor(
 //                password = currentState.password
 //            )
 
-            when (val result = repository.updateProfile(request)) {
+            when (val result = repository.updateProfile(request, context, imageUri)) {
                 is ResponseResult.Success -> {
                     Log.d("EditProfile", "프로필 수정 성공")
                     _isModified.value = false // 상태 업데이트

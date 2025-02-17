@@ -81,11 +81,15 @@ fun EditMemberScreen(
     Scaffold(topBar = {
         DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
             TextButton(onClick = {
-                viewModel.updateProfile(profileViewModel, navController)
-                navController.popBackStack(
-                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
-                    false
-                )
+                viewModel.updateProfile(context, profileViewModel, navController)
+                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
+                    popUpTo(Route.ProfileBaseRoute.ProfileEditRoute) { inclusive = true }
+                }
+//
+//                navController.popBackStack(
+//                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
+//                    false
+//                )
             }) {
                 Text("완료", color = primaryColor)
             }

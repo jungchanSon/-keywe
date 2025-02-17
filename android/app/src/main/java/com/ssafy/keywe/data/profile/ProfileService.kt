@@ -2,16 +2,18 @@ package com.ssafy.keywe.data.profile
 
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileListResponse
-import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
-import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
 import com.ssafy.keywe.data.dto.profile.UpdateProfileResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -25,19 +27,36 @@ interface ProfileService {
         @Query("profileId") profileId: Long
     ): Response<GetProfileDetailResponse>
 
+    @Multipart
     @POST(PROFILE_PATH)
     suspend fun postProfile(
-        @Body postProfileRequest: PostProfileRequest
+//        @Body postProfileRequest: PostProfileRequest,
+//        @Body imageBase64: String?
+//        @Body postProfileRequest: RequestBody,
+        @Part("profile") profile: RequestBody,
+        @Part profileImage: MultipartBody.Part? = null
     ): Response<PostProfileResponse>
 
+    @Multipart
     @PATCH(PROFILE_PATH)
     suspend fun updateProfile(
-        @Body updateProfileRequest: UpdateProfileRequest
+        @Part("profile") profile: RequestBody,
+        @Part profileImage: MultipartBody.Part?
     ): Response<UpdateProfileResponse>
 
     @DELETE(PROFILE_PATH)
     suspend fun deleteProfile(
         @Path("profileId") profileId: Long,
+    ): Response<Unit>
+
+    @POST("/user/profile/sms/send")
+    suspend fun sendSmsVerification(
+        @Body phone: Map<String, String>
+    ): Response<Unit>
+
+    @POST("/user/profile/sms/verify")
+    suspend fun verifySmsCode(
+        @Body request: Map<String, String>
     ): Response<Unit>
 
     companion object {
