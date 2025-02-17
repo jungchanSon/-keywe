@@ -1,6 +1,6 @@
 package com.kiosk.server.user.service.impl;
 
-import com.kiosk.server.image.repository.MenuImageRepository;
+import com.kiosk.server.image.repository.ProfileImageRepository;
 import com.kiosk.server.user.controller.dto.UserProfileDetailResponse;
 import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.service.ProfileDetailService;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class ProfileDetailServiceImpl implements ProfileDetailService {
 
     private final UserProfileUtil userProfileUtil;
-    private final MenuImageRepository imageRepository;
+    private final ProfileImageRepository imageRepository;
 
     @Override
     public UserProfileDetailResponse doService(long userId, long profileId) {
