@@ -262,30 +262,6 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         }
     }
 
-//    fun getOptionTypeByOptionValueId(optionValueId: Long): String {
-//        var retryCount = 0
-//        var optionType: String? = null
-//
-//        while (retryCount < 3) {
-//            optionType = selectedDetailMenu.value?.options
-//                ?.find { optionModel ->
-//                    optionModel.optionsValueGroup.any { it.optionValueId == optionValueId }
-//                }?.optionType
-//
-//            if (optionType != null) break
-//            retryCount++
-//        }
-//
-//        return optionType ?: "Unknown"
-//    }
-
-//    private fun getOptionValueById(optionValueId: Long): String {
-//        return selectedDetailMenu.value?.options
-//            ?.flatMap { it.optionsValueGroup }
-//            ?.find { it.optionValueId == optionValueId }
-//            ?.optionValue ?: "Unknown"
-//    }
-
     fun openDeleteDialog(cartItem: CartItem) {
         _selectedCartItem.value = cartItem
         _isDeleteDialogOpen.value = true
