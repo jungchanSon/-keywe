@@ -2,6 +2,7 @@ package com.kiosk.server.user.handler;
 
 import com.kiosk.server.common.exception.custom.BadRequestException;
 import com.kiosk.server.common.exception.custom.EntityNotFoundException;
+import com.kiosk.server.common.exception.custom.SmsException;
 import com.kiosk.server.user.controller.dto.SmsResponse;
 import com.kiosk.server.user.domain.SmsAuthenticationRepository;
 import com.kiosk.server.user.service.VerifySmsService;
@@ -47,7 +48,7 @@ public class SmsVerificationHandler {
         } catch (Exception e) {
             log.error("휴대폰 번호 {}로 인증번호 전송에 실패했습니다: {}",
                     userValidateUtil.maskPhoneNumber(phone), e.getMessage(), e);
-            throw new BadRequestException("SMS 전송에 실패했습니다.");
+            throw new SmsException("SMS 전송에 실패했습니다.");
         }
     }
 
