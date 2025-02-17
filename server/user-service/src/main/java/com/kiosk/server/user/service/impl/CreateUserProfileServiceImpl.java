@@ -5,6 +5,7 @@ import com.kiosk.server.image.service.UploadImageService;
 import com.kiosk.server.user.controller.dto.CreateProfileRequest;
 import com.kiosk.server.user.controller.dto.CreateProfileResponse;
 import com.kiosk.server.user.domain.ProfileRole;
+import com.kiosk.server.user.domain.SmsAuthenticationRepository;
 import com.kiosk.server.user.domain.UserProfile;
 import com.kiosk.server.user.domain.UserProfileRepository;
 import com.kiosk.server.user.service.CreateUserProfileService;
@@ -23,8 +24,9 @@ import java.time.format.DateTimeFormatter;
 public class CreateUserProfileServiceImpl implements CreateUserProfileService {
 
     private final UserValidateUtil userValidateUtil;
-    private final UserProfileRepository userProfileRepository;
     private final UploadImageService uploadImageService;
+    private final UserProfileRepository userProfileRepository;
+    private final SmsAuthenticationRepository smsAuthenticationRepository;
 
     @Override
     public CreateProfileResponse doService(long userId, CreateProfileRequest request, MultipartFile image) {
@@ -44,6 +46,9 @@ public class CreateUserProfileServiceImpl implements CreateUserProfileService {
         } else if (role == ProfileRole.PARENT) {
             userValidateUtil.validatePhoneNumber(request.phone());
             userValidateUtil.validateProfilePass(request.password());
+            if(!smsAuthenticationRepository.isPhoneNumberVerified(userId, request.phone())){
+                throw new BadRequestException("전화번호 인증이 필요합니다.");
+            }
             newProfile = UserProfile.createParent(userId, request.name(), role, request.phone(), request.password());
         } else {
             log.warn("잘못된 프로필 역할 지정. userId={}, profileRole={}", userId, request.role());
