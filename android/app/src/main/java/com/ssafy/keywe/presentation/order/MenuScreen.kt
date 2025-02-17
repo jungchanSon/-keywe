@@ -224,6 +224,7 @@ fun MenuScreen(
         Column(
             modifier = Modifier.fillMaxHeight()
         ) {
+            /// 메뉴 내용
             MenuCategoryScreen(menuViewModel, storeId)
             MenuSubCategory("Popular Coffee")
 
@@ -256,7 +257,7 @@ fun disConnect(
     if (isKiosk) {
         Log.d("Back", "Back")
         navController.navigate(Route.MenuBaseRoute.KioskHomeRoute) {
-            popUpTo(navController.graph.startDestinationId) {
+            popUpTo(Route.MenuBaseRoute.KioskHomeRoute) {
                 inclusive = true
             }
         }

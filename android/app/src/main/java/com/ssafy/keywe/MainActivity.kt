@@ -115,8 +115,8 @@ class MainActivity : ComponentActivity() {
             val configuration = LocalConfiguration.current
             val density = LocalDensity.current
 
-            val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx().toInt() }
-            val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx().toInt() }
+            val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
+            val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
             Log.d("ScreenSize", "전체 화면 크기 (시스템 UI 포함) : $screenWidthPx x $screenHeightPx")
 
 
@@ -143,8 +143,8 @@ class MainActivity : ComponentActivity() {
             PushNotificationManager.updateDeviceId(deviceId)
             Log.d("push notification device id", deviceId)
             screenSizeManager.updateScreenSize(this, density)
-            
-            screenSizeManager.updateScreenMetrics(this)
+
+            screenSizeManager.updateScreenMetrics(this, screenHeightPx, screenWidthPx)
 
             val navController = rememberNavController()
             NavControllerHolder.navController = navController
@@ -158,6 +158,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
             KeyWeTheme {
+                val configuration = LocalConfiguration.current
+                val density = LocalDensity.current
+
+                val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx().toInt() }
+                val screenHeightPx =
+                    with(density) { configuration.screenHeightDp.dp.toPx().toInt() }
+//                Log.d("ScreenSize", "전체 화면 크기 (시스템 UI 포함)222222 : $screenWidthPx x $screenHeightPx")
                 MyApp(navController, tokenManager)
             }
         }

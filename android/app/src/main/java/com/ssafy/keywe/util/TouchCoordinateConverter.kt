@@ -12,8 +12,8 @@ object TouchCoordinateConverter {
      * @param aspectRatio 화면의 종횡비 (height/width). 기본값으로 계산됨
      */
     data class ScreenMetrics(
-        val width: Int,
-        val height: Int,
+        val width: Float,
+        val height: Float,
         val density: Float,
         val aspectRatio: Float = height.toFloat() / width,
     )
@@ -104,10 +104,10 @@ object TouchCoordinateConverter {
         val targetDpY = relativeY * targetHeightDp * aspectRatioCorrection
 
         // 6. DP를 다시 픽셀로 변환하고 화면 범위 내로 제한
-        val finalX = dpToPx(targetDpX, targetMetrics.density)
-            .coerceIn(0f, targetMetrics.width.toFloat())
-        val finalY = dpToPx(targetDpY, targetMetrics.density)
-            .coerceIn(0f, targetMetrics.height.toFloat())
+        val finalX =
+            dpToPx(targetDpX, targetMetrics.density).coerceIn(0f, targetMetrics.width.toFloat())
+        val finalY =
+            dpToPx(targetDpY, targetMetrics.density).coerceIn(0f, targetMetrics.height.toFloat())
 
         return Pair(finalX, finalY)
     }
@@ -164,8 +164,7 @@ object TouchCoordinateConverter {
 
         // 보정된 DP -> 픽셀 변환
         return Pair(
-            dpToPx(correctedXDp, metrics.density),
-            dpToPx(correctedYDp, metrics.density)
+            dpToPx(correctedXDp, metrics.density), dpToPx(correctedYDp, metrics.density)
         )
     }
 }
@@ -179,11 +178,17 @@ object TouchCoordinateConverter {
  * 사용 예시:
  * val screenMetrics = initializeMetrics(context)
  */
-fun initializeMetrics(context: Context): TouchCoordinateConverter.ScreenMetrics {
+fun initializeMetrics(
+    context: Context,
+    height: Float,
+    width: Float,
+): TouchCoordinateConverter.ScreenMetrics {
     val displayMetrics = context.resources.displayMetrics
+
     return TouchCoordinateConverter.ScreenMetrics(
-        width = displayMetrics.widthPixels,
-        height = displayMetrics.heightPixels,
-        density = displayMetrics.density
+//        width = displayMetrics.widthPixels,
+//        height = displayMetrics.heightPixels,
+        width = width, height = height, density = displayMetrics.density
+
     )
 }

@@ -20,7 +20,7 @@ class ScreenSizeManager @Inject constructor(
         private set
 
     var screenMetrics: TouchCoordinateConverter.ScreenMetrics =
-        TouchCoordinateConverter.ScreenMetrics(0, 0, 0f, 0f)
+        TouchCoordinateConverter.ScreenMetrics(0f, 0f, 0f, 0f)
 
     var statusBarHeightPx: Int = 0
 
@@ -32,8 +32,8 @@ class ScreenSizeManager @Inject constructor(
         statusBarHeightPx = statusHeight
     }
 
-    fun updateScreenMetrics(context: Context) {
-        screenMetrics = initializeMetrics(context)
+    fun updateScreenMetrics(context: Context, height: Float, width: Float) {
+        screenMetrics = initializeMetrics(context, height, width)
     }
 
     fun updateScreenSize(context: Context, density: Density) {

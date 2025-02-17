@@ -324,7 +324,7 @@ class KeyWeViewModel @Inject constructor(
 
         // 상대방에서 터치한 offset 수신
         val convertOffset = _localScreenSize!!.convertGestureToAnotherScreen(
-            _remoteScreenSize!!, Offset(gestureData.x, gestureData.y + _systemUiHeight)
+            _remoteScreenSize!!, Offset(gestureData.x, gestureData.y)
         )
         val intent = Intent(applicationContext, RemoteControlService::class.java)
         when (gestureData) {
@@ -335,14 +335,14 @@ class KeyWeViewModel @Inject constructor(
 
         val localMetrics = screenSizeManager.screenMetrics
         val remoteMetrics = TouchCoordinateConverter.ScreenMetrics(
-            _remoteScreenSize!!.x.toInt(),
-            _remoteScreenSize!!.y.toInt(),
+            _remoteScreenSize!!.x,
+            _remoteScreenSize!!.y,
             _remoteScreenSize!!.density,
             _remoteScreenSize!!.aspectRatio,
         )
 
         val offset = TouchCoordinateConverter.convertCoordinates(
-            gestureData.x, gestureData.y + _systemUiHeight, remoteMetrics, localMetrics
+            gestureData.x, gestureData.y, remoteMetrics, localMetrics
         )
 
 //        intent.action = gestureData.type.name
@@ -351,11 +351,11 @@ class KeyWeViewModel @Inject constructor(
 
 //        intent.putExtra("x", gestureData.x)
 //        intent.putExtra("y", gestureData.y)
-//        intent.putExtra("x", convertOffset.x)
-//        intent.putExtra("y", convertOffset.y)
-
         intent.putExtra("x", offset.first)
-        intent.putExtra("y", offset.second)
+        intent.putExtra("y", offset.second + screenSizeManager.statusBarHeightPx)
+
+//        intent.putExtra("x", offset.first)
+//        intent.putExtra("y", offset.second)
         applicationContext.startService(intent)
     }
 
