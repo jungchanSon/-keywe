@@ -208,8 +208,8 @@ fun ParentWaitingRoomScreen(
                             Log.d("WaitingRoomScreen", "가족에게 요청을 보내지 못했어요.")
                         } else {
                             // 자식 프로필은 주문 요청이 불가합니다.
-                            errorMessageInConnecting = "자식 프로필은 주문 요청이 불가합니다."
-                            Log.d("WaitingRoomScreen", "자식 프로필은 주문 요청이 불가합니다.")
+                            errorMessageInConnecting = it.data!!.message
+                            Log.d("WaitingRoomScreen", "${it.data!!.message}")
                         }
                         closeSTOMP(context)
 //                        scope.launch {

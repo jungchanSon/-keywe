@@ -26,6 +26,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -34,6 +36,8 @@ import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -43,6 +47,8 @@ fun MenuMenuList(
     menuCartViewModel: MenuCartViewModel,
     isKeyWe: Boolean = false,
     storeId: Long,
+    keyWeViewModel: KeyWeViewModel,
+    isKiosk: Boolean = false,
 ) {
     val filteredMenuList by viewModel.filteredMenuItems.collectAsState()
     val listState = rememberLazyGridState() // 스크롤 상태 관리
@@ -68,15 +74,25 @@ fun MenuMenuList(
             state = listState
         ) {
             items(filteredMenuList) { menu ->
-                Log.d("menu data", "$menu")
+//                Log.d("menu data", "$menu")
                 MenuMenuScreen(
                     menuId = menu.menuId, selectItem = {
-                        if (isKeyWe) navController.navigate(
-                            Route.MenuBaseRoute.MenuDetailRoute(
-                                menu.menuId, storeId
+                        if (isKeyWe) {
+
+                            Log.d("MenuScreen", "Click Menu = ${menu.menuId}")
+                            if (!isKiosk) {
+                                keyWeViewModel.sendButtonEvent(
+                                    KeyWeButtonEvent.MenuSelect(
+                                        menuId = menu.menuId, storeId = storeId
+                                    )
+                                )
+                            }
+                            navController.navigate(
+                                Route.MenuBaseRoute.MenuDetailRoute(
+                                    menu.menuId, storeId
+                                )
                             )
-                        )
-                        else navController.navigate(
+                        } else navController.navigate(
                             Route.MenuBaseRoute.DefaultMenuDetailRoute(
                                 menu.menuId, storeId
                             )
@@ -96,14 +112,16 @@ fun MenuMenuScreen(
     menuCartViewModel: MenuCartViewModel,
     storeId: Long,
 ) {
-    Log.d("Menu ID", "$menuId")
+//    Log.d("Menu ID", "$menuId")
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 24.dp)
-            .wrapContentHeight()
-            .noRippleClickable { selectItem() }, contentAlignment = Alignment.BottomCenter
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 24.dp)
+        .wrapContentHeight()
+        .noRippleClickable { selectItem() }
+        .semantics {
+            contentDescription = "menu_item_$menuId"
+        }, contentAlignment = Alignment.BottomCenter
     ) {
         Column(
             modifier = Modifier
@@ -114,7 +132,7 @@ fun MenuMenuScreen(
             verticalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Log.d("menu Column", "$menuId")
+//            Log.d("menu Column", "$menuId")
             MenuImage(menuId, viewModel)
 
             MenuDescription(menuId, viewModel, menuCartViewModel, storeId)

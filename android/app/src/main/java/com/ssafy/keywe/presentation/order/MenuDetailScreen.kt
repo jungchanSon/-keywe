@@ -1,7 +1,8 @@
 package com.ssafy.keywe.presentation.order
 
+//import com.ssafy.keywe.webrtc.data.Drag
+//import com.ssafy.keywe.webrtc.data.Touch
 import android.util.Log
-import android.view.MotionEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -45,10 +45,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
-import com.ssafy.keywe.webrtc.data.Drag
-import com.ssafy.keywe.webrtc.data.MessageType
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
-import com.ssafy.keywe.webrtc.data.Touch
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 
@@ -171,49 +168,51 @@ fun MenuDetailScreen(
         }
     }
 
-    Scaffold(topBar = {
-        DefaultOrderAppBar(
-            title = "주문하기",
-            navController = navController,
-            viewModel = appBarViewModel,
-            keyWeViewModel = keyWeViewModel
-        )
-    }, modifier = Modifier
-        .fillMaxSize()
-        .pointerInteropFilter { motionEvent ->
-            when (motionEvent.action) {
-                MotionEvent.ACTION_DOWN -> {
-//                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
-//                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
-
-                    Log.d(
-                        "sendGesture",
-                        "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
-                    )
-//                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-                    if (!isKiosk) keyWeViewModel.sendClickGesture(
-                        Touch(
-                            MessageType.Touch, motionEvent.x, motionEvent.y,
-                        )
-                    )
-                    println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
-                }
-
-                MotionEvent.ACTION_MOVE -> {
-                    if (!isKiosk) keyWeViewModel.sendClickGesture(
-                        Drag(
-                            MessageType.Drag, motionEvent.x, motionEvent.y,
-                        )
-                    )
-                    println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
-                }
-
-                else -> {
-                    Log.d("MotionEvent", "click")
-                }
-            }
-            false
-        }) { innerPadding ->
+    Scaffold(
+        topBar = {
+            DefaultOrderAppBar(
+                title = "주문하기",
+                navController = navController,
+                viewModel = appBarViewModel,
+                keyWeViewModel = keyWeViewModel
+            )
+        }, modifier = Modifier
+            .fillMaxSize()
+//        .pointerInteropFilter { motionEvent ->
+//            when (motionEvent.action) {
+//                MotionEvent.ACTION_DOWN -> {
+////                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
+////                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
+//
+//                    Log.d(
+//                        "sendGesture",
+//                        "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
+//                    )
+////                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
+//                    if (!isKiosk) keyWeViewModel.sendClickGesture(
+//                        Touch(
+//                            MessageType.Touch, motionEvent.x, motionEvent.y,
+//                        )
+//                    )
+//                    println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
+//                }
+//
+//                MotionEvent.ACTION_MOVE -> {
+//                    if (!isKiosk) keyWeViewModel.sendClickGesture(
+//                        Drag(
+//                            MessageType.Drag, motionEvent.x, motionEvent.y,
+//                        )
+//                    )
+//                    println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
+//                }
+//
+//                else -> {
+//                    Log.d("MotionEvent", "click")
+//                }
+//            }
+//            false
+//        }
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()

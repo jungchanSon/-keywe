@@ -2,12 +2,12 @@ package com.ssafy.keywe.webrtc
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.accessibilityservice.GestureDescription
 import android.content.Intent
-import android.graphics.Path
 import android.os.Build
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.AccessibilityWindowInfo
 import com.ssafy.keywe.webrtc.data.MessageType
 
 
@@ -19,72 +19,45 @@ class RemoteControlService : AccessibilityService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(TAG, "onStartCommand 실행됨, intent: $intent")
+
         intent?.let {
-            val x = intent.getFloatExtra("x", -1F)
-            val y = intent.getFloatExtra("y", -1F)
-            if (validGesture(x, y)) return super.onStartCommand(intent, flags, startId)
+            Log.d(TAG, "intent.action: ${intent.action}")
+
             when (intent.action) {
-                MessageType.Touch.name -> {
-                    click(x, y)
+                MessageType.BUTTON_EVENT.name -> {
+                    Log.d(TAG, "버튼 이벤트 처리 시작")
+                    handleButtonEvent(intent)
                 }
 
-                MessageType.Drag.name -> {
-//        Log.d("RemoteControlService", "onStartCommand")
-//        val action = intent?.getStringExtra("Drag")
-//        if (action == "Drag") doRightThenDownDrag()
+                else -> {
+                    Log.e(TAG, "알 수 없는 intent.action: ${intent.action}")
                 }
             }
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun validGesture(x: Float, y: Float): Boolean = x == -1F || y == -1F
-
-
     override fun onServiceConnected() {
         super.onServiceConnected()
+        Log.d(TAG, "onServiceConnected")
 
         val info = AccessibilityServiceInfo()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
             info.eventTypes =
-                AccessibilityEvent.TYPE_VIEW_CLICKED or AccessibilityEvent.TYPE_VIEW_FOCUSED or AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_STARTED or AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_DROPPED or AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_CANCELLED
+                AccessibilityEvent.TYPE_VIEW_CLICKED or AccessibilityEvent.TYPE_VIEW_FOCUSED
         }
 
-        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL
-        info.notificationTimeout = 1000
+        info.apply {
+            feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL
+            notificationTimeout = 100  // 반응성 향상을 위해 타임아웃 감소
+            flags =
+                AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+        }
+
         this.serviceInfo = info
-        Log.d("WebrtcAccessibilityService", "onServiceConnected : ")
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent) {
-//        if (event?.eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
-//
-//        }
-        val nodeInfo = event.source ?: return
-        val eventType = event.eventType
-        // Semantics 정보 확인
-        val contentDescription = nodeInfo.contentDescription?.toString() ?: "없음"
-//        Log.d("AccessibilityEvent", "------------------------")
-//        Log.d("AccessibilityEvent", "이벤트 발생: $eventType")
-//        Log.d("AccessibilityEvent", "설명: $contentDescription")
-//        Log.d("AccessibilityEvent", "------------------------")
-
-//        val nodeInfo = event.source ?: return
-
-//        // 뒤는 원하는 대로...
-//        val id = nodeInfo.viewIdResourceName // View의 ID를 취득
-//        val packageName = event.packageName.toString() // View의 ID를 취득
-//        val resourceName = nodeInfo.viewIdResourceName
-//        val className = nodeInfo.className.toString() // Class명을 취득
-//        val eventType = AccessibilityEvent.eventTypeToString(event.eventType)
-//
-//        Log.d("onAccessibilityEvent", "id : $id")
-//        Log.d("onAccessibilityEvent", "packageName : $packageName")
-//        Log.d("onAccessibilityEvent", "resourceName : $resourceName")
-//        Log.d("onAccessibilityEvent", "className : $className")
-//        Log.d("onAccessibilityEvent", "eventType : $eventType")
-//        Log.d("RemoteControlService", "onAccessibilityEvent $event")
-    }
 
     override fun onInterrupt() {
         Log.d("RemoteControlService", "onInterrupt")
@@ -96,58 +69,166 @@ class RemoteControlService : AccessibilityService() {
     }
 
     override fun onDestroy() {
-        Log.d("RemoteControlService", "onInterrupt")
+        Log.d("RemoteControlService", "onDestroy")
+        stopAccessibilityService()
         super.onDestroy()
     }
 
-    private fun click(x: Float, y: Float, startTime: Long = 100, duration: Long = 100) {
-        Log.d("RemoteControlService", "CLICK x: $x, y: $y")
-        val gestureBuilder = GestureDescription.Builder()
-        val path = Path()
-        path.moveTo(x, y)
-        gestureBuilder.addStroke(GestureDescription.StrokeDescription(path, startTime, duration))
-        val gesture = gestureBuilder.build()
-        dispatchGesture(gesture, object : GestureResultCallback() {
-            override fun onCompleted(gestureDescription: GestureDescription?) {
-                Log.d("RemoteControlService", "Gesture completed")
-                super.onCompleted(gestureDescription)
-                // 화면 터치 제스처 실행 완료
+    private fun handleButtonEvent(intent: Intent) {
+        when (intent.getStringExtra("eventType")) {
+            "CategorySelect" -> {
+                val categoryName = intent.getStringExtra("categoryName") ?: return
+                Log.d(TAG, "CategorySelect: $categoryName")
+                findAndClickNodeByText(categoryName)
             }
 
-            override fun onCancelled(gestureDescription: GestureDescription?) {
-                Log.d("RemoteControlService", "Gesture onCancelled")
-                super.onCancelled(gestureDescription)
-                // 화면 터치 제스처 실행 취소
+            "MenuSelect" -> {
+                val menuId = intent.getLongExtra("menuId", -1L)
+                Log.d(TAG, "MenuSelect: $menuId")
+                findAndClickNodeByDescription("menu_item_$menuId")
             }
-        }, null)
+
+            "MenuAddToCart" -> {
+                val menuId = intent.getLongExtra("menuId", -1L)
+                Log.d(TAG, "MenuAddToCart: $menuId")
+                findAndClickNodeByDescription("add_to_cart_$menuId")
+            }
+        }
+    }
+
+    // 현재 활성화된 창의 루트 노드를 반환하는 함수
+    private fun getActiveRootNode(): AccessibilityNodeInfo? {
+        // serviceInfo에 FLAG_RETRIEVE_INTERACTIVE_WINDOWS 플래그가 설정되어 있어야 함
+        for (window in windows) {
+            // 애플리케이션 창이며 루트가 존재하는 창을 찾음
+            if (window.isActive && window.root != null && window.type == AccessibilityWindowInfo.TYPE_APPLICATION) {
+                return window.root
+            }
+        }
+        return null
+    }
+
+    private fun findAndClickNodeByText(text: String) {
+        // 매번 최신의 루트 노드를 새로 가져옴
+        val rootNode = getActiveRootNode()
+        if (rootNode == null) {
+            Log.e(TAG, "rootInActiveWindow is null")
+            return
+        }
+        val nodes = mutableListOf<AccessibilityNodeInfo>()
+        nodes.add(rootNode)
+
+        while (nodes.isNotEmpty()) {
+            val node = nodes.removeAt(0)
+
+            if (node.text?.toString()?.contains(text, ignoreCase = true) == true) {
+                Log.d(TAG, "Found node with text: $text")
+
+                // 1. 포커스 주기
+                if (node.isFocusable) {
+                    node.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
+                    Log.d(TAG, "Node focused before clicking")
+                }
+
+                // 2. UI 갱신 (Android 11 이상에서 지원)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    node.refresh()
+                    Log.d(TAG, "Node refreshed before clicking")
+                }
+
+                // 3. 클릭 가능한 경우 클릭
+                if (node.isEnabled && node.isClickable) {
+                    Log.d(TAG, "Node is enabled and clickable. Performing click action.")
+                    node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    return
+                } else {
+                    Log.w(TAG, "Node is not clickable. Trying to find clickable parent.")
+                    var parent = node.parent
+                    while (parent != null) {
+                        // 갱신 후 클릭 가능 여부 확인
+                        if (parent.isClickable && parent.refresh()) {
+                            Log.d(TAG, "Found clickable parent. Performing click action.")
+                            parent.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                            return
+                        }
+                        parent = parent.parent
+                    }
+                }
+            }
+
+            for (i in 0 until node.childCount) {
+                node.getChild(i)?.let { nodes.add(it) }
+            }
+        }
+        Log.w(TAG, "Node with text '$text' not found")
+    }
+
+    private fun findAndClickNodeByDescription(description: String) {
+        // 매번 최신의 루트 노드를 새로 가져옴
+        val rootNode = getActiveRootNode()
+        if (rootNode == null) {
+            Log.e(TAG, "rootInActiveWindow is null")
+            return
+        }
+        val nodes = mutableListOf<AccessibilityNodeInfo>()
+        nodes.add(rootNode)
+
+        while (nodes.isNotEmpty()) {
+            val node = nodes.removeAt(0)
+
+            if (node.contentDescription?.toString()
+                    ?.contains(description, ignoreCase = true) == true
+            ) {
+                Log.d(TAG, "Found node with description: $description")
+
+                if (node.isFocusable) {
+                    node.performAction(AccessibilityNodeInfo.ACTION_FOCUS)
+                    Log.d(TAG, "Node focused before clicking")
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    node.refresh()
+                    Log.d(TAG, "Node refreshed before clicking")
+                }
+
+                if (node.isEnabled && node.isClickable) {
+                    Log.d(TAG, "Node is enabled and clickable. Performing click action.")
+                    node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    return
+                } else {
+                    Log.w(TAG, "Node is not clickable. Trying to find clickable parent.")
+                    var parent = node.parent
+                    while (parent != null) {
+                        if (parent.isClickable && parent.refresh()) {
+                            Log.d(TAG, "Found clickable parent. Performing click action.")
+                            parent.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                            return
+                        }
+                        parent = parent.parent
+                    }
+                }
+            }
+
+            for (i in 0 until node.childCount) {
+                node.getChild(i)?.let { nodes.add(it) }
+            }
+        }
+        Log.w(TAG, "Node with description '$description' not found")
     }
 
 
-//    private fun createGesture(path: Path): GestureDescription {
-//        val stroke = GestureDescription.StrokeDescription(path, 0, 50) // 빠른 응답
-//        return GestureDescription.Builder().addStroke(stroke).build()
-//    }
+    override fun onAccessibilityEvent(event: AccessibilityEvent) {
+        // 디버깅을 위한 이벤트 로깅
+        val nodeInfo = event.source ?: return
+        val eventType = event.eventType
+        val contentDescription = nodeInfo.contentDescription?.toString() ?: "없음"
+        val text = nodeInfo.text?.toString() ?: "없음"
+        Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
+    }
+
+    companion object {
+        private const val TAG = "RemoteControlService"
+    }
 
 
-//    fun handleReceivedGesture(action: Int, x: Float, y: Float) {
-//        when (action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                path.reset()
-//                path.moveTo(x, y)
-//                isDragging = true
-//            }
-//
-//            MotionEvent.ACTION_MOVE -> {
-//                if (isDragging) {
-//                    path.lineTo(x, y)
-//                    handler.post { dispatchGesture(createGesture(path), null, null) }
-//                }
-//            }
-//
-//            MotionEvent.ACTION_UP -> {
-//                isDragging = false
-//                path.reset()
-//            }
-//        }
-//    }
 }

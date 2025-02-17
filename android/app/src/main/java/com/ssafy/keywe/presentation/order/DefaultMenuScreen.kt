@@ -1,7 +1,6 @@
 package com.ssafy.keywe.presentation.order
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,7 +45,7 @@ fun DefaultMenuScreen(
     menuCartViewModel: MenuCartViewModel = hiltViewModel(),
     storeId: Long,
 ) {
-    Log.d("MenuSCreen", "storeId = $storeId")
+//    Log.d("MenuSCreen", "storeId = $storeId")
 
     Scaffold(
 //        topBar = {
@@ -69,7 +68,11 @@ fun DefaultMenuScreen(
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
-                navController = navController, menuViewModel, menuCartViewModel, storeId = storeId
+                navController = navController,
+                menuViewModel,
+                menuCartViewModel,
+                storeId = storeId,
+                keyWeViewModel = hiltViewModel()
             )
         }
     }
@@ -114,8 +117,7 @@ fun DefaultFloatingCartButton(
             modifier = Modifier
                 .size(17.dp)
                 .offset(30.dp, 0.dp)
-                .background(primaryColor, CircleShape),
-            contentAlignment = Alignment.Center
+                .background(primaryColor, CircleShape), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = if (cartItemsCount < 100) cartItemsCount.toString() else "99+",

@@ -14,8 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import com.ssafy.keywe.R
 
 //@Composable
 //fun Base64Image(modifier: Modifier = Modifier, base64String: String) {
@@ -69,12 +67,12 @@ fun Base64Image(modifier: Modifier = Modifier, base64String: String) {
         return
     }
 
-    Log.d("Base64Image", "디코딩된 바이트 배열 길이: ${decodedByteArray.size}")
+//    Log.d("Base64Image", "디코딩된 바이트 배열 길이: ${decodedByteArray.size}")
 
     val bitmap: Bitmap? = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.size)
 
     if (bitmap != null) {
-        Log.d("Base64Image", "Bitmap 변환 성공")
+//        Log.d("Base64Image", "Bitmap 변환 성공")
         Image(
             bitmap = bitmap.asImageBitmap(),
             contentDescription = "Base64 Image",

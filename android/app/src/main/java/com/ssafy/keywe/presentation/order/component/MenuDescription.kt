@@ -1,6 +1,5 @@
 package com.ssafy.keywe.presentation.order.component
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +32,7 @@ fun MenuDescription(
 ) {
     val menu = viewModel.getMenuSimpleModelById(menuId)
 
-    Log.d("Menu Description", ":$menu")
+//    Log.d("Menu Description", ":$menu")
 
     val menuName = menu?.menuName ?: ""
     val menuRecipe = menu?.menuRecipe ?: ""

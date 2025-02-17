@@ -173,7 +173,7 @@ fun HelperWaitingRoomScreen(
                     STOMPTYPE.ERROR -> {
                         if (it.data!!.code == "R100") {
                             // 만료된 주문 요청입니다
-                            Toast.makeText(context, "만료된 주문 요청입니다.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, it.data!!.message, Toast.LENGTH_LONG).show()
                             Log.d("WaitingRoomScreen", "만료된 주문 요청입니다.")
 
                         } else if (it.data.code == "R101") {
@@ -182,9 +182,8 @@ fun HelperWaitingRoomScreen(
                             Log.d("WaitingRoomScreen", "가족에게 요청을 보내지 못했어요.")
                         } else {
                             // 자식 프로필은 주문 요청이 불가합니다.
-                            Toast.makeText(context, "자식 프로필은 주문 요청이 불가합니다.", Toast.LENGTH_LONG)
-                                .show()
-                            Log.d("WaitingRoomScreen", "자식 프로필은 주문 요청이 불가합니다.")
+                            Toast.makeText(context, it.data!!.message, Toast.LENGTH_LONG).show()
+                            Log.d("WaitingRoomScreen", "${it.data!!.message}")
                         }
                         closeSTOMP(context)
                         scope.launch {

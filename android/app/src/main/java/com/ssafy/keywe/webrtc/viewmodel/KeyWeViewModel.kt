@@ -1,22 +1,21 @@
 package com.ssafy.keywe.webrtc.viewmodel
 
+//import com.ssafy.keywe.webrtc.data.Drag
+//import com.ssafy.keywe.webrtc.data.ScreenSize
+//import com.ssafy.keywe.webrtc.data.Touch
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import com.ssafy.keywe.BuildConfig
-import com.ssafy.keywe.util.TouchCoordinateConverter
 import com.ssafy.keywe.webrtc.RemoteControlService
 import com.ssafy.keywe.webrtc.ScreenSizeManager
 import com.ssafy.keywe.webrtc.data.ChannelData
-import com.ssafy.keywe.webrtc.data.Drag
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.data.MessageData
 import com.ssafy.keywe.webrtc.data.MessageType
-import com.ssafy.keywe.webrtc.data.ScreenSize
-import com.ssafy.keywe.webrtc.data.Touch
 import com.ssafy.keywe.webrtc.ui.AudioStatsInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.agora.api.example.compose.data.SettingPreferences
@@ -60,8 +59,8 @@ class KeyWeViewModel @Inject constructor(
     private val _localDataStreamId = MutableStateFlow<Int?>(null)
     private val _remoteDataStreamId = MutableStateFlow<Int?>(null)
 
-    private var _localScreenSize: ScreenSize? = null
-    private var _remoteScreenSize: ScreenSize? = null
+//    private var _localScreenSize: ScreenSize? = null
+//    private var _remoteScreenSize: ScreenSize? = null
 
     private val _connected = MutableStateFlow<Boolean>(true)
     val connected = _connected.asStateFlow()
@@ -77,9 +76,13 @@ class KeyWeViewModel @Inject constructor(
 
     val module = SerializersModule {
         polymorphic(MessageData::class) {
-            subclass(Touch::class, Touch.serializer())
-            subclass(Drag::class, Drag.serializer())
-            subclass(ScreenSize::class, ScreenSize.serializer())
+            subclass(
+                KeyWeButtonEvent.CategorySelect::class, KeyWeButtonEvent.CategorySelect.serializer()
+            )
+            subclass(KeyWeButtonEvent.MenuSelect::class, KeyWeButtonEvent.MenuSelect.serializer())
+            subclass(
+                KeyWeButtonEvent.MenuAddToCart::class, KeyWeButtonEvent.MenuAddToCart.serializer()
+            )
         }
     }
 
@@ -91,7 +94,7 @@ class KeyWeViewModel @Inject constructor(
     fun connectWebRTC() {
         // 내 기기 화면 사이즈 설정
         _connected.update { true }
-        _localScreenSize = screenSizeManager.screenSize
+//        _localScreenSize = screenSizeManager.screenSize
         Log.d("KeyWeViewModel", "init connectWebRTC")
 
         _rtcEngine.update {
@@ -118,7 +121,7 @@ class KeyWeViewModel @Inject constructor(
                             _localDataStreamId.update { streamId }
                             streamId
                         }
-                        sendScreenSize(streamId, it)
+//                        sendScreenSize(streamId, it)
                         _localStats.update {
                             AudioStatsInfo()
                         }
@@ -133,7 +136,7 @@ class KeyWeViewModel @Inject constructor(
                     override fun onUserJoined(uid: Int, elapsed: Int) {
                         super.onUserJoined(uid, elapsed)
                         Log.d("ScreenSharing", "onUserJoined: $uid")
-                        sendScreenSize(_localDataStreamId.value, _rtcEngine.value)
+//                        sendScreenSize(_localDataStreamId.value, _rtcEngine.value)
                         _remoteStats.update {
                             AudioStatsInfo()
                         }
@@ -142,18 +145,9 @@ class KeyWeViewModel @Inject constructor(
                     override fun onUserOffline(uid: Int, reason: Int) {
                         super.onUserOffline(uid, reason)
                         Log.d("ScreenSharing", "onUserOffline: $uid")
-                        _remoteScreenSize = null
+//                        _remoteScreenSize = null
                         _remoteStats.update { null }
                     }
-
-//                    override fun onRtcStats(stats: RtcStats?) {
-//                        super.onRtcStats(stats)
-////                        Log.d("ScreenSharing", "onRtcStats: $stats")
-//                        _localStats.update {
-//                            it?.copy(rtcStats = stats)
-//                        }
-//                    }
-
 
                     override fun onLocalAudioStats(stats: LocalAudioStats?) {
                         super.onLocalAudioStats(stats)
@@ -181,37 +175,55 @@ class KeyWeViewModel @Inject constructor(
                             }
                         }
 
-                        // 바이트 배열을 JSON 문자열로 변환
-                        val jsonString = data.toString(Charsets.UTF_8)
-
-                        if (_remoteScreenSize == null && jsonString.contains(MessageType.ScreenSize.name)) {
-                            _remoteScreenSize = Json.decodeFromString<ScreenSize>(jsonString)
-                            Log.d("sendGesture", "상대방 스크린 사이즈: $_remoteScreenSize")
-                        } else if (_remoteScreenSize != null) {
-                            try {
-                                // JSON 문자열을 MyData 객체로 역직렬화
-                                val gestureData = Json.decodeFromString<MessageData>(jsonString)
-                                Log.d(
-                                    "sendGesture",
-                                    "=======================메시지 수신 성공======================="
-                                )
-
-                                Log.d("sendGesture", "수신된 데이터: $uid $streamId $gestureData")
-
-                                // 받은 데이터를 기반으로 필요한 동작 수행
-                                // todo 점유 할 때만 작동
-                                if (_localScreenSize != null) handleRemoteControl(gestureData)
-
-
-                            } catch (e: Exception) {
-                                Log.e("sendGesture", "JSON 파싱 오류: ${e.message}")
-                            }
-                        } else {
-                            // todo 이런 경우 다시 상대방에게 재요청
-                            Log.e("sendGesture", "상대방 스크린 사이즈 설정 X")
-//                            sendScreenSize(_localDataStreamId.value, _rtcEngine.value)
+                        try {
+                            val jsonString = data.toString(Charsets.UTF_8)
+                            val buttonEvent = Json.decodeFromString<MessageData>(jsonString)
+                            Log.d("KeyWeViewModel", "이벤트 수신: $buttonEvent")
+                            handleRemoteControl(buttonEvent)
+                        } catch (e: Exception) {
+                            Log.e("KeyWeViewModel", "메시지 처리 오류", e)
                         }
                     }
+
+//                    override fun onStreamMessage(uid: Int, streamId: Int, data: ByteArray) {
+//                        super.onStreamMessage(uid, streamId, data)
+//                        if (_remoteDataStreamId.value == null) {
+//                            _remoteDataStreamId.update {
+//                                streamId
+//                            }
+//                        }
+//
+//                        // 바이트 배열을 JSON 문자열로 변환
+//                        val jsonString = data.toString(Charsets.UTF_8)
+//
+////                        if (_remoteScreenSize == null && jsonString.contains(MessageType.ScreenSize.name)) {
+////                            _remoteScreenSize = Json.decodeFromString<ScreenSize>(jsonString)
+////                            Log.d("sendGesture", "상대방 스크린 사이즈: $_remoteScreenSize")
+////                        } else if (_remoteScreenSize != null) {
+////                            try {
+////                                // JSON 문자열을 MyData 객체로 역직렬화
+////                                val gestureData = Json.decodeFromString<MessageData>(jsonString)
+////                                Log.d(
+////                                    "sendGesture",
+////                                    "=======================메시지 수신 성공======================="
+////                                )
+////
+////                                Log.d("sendGesture", "수신된 데이터: $uid $streamId $gestureData")
+////
+////                                // 받은 데이터를 기반으로 필요한 동작 수행
+////                                // todo 점유 할 때만 작동
+////                                if (_localScreenSize != null) handleRemoteControl(gestureData)
+////
+////
+////                            } catch (e: Exception) {
+////                                Log.e("sendGesture", "JSON 파싱 오류: ${e.message}")
+////                            }
+////                        } else {
+////                            // todo 이런 경우 다시 상대방에게 재요청
+////                            Log.e("sendGesture", "상대방 스크린 사이즈 설정 X")
+//////                            sendScreenSize(_localDataStreamId.value, _rtcEngine.value)
+////                        }
+//                    }
 
                     override fun onStreamMessageError(
                         uid: Int,
@@ -243,28 +255,26 @@ class KeyWeViewModel @Inject constructor(
         mediaOptions.autoSubscribeAudio = true
         mediaOptions.autoSubscribeVideo = false
         _rtcEngine.value?.joinChannel(channelData.token, channelData.name, 0, mediaOptions)
-//        TokenUtils.gen(channelData.name, ch) {
-//        }
     }
 
-    fun sendClickGesture(gestureData: MessageData) {
-        // JSON으로 직렬화
-        val jsonString = json.encodeToString(gestureData)
-        val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
-        Log.d(
-            "sendGesture",
-            "전송된 데이터: dataStreamId = ${_localDataStreamId.value}, data = $gestureData"
-        )
-        val result = _localDataStreamId.value?.let {
-            _rtcEngine.value?.sendStreamMessage(it, messageBytes)
-        }
-        // todo 로컬 사이즈 크기 전송
-        if (result != 0) {
-            Log.e("sendGesture", "메시지 전송 실패: $result")
-        } else {
-            Log.d("sendGesture", "=======================메시지 전송 성공=======================")
-        }
-    }
+//    fun sendClickGesture(gestureData: MessageData) {
+//        // JSON으로 직렬화
+//        val jsonString = json.encodeToString(gestureData)
+//        val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
+//        Log.d(
+//            "sendGesture",
+//            "전송된 데이터: dataStreamId = ${_localDataStreamId.value}, data = $gestureData"
+//        )
+//        val result = _localDataStreamId.value?.let {
+//            _rtcEngine.value?.sendStreamMessage(it, messageBytes)
+//        }
+//        // todo 로컬 사이즈 크기 전송
+//        if (result != 0) {
+//            Log.e("sendGesture", "메시지 전송 실패: $result")
+//        } else {
+//            Log.d("sendGesture", "=======================메시지 전송 성공=======================")
+//        }
+//    }
 
     fun toggleAudio() {
         if (_audioRoute.value == Constants.AUDIO_ROUTE_SPEAKERPHONE) {
@@ -292,72 +302,121 @@ class KeyWeViewModel @Inject constructor(
         _connected.update { false }
     }
 
-    private fun sendScreenSize(streamId: Int?, it: RtcEngine?) {
-        streamId?.also { id ->
-//            val message = _localScreenSize?.toMessage()
-            val localMetrics = screenSizeManager.screenMetrics
-
-            val size = ScreenSize(
-                MessageType.ScreenSize,
-                localMetrics.width.toFloat(),
-                localMetrics.height.toFloat(),
-                localMetrics.density
-            )
-            val jsonString = json.encodeToString(size)
-            val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
-            Log.d("sendGesture", "send local Screen Size $jsonString")
-            it?.sendStreamMessage(id, messageBytes)
-        }
-    }
-
-
-    private fun handleRemoteControl(gestureData: MessageData) {
-        val screenSizeData = gestureData as? ScreenSize
-        if (screenSizeData != null) {
-            // screenSizeData를 사용하여 ScreenSize 관련 데이터를 처리할 수 있습니다.
-            Log.d("sendGesture", "상대방 스크린 사이즈: $screenSizeData")
-        } else {
-            // gestureData가 ScreenSize가 아닌 경우에 대한 처리를 합니다.
-            Log.d("sendGesture", "gesture")
-        }
+//    private fun sendScreenSize(streamId: Int?, it: RtcEngine?) {
+//        streamId?.also { id ->
+////            val message = _localScreenSize?.toMessage()
+//            val localMetrics = screenSizeManager.screenMetrics
+//
+//            val size = ScreenSize(
+//                MessageType.ScreenSize,
+//                localMetrics.width.toFloat(),
+//                localMetrics.height.toFloat(),
+//                localMetrics.density
+//            )
+//            val jsonString = json.encodeToString(size)
+//            val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
+//            Log.d("sendGesture", "send local Screen Size $jsonString")
+//            it?.sendStreamMessage(id, messageBytes)
+//        }
+//    }
 
 
-        // 상대방에서 터치한 offset 수신
-        val convertOffset = _localScreenSize!!.convertGestureToAnotherScreen(
-            _remoteScreenSize!!, Offset(gestureData.x, gestureData.y)
-        )
-        val intent = Intent(applicationContext, RemoteControlService::class.java)
-        when (gestureData) {
-            is Touch -> intent.action = MessageType.Touch.name
-            is Drag -> intent.action = MessageType.Drag.name
-            is ScreenSize -> MessageType.ScreenSize.name
-        }
-
-        val localMetrics = screenSizeManager.screenMetrics
-        val remoteMetrics = TouchCoordinateConverter.ScreenMetrics(
-            _remoteScreenSize!!.x,
-            _remoteScreenSize!!.y,
-            _remoteScreenSize!!.density,
-            _remoteScreenSize!!.aspectRatio,
-        )
-
-        val offset = TouchCoordinateConverter.convertCoordinates(
-            gestureData.x, gestureData.y, remoteMetrics, localMetrics
-        )
-
-//        intent.action = gestureData.type.name
-
-//        ScreenRatioUtil.dpToPixel(convertOffset.x)
-
-//        intent.putExtra("x", gestureData.x)
-//        intent.putExtra("y", gestureData.y)
-        intent.putExtra("x", offset.first)
-        intent.putExtra("y", offset.second + screenSizeManager.statusBarHeightPx)
-
+    //    private fun handleRemoteControl(gestureData: MessageData) {
+//        val screenSizeData = gestureData as? ScreenSize
+//        if (screenSizeData != null) {
+//            // screenSizeData를 사용하여 ScreenSize 관련 데이터를 처리할 수 있습니다.
+//            Log.d("sendGesture", "상대방 스크린 사이즈: $screenSizeData")
+//        } else {
+//            // gestureData가 ScreenSize가 아닌 경우에 대한 처리를 합니다.
+//            Log.d("sendGesture", "gesture")
+//        }
+//
+//
+//        // 상대방에서 터치한 offset 수신
+//        val convertOffset = _localScreenSize!!.convertGestureToAnotherScreen(
+//            _remoteScreenSize!!, Offset(gestureData.x, gestureData.y)
+//        )
+//        val intent = Intent(applicationContext, RemoteControlService::class.java)
+//        when (gestureData) {
+//            is Touch -> intent.action = MessageType.Touch.name
+//            is Drag -> intent.action = MessageType.Drag.name
+//            is ScreenSize -> MessageType.ScreenSize.name
+//        }
+//
+//        val localMetrics = screenSizeManager.screenMetrics
+//        val remoteMetrics = TouchCoordinateConverter.ScreenMetrics(
+//            _remoteScreenSize!!.x,
+//            _remoteScreenSize!!.y,
+//            _remoteScreenSize!!.density,
+//            _remoteScreenSize!!.aspectRatio,
+//        )
+//
+//        val offset = TouchCoordinateConverter.convertCoordinates(
+//            gestureData.x, gestureData.y, remoteMetrics, localMetrics
+//        )
+//
+////        intent.action = gestureData.type.name
+//
+////        ScreenRatioUtil.dpToPixel(convertOffset.x)
+//
+////        intent.putExtra("x", gestureData.x)
+////        intent.putExtra("y", gestureData.y)
 //        intent.putExtra("x", offset.first)
-//        intent.putExtra("y", offset.second)
-        applicationContext.startService(intent)
+//        intent.putExtra("y", offset.second + screenSizeManager.statusBarHeightPx)
+//
+////        intent.putExtra("x", offset.first)
+////        intent.putExtra("y", offset.second)
+//        applicationContext.startService(intent)
+//    }
+    fun sendButtonEvent(event: KeyWeButtonEvent) {
+        val jsonString = json.encodeToString<MessageData>(event)
+        val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
+        Log.d("KeyWeViewModel", "이벤트 전송: $event")
+
+//        Log.d("KeyWeViewModel", "_localDataStreamId.value: ${_localDataStreamId.value}")
+//        Log.d("KeyWeViewModel", "_rtcEngine.value: ${_rtcEngine.value}")
+
+        val result = _localDataStreamId.value?.let {
+            _rtcEngine.value?.sendStreamMessage(it, messageBytes)
+        }
+
+        if (result != 0) {
+            Log.e("KeyWeViewModel", "이벤트 전송 실패")
+        }
     }
 
+    private fun handleRemoteControl(messageData: MessageData) {
+        Log.d("KeyWeViewModel", "handleRemoteControl 호출됨: $messageData")
+
+        when (messageData) {
+            is KeyWeButtonEvent -> {
+                val intent = Intent(applicationContext, RemoteControlService::class.java).apply {
+                    action = MessageType.BUTTON_EVENT.name
+                    when (messageData) {
+                        is KeyWeButtonEvent.CategorySelect -> {
+                            putExtra("eventType", "CategorySelect")
+                            putExtra("categoryId", messageData.categoryId)
+                            putExtra("categoryName", messageData.categoryName)
+                        }
+
+                        is KeyWeButtonEvent.MenuSelect -> {
+                            putExtra("eventType", "MenuSelect")
+                            putExtra("menuId", messageData.menuId)
+                            putExtra("storeId", messageData.storeId)
+                        }
+
+                        is KeyWeButtonEvent.MenuAddToCart -> {
+                            putExtra("eventType", "MenuAddToCart")
+                            putExtra("menuId", messageData.menuId)
+                        }
+                    }
+                }
+
+                Log.d("KeyWeViewModel", "서비스 시작 시도: $intent")
+                val result = applicationContext.startService(intent)
+                Log.d("KeyWeViewModel", "서비스 시작 결과: $result")
+            }
+        }
+    }
 
 }

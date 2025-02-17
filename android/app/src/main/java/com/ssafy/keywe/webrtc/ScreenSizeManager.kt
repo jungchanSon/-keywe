@@ -6,8 +6,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import com.ssafy.keywe.util.TouchCoordinateConverter
 import com.ssafy.keywe.util.initializeMetrics
-import com.ssafy.keywe.webrtc.data.MessageType
-import com.ssafy.keywe.webrtc.data.ScreenSize
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,8 +14,8 @@ class ScreenSizeManager @Inject constructor(
 //    private val context: Context,
 //    private val density: Density,
 ) {
-    var screenSize: ScreenSize = ScreenSize(MessageType.ScreenSize, 0f, 0f, 0f, 0f)
-        private set
+//    var screenSize: ScreenSize = ScreenSize(MessageType.ScreenSize, 0f, 0f, 0f, 0f)
+//        private set
 
     var screenMetrics: TouchCoordinateConverter.ScreenMetrics =
         TouchCoordinateConverter.ScreenMetrics(0f, 0f, 0f, 0f)
@@ -52,12 +50,12 @@ class ScreenSizeManager @Inject constructor(
 
         Log.d("Screen Size DP", "width: $width, height: $height")
 //        Log.d("Screen Size DP", "Float width: ${width.value}, height: ${height.value}")
-        screenSize = ScreenSize(
-            MessageType.ScreenSize,
-            metrics.widthPixels.toFloat(),
-            metrics.heightPixels.toFloat(),
-            density.density,
-        )
+//        screenSize = ScreenSize(
+//            MessageType.ScreenSize,
+//            metrics.widthPixels.toFloat(),
+//            metrics.heightPixels.toFloat(),
+//            density.density,
+//        )
 //        screenSize = ScreenSize(
 //            MessageType.ScreenSize, width.value, height.value
 //        )
