@@ -103,6 +103,28 @@ class RemoteControlService : AccessibilityService() {
                 Log.d(TAG, "CartAcceptDialog: ")
                 findAndClickNodeByDescription("cart_accept_dialog")
             }
+
+            "CartIdOpenDialog" -> {
+                val cartId = intent.getLongExtra("cartId", -1L)
+                Log.d(TAG, "CartIdOpenDialog: ")
+                findAndClickNodeByDescription("cart_open_dialog_$cartId")
+            }
+
+            "CartIdOpenBottomSheet" -> {
+                val cartId = intent.getLongExtra("cartId", -1L)
+                Log.d(TAG, "CartIdOpenBottomSheet: ")
+                findAndClickNodeByDescription("cart_open_bottom_sheet_$cartId")
+            }
+
+            "CartCloseBottomSheet" -> {
+                Log.d(TAG, "CartCloseBottomSheet: ")
+                findAndClickNodeByDescription("close_bottom_sheet")
+            }
+
+            "CartAcceptBottomSheet" -> {
+                Log.d(TAG, "CartAcceptBottomSheet: ")
+                findAndClickNodeByDescription("accept_bottom_sheet")
+            }
         }
     }
 
@@ -235,7 +257,7 @@ class RemoteControlService : AccessibilityService() {
             }
         }
 
-        Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
+//        Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
     }
 
     /**

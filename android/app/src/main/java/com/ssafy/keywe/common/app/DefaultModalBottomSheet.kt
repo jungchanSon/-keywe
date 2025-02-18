@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +30,7 @@ fun DefaultModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = onDismissRequest,
         containerColor = whiteBackgroundColor,
+        properties = ModalBottomSheetDefaults.properties(shouldDismissOnBackPress = false),
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
 
