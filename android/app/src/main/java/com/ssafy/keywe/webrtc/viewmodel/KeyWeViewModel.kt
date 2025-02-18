@@ -440,15 +440,51 @@ class KeyWeViewModel @Inject constructor(
                         }
 
                         is KeyWeButtonEvent.CartAcceptDialog -> {
-                            putExtra("eventType", "CartAcceptDialog")
+                            putExtra(
+                                "eventType", "CartAcceptDialog"
+                            )
                         }
 
                         is KeyWeButtonEvent.CartCloseDialog -> {
-                            putExtra("eventType", "CartCloseDialog")
+                            putExtra(
+                                "eventType", "CartCloseDialog"
+                            )
                         }
 
                         is KeyWeButtonEvent.CartOpenDialog -> {
-                            putExtra("eventType", "CartOpenDialog")
+                            putExtra(
+                                "eventType", "CartOpenDialog"
+                            )
+                        }
+
+                        is KeyWeButtonEvent.CartIdOpenDialog -> {
+                            putExtra("eventType", "CartIdOpenDialog")
+                            putExtra("cartId", messageData.cartId)
+                        }
+
+                        is KeyWeButtonEvent.CartIdOpenBottomSheet -> {
+                            putExtra("eventType", "CartIdOpenBottomSheet")
+                            putExtra("cartId", messageData.cartId)
+                        }
+
+                        is KeyWeButtonEvent.CartAcceptBottomSheet -> {
+                            putExtra("eventType", "CartAcceptBottomSheet")
+                        }
+
+                        is KeyWeButtonEvent.CartCloseBottomSheet -> {
+                            putExtra("eventType", "CartCloseBottomSheet")
+                        }
+
+                        KeyWeButtonEvent.BackButton -> {
+                            putExtra("eventType", "BackButton")
+                        }
+
+                        KeyWeButtonEvent.OrderButton -> {
+                            putExtra("eventType", "OrderButton")
+                        }
+
+                        KeyWeButtonEvent.StoreButton -> {
+                            putExtra("eventType", "StoreButton")
                         }
                     }
                 }

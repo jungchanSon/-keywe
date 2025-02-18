@@ -104,6 +104,43 @@ class RemoteControlService : AccessibilityService() {
                 findAndClickNodeByDescription("cart_accept_dialog")
             }
 
+            "CartIdOpenDialog" -> {
+                val cartId = intent.getLongExtra("cartId", -1L)
+                Log.d(TAG, "CartIdOpenDialog: ")
+                findAndClickNodeByDescription("cart_open_dialog_$cartId")
+            }
+
+            "CartIdOpenBottomSheet" -> {
+                val cartId = intent.getLongExtra("cartId", -1L)
+                Log.d(TAG, "CartIdOpenBottomSheet: ")
+                findAndClickNodeByDescription("cart_open_bottom_sheet_$cartId")
+            }
+
+            "CartCloseBottomSheet" -> {
+                Log.d(TAG, "CartCloseBottomSheet: ")
+                findAndClickNodeByDescription("close_bottom_sheet")
+            }
+
+            "CartAcceptBottomSheet" -> {
+                Log.d(TAG, "CartAcceptBottomSheet: ")
+                findAndClickNodeByDescription("accept_bottom_sheet")
+            }
+
+            "BackButton" -> {
+                Log.d(TAG, "BackButton: ")
+                findAndClickNodeByDescription("back_button")
+            }
+
+            "StoreButton" -> {
+                Log.d(TAG, "StoreButton: ")
+                findAndClickNodeByDescription("menu_detail_store_button")
+            }
+
+            "OrderButton" -> {
+                Log.d(TAG, "OrderButton: ")
+                findAndClickNodeByDescription("menu_detail_order_button")
+            }
+
             "MenuDetailSelectCommonOption" -> {
                 val optionValue = intent.getStringExtra("optionValue") ?: return
                 Log.d(TAG, "optionValue: $optionValue")
@@ -265,7 +302,7 @@ class RemoteControlService : AccessibilityService() {
             }
         }
 
-        Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
+//        Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
     }
 
     /**

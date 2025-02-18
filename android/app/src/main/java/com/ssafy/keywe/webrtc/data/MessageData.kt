@@ -207,6 +207,26 @@ sealed class KeyWeButtonEvent : MessageData() {
     @Serializable
     data object CartAcceptDialog : KeyWeButtonEvent()
 
+    @Serializable
+    data class CartIdOpenDialog(val cartId: Long) : KeyWeButtonEvent()
+
+    @Serializable
+    data class CartIdOpenBottomSheet(val cartId: Long) : KeyWeButtonEvent()
+
+    @Serializable
+    data object CartCloseBottomSheet : KeyWeButtonEvent()
+
+    @Serializable
+    data object CartAcceptBottomSheet : KeyWeButtonEvent()
+
+    @Serializable
+    data object BackButton : KeyWeButtonEvent()
+
+    @Serializable
+    data object StoreButton : KeyWeButtonEvent()
+
+    @Serializable
+    data object OrderButton : KeyWeButtonEvent()
 
     @Serializable
     data class MenuDetailSelectCommonOption(

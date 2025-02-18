@@ -4,6 +4,7 @@ package com.ssafy.keywe.presentation.order
 //import com.ssafy.keywe.webrtc.data.Touch
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -88,7 +89,10 @@ fun MenuCartScreen(
     val isKiosk = tokenManager.isKiosk
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
 
-
+    BackHandler {
+        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.BackButton)
+        navController.popBackStack()
+    }
     LaunchedEffect(message) {
         Log.d("MenuCartScreen", "message: $message")
         message?.let {
@@ -155,27 +159,19 @@ fun MenuCartScreen(
 
         // 통화 종료 다이얼로그
         if (isStopCallingDialogOpen) {
-            MenuCartDeleteDialog(title = "통화 종료",
-                description = "통화를 종료하시겠습니까?",
-                onCancel = {
-                    appBarViewModel.closeDialog()
+            MenuCartDeleteDialog(title = "통화 종료", description = "통화를 종료하시겠습니까?", onCancel = {
+                appBarViewModel.closeDialog()
 //                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
 
-                },
-                onConfirm = {
+            }, onConfirm = {
 
-                    /* 너의 action */
-                    disConnect(
-                        context,
-                        keyWeViewModel,
-                        appBarViewModel,
-                        isKiosk,
-                        navController,
-                        tokenManager
-                    )
+                /* 너의 action */
+                disConnect(
+                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                )
 //                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
 
-                })
+            })
         }
 
     }
@@ -185,45 +181,10 @@ fun MenuCartScreen(
                 title = "장바구니",
                 navController = navController,
                 viewModel = appBarViewModel,
-                keyWeViewModel = keyWeViewModel
+                keyWeViewModel = keyWeViewModel,
+                isKiosk = isKiosk
             )
         }, modifier = Modifier.fillMaxSize()
-//            .pointerInteropFilter { motionEvent ->
-//                when (motionEvent.action) {
-//                    MotionEvent.ACTION_DOWN -> {
-////                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
-////                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
-//
-//                        Log.d(
-//                            "sendGesture",
-//                            "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
-//                        )
-////                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-//                        if (!isKiosk)
-//                            keyWeViewModel.sendClickGesture(
-//                                Touch(
-//                                    MessageType.Touch, motionEvent.x, motionEvent.y,
-//                                )
-//                            )
-//                        println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
-//                    }
-//
-//                    MotionEvent.ACTION_MOVE -> {
-//                        if (!isKiosk)
-//                            keyWeViewModel.sendClickGesture(
-//                                Drag(
-//                                    MessageType.Drag, motionEvent.x, motionEvent.y,
-//                                )
-//                            )
-//                        println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
-//                    }
-//
-//                    else -> {
-//                        Log.d("MotionEvent", "click")
-//                    }
-//                }
-//                false
-//            }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -261,7 +222,11 @@ fun MenuCartScreen(
                 ) {
                     items(cartItems, key = { it.id }) { item ->
                         MenuCartMenuBox(
-                            cartItem = item, viewModel = menuCartViewModel, storeId, keyWeViewModel, isKiosk
+                            cartItem = item,
+                            viewModel = menuCartViewModel,
+                            storeId,
+                            keyWeViewModel,
+                            isKiosk
                         )
 
                         Box(

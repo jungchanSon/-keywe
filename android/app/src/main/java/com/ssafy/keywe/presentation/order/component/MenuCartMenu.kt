@@ -66,18 +66,23 @@ fun MenuCartMenuBox(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .width(16.5.dp)
-                            .height(16.5.dp)
-                            .noRippleClickable { viewModel.openDeleteDialog(cartItem) },
-                        painter = painterResource(R.drawable.x),
-                        contentDescription = "x"
+                    Image(modifier = Modifier
+                        .width(16.5.dp)
+                        .height(16.5.dp)
+                        .semantics { contentDescription = "cart_open_dialog_${cartItem.id}" }
+                        .noRippleClickable {
+                            viewModel.openDeleteDialog(cartItem)
+                            if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                                KeyWeButtonEvent.CartIdOpenDialog(
+                                    cartItem.id
+                                )
+                            )
+                        }, painter = painterResource(R.drawable.x), contentDescription = "x"
                     )
                 }
             }
             // 이미지 + 이름 + 가격
-            MenuCartMenu(cartItem, viewModel, storeId, keyWeViewModel, isKiosk = isKiosk)
+            MenuCartMenu(cartItem, viewModel, storeId, keyWeViewModel, isKiosk)
         }
     }
 }
@@ -88,7 +93,7 @@ fun MenuCartMenu(
     viewModel: MenuCartViewModel,
     storeId: Long,
     keyWeViewModel: KeyWeViewModel,
-    isKiosk: Boolean
+    isKiosk: Boolean = false,
 ) {
     val cartItems by viewModel.cartItems.collectAsState()
     val updatedCartItem = cartItems.find { it.id == cartItem.id }
@@ -198,9 +203,17 @@ fun MenuCartMenu(
                                 Text(text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
-                                    modifier = Modifier.noRippleClickable {
-                                        isOptionChangeSheetOpen.value = true
-                                    })
+                                    modifier = Modifier
+                                        .semantics {
+                                            contentDescription =
+                                                "cart_open_bottom_sheet_${cartItem.id}"
+                                        }
+                                        .noRippleClickable {
+                                            isOptionChangeSheetOpen.value = true
+                                            if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                                                KeyWeButtonEvent.CartIdOpenBottomSheet(cartItem.id)
+                                            )
+                                        })
                             }
 
                             Box(modifier = Modifier.height(24.dp)) {
@@ -240,8 +253,8 @@ fun MenuCartMenu(
             viewModel = viewModel,
             onDismiss = { isOptionChangeSheetOpen.value = false },
             storeId,
-            keyWeViewModel = keyWeViewModel,
-            isKiosk = isKiosk
+            keyWeViewModel,
+            isKiosk
         )
     }
 

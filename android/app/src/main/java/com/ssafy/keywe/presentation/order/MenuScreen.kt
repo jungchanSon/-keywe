@@ -119,12 +119,7 @@ fun MenuScreen(
             }, onConfirm = {
                 /* 너의 action */
                 disConnect(
-                    context,
-                    keyWeViewModel,
-                    appBarViewModel,
-                    isKiosk,
-                    navController,
-                    tokenManager
+                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
                 )
 //                keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
             })
@@ -140,7 +135,8 @@ fun MenuScreen(
             navController = navController,
             viewModel = appBarViewModel,
             keyWeViewModel = keyWeViewModel,
-            isRoot = true
+            isRoot = true,
+            isKiosk = isKiosk
         )
     }, modifier = Modifier.fillMaxSize(), floatingActionButton = {
         FloatingCartButton(navController, menuCartViewModel, storeId, keyWeViewModel, isKiosk)

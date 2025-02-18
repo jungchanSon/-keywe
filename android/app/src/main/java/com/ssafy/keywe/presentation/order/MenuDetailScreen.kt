@@ -3,6 +3,7 @@ package com.ssafy.keywe.presentation.order
 //import com.ssafy.keywe.webrtc.data.Drag
 //import com.ssafy.keywe.webrtc.data.Touch
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
@@ -69,6 +71,11 @@ fun MenuDetailScreen(
     val menu by menuDetailViewModel.selectedDetailMenu.collectAsState()
     val isKiosk = tokenManager.isKiosk
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
+
+    BackHandler {
+        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.BackButton)
+        navController.popBackStack()
+    }
 
     // 데이터 가져오기
     LaunchedEffect(menuId) {
@@ -154,12 +161,7 @@ fun MenuDetailScreen(
             }, onConfirm = {
                 /* 너의 action */
                 disConnect(
-                    context,
-                    keyWeViewModel,
-                    appBarViewModel,
-                    isKiosk,
-                    navController,
-                    tokenManager
+                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
                 )
 //                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
 
@@ -173,7 +175,8 @@ fun MenuDetailScreen(
                 title = "주문하기",
                 navController = navController,
                 viewModel = appBarViewModel,
-                keyWeViewModel = keyWeViewModel
+                keyWeViewModel = keyWeViewModel,
+                isKiosk = isKiosk
             )
         }, modifier = Modifier.fillMaxSize()
 //        .pointerInteropFilter { motionEvent ->
@@ -308,7 +311,9 @@ fun MenuDetailScreen(
                     navController = navController,
                     menuCartViewModel = menuCartViewModel,
                     storeId = storeId,
-                    isKeyWe = true
+                    isKeyWe = true,
+                    keyWeViewModel = keyWeViewModel,
+                    isKiosk = isKiosk
                 )
             }
         }
