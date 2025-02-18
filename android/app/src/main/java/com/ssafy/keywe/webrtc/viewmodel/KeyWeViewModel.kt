@@ -368,6 +368,7 @@ class KeyWeViewModel @Inject constructor(
 ////        intent.putExtra("y", offset.second)
 //        applicationContext.startService(intent)
 //    }
+
     fun sendButtonEvent(event: KeyWeButtonEvent) {
         val jsonString = json.encodeToString<MessageData>(event)
         val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
@@ -485,6 +486,15 @@ class KeyWeViewModel @Inject constructor(
 
                         KeyWeButtonEvent.StoreButton -> {
                             putExtra("eventType", "StoreButton")
+                        }
+
+                        is KeyWeButtonEvent.ScrollEvent -> {
+                            putExtra("eventType", "ScrollEvent")
+                            putExtra("firstVisibleItemIndex", messageData.firstVisibleItemIndex)
+                            putExtra(
+                                "firstVisibleItemScrollOffset",
+                                messageData.firstVisibleItemScrollOffset
+                            )
                         }
                     }
                 }

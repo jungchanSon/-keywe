@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.order.component
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun MenuMenuList(
     navController: NavController,
@@ -56,9 +58,14 @@ fun MenuMenuList(
 
     LaunchedEffect(viewModel.selectedCategory.collectAsState().value) {
         coroutineScope.launch {
-            listState.scrollToItem(0) // 카테고리가 변경될 때 첫 번째 아이템으로 스크롤
+            listState.animateScrollToItem(
+                index = 8,
+                scrollOffset = 100
+            )
         }
     }
+    // Accompanist Snapper를 이용한 스냅 플링 동작 생성
+    val snapFlingBehavior = rememberSnapFlingBehavior(lazyGridState = listState)
 
     Box(
         modifier = Modifier
@@ -69,6 +76,7 @@ fun MenuMenuList(
         LazyVerticalGrid(
             columns = GridCells.Fixed(2), // 2열 그리드
             modifier = Modifier.fillMaxSize(),
+            flingBehavior = snapFlingBehavior,
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             state = listState
@@ -76,7 +84,8 @@ fun MenuMenuList(
             items(filteredMenuList) { menu ->
 //                Log.d("menu data", "$menu")
                 MenuMenuScreen(
-                    menuId = menu.menuId, selectItem = {
+                    menuId = menu.menuId,
+                    selectItem = {
                         if (isKeyWe) {
 
                             Log.d("MenuScreen", "Click Menu = ${menu.menuId}")
@@ -97,7 +106,10 @@ fun MenuMenuList(
                                 menu.menuId, storeId
                             )
                         )
-                    }, viewModel, menuCartViewModel, storeId,
+                    },
+                    viewModel,
+                    menuCartViewModel,
+                    storeId,
                     isKiosk = isKiosk,
                     keyWeViewModel = keyWeViewModel
                 )
@@ -114,7 +126,7 @@ fun MenuMenuScreen(
     menuCartViewModel: MenuCartViewModel,
     storeId: Long,
     isKiosk: Boolean,
-    keyWeViewModel: KeyWeViewModel
+    keyWeViewModel: KeyWeViewModel,
 ) {
 //    Log.d("Menu ID", "$menuId")
 
@@ -143,8 +155,10 @@ fun MenuMenuScreen(
                 menuId = menuId,
                 viewModel = viewModel,
                 menuCartViewModel = menuCartViewModel,
-                keyWeViewModel =keyWeViewModel,
-                storeId = storeId, isKiosk = isKiosk)
+                keyWeViewModel = keyWeViewModel,
+                storeId = storeId,
+                isKiosk = isKiosk
+            )
         }
 
         val density = LocalDensity.current.density // Density 가져오기

@@ -2,7 +2,9 @@ package com.ssafy.keywe.webrtc
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.accessibilityservice.GestureDescription
 import android.content.Intent
+import android.graphics.Path
 import android.os.Build
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
@@ -27,6 +29,14 @@ class RemoteControlService : AccessibilityService() {
                 MessageType.BUTTON_EVENT.name -> {
                     Log.d(TAG, "버튼 이벤트 처리 시작")
                     handleButtonEvent(intent)
+                }
+
+                MessageType.DRAG_EVENT.name -> {
+                    Log.d(TAG, "드래그 이벤트 처리 시작")
+                    val firstVisibleItemIndex = intent.getIntExtra("firstVisibleItemIndex", 0)
+                    val firstVisibleItemScrollOffset =
+                        intent.getIntExtra("firstVisibleItemScrollOffset", 0)
+//                    performDragGesture(targetScrollY)
                 }
 
                 else -> {
@@ -318,6 +328,38 @@ class RemoteControlService : AccessibilityService() {
 //        targetNodes?.forEach {
 //            Log.d(TAG, "찾은 요소: ${it.text}")
 //        }
+    }
+
+
+    // targetScrollY: A 스크린에서 받은 절대 스크롤 위치(예시)
+    fun performDragGesture(targetScrollY: Int) {
+        // 예시: 화면 중앙에서 targetScrollY 만큼 드래그하는 제스처 경로 생성
+        val startX = resources.displayMetrics.widthPixels / 2f
+        val startY = resources.displayMetrics.heightPixels * 0.8f
+        val endX = startX
+        // targetScrollY 값에 따라 끝점 Y 계산 (예시: 단순히 startY에서 targetScrollY 만큼 위로 이동)
+        val endY = startY - targetScrollY.toFloat()
+
+        val path = Path().apply {
+            moveTo(startX, startY)
+            lineTo(endX, endY)
+        }
+
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 500))
+            .build()
+
+        dispatchGesture(gesture, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                super.onCompleted(gestureDescription)
+                // 제스처 완료 후 추가 작업
+            }
+
+            override fun onCancelled(gestureDescription: GestureDescription?) {
+                super.onCancelled(gestureDescription)
+                // 제스처 취소 처리
+            }
+        }, null)
     }
 
     companion object {
