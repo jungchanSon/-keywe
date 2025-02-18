@@ -3,6 +3,7 @@ package com.ssafy.keywe.data.profile
 //import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import com.ssafy.keywe.data.ApiResponseHandler.handleApiResponse
 import com.ssafy.keywe.data.ResponseResult
+import com.ssafy.keywe.data.dto.profile.DeleteProfileRequest
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileListResponse
 import com.ssafy.keywe.data.dto.profile.PostProfileResponse
@@ -40,9 +41,13 @@ class ProfileRemoteDataSource @Inject constructor(private val profileService: Pr
             profileService.updateProfile(profileBody, profileImage)
         }
 
-    override suspend fun requestDeleteProfile(profileId: Long): ResponseResult<Unit> =
+    override suspend fun requestDeleteProfile(
+        profileId: Long,
+        token: String
+    ): ResponseResult<Unit> =
         handleApiResponse {
-            profileService.deleteProfile(profileId)
+            val request = DeleteProfileRequest(profileId)
+            profileService.deleteProfile(token, request)
         }
 
     override suspend fun requestSendSmsVerification(phone: String): ResponseResult<Unit> =

@@ -23,7 +23,7 @@ interface ProfileDataSource {
         profileImage: MultipartBody.Part?
     ): ResponseResult<UpdateProfileResponse>
 
-    suspend fun requestDeleteProfile(profileId: Long): ResponseResult<Unit>
+    suspend fun requestDeleteProfile(profileId: Long, token: String): ResponseResult<Unit>
 
     suspend fun requestSendSmsVerification(phone: String): ResponseResult<Unit>
     suspend fun requestVerifySmsCode(phone: String, verificationCode: String): ResponseResult<Unit>

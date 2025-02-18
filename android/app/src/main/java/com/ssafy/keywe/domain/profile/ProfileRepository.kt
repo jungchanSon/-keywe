@@ -25,7 +25,7 @@ interface ProfileRepository {
         imageUri: Uri?
     ): ResponseResult<UpdateProfileModel>
 
-    suspend fun deleteProfile(profileId: Long): ResponseResult<Unit>
+    suspend fun deleteProfile(profileId: Long, token: String): ResponseResult<Unit>
     suspend fun sendSmsVerification(phone: String): ResponseResult<String>
     suspend fun verifySmsCode(phone: String, verificationCode: String): ResponseResult<String>
 }

@@ -10,9 +10,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.gson.Gson
+import com.ssafy.keywe.common.LoginRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
+import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.data.datastore.ProfileDataStore
 import com.ssafy.keywe.data.dto.profile.UpdateProfileRequest
 import com.ssafy.keywe.domain.profile.ProfileRepository
@@ -33,6 +35,7 @@ import javax.inject.Inject
 class EditMemberViewModel @Inject constructor(
     private val repository: ProfileRepository,
     private val profileDataStore: ProfileDataStore,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditMemberState())
@@ -252,16 +255,32 @@ class EditMemberViewModel @Inject constructor(
     }
 
 
-    fun deleteProfile(profileId: Long) {
+    fun deleteProfile(profileId: Long, navController: NavController?) {
         viewModelScope.launch {
-            when (val result = repository.deleteProfile(profileId)) {
-//                is ResponseResult.Success -> ProfileIdManager.clearProfileId()// 삭제 완료 처리
-                is ResponseResult.Success -> Log.d("deleteProfile", "삭제됨")
+            val token = "Bearer ${tokenManager.getAccessToken()}"
+            when (val result = repository.deleteProfile(profileId, token)) {
+                is ResponseResult.Success -> {
+                    Log.d("deleteProfile", "프로필 삭제 성공")
+                    ProfileIdManager.clearProfileId() // 프로필 ID 초기화
+                    tokenManager.clearTokens()
 
-                else -> Log.e("deleteProfile", "프로필 삭제 실패")// 에러 처리
+                    // 로그인 화면으로 이동하는 로직 추가
+                    navController?.navigate(LoginRoute) {
+                        popUpTo(0) { inclusive = true } // 백스택 전체 제거
+                    }
+                }
+
+                is ResponseResult.ServerError -> {
+                    Log.e("deleteProfile", "서버 오류로 프로필 삭제 실패")
+                }
+
+                is ResponseResult.Exception -> {
+                    Log.e("deleteProfile", "네트워크 오류로 프로필 삭제 실패: ${result.message}")
+                }
             }
         }
     }
+
 
 //    // API 연동
 //    fun deleteProfile() {

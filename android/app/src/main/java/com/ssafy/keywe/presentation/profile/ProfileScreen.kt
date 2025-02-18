@@ -49,9 +49,12 @@ fun ProfileScreen(
     val profileState = viewModel.state.collectAsState()
 
 
-    LaunchedEffect(Unit) {
-        viewModel.loadProfileDetail()
+    LaunchedEffect(ProfileIdManager.profileId) {
+        ProfileIdManager.profileId.value?.let {
+            viewModel.loadProfileDetail()
+        }
     }
+
 
     Scaffold(
         topBar = { DefaultAppBar(title = "프로필", navController = navController) },

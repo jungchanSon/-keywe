@@ -31,5 +31,11 @@ data class UpdateProfileRequest(
     @SerialName("name") val name: String,
     @SerialName("phone") val phone: String? = null,
     @SerialName("password") val password: String? = null
+
+)
+
+@Serializable
+data class DeleteProfileRequest(
+    @SerialName("profileId") val profileId: Long
 )
 

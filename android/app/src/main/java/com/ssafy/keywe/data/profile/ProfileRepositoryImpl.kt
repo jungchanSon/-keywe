@@ -98,8 +98,8 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteProfile(profileId: Long): ResponseResult<Unit> {
-        return when (val result = profileDataSource.requestDeleteProfile(profileId)) {
+    override suspend fun deleteProfile(profileId: Long, token: String): ResponseResult<Unit> {
+        return when (val result = profileDataSource.requestDeleteProfile(profileId, token)) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
             )

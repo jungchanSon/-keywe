@@ -57,6 +57,10 @@ class ProfileDetailViewModel @Inject constructor(
             _error.value = null
 
             ProfileIdManager.profileId.value?.let { profileId ->
+                Log.d(
+                    "ProfileDetailViewModel",
+                    "Fetching profile detail for ID: $profileId"
+                ) // ✅ 디버깅 로그 추가
                 when (val result = repository.getProfileDetail(profileId)) {
                     is ResponseResult.Success -> {
                         _state.value = result.data
