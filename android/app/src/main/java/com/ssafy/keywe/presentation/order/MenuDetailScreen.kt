@@ -180,7 +180,8 @@ fun MenuDetailScreen(
                 title = "주문하기",
                 navController = navController,
                 viewModel = appBarViewModel,
-                keyWeViewModel = keyWeViewModel
+                keyWeViewModel = keyWeViewModel,
+                isKiosk = isKiosk
             )
         }, modifier = Modifier
             .fillMaxSize()

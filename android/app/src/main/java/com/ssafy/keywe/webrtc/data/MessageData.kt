@@ -219,6 +219,8 @@ sealed class KeyWeButtonEvent : MessageData() {
     @Serializable
     data object CartAcceptBottomSheet : KeyWeButtonEvent()
 
+    @Serializable
+    data object BackButton : KeyWeButtonEvent()
 
     override val mType: MessageType = MessageType.BUTTON_EVENT
 }

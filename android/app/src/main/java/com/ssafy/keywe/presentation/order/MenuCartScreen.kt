@@ -177,45 +177,10 @@ fun MenuCartScreen(
                 title = "장바구니",
                 navController = navController,
                 viewModel = appBarViewModel,
-                keyWeViewModel = keyWeViewModel
+                keyWeViewModel = keyWeViewModel,
+                isKiosk = isKiosk
             )
         }, modifier = Modifier.fillMaxSize()
-//            .pointerInteropFilter { motionEvent ->
-//                when (motionEvent.action) {
-//                    MotionEvent.ACTION_DOWN -> {
-////                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
-////                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
-//
-//                        Log.d(
-//                            "sendGesture",
-//                            "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
-//                        )
-////                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-//                        if (!isKiosk)
-//                            keyWeViewModel.sendClickGesture(
-//                                Touch(
-//                                    MessageType.Touch, motionEvent.x, motionEvent.y,
-//                                )
-//                            )
-//                        println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
-//                    }
-//
-//                    MotionEvent.ACTION_MOVE -> {
-//                        if (!isKiosk)
-//                            keyWeViewModel.sendClickGesture(
-//                                Drag(
-//                                    MessageType.Drag, motionEvent.x, motionEvent.y,
-//                                )
-//                            )
-//                        println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
-//                    }
-//
-//                    else -> {
-//                        Log.d("MotionEvent", "click")
-//                    }
-//                }
-//                false
-//            }
     ) { innerPadding ->
         Box(
             modifier = Modifier

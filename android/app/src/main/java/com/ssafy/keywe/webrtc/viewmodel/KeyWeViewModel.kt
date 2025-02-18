@@ -443,6 +443,10 @@ class KeyWeViewModel @Inject constructor(
                         is KeyWeButtonEvent.CartCloseBottomSheet -> {
                             putExtra("eventType", "CartCloseBottomSheet")
                         }
+
+                        KeyWeButtonEvent.BackButton -> {
+                            putExtra("eventType", "BackButton")
+                        }
                     }
                 }
 
