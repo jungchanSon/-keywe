@@ -25,7 +25,6 @@ import androidx.navigation.NavController
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
-import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
@@ -50,10 +49,11 @@ fun MenuDetailBottom(
     keyWeViewModel: KeyWeViewModel = hiltViewModel(),
     isKiosk: Boolean = false,
 ) {
-    val parentBackStackEntry =
-        if (isKeyWe) navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
-        else navController.getBackStackEntry<Route.MenuBaseRoute.DefaultMenuRoute>()
-    val viewModel = hiltViewModel<MenuDetailViewModel>(parentBackStackEntry)
+
+//    val parentBackStackEntry =
+//        if (isKeyWe) navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>()
+//        else navController.getBackStackEntry<Route.MenuBaseRoute.DefaultMenuRoute>()
+//    val viewModel = hiltViewModel<MenuDetailViewModel>(parentBackStackEntry)
 
 
     Box(modifier = Modifier.background(greyBackgroundColor)) {

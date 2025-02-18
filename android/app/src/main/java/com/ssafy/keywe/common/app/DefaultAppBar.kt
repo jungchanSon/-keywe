@@ -121,6 +121,10 @@ fun DefaultOrderAppBar(
 }
 
 fun isOnlyCurrentOrderScreenInBackStack(navController: NavController): Boolean {
-    return navController.currentDestination == navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>().destination
-//    return navController.previousBackStackEntry == null
+    val isCurrentDestination = try {
+        navController.currentDestination == navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>().destination
+    } catch (e: IllegalArgumentException) {
+        false
+    }
+    return isCurrentDestination
 }
