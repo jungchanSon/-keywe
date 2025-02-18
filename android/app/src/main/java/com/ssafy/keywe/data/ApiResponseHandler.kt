@@ -21,7 +21,10 @@ object ApiResponseHandler {
             val body: T? = response.body()
 
             when {
-                response.isSuccessful -> ResponseResult.Success(body as T)
+                response.isSuccessful -> {
+                    ResponseResult.Success(body as T)
+                }
+
                 else -> {
                     val errorBody: ResponseBody = response.errorBody()
                         ?: throw IllegalArgumentException("erroryBody를 찾을 수 없습니다.")
