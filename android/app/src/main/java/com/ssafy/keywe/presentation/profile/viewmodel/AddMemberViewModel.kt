@@ -250,6 +250,8 @@ class AddMemberViewModel @Inject constructor(
                 outputStream().use { output -> input.copyTo(output) }
             }
         }
+        Log.d("AddMemberViewModel", " 이미지 파일 경로: ${file.absolutePath}, 크기: ${file.length()} bytes")
+
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData("image", file.name, requestFile)
     }

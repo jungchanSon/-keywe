@@ -35,7 +35,7 @@ interface ProfileService {
 //        @Body imageBase64: String?
 //        @Body postProfileRequest: RequestBody,
         @Part("profile") profile: RequestBody,
-        @Part profileImage: MultipartBody.Part? = null
+        @Part profileImage: MultipartBody.Part?
     ): Response<PostProfileResponse>
 
     @Multipart
