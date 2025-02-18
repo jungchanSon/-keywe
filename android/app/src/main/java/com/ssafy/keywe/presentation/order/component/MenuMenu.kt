@@ -61,13 +61,13 @@ fun MenuMenuList(
     val listState = rememberLazyGridState() // 스크롤 상태 관리
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(viewModel.selectedCategory.collectAsState().value) {
-        coroutineScope.launch {
-            listState.animateScrollToItem(
-                index = 0,
-            )
-        }
-    }
+//    LaunchedEffect(viewModel.selectedCategory.collectAsState().value) {
+//        coroutineScope.launch {
+//            listState.animateScrollToItem(
+//                index = 0,
+//            )
+//        }
+//    }
 
 
     // [변경된 부분 1] 스크롤 상태 전송 (로컬 -> 원격)
