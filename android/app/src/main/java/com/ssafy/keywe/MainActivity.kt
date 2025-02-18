@@ -273,10 +273,10 @@ fun MyApp(
             composable<SplashRoute> {
                 SplashScreen(navController)
             }
-            composable<BottomRoute.HomeRoute> {
-                HomeScreen(navController, tokenManager)
-//                InputPhoneNumberScreen(navController)
-            }
+//            composable<BottomRoute.HomeRoute> {
+//                HomeScreen(navController, tokenManager)
+////                InputPhoneNumberScreen(navController)
+//            }
 //            composable<Route.AuthBaseRoute.LoginRoute> { LoginScreen(navController) }
             composable<SignUpRoute> {
                 SignUpScreen(navController)

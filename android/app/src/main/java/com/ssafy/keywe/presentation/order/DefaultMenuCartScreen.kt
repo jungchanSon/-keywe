@@ -35,6 +35,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.HorizontalDivider
 import com.ssafy.keywe.presentation.order.component.MenuCartBottom
 import com.ssafy.keywe.presentation.order.component.MenuCartDeleteDialog
@@ -113,14 +114,12 @@ fun DefaultMenuCartScreen(
 
     }
     Scaffold(
-//        topBar = {
-//            DefaultOrderAppBar(
-//                title = "장바구니",
-//                navController = navController,
-//                viewModel = appBarViewModel,
-//                keyWeViewModel = keyWeViewModel
-//            )
-//        },
+        topBar = {
+            DefaultAppBar(
+                title = "주문하기",
+                navController = navController,
+            )
+        },
 
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->

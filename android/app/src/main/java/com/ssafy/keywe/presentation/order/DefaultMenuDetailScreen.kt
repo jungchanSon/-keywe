@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.domain.order.OptionsModel
 import com.ssafy.keywe.presentation.order.component.MenuDetailBottom
 import com.ssafy.keywe.presentation.order.component.MenuDetailCommonOption
@@ -105,14 +106,12 @@ fun DefaultMenuDetailScreen(
 
     Scaffold(
 
-//        topBar = {
-//            DefaultOrderAppBar(
-//                title = "주문하기",
-//                navController = navController,
-//                viewModel = appBarViewModel,
-//                keyWeViewModel = keyWeViewModel
-//            )
-//        },
+        topBar = {
+            DefaultAppBar(
+                title = "주문하기",
+                navController = navController,
+            )
+        },
 
     ) { innerPadding ->
         Box(
@@ -203,8 +202,9 @@ fun DefaultMenuDetailScreen(
                     extraOptions = extraOptions.mapValues { it.value },
                     totalPrice = totalPrice.value,
                     navController = navController,
-                    menuCartViewModel = menuCartViewModel, storeId
-
+                    menuCartViewModel = menuCartViewModel,
+                    storeId = storeId,
+                    isKeyWe = false
                 )
             }
         }

@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
+import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.presentation.order.component.MenuCategoryScreen
 import com.ssafy.keywe.presentation.order.component.MenuMenuList
 import com.ssafy.keywe.presentation.order.component.MenuSubCategory
@@ -48,15 +49,12 @@ fun DefaultMenuScreen(
 //    Log.d("MenuSCreen", "storeId = $storeId")
 
     Scaffold(
-//        topBar = {
-//            DefaultOrderAppBar(
-//                title = "주문하기",
-//                navController = navController,
-//                viewModel = appBarViewModel,
-//                keyWeViewModel = keyWeViewModel,
-//                isRoot = true
-//            )
-//        },
+        topBar = {
+            DefaultAppBar(
+                title = "주문하기",
+                navController = navController,
+            )
+        },
         modifier = Modifier.fillMaxSize(), floatingActionButton = {
             DefaultFloatingCartButton(navController, menuCartViewModel, storeId)
         }) {

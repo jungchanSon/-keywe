@@ -258,8 +258,8 @@ fun disConnect(
         }
     } else {
         // 사용자 홈으로
-        navController.navigate(BottomRoute.HomeRoute) {
-            popUpTo(navController.graph.startDestinationId) {
+        navController.navigate(BottomRoute.ProfileRoute) {
+            popUpTo(BottomRoute.ProfileRoute) {
                 inclusive = true
             }
         }

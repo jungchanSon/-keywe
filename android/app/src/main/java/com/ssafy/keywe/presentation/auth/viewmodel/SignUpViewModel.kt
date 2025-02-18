@@ -70,13 +70,40 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+//    fun signUp() {
+//        viewModelScope.launch {
+//            val request = SignUpRequest(
+//                email = _email.value, password = _password.value
+//            )
+//            repository.signUp(request).onSuccess { _isSignUpIn.update { true } }
+//                .onException { e, message -> {} }.onServerError { }
+//        }
+//    }
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     fun signUp() {
         viewModelScope.launch {
+            _isLoading.value = true  // 로딩 시작
+
             val request = SignUpRequest(
                 email = _email.value, password = _password.value
             )
-            repository.signUp(request).onSuccess { _isSignUpIn.update { true } }
-                .onException { e, message -> {} }.onServerError { }
+
+            repository.signUp(request)
+                .onSuccess {
+                    _isSignUpIn.value = true  // 회원가입 성공 → 화면 이동
+                }
+                .onException { e, message ->
+                    _errorMessage.value = message
+                    _isLoading.value = false  // 실패 시 로딩 종료
+                }
+                .onServerError {
+                    _errorMessage.value = "서버 오류가 발생했습니다."
+                    _isLoading.value = false  // 실패 시 로딩 종료
+                }
         }
     }
+
 }

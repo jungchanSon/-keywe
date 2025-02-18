@@ -62,7 +62,7 @@ fun MenuDescription(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = TextStyle(
-                    fontSize = 13.sp,
+                    fontSize = 10.sp,
                     fontFamily = pretendardkr,
                     fontWeight = FontWeight.Normal,
                     color = polishedSteelColor
