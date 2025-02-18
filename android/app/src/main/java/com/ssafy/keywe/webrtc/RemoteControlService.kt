@@ -160,15 +160,15 @@ class RemoteControlService : AccessibilityService() {
             }
 
             "MenuCartPlusAmount" -> {
-                val cartItemName = intent.getStringExtra("cartItemName") ?: return
-                Log.d(TAG, "cartItemName: $cartItemName")
-                findAndClickNodeByDescription("plus_amount_$cartItemName")
+                val cartItemId = intent.getLongExtra("cartItemId", -1L) ?: return
+                Log.d(TAG, "cartItemName: $cartItemId")
+                findAndClickNodeByDescription("plus_amount_$cartItemId")
             }
 
             "MenuCartMinusAmount" -> {
-                val cartItemName = intent.getStringExtra("cartItemName") ?: return
-                Log.d(TAG, "cartItemName: $cartItemName")
-                findAndClickNodeByDescription("minus_amount_$cartItemName")
+                val cartItemId = intent.getLongExtra("cartItemId", -1L) ?: return
+                Log.d(TAG, "cartItemName: $cartItemId")
+                findAndClickNodeByDescription("minus_amount_$cartItemId")
             }
         }
     }

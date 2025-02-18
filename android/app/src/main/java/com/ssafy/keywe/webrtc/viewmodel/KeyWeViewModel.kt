@@ -427,12 +427,12 @@ class KeyWeViewModel @Inject constructor(
 
                         is KeyWeButtonEvent.MenuCartPlusAmount -> {
                             putExtra("eventType", "MenuCartPlusAmount")
-                            putExtra("cartItemName", messageData.cartItemName)
+                            putExtra("cartItemName", messageData.cartItemId)
                         }
 
                         is KeyWeButtonEvent.MenuCartMinusAmount -> {
                             putExtra("eventType", "MenuCartMinusAmount")
-                            putExtra("cartItemName", messageData.cartItemName)
+                            putExtra("cartItemName", messageData.cartItemId)
                         }
 
                         is KeyWeButtonEvent.MenuCart -> {

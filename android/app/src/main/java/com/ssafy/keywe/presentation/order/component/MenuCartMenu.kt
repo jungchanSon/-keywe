@@ -225,7 +225,7 @@ fun MenuCartMenu(
                                     }
                                     if (!isKiosk) keyWeViewModel.sendButtonEvent(
                                         KeyWeButtonEvent.MenuCartMinusAmount(
-                                            cartItem.name
+                                            cartItem.id
                                         )
                                     )
                                 }, onIncrease = {
@@ -234,11 +234,11 @@ fun MenuCartMenu(
                                     ) // 업데이트 로직 호출
                                     if (!isKiosk) keyWeViewModel.sendButtonEvent(
                                         KeyWeButtonEvent.MenuCartPlusAmount(
-                                            cartItem.name
+                                            cartItem.id
                                         )
                                     )
                                 },
-                                    cartItemName = cartItem.name)
+                                    cartItemId = cartItem.id)
                             }
                         }
                     }
@@ -261,7 +261,7 @@ fun MenuCartMenu(
 }
 
 @Composable
-fun CartMenuAmount(cartItemName: String, optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+fun CartMenuAmount(cartItemId: Long, optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
     Row(
         modifier = Modifier
             .width(88.dp)
@@ -273,7 +273,7 @@ fun CartMenuAmount(cartItemName: String, optionAmount: Int, onDecrease: () -> Un
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .semantics { contentDescription = "minus_amount_$cartItemName" }
+                .semantics { contentDescription = "minus_amount_$cartItemId" }
                 .noRippleClickable { onDecrease() },
             painter = painterResource(R.drawable.minus_circle),
             contentDescription = "minus in circle"
@@ -285,7 +285,7 @@ fun CartMenuAmount(cartItemName: String, optionAmount: Int, onDecrease: () -> Un
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .semantics { contentDescription = "plus_amount_$cartItemName" }
+                .semantics { contentDescription = "plus_amount_$cartItemId" }
                 .noRippleClickable { onIncrease() },
             painter = painterResource(R.drawable.profileplus),
             contentDescription = "plus in circle"

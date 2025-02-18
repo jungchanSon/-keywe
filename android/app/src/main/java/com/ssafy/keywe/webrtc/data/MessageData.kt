@@ -245,12 +245,12 @@ sealed class KeyWeButtonEvent : MessageData() {
 
     @Serializable
     data class MenuCartPlusAmount(
-        val cartItemName: String
+        val cartItemId: Long
     ) : KeyWeButtonEvent()
 
     @Serializable
     data class MenuCartMinusAmount(
-        val cartItemName: String
+        val cartItemId: Long
     ) : KeyWeButtonEvent()
 
     override val mType: MessageType = MessageType.BUTTON_EVENT
