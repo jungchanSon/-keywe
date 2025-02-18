@@ -2,12 +2,14 @@ package com.ssafy.keywe.viewmodel
 
 //import com.ssafy.keywe.presentation.profile.state.AddMemberState
 //import com.ssafy.keywe.presentation.profile.state.VerificationStatus
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.data.state.AddMemberState
@@ -20,6 +22,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,46 +59,172 @@ class AddMemberViewModel @Inject constructor(
     private val _profileImageUri = MutableStateFlow<Uri?>(null)
     val profileImageUri = _profileImageUri.asStateFlow()
 
-    fun postProfile(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                Log.d("state 상태", "$state.value")
-                Log.d("_state 상태", "$_state.value")
-                val phoneNumber = _state.value.phone.replace("-", "")
-                val request = PostProfileRequest(
-                    role = if (_state.value.selectedTab == 0) "PARENT" else "CHILD",
-                    name = _state.value.name,
-                    phone = if (_state.value.selectedTab == 0) phoneNumber else null,
-//                    password = if (_state.value.selectedTab == 0) _state.value.password.toInt() else 0
-                    password = if (_state.value.selectedTab == 0) _state.value.password else null
-                )
-                Log.d("Add Member", "$request")
 
-                when (val result = repository.postProfile(request)) {
+    fun postProfile(
+        context: Context,
+        onSuccess: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val gson = Gson()
+
+            try {
+                val role = if (_state.value.selectedTab == 0) "PARENT" else "CHILD"
+
+                val profileJson = gson.toJson(
+                    PostProfileRequest(
+                        role = role,
+                        name = _state.value.name,
+                        phone = if (_state.value.selectedTab == 0) _state.value.phone?.replace(
+                            "-",
+                            ""
+                        ) else null,
+                        password = if (_state.value.selectedTab == 0) _state.value.password else null,
+                        imagePath = null
+                    )
+                )
+                val profileBody = profileJson.toRequestBody("application/json".toMediaTypeOrNull())
+
+                val imageUri = _profileImageUri.value
+                val profileImage = imageUri?.let { createMultipartImage(context, it) }
+
+                when (val result =
+                    repository.postProfile(profileBody, profileImage)) {
                     is ResponseResult.Success -> {
-                        _profileAddedEvent.emit(request)
-                        onSuccess()
-//                        clearState()
-                        AddMemberState()
-                        Log.d("Add Member", "성공함")
+                        onSuccess(result.data.id)
+                        clearState()
+                        Log.d("AddMemberViewModel", "프로필 추가 성공")
                     }
 
                     is ResponseResult.ServerError -> {
                         _errorMessage.value = "프로필 생성에 실패했습니다"
-                        Log.d("Add Member", "서버 문제 실패")
-
+                        Log.d("AddMemberViewModel", "서버 오류로 실패")
                     }
 
                     is ResponseResult.Exception -> {
-                        _errorMessage.value = result.message
-                        Log.d("Add Member", "뭔지 모를 오류")
-
+                        _errorMessage.value = "네트워크 오류가 발생했습니다"
+                        Log.d("AddMemberViewModel", "네트워크 오류")
                     }
                 }
             } catch (e: Exception) {
                 _errorMessage.value = "네트워크 오류가 발생했습니다"
+                Log.d("AddMemberViewModel", "예외 발생: ${e.message}")
             }
         }
+    }
+
+//    fun postProfile(
+//        context: Context,
+//        role: String,
+//        name: String,
+//        phone: String? = null,
+//        password: String? = null,
+//        imageUri: Uri?,
+//        onSuccess: () -> Unit
+//    ) {
+//        viewModelScope.launch {
+//            try {
+//                val profileBody = createProfileRequestBody(role, name, phone, password)
+//                val profileImage =
+//                    imageUri?.let { createMultipartImage(context, it) }  // 이미지가 있으면 변환
+//
+//                when (val result = repository.postProfile(profileBody, profileImage)) {
+//                    is ResponseResult.Success -> {
+//                        onSuccess()
+//                        Log.d("AddMemberViewModel", "프로필 추가 성공")
+//                    }
+//
+//                    is ResponseResult.ServerError -> {
+//                        Log.d("AddMemberViewModel", "서버 오류로 실패")
+//                    }
+//
+//                    is ResponseResult.Exception -> {
+//                        Log.d("AddMemberViewModel", "네트워크 오류")
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                Log.d("AddMemberViewModel", "예외 발생: ${e.message}")
+//            }
+//        }
+//    }
+
+//    fun postProfile(context: Context, onSuccess: () -> Unit) {
+//        viewModelScope.launch {
+//            try {
+//                Log.d("_state 상태", "$_state.value")
+//                val phoneNumber = _state.value.phone.replace("-", "")
+//                val imageBase64 = profileImageUri.value?.let { uri ->
+//                    convertImageToBase64(context, uri)
+//                    val request = PostProfileRequest(
+//                        role = if (_state.value.selectedTab == 0) "PARENT" else "CHILD",
+//                        name = _state.value.name,
+//                        phone = if (_state.value.selectedTab == 0) phoneNumber else null,
+////                    password = if (_state.value.selectedTab == 0) _state.value.password.toInt() else 0
+//                        password = if (_state.value.selectedTab == 0) _state.value.password else null,
+//                        imageBase64 = imageBase64
+//                    )
+//
+//                    // 이미지 Base64 변환
+//
+////                val imageUri = _profileImageUri
+////                val imagepart = imageUri?.let { uri ->
+////                    val file = File(uri.path ?: "")
+////                    val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+////                    MultipartBody.Part.createFormData("image", file.name, requestFile)
+//                }
+////                Log.d("Add Member", "$request")
+//
+//                //api 요청
+//                when (val result = repository.postProfile(request)) {
+//                    is ResponseResult.Success -> {
+////                        _profileAddedEvent.emit(request)
+//                        onSuccess()
+////                        clearState()
+//                        AddMemberState()
+//                        Log.d("Add Member", "성공함")
+//                    }
+//
+//                    is ResponseResult.ServerError -> {
+//                        _errorMessage.value = "프로필 생성에 실패했습니다"
+//                        Log.d("Add Member", "서버 문제 실패")
+//
+//                    }
+//
+//                    is ResponseResult.Exception -> {
+//                        _errorMessage.value = result.message
+//                        Log.d("Add Member", "뭔지 모를 오류")
+//
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                _errorMessage.value = "네트워크 오류가 발생했습니다"
+//            }
+//        }
+//    }
+
+    private fun createProfileRequestBody(
+        role: String,
+        name: String,
+        phone: String?,
+        password: String?
+    ): PostProfileRequest {
+        return PostProfileRequest(
+            role = role,
+            name = name,
+            phone = phone?.replace("-", ""),
+            password = password,
+            imagePath = null
+        )
+    }
+
+    private fun createMultipartImage(context: Context, imageUri: Uri): MultipartBody.Part {
+        val inputStream = context.contentResolver.openInputStream(imageUri)
+        val file = File(context.cacheDir, "profile_image.jpg").apply {
+            outputStream().use { output ->
+                inputStream?.copyTo(output)
+            }
+        }
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData("image", file.name, requestFile)
     }
 
     private fun checkAddButtonEnabled() {
@@ -193,21 +326,31 @@ class AddMemberViewModel @Inject constructor(
 
     fun verifyCode() {
         viewModelScope.launch {
-            if (state.value.verificationCode.length == 6) {
-                // 인증번호 검증 API 호출
-                val isSuccess = state.value.verificationCode == "123456"  // 임시 검증 로직
-                _state.update {
-                    it.copy(
-                        verificationStatus = if (isSuccess) VerificationStatus.SUCCESS
-                        else VerificationStatus.FAILURE
-                    )
+            val phone = _state.value.phone.replace("-", "")
+            val verificationCode = _state.value.verificationCode
+
+            if (verificationCode.length != 6) {
+                _errorMessage.value = "6자리 인증번호를 입력하세요."
+                return@launch
+            }
+
+            when (val result = repository.verifySmsCode(phone, verificationCode)) {
+                is ResponseResult.Success -> {
+                    _state.update {
+                        it.copy(verificationStatus = VerificationStatus.SUCCESS)
+                    }
+                    _verificationMessage.value = "인증이 성공되었습니다."
+                    checkAddButtonEnabled()
                 }
-                _verificationMessage.value = if (isSuccess) {
-                    "인증이 성공되었습니다."
-                } else {
-                    "인증이 실패되었습니다."
+
+                is ResponseResult.ServerError -> {
+                    _verificationMessage.value = "인증번호가 일치하지 않습니다."
+                    _state.update { it.copy(verificationStatus = VerificationStatus.FAILURE) }
                 }
-                checkAddButtonEnabled()
+
+                is ResponseResult.Exception -> {
+                    _errorMessage.value = "네트워크 오류가 발생했습니다."
+                }
             }
         }
     }
@@ -221,20 +364,38 @@ class AddMemberViewModel @Inject constructor(
 
     fun sendVerification() {
         viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isVerificationSent = true, verificationStatus = VerificationStatus.NONE
-                )
+            val phone = _state.value.phone.replace("-", "")
+
+            // 전화번호 유효한지 확인
+            if (phone.isEmpty() || phone.length != 11) {
+                _errorMessage.value = "11자리 전화번호를 입력하세요."
+                return@launch
             }
-            // 인증번호 전송 API 호출
-            _verificationMessage.value = "인증번호가 전송되었습니다."
+
+            when (val result = repository.sendSmsVerification(phone)) {
+                is ResponseResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            isVerificationSent = true,
+                            verificationStatus = VerificationStatus.NONE
+                        )
+                    }
+                    _verificationMessage.value = "인증번호가 전송되었습니다."
+                }
+
+                is ResponseResult.ServerError -> {
+                    _errorMessage.value = "SMS 전송에 실패했습니다."
+                }
+
+                is ResponseResult.Exception -> {
+                    _errorMessage.value = "네트워크 오류가 발생했습니다."
+                }
+            }
         }
     }
 
-    fun updateProfileImage(uri: Uri) {
+    fun updateProfileImage(uri: Uri?) {
         _profileImageUri.value = uri
     }
-
-
 }
 

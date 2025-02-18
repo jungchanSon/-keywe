@@ -229,7 +229,8 @@ fun ProfileGrid(
     ) {
         items(profiles) { profile ->
             Profile(name = profile.name,
-                profileImage = R.drawable.humanimage,
+//                profileImage = profile.image ?: R.drawable.humanimage.toString(),
+                profileImage = profile.image,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onProfileClick(profile) })

@@ -1,6 +1,7 @@
 package com.ssafy.keywe.data.dto.mapper
 
 //import com.ssafy.keywe.data.dto.profile.PatchProfileResponse
+import com.ssafy.keywe.R
 import com.ssafy.keywe.data.dto.auth.SelectProfileResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileDetailResponse
 import com.ssafy.keywe.data.dto.profile.GetProfileListResponse
@@ -16,6 +17,7 @@ fun GetProfileListResponse.toDomain(): GetProfileListModel = GetProfileListModel
     id = this.id,
     name = this.name,
     role = this.role,
+    image = this.image ?: R.drawable.humanimage.toString()
 )
 
 fun GetProfileDetailResponse.toDomain(): GetProfileDetailModel = GetProfileDetailModel(
@@ -23,6 +25,7 @@ fun GetProfileDetailResponse.toDomain(): GetProfileDetailModel = GetProfileDetai
     name = this.name,
     role = this.role,
     phone = this.phone ?: "",
+    image = this.image ?: R.drawable.humanimage.toString()
 )
 
 fun PostProfileResponse.toDomain(): PostProfileModel = PostProfileModel(

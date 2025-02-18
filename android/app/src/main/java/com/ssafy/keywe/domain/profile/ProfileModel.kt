@@ -3,14 +3,16 @@ package com.ssafy.keywe.domain.profile
 data class GetProfileListModel(
     val id: String,
     val name: String,
-    val role: String
+    val role: String,
+    val image: String?
 )
 
 data class GetProfileDetailModel(
     val id: String,
     val name: String,
     val role: String?,
-    val phone: String?
+    val phone: String?,
+    val image: String?
 )
 
 data class PostProfileModel(

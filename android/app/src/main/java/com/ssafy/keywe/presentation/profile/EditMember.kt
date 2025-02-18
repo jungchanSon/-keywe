@@ -79,13 +79,17 @@ fun EditMemberScreen(
     }
 
     Scaffold(topBar = {
-        DefaultAppBar(title = "구성원 수정", navController = navController, actions = {
+        DefaultAppBar(title = "프로필 수정", navController = navController, actions = {
             TextButton(onClick = {
-                viewModel.updateProfile(profileViewModel, navController)
-                navController.popBackStack(
-                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
-                    false
-                )
+                viewModel.updateProfile(context, profileViewModel, navController)
+                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
+                    popUpTo(Route.ProfileBaseRoute.ProfileEditRoute) { inclusive = true }
+                }
+//
+//                navController.popBackStack(
+//                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
+//                    false
+//                )
             }) {
                 Text("완료", color = primaryColor)
             }
@@ -151,8 +155,8 @@ fun EditMemberScreen(
                         Log.d("profileId", "$profileId")
                         AlertDialog.Builder(context).setTitle("프로필 삭제")
                             .setMessage("정말로 이 프로필을 삭제하시겠습니까?").setPositiveButton("삭제") { _, _ ->
-                                viewModel.deleteProfile(it)
-                                navController.navigateUp() // 삭제 후 이전 화면으로 이동
+                                viewModel.deleteProfile(it, navController)
+//                                navController.navigateUp() // 삭제 후 이전 화면으로 이동
                             }.setNegativeButton("취소", null).show()
                     }
                 }, modifier = Modifier
