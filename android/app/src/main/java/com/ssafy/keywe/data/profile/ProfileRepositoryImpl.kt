@@ -70,10 +70,9 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-
     /** ✅ updateProfile 메서드 수정 */
     override suspend fun updateProfile(
-        updateProfileRequest: UpdateProfileRequest, image: MultipartBody.Part?
+        updateProfileRequest: UpdateProfileRequest, context: Context, image: MultipartBody.Part?
     ): ResponseResult<UpdateProfileModel> {
         val gson = Gson()
         val profileJsonString = gson.toJson(updateProfileRequest)
@@ -108,11 +107,6 @@ class ProfileRepositoryImpl @Inject constructor(
             is ResponseResult.Success -> result
         }
     }
-
-//    companion object {
-//        private const val EXCEPTION_NETWORK_ERROR_MESSAGE =
-//            "네트워크 연결이 불안정합니다. 연결을 재설정한 후 다시 시도해 주세요."
-//    }
 
     override suspend fun sendSmsVerification(phone: String): ResponseResult<String> {
         return when (val result = profileDataSource.requestSendSmsVerification(phone)) {

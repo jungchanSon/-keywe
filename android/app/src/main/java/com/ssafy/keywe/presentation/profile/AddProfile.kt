@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.profile
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateFloatAsState
@@ -60,6 +61,7 @@ import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
+import com.ssafy.keywe.data.dto.profile.PostProfileRequest
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
@@ -258,7 +260,13 @@ fun AddMemberScreen(
 
                     viewModel.postProfile(
                         context = context,
-//                        imageUri = imageUri,
+                        profileRequest = PostProfileRequest(
+                            role = if (state.selectedTab == 0) "PARENT" else "CHILD",
+                            name = state.name,
+                            phone = if (state.selectedTab == 0) state.phone else null,
+                            password = if (state.selectedTab == 0) state.password else null
+                        ),
+                        imageUri = imageUri,
                         onSuccess = {
                             profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
 
@@ -275,7 +283,12 @@ fun AddMemberScreen(
                                     Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
                                 )
                             }
+                        },
+                        onError = { errorMessage ->
+                            // ✅ 실패 시 처리할 로직 추가 (예: 토스트 메시지)
+                            Log.e("AddMemberScreen", "❌ 프로필 추가 실패: $errorMessage")
                         }
+
                     )
                 },
                 modifier = Modifier
@@ -504,7 +517,7 @@ fun ProfileImagePicker(
     ) { uri: Uri? ->
         uri?.let {
 //            imageUri = it
-            viewModel.updateProfileImage(uri)
+            viewModel.updateProfileImage(it)
         }
     }
 

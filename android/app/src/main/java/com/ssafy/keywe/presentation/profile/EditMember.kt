@@ -71,7 +71,7 @@ fun EditMemberScreen(
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let { viewModel.updateProfileImage(it) }
+        uri?.let { viewModel.updateProfileImage(uri) }  //이미지 uri 업데이트
     }
     val profileId by ProfileIdManager.profileId.collectAsStateWithLifecycle()
     // 기존 프로필 정보 불러오기
@@ -82,10 +82,12 @@ fun EditMemberScreen(
     Scaffold(topBar = {
         DefaultAppBar(title = "프로필 수정", actions = {
             TextButton(onClick = {
+                val imageUri = viewModel.profileImageUri.value
+                    ?: Uri.parse("android.resource://${context.packageName}/${R.drawable.humanimage}")
                 viewModel.updateProfile(
                     context,
                     profileViewModel,
-                    viewModel.profileImageUri.value,
+//                    imageUri, // ✅ 변환된 MultipartBody.Part 전달
                     navController
                 )
                 navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
