@@ -14,7 +14,7 @@ class RemoteControlService : AccessibilityService() {
     override fun onCreate() {
         super.onCreate()
 //        serviceInfo.flags = AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
-        Log.d("RemoteControlService", "onCreate")
+        Log.d(TAG, "onCreate")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -50,16 +50,16 @@ class RemoteControlService : AccessibilityService() {
 
 
     override fun onInterrupt() {
-        Log.d("RemoteControlService", "onInterrupt")
+        Log.d(TAG, "onInterrupt")
     }
 
     fun stopAccessibilityService() {
         disableSelf()
-        Log.d("AccessibilityService", "서비스 종료됨")
+        Log.d(TAG, "서비스 종료됨")
     }
 
     override fun onDestroy() {
-        Log.d("RemoteControlService", "onDestroy")
+        Log.d(TAG, "onDestroy")
         stopAccessibilityService()
         super.onDestroy()
     }
@@ -291,11 +291,12 @@ class RemoteControlService : AccessibilityService() {
         val contentDescription = nodeInfo.contentDescription?.toString() ?: "없음"
         val text = nodeInfo.text?.toString() ?: "없음"
 
+        Log.d(TAG, "eventType = ${event.eventType}, name = ${event}")
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
                 -> {
-                Log.d(" ", "화면 변경 감지됨: ${event.className}")
+                Log.d(TAG, "화면 변경 감지됨: ${event.className}")
 
                 // 새로운 화면의 루트 노드 업데이트
                 updateCurrentRootNode()
@@ -310,13 +311,13 @@ class RemoteControlService : AccessibilityService() {
      */
     private fun updateCurrentRootNode() {
         val rootNode = rootInActiveWindow ?: return
-        Log.d("Accessibility", "현재 화면의 루트 노드 갱신됨")
+        Log.d(TAG, "현재 화면의 루트 노드 갱신됨")
 
         // 특정 요소를 찾고 싶다면 여기에 추가
-        val targetNodes = rootNode.findAccessibilityNodeInfosByText("네비게이션 버튼")
-        targetNodes?.forEach {
-            Log.d("Accessibility", "찾은 요소: ${it.text}")
-        }
+//        val targetNodes = rootNode.findAccessibilityNodeInfosByText("네비게이션 버튼")
+//        targetNodes?.forEach {
+//            Log.d(TAG, "찾은 요소: ${it.text}")
+//        }
     }
 
     companion object {
