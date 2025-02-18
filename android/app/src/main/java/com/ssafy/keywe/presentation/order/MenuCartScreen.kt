@@ -261,7 +261,7 @@ fun MenuCartScreen(
                 ) {
                     items(cartItems, key = { it.id }) { item ->
                         MenuCartMenuBox(
-                            cartItem = item, viewModel = menuCartViewModel, storeId
+                            cartItem = item, viewModel = menuCartViewModel, storeId, keyWeViewModel, isKiosk
                         )
 
                         Box(

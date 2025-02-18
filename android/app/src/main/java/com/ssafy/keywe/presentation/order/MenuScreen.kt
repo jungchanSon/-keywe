@@ -158,7 +158,7 @@ fun MenuScreen(
                 menuCartViewModel,
                 isKeyWe = true,
                 storeId,
-                keyWeViewModel,
+                keyWeViewModel = keyWeViewModel,
                 isKiosk
             )
         }

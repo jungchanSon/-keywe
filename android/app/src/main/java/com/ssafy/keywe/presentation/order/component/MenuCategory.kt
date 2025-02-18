@@ -51,22 +51,27 @@ fun MenuCategoryScreen(
                 }
             }) {
             menuCategoryList.forEach { category ->
-                Tab(modifier = Modifier.semantics {
-                    contentDescription = category.categoryName
-                }, selected = selectedCategory == category.categoryName, onClick = {
-                    viewModel.setSelectedCategory(category.categoryName, storeId)
-                    if (!isKiosk) keyWeViewModel.sendButtonEvent(
-                        KeyWeButtonEvent.CategorySelect(
-                            category.categoryId, category.categoryName
+                Tab(modifier = Modifier
+//                    .noRippleClickable {
+//                        viewModel.setSelectedCategory(category.categoryName, storeId)
+//                        selectItem() }
+                    .semantics { contentDescription = category.categoryName },
+                    selected = selectedCategory == category.categoryName,
+                    onClick = {
+                        viewModel.setSelectedCategory(category.categoryName, storeId)
+                        if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                            KeyWeButtonEvent.CategorySelect(
+                                category.categoryId, category.categoryName
+                            )
                         )
-                    )
-                }, text = {
-                    Text(
-                        text = category.categoryName,
-                        color = if (selectedCategory == category.categoryName) primaryColor else Color.Gray,
-                        modifier = Modifier.fillMaxWidth(0.9f) // 90% 비율 적용
-                    )
-                })
+                    },
+                    text = {
+                        Text(
+                            text = category.categoryName,
+                            color = if (selectedCategory == category.categoryName) primaryColor else Color.Gray,
+                            modifier = Modifier.fillMaxWidth(0.9f) // 90% 비율 적용
+                        )
+                    })
             }
         }
     }

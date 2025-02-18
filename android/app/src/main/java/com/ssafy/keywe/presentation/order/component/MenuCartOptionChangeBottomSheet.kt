@@ -39,6 +39,7 @@ import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +49,8 @@ fun OptionChangeBottomSheet(
     viewModel: MenuCartViewModel,
     onDismiss: () -> Unit,
     storeId: Long,
+    keyWeViewModel: KeyWeViewModel,
+    isKiosk: Boolean = false
 ) {
 
     val menu by viewModel.selectedDetailMenu.collectAsState()
@@ -153,10 +156,14 @@ fun OptionChangeBottomSheet(
                     ) {
                         MenuDetailCommonOptionRow(sizeValues,
                             selectedSize.value,
-                            onSelect = { selectedSize.value = it })
+                            onSelect = { selectedSize.value = it }, isKiosk = isKiosk,
+                            keyWeViewModel
+                        )
                         MenuDetailCommonOptionRow(temperatureValues,
                             selectedTemperature.value,
-                            onSelect = { selectedTemperature.value = it })
+                            onSelect = { selectedTemperature.value = it }, isKiosk = isKiosk,
+                            keyWeViewModel
+                        )
                     }
                 }
             }
@@ -189,7 +196,9 @@ fun OptionChangeBottomSheet(
                                         if (count == 0) extraOptions.remove(id)
                                         else extraOptions[id] =
                                             optionValue to count // ✅ optionValue 저장
-                                    })
+                                    },
+                                    isKiosk = isKiosk,
+                                    keyWeViewModel = keyWeViewModel)
                             }
                         }
                     }

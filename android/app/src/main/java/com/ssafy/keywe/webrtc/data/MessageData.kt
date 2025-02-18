@@ -208,6 +208,31 @@ sealed class KeyWeButtonEvent : MessageData() {
     data object CartAcceptDialog : KeyWeButtonEvent()
 
 
+    @Serializable
+    data class MenuDetailSelectCommonOption(
+        val optionValue: String
+    ) : KeyWeButtonEvent()
+
+    @Serializable
+    data class MenuDetailPlusExtraOption(
+        val optionName: String
+    ) : KeyWeButtonEvent()
+
+    @Serializable
+    data class MenuDetailMinusExtraOption(
+        val optionName: String
+    ) : KeyWeButtonEvent()
+
+    @Serializable
+    data class MenuCartPlusAmount(
+        val cartItemName: String
+    ) : KeyWeButtonEvent()
+
+    @Serializable
+    data class MenuCartMinusAmount(
+        val cartItemName: String
+    ) : KeyWeButtonEvent()
+
     override val mType: MessageType = MessageType.BUTTON_EVENT
 }
 

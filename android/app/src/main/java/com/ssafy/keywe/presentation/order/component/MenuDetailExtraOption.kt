@@ -24,8 +24,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.keywe.R
 import com.ssafy.keywe.domain.order.OptionsModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
@@ -33,12 +36,16 @@ import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 
 
 @Composable
 fun MenuDetailExtraOption(
     options: List<OptionsModel>,
-    onOptionSelected: (Long, String, Int) -> Unit
+    onOptionSelected: (Long, String, Int) -> Unit,
+    isKiosk: Boolean = false,
+    keyWeViewModel: KeyWeViewModel = hiltViewModel()
 ) {
 
     val extraOptions = remember { mutableStateMapOf<Long, Pair<String, Int>>() }
@@ -67,8 +74,10 @@ fun MenuDetailExtraOption(
                     verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
                 ) {
                     options.forEach { option ->
-                        val optionId = option.optionsValueGroup.firstOrNull()?.optionValueId ?: option.optionId
-                        val optionName = option.optionsValueGroup.firstOrNull()?.optionValue ?: option.optionName
+                        val optionId =
+                            option.optionsValueGroup.firstOrNull()?.optionValueId ?: option.optionId
+                        val optionName =
+                            option.optionsValueGroup.firstOrNull()?.optionValue ?: option.optionName
 
                         OptionBox(
                             id = optionId,
@@ -79,7 +88,9 @@ fun MenuDetailExtraOption(
                                 if (count == 0) extraOptions.remove(id)
                                 else extraOptions[id] = name to count
                                 onOptionSelected(id, name, count)
-                            }
+                            },
+                            isKiosk = isKiosk,
+                            keyWeViewModel = keyWeViewModel
                         )
                     }
                 }
@@ -97,7 +108,14 @@ fun Option(name: String, optionPrice: Int) {
 }
 
 @Composable
-fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+fun OptionAmount(
+    optionAmount: Int,
+    optionName: String,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit,
+    isKiosk: Boolean,
+    keyWeViewModel: KeyWeViewModel
+) {
     Row(
         modifier = Modifier
             .width(88.dp)
@@ -109,7 +127,15 @@ fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Un
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .noRippleClickable { onDecrease() },
+                .semantics { contentDescription = "minus_extra_option_$optionName" }
+                .noRippleClickable {
+                    onDecrease()
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                        KeyWeButtonEvent.MenuDetailMinusExtraOption(
+                            optionName
+                        )
+                    )
+                },
             painter = painterResource(R.drawable.minus_circle),
             contentDescription = "minus in circle"
         )
@@ -121,7 +147,15 @@ fun OptionAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Un
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
-                .noRippleClickable { onIncrease() },
+                .semantics { contentDescription = "plus_extra_option_$optionName" }
+                .noRippleClickable {
+                    onIncrease()
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                        KeyWeButtonEvent.MenuDetailPlusExtraOption(
+                            optionName
+                        )
+                    )
+                                   },
             painter = painterResource(R.drawable.plus_circle),
             contentDescription = "plus in circle"
         )
@@ -134,7 +168,9 @@ fun OptionBox(
     name: String,
     optionPrice: Int,
     extraOptions: MutableMap<Long, Pair<String, Int>>,
-    onOptionSelected: (Long, String, Int) -> Unit
+    onOptionSelected: (Long, String, Int) -> Unit,
+    isKiosk: Boolean,
+    keyWeViewModel: KeyWeViewModel
 ) {
 
     val optionAmount = remember { mutableIntStateOf(extraOptions[id]?.second ?: 0) }
@@ -159,7 +195,7 @@ fun OptionBox(
         ) {
             Option(name, optionPrice)
             OptionAmount(
-                optionAmount.value,
+                optionAmount = optionAmount.value,
                 onDecrease = {
                     if (optionAmount.value > 0) {
                         optionAmount.value -= 1
@@ -172,7 +208,10 @@ fun OptionBox(
                         extraOptions[id] = name to optionAmount.value
                         onOptionSelected(id, name, optionAmount.value)
                     }
-                })
+                },
+                optionName = name,
+                keyWeViewModel = keyWeViewModel,
+                isKiosk = isKiosk)
         }
     }
 }

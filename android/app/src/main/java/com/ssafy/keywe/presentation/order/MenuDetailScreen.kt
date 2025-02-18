@@ -61,6 +61,7 @@ fun MenuDetailScreen(
     signalViewModel: SignalViewModel,
     tokenManager: TokenManager,
     storeId: Long,
+    isKiosk: Boolean = false
 ) {
     Log.d("Menu Detail", ":$menuId")
     val context = LocalContext.current
@@ -88,12 +89,7 @@ fun MenuDetailScreen(
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
                 disConnect(
-                    context,
-                    keyWeViewModel,
-                    appBarViewModel,
-                    isKiosk,
-                    navController,
-                    tokenManager
+                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
                 )
             }
         }
@@ -151,26 +147,23 @@ fun MenuDetailScreen(
     ) {
         // 통화 종료 다이얼로그
         if (isStopCallingDialogOpen) {
-            MenuCartDeleteDialog(title = "통화 종료",
-                description = "통화를 종료하시겠습니까?",
-                onCancel = {
-                    appBarViewModel.closeDialog()
+            MenuCartDeleteDialog(title = "통화 종료", description = "통화를 종료하시겠습니까?", onCancel = {
+                appBarViewModel.closeDialog()
 //                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
 
-                },
-                onConfirm = {
-                    /* 너의 action */
-                    disConnect(
-                        context,
-                        keyWeViewModel,
-                        appBarViewModel,
-                        isKiosk,
-                        navController,
-                        tokenManager
-                    )
+            }, onConfirm = {
+                /* 너의 action */
+                disConnect(
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager
+                )
 //                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
 
-                })
+            })
         }
     }
 
@@ -182,8 +175,7 @@ fun MenuDetailScreen(
                 viewModel = appBarViewModel,
                 keyWeViewModel = keyWeViewModel
             )
-        }, modifier = Modifier
-            .fillMaxSize()
+        }, modifier = Modifier.fillMaxSize()
 //        .pointerInteropFilter { motionEvent ->
 //            when (motionEvent.action) {
 //                MotionEvent.ACTION_DOWN -> {
@@ -251,7 +243,8 @@ fun MenuDetailScreen(
                     }
 
                     item {
-                        MenuDetailCommonOption(sizeOptions = sizeValues,
+                        MenuDetailCommonOption(
+                            sizeOptions = sizeValues,
                             temperatureOptions = temperatureValues,
                             selectedSize = selectedSize.value, // 🔹 MutableState<String> 자체를 전달
                             selectedTemperature = selectedTemperature.value,
@@ -265,7 +258,10 @@ fun MenuDetailScreen(
                                     optionPrice * pair.second
                                 }
                             },
-                            onTemperatureSelected = { temp -> selectedTemperature.value = temp })
+                            onTemperatureSelected = { temp -> selectedTemperature.value = temp },
+                            isKiosk = isKiosk,
+                            keyWeViewModel = keyWeViewModel
+                        )
                         Spacer(
                             modifier = Modifier
                                 .height(12.dp)
@@ -276,11 +272,15 @@ fun MenuDetailScreen(
 
                     item {
 
-                        MenuDetailExtraOption(options = sortedExtraOptions,
+                        MenuDetailExtraOption(
+                            options = sortedExtraOptions,
                             onOptionSelected = { id, name, newAmount ->
                                 if (newAmount == 0) extraOptions.remove(id)
                                 else extraOptions[id] = name to newAmount
-                            })
+                            },
+                            isKiosk = isKiosk,
+                            keyWeViewModel = keyWeViewModel
+                        )
 
                         totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value]
                             ?: 0) + extraOptions.entries.sumOf { (optionId, pair) ->

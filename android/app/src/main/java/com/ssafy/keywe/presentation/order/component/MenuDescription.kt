@@ -22,13 +22,17 @@ import com.ssafy.keywe.presentation.order.viewmodel.MenuViewModel
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.pretendardkr
 import com.ssafy.keywe.ui.theme.titleTextColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 
 @Composable
 fun MenuDescription(
     menuId: Long,
     viewModel: MenuViewModel = hiltViewModel(),
     menuCartViewModel: MenuCartViewModel,
+    keyWeViewModel: KeyWeViewModel,
     storeId: Long,
+    isKiosk: Boolean
 ) {
     val menu = viewModel.getMenuSimpleModelById(menuId)
 
@@ -78,11 +82,14 @@ fun MenuDescription(
                 )
             )
         }
-        MenuPlusButton({
-            menuCartViewModel.addToCart(
+        MenuPlusButton({ menuCartViewModel.addToCart(
                 menuId, "Tall", "Hot", emptyMap(), menuPrice, storeId
             )
-        })
+            if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                KeyWeButtonEvent.MenuAddToCart(menuId)
+            )},
+            menuId = menuId
+        )
     }
 
 }

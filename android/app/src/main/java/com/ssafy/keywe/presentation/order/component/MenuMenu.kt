@@ -97,7 +97,9 @@ fun MenuMenuList(
                                 menu.menuId, storeId
                             )
                         )
-                    }, viewModel, menuCartViewModel, storeId
+                    }, viewModel, menuCartViewModel, storeId,
+                    isKiosk = isKiosk,
+                    keyWeViewModel = keyWeViewModel
                 )
             }
         }
@@ -111,6 +113,8 @@ fun MenuMenuScreen(
     viewModel: MenuViewModel,
     menuCartViewModel: MenuCartViewModel,
     storeId: Long,
+    isKiosk: Boolean,
+    keyWeViewModel: KeyWeViewModel
 ) {
 //    Log.d("Menu ID", "$menuId")
 
@@ -135,7 +139,12 @@ fun MenuMenuScreen(
 //            Log.d("menu Column", "$menuId")
             MenuImage(menuId, viewModel)
 
-            MenuDescription(menuId, viewModel, menuCartViewModel, storeId)
+            MenuDescription(
+                menuId = menuId,
+                viewModel = viewModel,
+                menuCartViewModel = menuCartViewModel,
+                keyWeViewModel =keyWeViewModel,
+                storeId = storeId, isKiosk = isKiosk)
         }
 
         val density = LocalDensity.current.density // Density 가져오기

@@ -373,8 +373,8 @@ class KeyWeViewModel @Inject constructor(
         val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
         Log.d("KeyWeViewModel", "이벤트 전송: $event")
 
-//        Log.d("KeyWeViewModel", "_localDataStreamId.value: ${_localDataStreamId.value}")
-//        Log.d("KeyWeViewModel", "_rtcEngine.value: ${_rtcEngine.value}")
+        Log.d("KeyWeViewModel", "_localDataStreamId.value: ${_localDataStreamId.value}")
+        Log.d("KeyWeViewModel", "_rtcEngine.value: ${_rtcEngine.value}")
 
         val result = _localDataStreamId.value?.let {
             _rtcEngine.value?.sendStreamMessage(it, messageBytes)
@@ -410,19 +410,46 @@ class KeyWeViewModel @Inject constructor(
                             putExtra("menuId", messageData.menuId)
                         }
 
+                        is KeyWeButtonEvent.MenuDetailSelectCommonOption -> {
+                            putExtra("eventType", "MenuDetailSelectCommonOption")
+                            putExtra("optionValue", messageData.optionValue)
+                        }
+
+                        is KeyWeButtonEvent.MenuDetailPlusExtraOption -> {
+                            putExtra("eventType", "MenuDetailPlusExtraOption")
+                            putExtra("optionName", messageData.optionName)
+                        }
+
+                        is KeyWeButtonEvent.MenuDetailMinusExtraOption -> {
+                            putExtra("eventType", "MenuDetailMinusExtraOption")
+                            putExtra("optionName", messageData.optionName)
+                        }
+
+                        is KeyWeButtonEvent.MenuCartPlusAmount -> {
+                            putExtra("eventType", "MenuCartPlusAmount")
+                            putExtra("cartItemName", messageData.cartItemName)
+                        }
+
+                        is KeyWeButtonEvent.MenuCartMinusAmount -> {
+                            putExtra("eventType", "MenuCartMinusAmount")
+                            putExtra("cartItemName", messageData.cartItemName)
+                        }
+
                         is KeyWeButtonEvent.MenuCart -> {
                             putExtra("eventType", "MenuCart")
                         }
 
-                        KeyWeButtonEvent.CartAcceptDialog -> putExtra(
-                            "eventType", "CartAcceptDialog"
-                        )
+                        is KeyWeButtonEvent.CartAcceptDialog -> {
+                            putExtra("eventType", "CartAcceptDialog")
+                        }
 
-                        KeyWeButtonEvent.CartCloseDialog -> putExtra(
-                            "eventType", "CartCloseDialog"
-                        )
+                        is KeyWeButtonEvent.CartCloseDialog -> {
+                            putExtra("eventType", "CartCloseDialog")
+                        }
 
-                        KeyWeButtonEvent.CartOpenDialog -> putExtra("eventType", "CartOpenDialog")
+                        is KeyWeButtonEvent.CartOpenDialog -> {
+                            putExtra("eventType", "CartOpenDialog")
+                        }
                     }
                 }
 
