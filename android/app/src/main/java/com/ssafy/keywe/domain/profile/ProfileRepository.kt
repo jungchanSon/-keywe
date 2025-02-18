@@ -12,9 +12,6 @@ interface ProfileRepository {
     suspend fun getProfileList(): ResponseResult<List<GetProfileListModel>>
     suspend fun getProfileDetail(profileId: Long): ResponseResult<GetProfileDetailModel>
     suspend fun postProfile(
-//        postProfileRequest: PostProfileRequest,
-//        context: Context,
-//        imageUri: Uri?
         profileBody: RequestBody,
         image: MultipartBody.Part?
     ): ResponseResult<PostProfileModel>

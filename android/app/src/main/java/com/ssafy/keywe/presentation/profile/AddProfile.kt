@@ -221,7 +221,7 @@ fun AddMemberScreen(
                             },
                             modifier = Modifier
                                 .height(52.dp)
-                                .width(120.dp),
+                                .width(140.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
                             enabled = if (state.isVerificationSent) {
                                 viewModel.isVerificationButtonEnabled.collectAsState().value
@@ -229,7 +229,7 @@ fun AddMemberScreen(
                                 state.isPhoneValid && !state.isVerificationSent
                             }
                         ) {
-                            Text(text = if (state.isVerificationSent) "인증확인" else "확인")
+                            Text(text = if (state.isVerificationSent) "인증확인" else "인증번호전송")
                         }
                     }
                 }

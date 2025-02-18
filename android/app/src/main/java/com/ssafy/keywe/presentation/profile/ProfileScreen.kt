@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,6 @@ import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.profile.component.MenuButton
-import com.ssafy.keywe.presentation.profile.component.OrderStaticsBox
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileDetailViewModel
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.subtitle1
@@ -57,7 +57,7 @@ fun ProfileScreen(
 
 
     Scaffold(
-        topBar = { DefaultAppBar(title = "프로필", navController = navController) },
+        topBar = { DefaultAppBar(title = "프로필") },
 //        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Column(
@@ -93,6 +93,11 @@ fun ProfileScreen(
                         style = subtitle1,
                         color = Color.Gray
                     )
+                    Text(
+                        text = profileState.value?.phone ?: "",
+                        style = subtitle1,
+                        color = Color.Gray
+                    )
 //                    Text(
 //                        text = "김동철", style = h6sb, modifier = Modifier.padding(top = 8.dp)
 //                    )
@@ -103,24 +108,6 @@ fun ProfileScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            // 오더 통계 카드
-            Row(
-                modifier = Modifier
-                    .height(60.dp)
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                OrderStaticsBox(
-                    modifier = Modifier.weight(1f), orderCount = 39, label = "Total Orders"
-                )
-                OrderStaticsBox(
-                    modifier = Modifier.weight(1f), orderCount = 2, label = "Active Orders"
-                )
-                OrderStaticsBox(
-                    modifier = Modifier.weight(1f), orderCount = 39, label = "Cancle Orders"
-                )
-            }
 
 //            // 계정관리 버튼
             Row(modifier = Modifier
@@ -144,7 +131,6 @@ fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        MenuButton(text = "본인정보", onClick = {})
         MenuButton(text = "프로필 수정", onClick = {
             ProfileIdManager.profileId.value?.let { profile ->
                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
@@ -157,6 +143,16 @@ fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager
                 tokenManager.clearTokens()
             }
         })
-        MenuButton(text = "회원탈퇴", onClick = {})
+        MenuButton(text = "회원탈퇴", onClick = {
+            scope.launch {
+                tokenManager.clearTokens()
+
+                Toast.makeText(navController.context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+
+                navController.navigate(Route.AuthBaseRoute.LoginRoute) {
+                    popUpTo(Route.ProfileBaseRoute.ProfileScreenRoute) { inclusive = true }
+                }
+            }
+        })
     }
 }

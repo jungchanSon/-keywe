@@ -262,6 +262,7 @@ class EditMemberViewModel @Inject constructor(
                     Log.d("deleteProfile", "프로필 삭제 성공")
                     ProfileIdManager.clearProfileId() // 프로필 ID 초기화
                     tokenManager.clearTokens()
+//                    _uiEvent.emit(UiEvent.ShowToast("프로필이 삭제되었습니다."))
 
                     // 로그인 화면으로 이동하는 로직 추가
                     navController?.navigate(Route.AuthBaseRoute.LoginRoute) {

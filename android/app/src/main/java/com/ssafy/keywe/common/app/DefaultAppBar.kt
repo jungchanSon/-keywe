@@ -29,7 +29,7 @@ import io.agora.rtc2.Constants
 fun DefaultAppBar(
     title: String,
     actions: @Composable RowScope.() -> Unit = {},
-    navController: NavController,
+    navController: NavController? = null,
 ) {
     TopAppBar(
         backgroundColor = whiteBackgroundColor,
@@ -37,7 +37,7 @@ fun DefaultAppBar(
         windowInsets = WindowInsets(0, 0, 0, 0),
         title = { Text(text = title, style = h6) },
         navigationIcon = {
-            if (!isOnlyCurrentScreenInBackStack(navController)) {
+            if (navController != null && !isOnlyCurrentScreenInBackStack(navController)) {
                 IconButton(onClick = {
                     navController.popBackStack()
                 }) {

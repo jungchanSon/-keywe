@@ -39,3 +39,8 @@ data class DeleteProfileRequest(
     @SerialName("profileId") val profileId: Long
 )
 
+@Serializable
+data class SmsRequest(
+    val phone: String
+)
+

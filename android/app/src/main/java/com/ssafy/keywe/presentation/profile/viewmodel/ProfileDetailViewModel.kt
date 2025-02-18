@@ -56,28 +56,38 @@ class ProfileDetailViewModel @Inject constructor(
             _isLoading.value = true
             _error.value = null
 
-            ProfileIdManager.profileId.value?.let { profileId ->
-                Log.d(
-                    "ProfileDetailViewModel",
-                    "Fetching profile detail for ID: $profileId"
-                ) // ✅ 디버깅 로그 추가
-                when (val result = repository.getProfileDetail(profileId)) {
-                    is ResponseResult.Success -> {
-                        _state.value = result.data
-                    }
+            val profileId = ProfileIdManager.profileId.value
+            if (profileId == null) {
+                Log.e("ProfileDetailViewModel", "❌ Profile ID is null, cannot fetch data!")
+                _isLoading.value = false
+                return@launch
+            }
 
-                    is ResponseResult.ServerError -> {
-                        _error.value = "서버 오류가 발생했습니다"
-                    }
+            Log.d("ProfileDetailViewModel", "✅ Fetching profile detail for ID: $profileId")
 
-                    is ResponseResult.Exception -> {
-                        _error.value = "네트워크 오류가 발생했습니다"
-                    }
+            when (val result = repository.getProfileDetail(profileId)) {
+                is ResponseResult.Success -> {
+                    _state.value = result.data // ✅ null 방지
+                    Log.d(
+                        "ProfileDetailViewModel",
+                        "✅ Profile data loaded successfully: ${_state.value}"
+                    )
+                }
+
+                is ResponseResult.ServerError -> {
+                    _error.value = "서버 오류가 발생했습니다"
+                    Log.e("ProfileDetailViewModel", "❌ Server error while fetching profile data")
+                }
+
+                is ResponseResult.Exception -> {
+                    _error.value = "네트워크 오류가 발생했습니다"
+                    Log.e("ProfileDetailViewModel", "❌ Network error: ${result.message}")
                 }
             }
             _isLoading.value = false
         }
     }
+
 
     fun updateProfile(context: Context, profileViewModel: ProfileViewModel, imageUri: Uri?) {
         viewModelScope.launch {
