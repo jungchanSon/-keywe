@@ -9,9 +9,11 @@ import com.kiosk.server.user.service.CeoLoginService;
 import com.kiosk.server.user.util.HashUtil;
 import com.kiosk.server.user.util.TokenUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CeoLoginServiceImpl implements CeoLoginService {
@@ -25,16 +27,19 @@ public class CeoLoginServiceImpl implements CeoLoginService {
         User foundUser = userRepository.findByEmail(email);
 
         if (foundUser == null || foundUser.getRole() != UserRole.CEO) {
-            throw new UnauthorizedException("Incorrect Credentials");
+            log.info("사장님 로그인 실패 - 존재하지 않는 이메일: email={}", email);
+            throw new UnauthorizedException("로그인에 실패했습니다.");
         }
 
         // 비밀번호 검증
         String hashedInputPassword = HashUtil.hashPassword(password, foundUser.getSalt());
 
         if (!foundUser.getPassword().equals(hashedInputPassword)) {
-            throw new UnauthorizedException("Incorrect Credentials");
+            log.info("사장님 로그인 실패 - 잘못된 비밀번호 입력: email={}", email);
+            throw new UnauthorizedException("로그인에 실패했습니다.");
         }
 
+        log.info("사장님 로그인 성공 - userId={}", foundUser.getUserId());
         String accessToken = tokenUtil.createAuthenticationToken(foundUser.getUserId(), foundUser.getUserId());
         return new CeoLoginResult(accessToken, String.valueOf(foundUser.getUserId()));
     }
