@@ -414,9 +414,15 @@ class KeyWeViewModel @Inject constructor(
                             putExtra("eventType", "MenuCart")
                         }
 
-                        KeyWeButtonEvent.CartAcceptDialog -> TODO()
-                        KeyWeButtonEvent.CartCloseDialog -> TODO()
-                        KeyWeButtonEvent.CartOpenDialog -> TODO()
+                        KeyWeButtonEvent.CartAcceptDialog -> putExtra(
+                            "eventType", "CartAcceptDialog"
+                        )
+
+                        KeyWeButtonEvent.CartCloseDialog -> putExtra(
+                            "eventType", "CartCloseDialog"
+                        )
+
+                        KeyWeButtonEvent.CartOpenDialog -> putExtra("eventType", "CartOpenDialog")
                     }
                 }
 

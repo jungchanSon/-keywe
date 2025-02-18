@@ -112,21 +112,22 @@ fun MenuScreen(
     ) {
         // 통화 종료 다이얼로그
         if (isStopCallingDialogOpen) {
-            MenuCartDeleteDialog(title = "통화 종료",
-                description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.closeDialog() },
-                onConfirm = {
-                    /* 너의 action */
-                    disConnect(
-                        context,
-                        keyWeViewModel,
-                        appBarViewModel,
-                        isKiosk,
-                        navController,
-                        tokenManager
-                    )
-                    keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
-                })
+            MenuCartDeleteDialog(title = "통화 종료", description = "통화를 종료하시겠습니까?", onCancel = {
+                appBarViewModel.closeDialog()
+//                if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
+
+            }, onConfirm = {
+                /* 너의 action */
+                disConnect(
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager
+                )
+//                keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
+            })
         }
     }
 

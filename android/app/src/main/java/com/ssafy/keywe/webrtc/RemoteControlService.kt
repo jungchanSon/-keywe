@@ -88,6 +88,21 @@ class RemoteControlService : AccessibilityService() {
                 Log.d(TAG, "MenuCart: ")
                 findAndClickNodeByDescription("menu_cart")
             }
+
+            "CartOpenDialog" -> {
+                Log.d(TAG, "CartOpenDialog: ")
+                findAndClickNodeByDescription("cart_open_dialog")
+            }
+
+            "CartCloseDialog" -> {
+                Log.d(TAG, "CartCloseDialog: ")
+                findAndClickNodeByDescription("cart_close_dialog")
+            }
+
+            "CartAcceptDialog" -> {
+                Log.d(TAG, "CartAcceptDialog: ")
+                findAndClickNodeByDescription("cart_accept_dialog")
+            }
         }
     }
 

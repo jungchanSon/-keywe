@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -56,6 +58,7 @@ import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
@@ -92,12 +95,7 @@ fun MenuCartScreen(
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
                 disConnect(
-                    context,
-                    keyWeViewModel,
-                    appBarViewModel,
-                    isKiosk,
-                    navController,
-                    tokenManager
+                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
                 )
             }
         }
@@ -117,11 +115,15 @@ fun MenuCartScreen(
         if (isDeleteDialogOpen && selectedCartItem != null) {
             MenuCartDeleteDialog(title = "장바구니 삭제",
                 description = "선택한 상품을 장바구니에서 삭제하시겠습니까?",
-                onCancel = { menuCartViewModel.closeDeleteDialog() },
+                onCancel = {
+                    menuCartViewModel.closeDeleteDialog()
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
+                },
                 onConfirm = {
                     selectedCartItem?.let { cartItem ->
                         menuCartViewModel.removeFromCart(cartItem.id)
                     }
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
                 })
         }
 
@@ -129,10 +131,15 @@ fun MenuCartScreen(
         if (isAllDeleteDialogOpen.value) {
             MenuCartDeleteDialog(title = "전체 메뉴 삭제",
                 description = "장바구니에 담긴 모든 메뉴를 삭제하시겠습니까?",
-                onCancel = { isAllDeleteDialogOpen.value = false },
+                onCancel = {
+                    isAllDeleteDialogOpen.value = false
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
+                },
                 onConfirm = {
                     menuCartViewModel.clearCart()
                     isAllDeleteDialogOpen.value = false
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
+
                 })
         }
 
@@ -150,7 +157,11 @@ fun MenuCartScreen(
         if (isStopCallingDialogOpen) {
             MenuCartDeleteDialog(title = "통화 종료",
                 description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.closeDialog() },
+                onCancel = {
+                    appBarViewModel.closeDialog()
+//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
+
+                },
                 onConfirm = {
 
                     /* 너의 action */
@@ -162,6 +173,8 @@ fun MenuCartScreen(
                         navController,
                         tokenManager
                     )
+//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
+
                 })
         }
 
@@ -174,8 +187,7 @@ fun MenuCartScreen(
                 viewModel = appBarViewModel,
                 keyWeViewModel = keyWeViewModel
             )
-        }, modifier = Modifier
-            .fillMaxSize()
+        }, modifier = Modifier.fillMaxSize()
 //            .pointerInteropFilter { motionEvent ->
 //                when (motionEvent.action) {
 //                    MotionEvent.ACTION_DOWN -> {
@@ -230,9 +242,13 @@ fun MenuCartScreen(
                     Text(text = "전체 삭제",
                         style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                         color = polishedSteelColor,
-                        modifier = Modifier.noRippleClickable {
-                            isAllDeleteDialogOpen.value = true
-                        })
+
+                        modifier = Modifier
+                            .semantics { contentDescription = "cart_open_dialog" }
+                            .noRippleClickable {
+                                isAllDeleteDialogOpen.value = true
+                                if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartOpenDialog)
+                            })
                 }
 
 

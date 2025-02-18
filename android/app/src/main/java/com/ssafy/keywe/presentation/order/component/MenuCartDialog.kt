@@ -63,7 +63,7 @@ fun MenuCartDeleteDialog(
                             .weight(1f)
                             .height(52.dp)
                             .semantics {
-                                contentDescription = "cart_dialog_close"
+                                contentDescription = "cart_close_dialog"
                             }, content = "뒤로가기",
 
                         onClick = onCancel, colors = ButtonColors(
@@ -78,7 +78,7 @@ fun MenuCartDeleteDialog(
                             .weight(1f)
                             .height(52.dp)
                             .semantics {
-                                contentDescription = "cart_dialog_accept"
+                                contentDescription = "cart_accept_dialog"
                             }, content = "확인", onClick = onConfirm
                     )
                 }

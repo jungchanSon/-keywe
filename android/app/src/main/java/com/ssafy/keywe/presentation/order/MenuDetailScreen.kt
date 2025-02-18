@@ -153,7 +153,11 @@ fun MenuDetailScreen(
         if (isStopCallingDialogOpen) {
             MenuCartDeleteDialog(title = "통화 종료",
                 description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.closeDialog() },
+                onCancel = {
+                    appBarViewModel.closeDialog()
+//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
+
+                },
                 onConfirm = {
                     /* 너의 action */
                     disConnect(
@@ -164,6 +168,8 @@ fun MenuDetailScreen(
                         navController,
                         tokenManager
                     )
+//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
+
                 })
         }
     }
