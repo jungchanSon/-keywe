@@ -51,13 +51,9 @@ fun MenuCategoryScreen(
                 }
             }) {
             menuCategoryList.forEach { category ->
-                Tab(modifier = Modifier
-//                    .noRippleClickable {
-//                        viewModel.setSelectedCategory(category.categoryName, storeId)
-//                        selectItem() }
-                    .semantics {
-                        contentDescription = category.categoryName
-                    }, selected = selectedCategory == category.categoryName, onClick = {
+                Tab(modifier = Modifier.semantics {
+                    contentDescription = category.categoryName
+                }, selected = selectedCategory == category.categoryName, onClick = {
                     viewModel.setSelectedCategory(category.categoryName, storeId)
                     if (!isKiosk) keyWeViewModel.sendButtonEvent(
                         KeyWeButtonEvent.CategorySelect(

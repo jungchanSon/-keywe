@@ -7,7 +7,6 @@ import android.os.Build
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.view.accessibility.AccessibilityWindowInfo
 import com.ssafy.keywe.webrtc.data.MessageType
 
 
@@ -93,9 +92,14 @@ class RemoteControlService : AccessibilityService() {
                 Log.d(TAG, "MenuAddToCart: $menuId")
                 findAndClickNodeByDescription("add_to_cart_$menuId")
             }
+
+            "MenuCart" -> {
+                Log.d(TAG, "MenuCart: ")
+                findAndClickNodeByDescription("menu_cart")
+            }
         }
     }
-    
+
     private fun findAndClickNodeByText(text: String) {
         // 매번 최신의 루트 노드를 새로 가져옴
 //        val rootNode = getActiveRootNode()

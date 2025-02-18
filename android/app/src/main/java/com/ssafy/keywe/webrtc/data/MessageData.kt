@@ -194,6 +194,9 @@ sealed class KeyWeButtonEvent : MessageData() {
         val menuId: Long,
     ) : KeyWeButtonEvent()
 
+    @Serializable
+    data object MenuCart : KeyWeButtonEvent()
+
     override val mType: MessageType = MessageType.BUTTON_EVENT
 }
 

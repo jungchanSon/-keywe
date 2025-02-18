@@ -409,6 +409,10 @@ class KeyWeViewModel @Inject constructor(
                             putExtra("eventType", "MenuAddToCart")
                             putExtra("menuId", messageData.menuId)
                         }
+
+                        is KeyWeButtonEvent.MenuCart -> {
+                            putExtra("eventType", "MenuCart")
+                        }
                     }
                 }
 

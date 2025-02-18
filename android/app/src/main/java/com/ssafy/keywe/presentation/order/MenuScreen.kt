@@ -32,6 +32,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -53,6 +55,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.screen.closeSTOMP
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
@@ -138,7 +141,7 @@ fun MenuScreen(
             isRoot = true
         )
     }, modifier = Modifier.fillMaxSize(), floatingActionButton = {
-        FloatingCartButton(navController, menuCartViewModel, storeId)
+        FloatingCartButton(navController, menuCartViewModel, storeId, keyWeViewModel, isKiosk)
     }) {
         Column(
             modifier = Modifier.fillMaxHeight()
@@ -197,6 +200,8 @@ fun FloatingCartButton(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel = hiltViewModel(),
     storeId: Long,
+    keyWeViewModel: KeyWeViewModel,
+    isKiosk: Boolean = false,
 ) {
 //    val cartItemCount by viewModel.cartItemCount.collectAsState()
     val cartItems by menuCartViewModel.cartItems.collectAsState()
@@ -209,8 +214,10 @@ fun FloatingCartButton(
             .background(whiteBackgroundColor, shape = CircleShape)
             .shadow(4.dp, CircleShape, clip = false)
     ) {
-        FloatingActionButton(
-            onClick = { navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId)) },
+        FloatingActionButton(onClick = {
+            navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId))
+            if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.MenuCart)
+        },
             containerColor = Color.White,
             contentColor = Color.White,
             shape = CircleShape,
@@ -218,7 +225,9 @@ fun FloatingCartButton(
             modifier = Modifier
                 .size(48.dp)
                 .border(2.dp, primaryColor, CircleShape)
-        ) {
+                .semantics {
+                    contentDescription = "menu_cart"
+                }) {
             Image(
                 modifier = Modifier.background(whiteBackgroundColor),
                 painter = painterResource(R.drawable.outline_shopping_cart_24),
