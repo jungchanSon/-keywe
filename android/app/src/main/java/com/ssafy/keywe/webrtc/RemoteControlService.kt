@@ -38,22 +38,13 @@ class RemoteControlService : AccessibilityService() {
     }
 
     override fun onServiceConnected() {
-        super.onServiceConnected()
-        Log.d(TAG, "onServiceConnected")
-
         val info = AccessibilityServiceInfo()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
-//            info.eventTypes =
-//                AccessibilityEvent.TYPE_VIEW_CLICKED or AccessibilityEvent.TYPE_VIEW_FOCUSED
-        }
-
-        info.apply {
-            feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL
-            notificationTimeout = 100  // 반응성 향상을 위해 타임아웃 감소
-            flags =
-                AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
-        }
-
+        info.eventTypes =
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL
+        info.notificationTimeout = 100
+        info.flags =
+            AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
         this.serviceInfo = info
     }
 
@@ -114,7 +105,7 @@ class RemoteControlService : AccessibilityService() {
         while (nodes.isNotEmpty()) {
             val node = nodes.removeAt(0)
 
-            if (node.text?.toString()?.contains(text, ignoreCase = true) == true) {
+            if (node.text?.toString()?.equals(text, ignoreCase = true) == true) {
                 Log.d(TAG, "Found node with text: $text")
 
                 // 1. 포커스 주기
@@ -171,7 +162,7 @@ class RemoteControlService : AccessibilityService() {
             val node = nodes.removeAt(0)
 
             if (node.contentDescription?.toString()
-                    ?.contains(description, ignoreCase = true) == true
+                    ?.equals(description, ignoreCase = true) == true
             ) {
                 Log.d(TAG, "Found node with description: $description")
 
@@ -222,7 +213,7 @@ class RemoteControlService : AccessibilityService() {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
                 -> {
-                Log.d("Accessibility", "화면 변경 감지됨: ${event.className}")
+                Log.d(" ", "화면 변경 감지됨: ${event.className}")
 
                 // 새로운 화면의 루트 노드 업데이트
                 updateCurrentRootNode()

@@ -125,6 +125,7 @@ fun MenuScreen(
                         navController,
                         tokenManager
                     )
+                    keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
                 })
         }
     }

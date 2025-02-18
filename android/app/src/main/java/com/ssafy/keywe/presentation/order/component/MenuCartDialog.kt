@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,8 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.ssafy.keywe.common.app.BottomButton
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h6sb
@@ -25,14 +30,17 @@ import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.titleTextColor
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuCartDeleteDialog(
     title: String,
     description: String,
     onCancel: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
 ) {
-    Dialog(onDismissRequest = { onCancel() }) {
+    BasicAlertDialog(properties = DialogProperties(
+        dismissOnBackPress = false, dismissOnClickOutside = false
+    ), onDismissRequest = { onCancel() }) {
         Surface(
             modifier = Modifier
                 .width(280.dp) // 다이얼로그 크기 조절
@@ -53,10 +61,12 @@ fun MenuCartDeleteDialog(
                     BottomButton(
                         modifier = Modifier
                             .weight(1f)
-                            .height(52.dp),
-                        content = "뒤로가기",
-                        onClick = onCancel,
-                        colors = ButtonColors(
+                            .height(52.dp)
+                            .semantics {
+                                contentDescription = "cart_dialog_close"
+                            }, content = "뒤로가기",
+
+                        onClick = onCancel, colors = ButtonColors(
                             containerColor = greyBackgroundColor,
                             contentColor = titleTextColor,
                             disabledContentColor = polishedSteelColor,
@@ -66,9 +76,10 @@ fun MenuCartDeleteDialog(
                     BottomButton(
                         modifier = Modifier
                             .weight(1f)
-                            .height(52.dp),
-                        content = "확인",
-                        onClick = onConfirm
+                            .height(52.dp)
+                            .semantics {
+                                contentDescription = "cart_dialog_accept"
+                            }, content = "확인", onClick = onConfirm
                     )
                 }
             }
@@ -80,7 +91,7 @@ fun MenuCartDeleteDialog(
 fun MenuCartFinishDialog(
     title: String,
     description: String,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
 ) {
     Dialog(onDismissRequest = {}) {
         Surface(

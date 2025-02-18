@@ -197,6 +197,17 @@ sealed class KeyWeButtonEvent : MessageData() {
     @Serializable
     data object MenuCart : KeyWeButtonEvent()
 
+
+    @Serializable
+    data object CartOpenDialog : KeyWeButtonEvent()
+
+    @Serializable
+    data object CartCloseDialog : KeyWeButtonEvent()
+
+    @Serializable
+    data object CartAcceptDialog : KeyWeButtonEvent()
+
+
     override val mType: MessageType = MessageType.BUTTON_EVENT
 }
 
