@@ -51,12 +51,6 @@ class EditMemberViewModel @Inject constructor(
         }
     }
 
-    //    fun updateProfileImage(uri: Uri) {
-//        _profileImageUri.value = uri
-//        _state.update {
-//            it.copy(isModified = true)
-//        }
-//    }
     fun updateProfileImage(uri: Uri) {
         _profileImageUri.value = uri
         _state.update {

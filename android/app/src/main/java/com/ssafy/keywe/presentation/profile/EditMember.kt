@@ -44,11 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
 import com.ssafy.keywe.common.manager.ProfileIdManager
+import com.ssafy.keywe.presentation.order.component.Base64Image
 import com.ssafy.keywe.presentation.profile.viewmodel.EditMemberViewModel
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.body2
@@ -82,12 +84,9 @@ fun EditMemberScreen(
     Scaffold(topBar = {
         DefaultAppBar(title = "프로필 수정", actions = {
             TextButton(onClick = {
-                val imageUri = viewModel.profileImageUri.value
-                    ?: Uri.parse("android.resource://${context.packageName}/${R.drawable.humanimage}")
                 viewModel.updateProfile(
                     context,
                     profileViewModel,
-//                    imageUri, // ✅ 변환된 MultipartBody.Part 전달
                     navController
                 )
                 navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
@@ -110,16 +109,18 @@ fun EditMemberScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
         ) {
-            Box(modifier = Modifier
-                .size(150.dp)
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 24.dp)
-                .clickable { imagePicker.launch("image/*") })
-            // 프로필 이미지 섹션
+            // 프로필 이미지 선택 및 표시
             ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
 
-
             Spacer(modifier = Modifier.height(16.dp))
+//            Box(modifier = Modifier
+//                .size(150.dp)
+//                .align(Alignment.CenterHorizontally)
+//                .padding(vertical = 24.dp)
+//                .clickable { imagePicker.launch("image/*") })
+//            // 프로필 이미지 섹션
+//            ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
+//            Spacer(modifier = Modifier.height(16.dp))
 
             // 이름 입력 필드
             DefaultTextFormField(label = "이름",
@@ -177,17 +178,32 @@ fun EditMemberScreen(
 // 📌 프로필 이미지 선택기
 @Composable
 fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) {
+    val selectImageUri by viewModel.profileImageUri.collectAsStateWithLifecycle()
+    val existingImageState by viewModel.state.collectAsStateWithLifecycle()
+
     Box(modifier = Modifier
         .size(150.dp)
         .padding(vertical = 24.dp)
         .clickable { imagePicker() }) {
-        // 기본 프로필 이미지
-        Image(
-            painter = painterResource(id = R.drawable.humanimage),
-            contentDescription = "프로필 이미지",
-            modifier = Modifier.fillMaxSize()
-        )
 
+        if (selectImageUri != null) {
+            Image(
+                painter = rememberAsyncImagePainter(selectImageUri),
+                contentDescription = "선택한 프로필 이미지",
+                modifier = Modifier.fillMaxSize()
+            )
+        } else if (!existingImageState.profileImage.isNullOrBlank()) {
+            Base64Image(
+                base64String = existingImageState.profileImage!!,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.humanimage),
+                contentDescription = "기본 프로필 이미지",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
         // 수정 버튼 아이콘
         Image(painter = painterResource(id = R.drawable.edit),
             contentDescription = "프로필 수정 버튼",
