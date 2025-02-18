@@ -78,8 +78,7 @@ class AddMemberViewModel @Inject constructor(
                             "-",
                             ""
                         ) else null,
-                        password = if (_state.value.selectedTab == 0) _state.value.password else null,
-                        imagePath = null
+                        password = if (_state.value.selectedTab == 0) _state.value.password else null
                     )
                 )
                 val profileBody = profileJson.toRequestBody("application/json".toMediaTypeOrNull())
@@ -211,21 +210,32 @@ class AddMemberViewModel @Inject constructor(
             role = role,
             name = name,
             phone = phone?.replace("-", ""),
-            password = password,
-            imagePath = null
+            password = password
         )
     }
 
-    private fun createMultipartImage(context: Context, imageUri: Uri): MultipartBody.Part {
-        val inputStream = context.contentResolver.openInputStream(imageUri)
+    
+    // Uri -> 멀티파트로 바꾸는 함수
+    private fun createMultipartImage(context: Context, uri: Uri): MultipartBody.Part {
         val file = File(context.cacheDir, "profile_image.jpg").apply {
-            outputStream().use { output ->
-                inputStream?.copyTo(output)
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                outputStream().use { output -> input.copyTo(output) }
             }
         }
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData("image", file.name, requestFile)
     }
+
+//    private fun createMultipartImage(context: Context, imageUri: Uri): MultipartBody.Part {
+//        val inputStream = context.contentResolver.openInputStream(imageUri)
+//        val file = File(context.cacheDir, "image.jpg").apply {
+//            outputStream().use { output ->
+//                inputStream?.copyTo(output)
+//            }
+//        }
+//        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+//        return MultipartBody.Part.createFormData("image", file.name, requestFile)
+//    }
 
     private fun checkAddButtonEnabled() {
         val currentState = _state.value

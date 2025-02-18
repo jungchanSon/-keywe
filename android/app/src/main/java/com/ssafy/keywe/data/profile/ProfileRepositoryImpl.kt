@@ -73,11 +73,11 @@ class ProfileRepositoryImpl @Inject constructor(
 
     /** ✅ updateProfile 메서드 수정 */
     override suspend fun updateProfile(
-        updateProfileRequest: UpdateProfileRequest, context: Context, imageUri: Uri?
+        updateProfileRequest: UpdateProfileRequest, image: MultipartBody.Part?
     ): ResponseResult<UpdateProfileModel> {
         val gson = Gson()
         val profileJsonString = gson.toJson(updateProfileRequest)
-//        val profileBody = createProfileRequestBody(updateProfileRequest)
+//        val profileBody = profileJsonString.toRequestBody("application/json".toMediaTypeOrNull())
 //        val profileBody = MultipartBody.Part.createFormData(
 //            "profile",
 //            null,
@@ -85,10 +85,10 @@ class ProfileRepositoryImpl @Inject constructor(
 //        )
         val profileBody = profileJsonString.toRequestBody("application/json".toMediaTypeOrNull())
 
-        val profileImage = imageUri?.let { createMultipartImage(context, it) }
+//        val profileImage = imageUri?.let { createMultipartImage(context, it) }
 
         return when (val result =
-            profileDataSource.requestUpdateProfile(profileBody, profileImage)) {
+            profileDataSource.requestUpdateProfile(profileBody, image)) {
             is ResponseResult.Exception -> ResponseResult.Exception(
                 result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
             )

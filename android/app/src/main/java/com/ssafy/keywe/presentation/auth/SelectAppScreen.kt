@@ -39,7 +39,7 @@ fun SelectAppScreen(navController: NavHostController) {
 
                 SelectOptionCard(title = "키위 매칭 이용",
                     description = "사장님으로 시작하기\n메뉴선택, 편집 및 관리",
-                    imageRes = R.drawable.kiwibird,
+                    imageRes = R.drawable.ceo,
                     backgroundColor = Color(0xFFF8B195),
                     onClick = {
                         navController.navigate(
@@ -50,7 +50,7 @@ fun SelectAppScreen(navController: NavHostController) {
 
                 SelectOptionCard(title = "키위 매칭 이용",
                     description = "이용자로 시작하기\n키위매칭 서비스 이용",
-                    imageRes = R.drawable.kiwibird,
+                    imageRes = R.drawable.user,
                     backgroundColor = Color(0xFFBFA895),
                     onClick = {
                         navController.navigate(

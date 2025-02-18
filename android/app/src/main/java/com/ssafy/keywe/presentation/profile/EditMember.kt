@@ -66,6 +66,7 @@ fun EditMemberScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+
     // 프로필 이미지 선택
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -79,17 +80,17 @@ fun EditMemberScreen(
     }
 
     Scaffold(topBar = {
-        DefaultAppBar(title = "프로필 수정", navController = navController, actions = {
+        DefaultAppBar(title = "프로필 수정", actions = {
             TextButton(onClick = {
-                viewModel.updateProfile(context, profileViewModel, navController)
+                viewModel.updateProfile(
+                    context,
+                    profileViewModel,
+                    viewModel.profileImageUri.value,
+                    navController
+                )
                 navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
                     popUpTo(Route.ProfileBaseRoute.ProfileEditRoute) { inclusive = true }
                 }
-//
-//                navController.popBackStack(
-//                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
-//                    false
-//                )
             }) {
                 Text("완료", color = primaryColor)
             }
@@ -183,7 +184,6 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
             painter = painterResource(id = R.drawable.humanimage),
             contentDescription = "프로필 이미지",
             modifier = Modifier.fillMaxSize()
-//                .align(Alignment.BottomEnd)
         )
 
         // 수정 버튼 아이콘
@@ -220,7 +220,7 @@ fun PhoneNumberInput(
 
         OutlinedTextField(
             value = phone, // ✅ 기존에 저장된 핸드폰 번호 표시
-            onValueChange = { onPhoneChange(it) }, // ✅ 값이 변경될 때 `onPhoneChange` 호출
+            onValueChange = { onPhoneChange(it) }, // ✅ 값이 변경될 때 onPhoneChange 호출
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             interactionSource = interactionSource,
             isError = !isPhoneValid, // ✅ 유효성 검사 반영
