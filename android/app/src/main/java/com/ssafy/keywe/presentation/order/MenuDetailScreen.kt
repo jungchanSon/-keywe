@@ -309,7 +309,9 @@ fun MenuDetailScreen(
                     navController = navController,
                     menuCartViewModel = menuCartViewModel,
                     storeId = storeId,
-                    isKeyWe = true
+                    isKeyWe = true,
+                    keyWeViewModel = keyWeViewModel,
+                    isKiosk = isKiosk
                 )
             }
         }

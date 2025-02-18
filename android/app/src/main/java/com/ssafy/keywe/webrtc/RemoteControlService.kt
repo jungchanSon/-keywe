@@ -130,6 +130,16 @@ class RemoteControlService : AccessibilityService() {
                 Log.d(TAG, "BackButton: ")
                 findAndClickNodeByDescription("back_button")
             }
+
+            "StoreButton" -> {
+                Log.d(TAG, "StoreButton: ")
+                findAndClickNodeByDescription("menu_detail_store_button")
+            }
+
+            "OrderButton" -> {
+                Log.d(TAG, "OrderButton: ")
+                findAndClickNodeByDescription("menu_detail_order_button")
+            }
         }
     }
 

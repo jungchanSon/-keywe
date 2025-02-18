@@ -414,17 +414,23 @@ class KeyWeViewModel @Inject constructor(
                             putExtra("eventType", "MenuCart")
                         }
 
-                        is KeyWeButtonEvent.CartAcceptDialog -> putExtra(
-                            "eventType", "CartAcceptDialog"
-                        )
+                        is KeyWeButtonEvent.CartAcceptDialog -> {
+                            putExtra(
+                                "eventType", "CartAcceptDialog"
+                            )
+                        }
 
-                        is KeyWeButtonEvent.CartCloseDialog -> putExtra(
-                            "eventType", "CartCloseDialog"
-                        )
+                        is KeyWeButtonEvent.CartCloseDialog -> {
+                            putExtra(
+                                "eventType", "CartCloseDialog"
+                            )
+                        }
 
-                        is KeyWeButtonEvent.CartOpenDialog -> putExtra(
-                            "eventType", "CartOpenDialog"
-                        )
+                        is KeyWeButtonEvent.CartOpenDialog -> {
+                            putExtra(
+                                "eventType", "CartOpenDialog"
+                            )
+                        }
 
                         is KeyWeButtonEvent.CartIdOpenDialog -> {
                             putExtra("eventType", "CartIdOpenDialog")
@@ -446,6 +452,14 @@ class KeyWeViewModel @Inject constructor(
 
                         KeyWeButtonEvent.BackButton -> {
                             putExtra("eventType", "BackButton")
+                        }
+
+                        KeyWeButtonEvent.OrderButton -> {
+                            putExtra("eventType", "OrderButton")
+                        }
+
+                        KeyWeButtonEvent.StoreButton -> {
+                            putExtra("eventType", "StoreButton")
                         }
                     }
                 }
