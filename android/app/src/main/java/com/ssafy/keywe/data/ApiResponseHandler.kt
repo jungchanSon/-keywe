@@ -18,23 +18,31 @@ object ApiResponseHandler {
     suspend fun <T : Any> handleApiResponse(execute: suspend () -> Response<T>): ResponseResult<T> {
         return try {
             val response: Response<T> = execute()
-            val body: T? = response.body()
 
             when {
                 response.isSuccessful -> {
-                    ResponseResult.Success(body as T)
+                    when (response.code()) {
+                        204 -> {
+                            @Suppress("UNCHECKED_CAST")
+                            ResponseResult.Success(Unit as T)
+                        }
+
+                        else -> {
+                            val body = response.body()
+                            ResponseResult.Success(
+                                body ?: @Suppress("UNCHECKED_CAST") (Unit as T)
+                            )
+                        }
+                    }
                 }
 
                 else -> {
                     val errorBody: ResponseBody = response.errorBody()
-                        ?: throw IllegalArgumentException("erroryBody를 찾을 수 없습니다.")
+                        ?: throw IllegalArgumentException("errorBody를 찾을 수 없습니다.")
                     Log.d("rest api error", errorBody.toString())
 
-//                    val errorResponse: ErrorResponse = getErrorResponse(errorBody)
-//                    Log.d("rest api error", "${errorResponse}")
-
                     ResponseResult.ServerError(
-                        status = Status.Code(500),//errorResponse.code
+                        status = Status.Code(response.code())
                     )
                 }
             }

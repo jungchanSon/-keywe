@@ -53,3 +53,8 @@ data class UpdateProfileResponse(
     @SerialName("phone") val phone: String?,
     @SerialName("password") val password: String?
 )
+
+@Serializable
+data class SmsResponse(
+    val message: String
+)

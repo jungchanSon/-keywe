@@ -66,11 +66,12 @@ fun EditMemberScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+
     // 프로필 이미지 선택
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let { viewModel.updateProfileImage(it) }
+        uri?.let { viewModel.updateProfileImage(uri) }  //이미지 uri 업데이트
     }
     val profileId by ProfileIdManager.profileId.collectAsStateWithLifecycle()
     // 기존 프로필 정보 불러오기
@@ -79,17 +80,19 @@ fun EditMemberScreen(
     }
 
     Scaffold(topBar = {
-        DefaultAppBar(title = "프로필 수정", navController = navController, actions = {
+        DefaultAppBar(title = "프로필 수정", actions = {
             TextButton(onClick = {
-                viewModel.updateProfile(context, profileViewModel, navController)
+                val imageUri = viewModel.profileImageUri.value
+                    ?: Uri.parse("android.resource://${context.packageName}/${R.drawable.humanimage}")
+                viewModel.updateProfile(
+                    context,
+                    profileViewModel,
+//                    imageUri, // ✅ 변환된 MultipartBody.Part 전달
+                    navController
+                )
                 navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
                     popUpTo(Route.ProfileBaseRoute.ProfileEditRoute) { inclusive = true }
                 }
-//
-//                navController.popBackStack(
-//                    Route.ProfileBaseRoute.ProfileChoiceRoute(false),
-//                    false
-//                )
             }) {
                 Text("완료", color = primaryColor)
             }
@@ -183,7 +186,6 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
             painter = painterResource(id = R.drawable.humanimage),
             contentDescription = "프로필 이미지",
             modifier = Modifier.fillMaxSize()
-//                .align(Alignment.BottomEnd)
         )
 
         // 수정 버튼 아이콘
@@ -220,7 +222,7 @@ fun PhoneNumberInput(
 
         OutlinedTextField(
             value = phone, // ✅ 기존에 저장된 핸드폰 번호 표시
-            onValueChange = { onPhoneChange(it) }, // ✅ 값이 변경될 때 `onPhoneChange` 호출
+            onValueChange = { onPhoneChange(it) }, // ✅ 값이 변경될 때 onPhoneChange 호출
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             interactionSource = interactionSource,
             isError = !isPhoneValid, // ✅ 유효성 검사 반영

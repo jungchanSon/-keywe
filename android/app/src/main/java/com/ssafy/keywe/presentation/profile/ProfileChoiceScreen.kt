@@ -51,12 +51,10 @@ fun ProfileChoiceScreen(
     isJoinApp: Boolean,
     profileViewModel: ProfileViewModel = hiltViewModel(),
     fcmViewModel: FCMViewModel = hiltViewModel(),
-//    profileDataStore: ProfileDataStore = hiltViewModel()
 ) {
     val profiles by profileViewModel.profiles.collectAsStateWithLifecycle() // 프로필뷰모델에서 프로필 목록을 자동으로 업데이트하기
     val parentProfiles = profiles.filter { it.role == PARENT }
     val childProfiles = profiles.filter { it.role == CHILD }
-//    val token by PushNotificationManager.token.collectAsStateWithLifecycle()
 
     //화면이 다시 나타날떄마다 api 다시 조회
     LaunchedEffect(Unit) {
