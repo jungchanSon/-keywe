@@ -4,6 +4,7 @@ package com.ssafy.keywe.presentation.order
 //import com.ssafy.keywe.webrtc.data.Touch
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -88,7 +89,10 @@ fun MenuCartScreen(
     val isKiosk = tokenManager.isKiosk
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
 
-
+    BackHandler {
+        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.BackButton)
+        navController.popBackStack()
+    }
     LaunchedEffect(message) {
         Log.d("MenuCartScreen", "message: $message")
         message?.let {
