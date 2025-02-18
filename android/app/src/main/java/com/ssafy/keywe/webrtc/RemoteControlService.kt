@@ -95,19 +95,7 @@ class RemoteControlService : AccessibilityService() {
             }
         }
     }
-
-    // 현재 활성화된 창의 루트 노드를 반환하는 함수
-    private fun getActiveRootNode(): AccessibilityNodeInfo? {
-        // serviceInfo에 FLAG_RETRIEVE_INTERACTIVE_WINDOWS 플래그가 설정되어 있어야 함
-        for (window in windows) {
-            // 애플리케이션 창이며 루트가 존재하는 창을 찾음
-            if (window.isActive && window.root != null && window.type == AccessibilityWindowInfo.TYPE_APPLICATION) {
-                return window.root
-            }
-        }
-        return null
-    }
-
+    
     private fun findAndClickNodeByText(text: String) {
         // 매번 최신의 루트 노드를 새로 가져옴
 //        val rootNode = getActiveRootNode()

@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.gson.Gson
-import com.ssafy.keywe.common.LoginRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
@@ -35,7 +34,7 @@ import javax.inject.Inject
 class EditMemberViewModel @Inject constructor(
     private val repository: ProfileRepository,
     private val profileDataStore: ProfileDataStore,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditMemberState())
@@ -190,7 +189,7 @@ class EditMemberViewModel @Inject constructor(
 
     //수정 업데이트 정보 담기
     fun updateProfile(
-        context: Context, profileViewModel: ProfileViewModel, navController: NavController
+        context: Context, profileViewModel: ProfileViewModel, navController: NavController,
     ) {
         viewModelScope.launch {
 
@@ -265,7 +264,7 @@ class EditMemberViewModel @Inject constructor(
                     tokenManager.clearTokens()
 
                     // 로그인 화면으로 이동하는 로직 추가
-                    navController?.navigate(LoginRoute) {
+                    navController?.navigate(Route.AuthBaseRoute.LoginRoute) {
                         popUpTo(0) { inclusive = true } // 백스택 전체 제거
                     }
                 }
