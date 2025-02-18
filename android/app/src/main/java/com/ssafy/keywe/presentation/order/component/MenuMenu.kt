@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.order.component
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,9 +41,12 @@ import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 
+@OptIn(FlowPreview::class)
 @Composable
 fun MenuMenuList(
     navController: NavController,
@@ -59,13 +64,46 @@ fun MenuMenuList(
     LaunchedEffect(viewModel.selectedCategory.collectAsState().value) {
         coroutineScope.launch {
             listState.animateScrollToItem(
-                index = 8,
-                scrollOffset = 100
+                index = 0,
             )
         }
     }
+
+
+    // [변경된 부분 1] 스크롤 상태 전송 (로컬 -> 원격)
+    if(!isKiosk){
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
+                .debounce(100) // 100ms마다 업데이트 전송
+                .collect { (index, offset) ->
+                    Log.d("MenuMenuList", "스크롤 상태 전송 (로컬 -> 원격) : $index, $offset")
+                    // 스크롤 상태를 원격에 전송하는 함수 (구현 필요)
+                    keyWeViewModel.sendScrollData(
+                        firstVisibleItemIndex = index,
+                        firstVisibleItemScrollOffset = offset
+                    )
+                }
+        }
+    }
+
+
+    // [변경된 부분 2] 원격 스크롤 상태 수신 후 동기화 (원격 -> 로컬)
+    LaunchedEffect(keyWeViewModel.remoteScrollState) {
+        coroutineScope.launch {
+            keyWeViewModel.remoteScrollState.collect { scrollData ->
+                scrollData?.let {
+                    listState.animateScrollToItem(
+                        index = it.firstVisibleItemIndex,
+                        scrollOffset = scrollData.firstVisibleItemScrollOffset
+                    )
+                }
+            }
+        }
+
+    }
+
     // Accompanist Snapper를 이용한 스냅 플링 동작 생성
-    val snapFlingBehavior = rememberSnapFlingBehavior(lazyGridState = listState)
+    val snapFlingBehavior = rememberSnapFlingBehavior(lazyGridState = listState, snapPosition = SnapPosition.Start)
 
     Box(
         modifier = Modifier

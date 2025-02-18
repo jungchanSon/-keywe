@@ -114,7 +114,7 @@ fun InputPhoneNumberScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .height(75.dp)
+//                        .height(75.dp)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
@@ -125,7 +125,7 @@ fun InputPhoneNumberScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+//                Spacer(modifier = Modifier.height(30.dp))
 
                 PhoneNumberDisplay(phoneNumber1, phoneNumber2, phoneNumber3)
 
