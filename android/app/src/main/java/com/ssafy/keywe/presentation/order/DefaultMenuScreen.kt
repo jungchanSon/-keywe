@@ -62,7 +62,7 @@ fun DefaultMenuScreen(
             modifier = Modifier.fillMaxHeight()
         ) {
 
-            MenuCategoryScreen(menuViewModel, storeId)
+            MenuCategoryScreen(menuViewModel, storeId = storeId)
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(

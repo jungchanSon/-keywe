@@ -137,88 +137,14 @@ fun MenuScreen(
             keyWeViewModel = keyWeViewModel,
             isRoot = true
         )
-    }, modifier = Modifier
-        .fillMaxSize()
-//        .pointerInput(Unit) {
-//            awaitEachGesture {
-//                // 첫 터치 다운 이벤트를 감지하되, 소비하지 않음 (requireUnconsumed = false)
-//                val down = awaitFirstDown(requireUnconsumed = false)
-//                val startPosition = down.position
-//                Log.d("ParentGesture", "Down at: $startPosition")
-//                var isDragging = false
-//
-//                // 터치가 계속되는 동안 이벤트를 관찰
-//                do {
-//                    // Initial 패스로 이벤트를 관찰 (이벤트 소비 X)
-//                    val event = awaitPointerEvent(PointerEventPass.Initial)
-//                    event.changes.forEach { change ->
-//                        // 터치 이동이 발생하면 드래그로 판단
-//                        val delta = change.positionChange()
-//                        if (delta != Offset.Zero) {
-//                            isDragging = true
-//                            Log.d(
-//                                "ParentGesture",
-//                                "Dragging: current x=${change.position.x}, y=${change.position.y}, delta=(${
-//                                    delta.x
-//                                }, ${delta.y})"
-//                            )
-//                        }
-//                    }
-//                    // 터치가 여전히 진행 중이면 반복
-//                } while (event.changes.any { it.pressed })
-//
-//                // 드래그가 없었으면 클릭으로 간주
-//                if (!isDragging) {
-//                    Log.d("ParentGesture", "Click detected at: $startPosition")
-//                }
-//            }
-//        }
-//        .pointerInteropFilter { motionEvent ->
-//            when (motionEvent.action) {
-//                MotionEvent.ACTION_DOWN -> {
-////                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
-////                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
-//
-//                    Log.d(
-//                        "sendGesture",
-//                        "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
-//                    )
-////                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-////                    if (!isKiosk)
-////                        keyWeViewModel.sendClickGesture(
-////                        Touch(
-////                            MessageType.Touch, motionEvent.x, motionEvent.y,
-////                        )
-////                    )
-//                    println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
-//                }
-//
-//                MotionEvent.ACTION_MOVE -> {
-////                    if (!isKiosk) keyWeViewModel.sendClickGesture(
-////                        Drag(
-////                            MessageType.Drag, motionEvent.x, motionEvent.y,
-////                        )
-////                    )
-//                    println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
-//                }
-//
-//                else -> {
-//                    Log.d("MotionEvent", "click")
-//                }
-//            }
-//            false
-//        }
-        ,
-
-
-        floatingActionButton = {
-            FloatingCartButton(navController, menuCartViewModel, storeId)
-        }) {
+    }, modifier = Modifier.fillMaxSize(), floatingActionButton = {
+        FloatingCartButton(navController, menuCartViewModel, storeId)
+    }) {
         Column(
             modifier = Modifier.fillMaxHeight()
         ) {
             /// 메뉴 내용
-            MenuCategoryScreen(menuViewModel, storeId)
+            MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
