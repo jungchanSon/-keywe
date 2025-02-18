@@ -44,8 +44,8 @@ class RemoteControlService : AccessibilityService() {
 
         val info = AccessibilityServiceInfo()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
-            info.eventTypes =
-                AccessibilityEvent.TYPE_VIEW_CLICKED or AccessibilityEvent.TYPE_VIEW_FOCUSED
+//            info.eventTypes =
+//                AccessibilityEvent.TYPE_VIEW_CLICKED or AccessibilityEvent.TYPE_VIEW_FOCUSED
         }
 
         info.apply {
@@ -110,7 +110,8 @@ class RemoteControlService : AccessibilityService() {
 
     private fun findAndClickNodeByText(text: String) {
         // 매번 최신의 루트 노드를 새로 가져옴
-        val rootNode = getActiveRootNode()
+//        val rootNode = getActiveRootNode()
+        val rootNode = rootInActiveWindow  // 항상 최신 노드 가져오기
         if (rootNode == null) {
             Log.e(TAG, "rootInActiveWindow is null")
             return
@@ -165,7 +166,8 @@ class RemoteControlService : AccessibilityService() {
 
     private fun findAndClickNodeByDescription(description: String) {
         // 매번 최신의 루트 노드를 새로 가져옴
-        val rootNode = getActiveRootNode()
+        val rootNode = rootInActiveWindow  // 항상 최신 노드 가져오기
+
         if (rootNode == null) {
             Log.e(TAG, "rootInActiveWindow is null")
             return
@@ -223,7 +225,33 @@ class RemoteControlService : AccessibilityService() {
         val eventType = event.eventType
         val contentDescription = nodeInfo.contentDescription?.toString() ?: "없음"
         val text = nodeInfo.text?.toString() ?: "없음"
+
+        when (event.eventType) {
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+                -> {
+                Log.d("Accessibility", "화면 변경 감지됨: ${event.className}")
+
+                // 새로운 화면의 루트 노드 업데이트
+                updateCurrentRootNode()
+            }
+        }
+
         Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
+    }
+
+    /**
+     * 현재 화면의 최신 노드를 가져와 갱신하는 함수
+     */
+    private fun updateCurrentRootNode() {
+        val rootNode = rootInActiveWindow ?: return
+        Log.d("Accessibility", "현재 화면의 루트 노드 갱신됨")
+
+        // 특정 요소를 찾고 싶다면 여기에 추가
+        val targetNodes = rootNode.findAccessibilityNodeInfosByText("네비게이션 버튼")
+        targetNodes?.forEach {
+            Log.d("Accessibility", "찾은 요소: ${it.text}")
+        }
     }
 
     companion object {
