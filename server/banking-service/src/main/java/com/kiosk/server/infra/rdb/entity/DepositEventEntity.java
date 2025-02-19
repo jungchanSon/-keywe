@@ -15,38 +15,21 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(catalog = "account", name = "account")
+@Table(catalog = "balance_history ", name = "deposit")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class AccountEntity {
+public class DepositEventEntity {
 
     @Id
-    private Long accountId;
+    private Long depositEventId;
 
-    private Long memberId;
+    private Long userId;
 
-    private String email;
+    private Long amount;
 
-    private Long balance;
-
-    private Long withdrawSnapshotId = 0L;
-
-    private Long depositSnapshotId = 0L;
-
-    private String phoneNumber;
+    private Long remainingBalance;
 
     @CreatedDate
-    private LocalDateTime createdAt;
-
-    public Boolean minus(long amount) {
-        if(this.balance < amount) return false;
-        this.balance -= amount;
-
-        return true;
-    }
-
-    public void plus(long amount) {
-        this.balance += amount;
-    }
+    private LocalDateTime localDateTime;
 }
