@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -38,8 +39,11 @@ import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 const val PARENT = "PARENT"
 const val CHILD = "CHILD"
@@ -55,7 +59,7 @@ fun ProfileChoiceScreen(
     val profiles by profileViewModel.profiles.collectAsStateWithLifecycle() // 프로필뷰모델에서 프로필 목록을 자동으로 업데이트하기
     val parentProfiles = profiles.filter { it.role == PARENT }
     val childProfiles = profiles.filter { it.role == CHILD }
-
+    val scope = rememberCoroutineScope()
     //화면이 다시 나타날떄마다 api 다시 조회
     LaunchedEffect(Unit) {
         profileViewModel.refreshProfileList()
@@ -65,11 +69,9 @@ fun ProfileChoiceScreen(
     Scaffold(
         topBar = {
             DefaultAppBar(
-                title = if (isJoinApp) "프로필 선택" else "계정 관리",
-                navController = navController
+                title = if (isJoinApp) "프로필 선택" else "계정 관리", navController = navController
             )
-        },
-        modifier = Modifier.fillMaxSize()
+        }, modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         if (profiles.isEmpty()) {
             // 프로필이 없을 때의 UI
@@ -84,7 +86,7 @@ fun ProfileChoiceScreen(
                 Box(
                     modifier = Modifier
                         .size(120.dp)
-                        .background(color = greyBackgroundColor)
+                        .background(color = lightColor)
                         .clickable {
                             navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
                         }, contentAlignment = Alignment.Center
@@ -122,14 +124,13 @@ fun ProfileChoiceScreen(
                             // 처음
                             if (isJoinApp) {
                                 joinHome(
-                                    profileViewModel, profile, navController
+                                    profileViewModel, profile, navController, scope
                                 )
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
 
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                        }, modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -145,7 +146,7 @@ fun ProfileChoiceScreen(
                             // 처음
                             if (isJoinApp) {
                                 joinHome(
-                                    profileViewModel, profile, navController
+                                    profileViewModel, profile, navController, scope
                                 )
                             } else {
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
@@ -200,15 +201,19 @@ private fun joinHome(
     profileViewModel: ProfileViewModel,
     profile: GetProfileListModel,
     navController: NavController,
+    scope: CoroutineScope
 ) {
-    profileViewModel.selectAccount(profile)
-    ProfileIdManager.updateProfileId(profile.id.toLong())
-    navController.navigate(BottomRoute.ProfileRoute, builder = {
-        popUpTo(navController.graph.startDestinationId) {
-            inclusive = true
-        }
-        launchSingleTop = true
-    })
+    scope.launch {
+        profileViewModel.selectAccount(profile)
+        ProfileIdManager.updateProfileId(profile.id.toLong())
+        navController.navigate(BottomRoute.ProfileRoute, builder = {
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
+            launchSingleTop = true
+        })
+    }
+
 }
 
 

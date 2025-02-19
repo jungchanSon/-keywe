@@ -113,7 +113,7 @@ fun AddMemberScreen(
 
 
     Scaffold(
-        topBar = { DefaultAppBar(title = "구성원 추가", navController = navController) },
+        topBar = { DefaultAppBar(title = "프로필 추가", navController = navController) },
         modifier = Modifier
             .fillMaxSize()
             .clickable(interactionSource = remember { MutableInteractionSource() },
