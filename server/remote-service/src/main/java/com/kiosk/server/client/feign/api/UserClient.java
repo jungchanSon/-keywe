@@ -10,8 +10,11 @@ import java.util.List;
 @FeignClient(name = "userClient", url = "${service.user}")
 public interface UserClient {
 
-    @GetMapping("/internal/users/{userId}/profiles/child")
-    List<UserProfile> getHelperProfiles(@PathVariable(name = "userId") String userId);
+    @GetMapping("/internal/users/profiles/{userId}")
+    UserProfile getUserProfile(@PathVariable(name = "userId") String userId);
+
+    @GetMapping("/internal/users/{familyId}/profiles/child")
+    List<UserProfile> getHelperProfiles(@PathVariable(name = "familyId") String familyId);
 
     @GetMapping(value = "/internal/profiles/{userId}/role/parent")
     boolean verifyParentRole(@PathVariable("userId") String userId);

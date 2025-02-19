@@ -33,17 +33,20 @@ public class RemoteOrderHandler {
     ) {
         String userId = (String) sessionAttributes.get("userId");
         String familyId = (String) sessionAttributes.get("familyId");
-        String sessionId = remoteOrderService.saveSession(userId, familyId, requestMessage.storeId());
+        RemoteOrderSession session = remoteOrderService.saveSession(userId, familyId, requestMessage.storeId());
 
         // 키오스크에게 sessionId 전달
         RemoteOrderResponse responseMessage = RemoteOrderResponse.success(
             RemoteOrderResponseType.REQUESTED,
-            Map.of("sessionId", sessionId)
+            Map.of(
+                "sessionId", session.getSessionId(),
+                "username", session.getKioskUserName()
+            )
         );
 
         messagingTemplate.convertAndSend("/topic/" + userId, responseMessage);
 
-        sessionAttributes.put("sessionId", sessionId);
+        sessionAttributes.put("sessionId", session.getSessionId());
     }
 
     @MessageMapping("/remote-order/accept")
@@ -59,20 +62,32 @@ public class RemoteOrderHandler {
         AgoraChannelInfo agoraChannelInfo = agoraService.createChannel(session.getSessionId());
 
         // 양쪽에 Agora 토큰 전달
-        RemoteOrderResponse responseMessage = RemoteOrderResponse.success(
+        RemoteOrderResponse kioskUserResponseMessage = RemoteOrderResponse.success(
             RemoteOrderResponseType.ACCEPTED,
             Map.of(
                 "sessionId", session.getSessionId(),
                 "helperUserId", helperUserId,
-                "helperUserName", session.getHelperName(),
                 "kioskUserId", session.getKioskUserId(),
+                "partnerName", session.getHelperUserName(),
                 "channel", agoraChannelInfo
             )
         );
 
-        messagingTemplate.convertAndSend("/topic/" + helperUserId, responseMessage);
-        messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), responseMessage);
+        RemoteOrderResponse helperUserResponseMessage = RemoteOrderResponse.success(
+            RemoteOrderResponseType.ACCEPTED,
+            Map.of(
+                "sessionId", session.getSessionId(),
+                "helperUserId", helperUserId,
+                "kioskUserId", session.getKioskUserId(),
+                "partnerName", session.getKioskUserName(),
+                "channel", agoraChannelInfo
+            )
+        );
+
+        messagingTemplate.convertAndSend("/topic/" + helperUserId, helperUserResponseMessage);
+        messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), kioskUserResponseMessage);
 
         sessionAttributes.put("sessionId", session.getSessionId());
     }
+
 }

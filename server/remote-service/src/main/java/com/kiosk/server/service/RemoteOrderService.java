@@ -32,8 +32,10 @@ public class RemoteOrderService {
 
     private static final Duration SESSION_TIMEOUT = Duration.ofSeconds(30);
 
-    public String saveSession(String userId, String familyId, String storeId) {
-        if (!userClient.verifyParentRole(userId)) {
+    public RemoteOrderSession saveSession(String userId, String familyId, String storeId) {
+        UserProfile userProfile = userClient.getUserProfile(userId);
+
+        if (!userProfile.role().equals("PARENT")) {
             throw new ChildRemoteOrderForbiddenException();
         }
 
@@ -41,6 +43,7 @@ public class RemoteOrderService {
             .sessionId(String.valueOf(IdUtil.create()))
             .familyId(familyId)
             .kioskUserId(userId)
+            .kioskUserName(userProfile.name())
             .storeId(storeId)
             .status(RemoteOrderStatus.WAITING.name())
             .createdAt(LocalDateTime.now().toString())
@@ -54,26 +57,17 @@ public class RemoteOrderService {
         scheduleTimeoutCheck(session.getSessionId());
         eventPublisher.publishEvent(new RemoteOrderRequestedEvent(session));
 
-        return session.getSessionId();
+        return session;
     }
 
     public RemoteOrderSession acceptSession(String sessionId, String helperUserId, String familyId) {
-        if (!sessionRepository.isHelper(familyId, helperUserId)) {
-            throw new UnauthorizedRemoteOrderAcceptException();
-        }
-
-        RemoteOrderSession session = sessionRepository.acceptSession(sessionId, helperUserId);
-
         // Helper의 이름 가져오기
         String helperName = sessionRepository.getHelperName(familyId, helperUserId);
         if (helperName == null) {
-            throw new IllegalStateException("Helper name not found");
+            throw new UnauthorizedRemoteOrderAcceptException();
         }
 
-        session.setHelperName(helperName);
-        sessionRepository.save(session);
-
-        return session;
+        return sessionRepository.acceptSession(sessionId, helperUserId, helperName);
     }
 
     private void scheduleTimeoutCheck(String sessionId) {
