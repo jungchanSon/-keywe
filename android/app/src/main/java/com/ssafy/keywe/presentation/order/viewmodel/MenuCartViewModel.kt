@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssafy.keywe.data.ResponseResult
@@ -62,7 +63,7 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                 is ResponseResult.Success -> {
                     val menuDetail = result.data
                     _selectedDetailMenu.value = menuDetail
-                    println("getDetailMenu 결과: $menuDetail")
+                    Log.d("MenuCartViewModel", "getDetailMenu 결과: $menuDetail")
                     menuDetail.options.forEach { option ->
                         Timber.tag("옵션 정보")
                             .d("옵션명: ${option.optionName}, 옵션 ID: ${option.optionId}")
@@ -92,22 +93,29 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
         storeId: Long,
     ) {
         viewModelScope.launch {
+            Log.d(
+                "MenuCartViewModel",
+                "addToCart: menuId: $menuId, size: $size, temperature: $temperature"
+            )
             _selectedDetailMenu.value = null
 
             fetchMenuDetailById(menuId, storeId)
 
             var retryCount = 0
-            while (selectedDetailMenu.value == null && retryCount < 6) {
+            while (_selectedDetailMenu.value == null && retryCount < 6) {
                 delay(500)
                 retryCount++
             }
 
-            val menuData = selectedDetailMenu.value
+            val menuData = _selectedDetailMenu.value
             if (menuData == null) {
                 Timber.tag("addToCart").e("메뉴 데이터가 null입니다. menuId: $menuId")
                 return@launch
             }
-
+            Log.d(
+                "MenuCartViewModel",
+                "menuData = $menuData"
+            )
             val sizeOptionId = menuData.options.flatMap { it.optionsValueGroup }
                 .find { it.optionValue == size }?.optionValueId
 
@@ -131,7 +139,7 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
             val currentCart = _cartItems.value.toMutableList()
 
             val existingItemIndex = currentCart.indexOfFirst {
-                it.name == menuData.menuName && it.size == size && it.temperature == temperature && it.extraOptions == cartExtraOptions
+                it.menuId == menuData.menuId && it.name == menuData.menuName && it.size == size && it.temperature == temperature && it.extraOptions == cartExtraOptions
             }
 
             if (existingItemIndex != -1) {

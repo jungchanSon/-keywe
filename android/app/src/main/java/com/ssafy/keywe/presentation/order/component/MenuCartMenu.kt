@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +46,7 @@ fun MenuCartMenuBox(
     viewModel: MenuCartViewModel,
     storeId: Long,
     keyWeViewModel: KeyWeViewModel = hiltViewModel(),
-    isKiosk: Boolean = false
+    isKiosk: Boolean = false,
 ) {
     Box {
         Column {
@@ -114,9 +112,10 @@ fun MenuCartMenu(
     }
     Log.d("extraOptions", "$extraOptions")
 
-    LaunchedEffect(cartItem.menuId) {
-        viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
-    }
+//    LaunchedEffect(cartItem.menuId) {
+//        Log.d("MenuCartViewModel", "스크린쪽 호출")
+//        viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
+//    }
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -238,7 +237,8 @@ fun MenuCartMenu(
                                         )
                                     )
                                 },
-                                    cartItemId = cartItem.id)
+                                    cartItemId = cartItem.id
+                                )
                             }
                         }
                     }
@@ -261,7 +261,12 @@ fun MenuCartMenu(
 }
 
 @Composable
-fun CartMenuAmount(cartItemId: Long, optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+fun CartMenuAmount(
+    cartItemId: Long,
+    optionAmount: Int,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .width(88.dp)

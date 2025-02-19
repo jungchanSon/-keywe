@@ -117,14 +117,15 @@ fun MenuDetailBottomBackButton(
         mapOf() // 기본값 설정
     }
 
-    Log.d("MenuDetailBottomBackButton", "🔥 extraOptions: $extraOptions")
-    Log.d("MenuDetailBottomBackButton", "🔥 selectedOptions: $selectedOptions")
+//    Log.d("MenuDetailBottomBackButton", "🔥 extraOptions: $extraOptions")
+//    Log.d("MenuDetailBottomBackButton", "🔥 selectedOptions: $selectedOptions")
 
     var addToCartTrigger by remember { mutableStateOf(false) }
 
     BottomButton(
         content = content, onClick = {
             Log.d("MenuDetailBottomBackButton", "🛒 addToCart 호출됨!")
+
             menuCartViewModel.addToCart(
                 menuId = menuId,
                 size = selectedSize,
@@ -182,14 +183,18 @@ fun MenuDetailBottomCartButton(
         mapOf() // 기본값 설정
     }
 
-    Log.d("MenuDetailBottomBackButton", "🔥 extraOptions: $extraOptions")
-    Log.d("MenuDetailBottomBackButton", "🔥 selectedOptions: $selectedOptions")
+//    Log.d("MenuDetailBottomBackButton", "🔥 extraOptions: $extraOptions")
+//    Log.d("MenuDetailBottomBackButton", "🔥 selectedOptions: $selectedOptions")
 
     var addToCartTrigger by remember { mutableStateOf(false) }
 
     BottomButton(
         content = content, onClick = {
             Log.d("MenuDetailBottomBackButton", "🛒 addToCart 호출됨!")
+            Log.d(
+                "MenuDetailBottomBackButton",
+                "menuId = $menuId, size = $selectedSize, temperature = $selectedTemperature, extraOptions = $extraOptions, totalPrice = $totalPrice, storeId = $storeId  selectedOptions: $selectedOptions"
+            )
             menuCartViewModel.addToCart(
                 menuId = menuId,
                 size = selectedSize,
