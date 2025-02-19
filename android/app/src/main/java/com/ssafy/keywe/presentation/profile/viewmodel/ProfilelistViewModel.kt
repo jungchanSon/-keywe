@@ -42,7 +42,10 @@ class ProfileViewModel @Inject constructor(
     val profiles = _profiles.asStateFlow()
 
     init {
-        getProfileList()
+        viewModelScope.launch {
+//            delay(200)
+            getProfileList()
+        }
     }
 
     private fun getProfileList() {
@@ -66,60 +69,28 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun selectAccount(model: GetProfileListModel) {
+    suspend fun selectAccount(model: GetProfileListModel) {
         Log.d("PROFILE ID", "selected ProfileId = ${model.id}")
-        viewModelScope.launch {
-            val request = SelectProfileRequest(
-                model.id.toLong()
-            )
-            authRepository.selectProfile(request).onSuccess { response ->
-                ProfileIdManager.updateProfileId(model.id.toLong())
-                profileDataStore.saveProfileId(model.id.toLong())
-                saveToken(response)
-            }
-                .onException { e, message ->
-                    Log.d("Select User onException", "SelectError $message")
-                }.onServerError { status ->
-                    Log.d("Select User onServerError", "SelectError $status")
-                }
-
+//        viewModelScope.launch {
+        val request = SelectProfileRequest(
+            model.id.toLong()
+        )
+        authRepository.selectProfile(request).onSuccess { response ->
+            ProfileIdManager.updateProfileId(model.id.toLong())
+            profileDataStore.saveProfileId(model.id.toLong())
+            saveToken(response)
         }
+            .onException { e, message ->
+                Log.d("Select User onException", "SelectError $message")
+            }.onServerError { status ->
+                Log.d("Select User onServerError", "SelectError $status")
+            }
+
+//        }
 
     }
 
-//    fun selectAccount(model: GetProfileListModel) {
-//        viewModelScope.launch {
-//            val request = SelectProfileRequest(
-//                model.id.toLong()
-//            )
-//            authRepository.selectProfile(request).onSuccess(::saveToken).onException { e, message ->
-//                Log.d("Select User onException", "SelectError $message")
-//            }.onServerError { status ->
-//                Log.d("Select User onServerError", "SelectError $status")
-//            }
-//
-//        }
-//
-//    }
 
-    //    fun refreshProfileList() {
-//        viewModelScope.launch {
-//            when (val result = profileRepository.getProfileList()) {
-//                is ResponseResult.Success -> {
-//                    _profiles.value = result.data
-//                    Log.d("refreshProfileList", "프로필 목록 새로고침 성공")
-//                }
-//
-//                is ResponseResult.ServerError -> {
-//                    Log.e("refreshProfileList", "서버 에러: ${result.status}")
-//                }
-//
-//                is ResponseResult.Exception -> {
-//                    Log.e("refreshProfileList", "예외 발생: ${result.e.message}")
-//                }
-//            }
-//        }
-//    }
     fun refreshProfileList() {
         viewModelScope.launch {
             when (val result = profileRepository.getProfileList()) {

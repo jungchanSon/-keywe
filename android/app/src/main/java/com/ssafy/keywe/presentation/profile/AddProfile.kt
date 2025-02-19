@@ -88,32 +88,9 @@ fun AddMemberScreen(
     val context = LocalContext.current
 
 
-    //화면열때마다 api 갱신(추가하기 버튼에 해놨지롱)
-//    LaunchedEffect(Unit) {
-//        viewModel.profileAddedEvent.collect {
-//            Log.d("AddMemberScreen", "Add Routing")
-//
-//            profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
-//
-//            if (isJoinApp) {
-//                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp = true))
-//                {
-//                    popUpTo(navController.graph.startDestinationId) {
-//                        inclusive = false
-//                    }  // 기존 스택을 유지할지 여부 설정, true로 이동하면서 popupto로 스택정리
-//                }
-//            } else {
-//                // false로 popbackstack 사용하여 이동
-//                navController.popBackStack(
-//                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
-//                )
-//            }
-//        }
-//    }
-
 
     Scaffold(
-        topBar = { DefaultAppBar(title = "구성원 추가", navController = navController) },
+        topBar = { DefaultAppBar(title = "프로필 추가", navController = navController) },
         modifier = Modifier
             .fillMaxSize()
             .clickable(interactionSource = remember { MutableInteractionSource() },
@@ -298,109 +275,6 @@ fun AddMemberScreen(
             ) {
                 Text("추가하기")
             }
-
-//            Button(
-//                onClick = {
-//                    val imageUri = imageUriState
-//                        ?: Uri.parse("android.resource://${context.packageName}/${R.drawable.humanimage}")
-//                    if (imageUri != null) {
-//                        viewModel.postProfile(
-//                            context = context,
-//                            onSuccess = {
-//                                profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
-//
-//                                if (isJoinApp) {
-//                                    navController.navigate(
-//                                        Route.ProfileBaseRoute.ProfileChoiceRoute(
-//                                            isJoinApp = true
-//                                        )
-//                                    ) {
-//                                        popUpTo(0) { inclusive = false }
-//                                    }
-//                                } else {
-//                                    navController.popBackStack(
-//                                        Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
-//                                    )
-//                                }
-//                            }
-//                        )
-//                    } else {
-//                        Log.e("Profile", "이미지가 선택되지 않았습니다.")
-//                    }
-//                },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(48.dp),
-//                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-//                enabled = viewModel.isAddButtonEnabled.collectAsState().value
-//            ) {
-//                Text("추가하기")
-//            }
-
-//            Button(
-//                onClick = {
-//                    viewModel.postProfile(
-//                        onSuccess = {
-//                            profileViewModel.refreshProfileList() // 추가 후 목록 새로고침
-//
-//                            if (isJoinApp) {
-//                                // profileChoiceScreen(true)로 이동하면서 스택 정리
-//                                navController.navigate(
-//                                    Route.ProfileBaseRoute.ProfileChoiceRoute(
-//                                        isJoinApp = true
-//                                    )
-//                                ) {
-//                                    popUpTo(0) { inclusive = false }
-//                                }
-//                            } else {
-//                                // profileChoiceScreen(false)로 popBackStack() 사용하여 이동
-//                                navController.popBackStack(
-//                                    Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
-//                                )
-//                            }
-//                        }
-//                    )
-//                },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(48.dp),
-//                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-//                enabled = viewModel.isAddButtonEnabled.collectAsState().value
-//            ) {
-//                Text("추가하기")
-//            }
-
-
-//            // 추가하기 버튼
-//            Button(
-//                onClick = {
-//                    viewModel.postProfile(
-//                        onSuccess = {
-//                            navController.popBackStack(
-//                                Route.ProfileBaseRoute.ProfileChoiceRoute(isJoinApp), false
-//                            )
-//                        }
-//                    )
-////                    viewModel.postProfile()
-////                    val backstack =
-////                        navController.getBackStackEntry<Route.ProfileBaseRoute.ProfileAddRoute>()
-//
-////                    viewModel.postProfile()
-//
-////                    navController.popBackStack()
-////                    backstack.destination
-//
-////                    Log.d("NavBackStack", "현재화면 : $currentRoute")
-//                },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(48.dp),
-//                colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
-//                enabled = viewModel.isAddButtonEnabled.collectAsState().value
-//            ) {
-//                Text("추가하기")
-//            }
-
             Spacer(modifier = Modifier.height(32.dp))
         }
     }

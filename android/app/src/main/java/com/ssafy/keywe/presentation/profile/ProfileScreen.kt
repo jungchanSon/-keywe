@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.profile
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,11 +52,12 @@ fun ProfileScreen(
 
     val profileState = viewModel.state.collectAsStateWithLifecycle()
 
-
     LaunchedEffect(ProfileIdManager.profileId) {
         ProfileIdManager.profileId.value?.let {
+            Log.d("ProfileScreen", "✅ Profile ID Loaded: $it")
             viewModel.loadProfileDetail()
             profileViewModel.refreshProfileList()
+            viewModel.refreshProfile()
         }
     }
 

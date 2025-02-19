@@ -113,14 +113,6 @@ fun EditMemberScreen(
             ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
 
             Spacer(modifier = Modifier.height(16.dp))
-//            Box(modifier = Modifier
-//                .size(150.dp)
-//                .align(Alignment.CenterHorizontally)
-//                .padding(vertical = 24.dp)
-//                .clickable { imagePicker.launch("image/*") })
-//            // 프로필 이미지 섹션
-//            ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
-//            Spacer(modifier = Modifier.height(16.dp))
 
             // 이름 입력 필드
             DefaultTextFormField(label = "이름",
@@ -160,6 +152,7 @@ fun EditMemberScreen(
                         AlertDialog.Builder(context).setTitle("프로필 삭제")
                             .setMessage("정말로 이 프로필을 삭제하시겠습니까?").setPositiveButton("삭제") { _, _ ->
                                 viewModel.deleteProfile(it, navController)
+
 //                                navController.navigateUp() // 삭제 후 이전 화면으로 이동
                             }.setNegativeButton("취소", null).show()
                     }

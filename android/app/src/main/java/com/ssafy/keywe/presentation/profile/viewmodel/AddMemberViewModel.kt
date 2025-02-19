@@ -61,38 +61,6 @@ class AddMemberViewModel @Inject constructor(
     val profileImageUri = _profileImageUri.asStateFlow()
 
 
-    fun postProfile(
-        context: Context,
-        profileRequest: PostProfileRequest,
-        imageUri: Uri?,
-        onSuccess: (String) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        viewModelScope.launch {
-            try {
-                val profileBody = createProfileRequestBody(profileRequest)
-                val imagePart = imageUri?.let { createMultipartImage(context, it) }
-
-                when (val result = repository.postProfile(profileBody, imagePart)) {
-                    is ResponseResult.Success -> {
-                        onSuccess(result.data.id) // 서버에서 반환된 id 사용
-                        Log.d("AddMemberViewModel", "✅ 프로필 추가 성공!")
-                    }
-
-                    is ResponseResult.ServerError -> {
-                        onError("❌ 서버 오류로 실패")
-                    }
-
-                    is ResponseResult.Exception -> {
-                        onError("❌ 네트워크 오류 발생")
-                    }
-                }
-            } catch (e: Exception) {
-                onError("❌ 예외 발생: ${e.message}")
-            }
-        }
-    }
-
 //    fun postProfile(
 //        context: Context,
 //        profileRequest: PostProfileRequest,
@@ -101,51 +69,83 @@ class AddMemberViewModel @Inject constructor(
 //        onError: (String) -> Unit
 //    ) {
 //        viewModelScope.launch {
-//            val gson = Gson()
-//
 //            try {
-//                val role = if (_state.value.selectedTab == 0) "PARENT" else "CHILD"
+//                val profileBody = createProfileRequestBody(profileRequest)
+//                val imagePart = imageUri?.let { createMultipartImage(context, it) }
 //
-//                val profileJson = gson.toJson(
-//                    PostProfileRequest(
-//                        role = role,
-//                        name = _state.value.name,
-//                        phone = if (_state.value.selectedTab == 0) _state.value.phone?.replace(
-//                            "-",
-//                            ""
-//                        ) else null,
-//                        password = if (_state.value.selectedTab == 0) _state.value.password else null
-//                    )
-//                )
-//                val profileBody = profileJson.toRequestBody("application/json".toMediaTypeOrNull())
-//
-//                val imageUri = _profileImageUri.value
-//                val profileImage = imageUri?.let { createMultipartImage(context, it) }
-//
-//                when (val result =
-//                    repository.postProfile(profileBody, profileImage)) {
+//                when (val result = repository.postProfile(profileBody, imagePart)) {
 //                    is ResponseResult.Success -> {
-//                        onSuccess(result.data.id)
-//                        clearState()
-//                        Log.d("AddMemberViewModel", "프로필 추가 성공")
+//                        onSuccess(result.data.id) // 서버에서 반환된 id 사용
+//                        Log.d("AddMemberViewModel", "✅ 프로필 추가 성공!")
 //                    }
 //
 //                    is ResponseResult.ServerError -> {
-//                        _errorMessage.value = "프로필 생성에 실패했습니다"
-//                        Log.d("AddMemberViewModel", "서버 오류로 실패")
+//                        onError("❌ 서버 오류로 실패")
 //                    }
 //
 //                    is ResponseResult.Exception -> {
-//                        _errorMessage.value = "네트워크 오류가 발생했습니다"
-//                        Log.d("AddMemberViewModel", "네트워크 오류")
+//                        onError("❌ 네트워크 오류 발생")
 //                    }
 //                }
 //            } catch (e: Exception) {
-//                _errorMessage.value = "네트워크 오류가 발생했습니다"
-//                Log.d("AddMemberViewModel", "예외 발생: ${e.message}")
+//                onError("❌ 예외 발생: ${e.message}")
 //            }
 //        }
 //    }
+
+    fun postProfile(
+        context: Context,
+        profileRequest: PostProfileRequest,
+        imageUri: Uri?,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val gson = Gson()
+
+            try {
+                val role = if (_state.value.selectedTab == 0) "PARENT" else "CHILD"
+
+                val profileJson = gson.toJson(
+                    PostProfileRequest(
+                        role = role,
+                        name = _state.value.name,
+                        phone = if (_state.value.selectedTab == 0) _state.value.phone?.replace(
+                            "-",
+                            ""
+                        ) else null,
+                        password = if (_state.value.selectedTab == 0) _state.value.password else null
+                    )
+                )
+                val profileBody = profileJson.toRequestBody("application/json".toMediaTypeOrNull())
+
+                val imageUri = _profileImageUri.value
+                val profileImage = imageUri?.let { createMultipartImage(context, it) }
+
+                when (val result =
+                    repository.postProfile(profileBody, profileImage)) {
+                    is ResponseResult.Success -> {
+                        onSuccess(result.data.id)
+                        clearState()
+                        Log.d("AddMemberViewModel", "프로필 추가 성공")
+                    }
+
+                    is ResponseResult.ServerError -> {
+                        _errorMessage.value = "프로필 생성에 실패했습니다"
+                        Log.d("AddMemberViewModel", "서버 오류로 실패")
+                    }
+
+                    is ResponseResult.Exception -> {
+                        _errorMessage.value = "네트워크 오류가 발생했습니다"
+                        Log.d("AddMemberViewModel", "네트워크 오류")
+                    }
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "네트워크 오류가 발생했습니다"
+                Log.d("AddMemberViewModel", "예외 발생: ${e.message}")
+            }
+        }
+    }
 
 //    fun postProfile(
 //        context: Context,
