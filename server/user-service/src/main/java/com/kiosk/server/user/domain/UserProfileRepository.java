@@ -14,6 +14,8 @@ public interface UserProfileRepository {
     // 프로필 이름 조회 (중복 비허용)
     int checkDuplicateProfileName(@Param("userId") long userId, @Param("profileName") String profileName);
 
+    UserProfileResponse getUserProfile(long profileId);
+
     // 프로필 목록 조회
     List<UserProfileResponse> getUserProfileList(long userId);
 

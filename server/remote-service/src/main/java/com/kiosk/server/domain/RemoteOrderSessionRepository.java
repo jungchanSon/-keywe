@@ -68,15 +68,11 @@ public class RemoteOrderSessionRepository {
         stringRedisTemplate.opsForHash().putAll(key, helperMap);
     }
 
-    public boolean isHelper(String familyId, String userId) {
-        return Boolean.TRUE.equals(stringRedisTemplate.opsForHash().hasKey(HELPER_PREFIX + familyId, userId));
-    }
-
     public String getHelperName(String familyId, String userId) {
         return (String) stringRedisTemplate.opsForHash().get(HELPER_PREFIX + familyId, userId);
     }
 
-    public RemoteOrderSession acceptSession(String sessionId, String helperUserId) {
+    public RemoteOrderSession acceptSession(String sessionId, String helperUserId, String helperUserName) {
         return sessionRedisTemplate.execute(new SessionCallback<>() {
             @Override
             public RemoteOrderSession execute(RedisOperations operations) throws DataAccessException {
@@ -97,6 +93,7 @@ public class RemoteOrderSessionRepository {
 
                 session.setHelperUserId(helperUserId);
                 session.setStatus(RemoteOrderStatus.ACCEPTED.name());
+                session.setHelperUserName(helperUserName);
                 operations.opsForValue().set(key, session);
 
                 if (CollectionUtils.isEmpty(operations.exec())) {

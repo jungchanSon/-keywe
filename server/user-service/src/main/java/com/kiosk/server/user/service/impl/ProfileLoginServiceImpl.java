@@ -2,7 +2,7 @@ package com.kiosk.server.user.service.impl;
 
 import com.kiosk.server.user.util.TokenUtil;
 import com.kiosk.server.user.domain.UserProfile;
-import com.kiosk.server.user.service.FindUserProfileByIdService;
+import com.kiosk.server.user.service.ProfileLoginService;
 import com.kiosk.server.user.util.UserProfileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FindUserProfileByIdServiceImpl implements FindUserProfileByIdService {
+public class ProfileLoginServiceImpl implements ProfileLoginService {
 
     private final TokenUtil tokenUtil;
     private final UserProfileUtil userProfileUtil;
 
     @Override
     public String doService(long userId, long profileId) {
-        log.info("FindUserProfileByIdService: userId={}, profileId={}", userId, profileId);
+        log.info("ProfileLoginService: userId={}, profileId={}", userId, profileId);
 
         // userProfile 조회
         UserProfile foundProfile = userProfileUtil.getUserProfileById(userId, profileId);

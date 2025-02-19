@@ -1,6 +1,6 @@
 package com.kiosk.server.service;
 
-import com.kiosk.server.client.feign.api.UserClient;
+import com.kiosk.server.client.feign.api.UserServiceClient;
 import com.kiosk.server.client.feign.dto.UserProfile;
 import com.kiosk.server.common.util.IdUtil;
 import com.kiosk.server.domain.RemoteOrderSession;
@@ -24,16 +24,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RemoteOrderService {
 
-    private final UserClient userClient;
     private final TaskScheduler taskScheduler;
+    private final UserServiceClient userServiceClient;
     private final SimpMessagingTemplate messagingTemplate;
     private final ApplicationEventPublisher eventPublisher;
     private final RemoteOrderSessionRepository sessionRepository;
 
     private static final Duration SESSION_TIMEOUT = Duration.ofSeconds(30);
 
-    public String saveSession(String userId, String familyId, String storeId) {
-        if (!userClient.verifyParentRole(userId)) {
+    public RemoteOrderSession saveSession(String userId, String familyId, String storeId) {
+        UserProfile userProfile = userServiceClient.getUserProfile(userId);
+
+        if (!userProfile.role().equals("PARENT")) {
             throw new ChildRemoteOrderForbiddenException();
         }
 
@@ -41,6 +43,7 @@ public class RemoteOrderService {
             .sessionId(String.valueOf(IdUtil.create()))
             .familyId(familyId)
             .kioskUserId(userId)
+            .kioskUserName(userProfile.name())
             .storeId(storeId)
             .status(RemoteOrderStatus.WAITING.name())
             .createdAt(LocalDateTime.now().toString())
@@ -48,32 +51,23 @@ public class RemoteOrderService {
 
         sessionRepository.save(session);
 
-        List<UserProfile> helperProfiles = userClient.getHelperProfiles(familyId);
+        List<UserProfile> helperProfiles = userServiceClient.getHelperProfiles(familyId);
         sessionRepository.saveHelperIdNameMap(familyId, helperProfiles);
 
         scheduleTimeoutCheck(session.getSessionId());
         eventPublisher.publishEvent(new RemoteOrderRequestedEvent(session));
 
-        return session.getSessionId();
+        return session;
     }
 
     public RemoteOrderSession acceptSession(String sessionId, String helperUserId, String familyId) {
-        if (!sessionRepository.isHelper(familyId, helperUserId)) {
-            throw new UnauthorizedRemoteOrderAcceptException();
-        }
-
-        RemoteOrderSession session = sessionRepository.acceptSession(sessionId, helperUserId);
-
         // Helper의 이름 가져오기
         String helperName = sessionRepository.getHelperName(familyId, helperUserId);
         if (helperName == null) {
-            throw new IllegalStateException("Helper name not found");
+            throw new UnauthorizedRemoteOrderAcceptException();
         }
 
-        session.setHelperName(helperName);
-        sessionRepository.save(session);
-
-        return session;
+        return sessionRepository.acceptSession(sessionId, helperUserId, helperName);
     }
 
     private void scheduleTimeoutCheck(String sessionId) {

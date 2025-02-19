@@ -1,6 +1,6 @@
 package com.kiosk.server.event;
 
-import com.kiosk.server.client.feign.api.NotificationClient;
+import com.kiosk.server.client.feign.api.NotificationServiceClient;
 import com.kiosk.server.client.feign.dto.NotificationMessage;
 import com.kiosk.server.client.feign.dto.SendFcmMessageRequest;
 import com.kiosk.server.client.feign.dto.SendFcmMessageResponse;
@@ -24,27 +24,29 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RemoteOrderRequestedEventListener {
 
-    private final NotificationClient notificationClient;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationServiceClient notificationServiceClient;
     private final RemoteOrderSessionRepository remoteOrderSessionRepository;
 
     @Async
     @EventListener
     public void handleRemoteOrderHelpRequested(RemoteOrderRequestedEvent event) {
         RemoteOrderSession session = event.session();
+        String kioskUserName = session.getKioskUserName();
 
         // FCM 메시지 구성 로직
         Map<String, String> notificationData = Map.of(
             "title", "대리 주문 도움 요청",
-            "body", "키오스크 주문 도움이 필요합니다.",
+            "body", kioskUserName + "님이 키오스크 주문 도움을 요청했습니다",
             "sessionId", session.getSessionId(),
             "storeId", session.getStoreId(),
-            "kioskUserId", session.getKioskUserId()
+            "kioskUserId", session.getKioskUserId(),
+            "kioskUserName", kioskUserName
         );
 
         NotificationMessage notificationMessage = new NotificationMessage(
             "대리 주문 도움 요청",
-            "키오스크 주문 도움이 필요합니다.",
+            kioskUserName + "님이 키오스크 주문 도움을 요청했습니다",
             "REMOTE-ORDER",
             notificationData,
             NotificationMessage.MessagePriority.HIGH,
@@ -56,7 +58,7 @@ public class RemoteOrderRequestedEventListener {
 
         SendFcmMessageRequest request = new SendFcmMessageRequest("PROFILE", helperIds, notificationMessage);
 
-        ResponseEntity<SendFcmMessageResponse> response = notificationClient.sendFcmMessage(request);
+        ResponseEntity<SendFcmMessageResponse> response = notificationServiceClient.sendFcmMessage(request);
 
         if (
             response.getStatusCode() != HttpStatus.OK ||
