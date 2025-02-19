@@ -285,8 +285,7 @@ fun AddMemberScreen(
                             }
                         },
                         onError = { errorMessage ->
-                            // ✅ 실패 시 처리할 로직 추가 (예: 토스트 메시지)
-                            Log.e("AddMemberScreen", "❌ 프로필 추가 실패: $errorMessage")
+                            Log.e("AddMemberScreen", " 프로필 추가 실패: $errorMessage")
                         }
 
                     )

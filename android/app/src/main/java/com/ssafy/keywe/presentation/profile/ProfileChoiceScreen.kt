@@ -214,7 +214,8 @@ private fun joinHome(
 
 @Composable
 fun ProfileGrid(
-    profiles: List<GetProfileListModel>, onProfileClick: (GetProfileListModel) -> Unit,
+    profiles: List<GetProfileListModel>,
+    onProfileClick: (GetProfileListModel) -> Unit,
 //    onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -228,12 +229,11 @@ fun ProfileGrid(
         items(profiles) { profile ->
             Profile(name = profile.name,
 //                profileImage = profile.image ?: R.drawable.humanimage.toString(),
-                profileImage = profile.image,
+                profileImage = profile.image, // Base64 이미지 전달
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onProfileClick(profile) })
         }
-
-        item {}
+//        item {}
     }
 }

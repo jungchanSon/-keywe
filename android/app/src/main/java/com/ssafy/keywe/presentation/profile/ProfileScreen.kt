@@ -1,8 +1,11 @@
 package com.ssafy.keywe.presentation.profile
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,20 +22,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.presentation.order.component.Base64Image
 import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileDetailViewModel
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.h6sb
+import com.ssafy.keywe.ui.theme.lightColor
 import kotlinx.coroutines.launch
 
 
@@ -70,20 +75,24 @@ fun ProfileScreen(
                     .padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // 프로필 이미지 적용
-                AsyncImage(
-//                    model = if (!profileState.value?.image.isNullOrBlank()) {
-//                        profileState.value?.image
-//                    } else {
-//                        null // 기본 이미지 적용을 위해 null 반환
-//                    },
-                    model = profileState.value?.image ?: R.drawable.humanimage,
-                    contentDescription = "프로필 이미지",
-                    modifier = Modifier.size(120.dp),
-//                    key = profileState.value?.image
-//                    placeholder = painterResource(R.drawable.humanimage), // 기본 이미지
-//                    error = painterResource(R.drawable.humanimage) // 에러 발생 시 기본 이미지
-                )
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .background(lightColor)
+                ) {
+                    if (!profileState.value?.image.isNullOrBlank()) {
+                        Base64Image(
+                            base64String = profileState.value?.image ?: "",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.humanimage),
+                            contentDescription = "기본 프로필 이미지",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
