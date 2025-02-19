@@ -76,7 +76,7 @@ fun InputPasswordScreen(
             ) {
                 Box(
                     modifier = Modifier
-//                        .height(75.dp)
+                        .height(75.dp)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
@@ -91,7 +91,7 @@ fun InputPasswordScreen(
 
                 Box(
                     modifier = Modifier
-//                        .height(30.dp) // 고정된 높이 설정
+                        .height(30.dp) // 고정된 높이 설정
                         .fillMaxWidth(),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -107,7 +107,7 @@ fun InputPasswordScreen(
                             )
                         )
                     } else {
-//                        Spacer(modifier = Modifier.height(30.dp)) // 같은 높이의 빈 공간 유지
+                        Spacer(modifier = Modifier.height(30.dp)) // 같은 높이의 빈 공간 유지
                     }
                 }
 
