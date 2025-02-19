@@ -1,11 +1,11 @@
 package com.ssafy.keywe
 
-import android.R
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
@@ -73,12 +73,15 @@ class KeyWeMessagingService : FirebaseMessagingService() {
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val builder =
-            NotificationCompat.Builder(this, channelId).setSmallIcon(R.mipmap.sym_def_app_icon)
+            NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.keywe_logo_white_24x24)
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.keywe_app_logo))
                 .setContentTitle(notification.title).setContentText(notification.body)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(notification.body))
                 .setAutoCancel(true).setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).setSound(defaultSoundUri)
+                .setColor(0xFFEE5B22.toInt())
                 .setContentIntent(pendingIntent)
 
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager

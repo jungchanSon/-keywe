@@ -209,11 +209,21 @@ fun MenuScreen(
                     .fillMaxHeight()
                     .then(
                         if (isKiosk) {
-                            Modifier.border(
-                                width = 2.dp,
-                                color = primaryColor,
-                                shape = RoundedCornerShape(8.dp)
-                            )
+                            Modifier
+                                .border(
+                                    width = 2.dp,
+                                    color = primaryColor,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .pointerInput(Unit) {
+                                    awaitPointerEventScope {
+                                        while (true) {
+                                            awaitPointerEvent().apply {
+                                                // 이벤트를 소비하여 터치를 막음
+                                            }
+                                        }
+                                    }
+                                }
                         } else {
                             Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
                         }

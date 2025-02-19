@@ -128,7 +128,7 @@ class MediaService : Service() {
         }
 
         return NotificationCompat.Builder(this, channelId).setContentTitle("키오스크 대리 주문")
-            .setContentText("현재 키오스크 대리 주문 중입니다.").setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentText("현재 키오스크 대리 주문 중입니다.").setSmallIcon(R.mipmap.keywe_app_logo)
             .build()
     }
 

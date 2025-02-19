@@ -180,10 +180,8 @@ fun MenuCartScreen(
 
     }
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ){
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+    ) {
         Scaffold(
             topBar = {
                 DefaultOrderAppBar(
@@ -193,41 +191,38 @@ fun MenuCartScreen(
                     keyWeViewModel = keyWeViewModel,
                     isKiosk = isKiosk
                 )
-            },
-            modifier = Modifier
-                .fillMaxSize()
+            }, modifier = Modifier.fillMaxSize()
         ) { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .background(whiteBackgroundColor)
-                    ,
+                    .background(whiteBackgroundColor),
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                        .then(
-                            if (isKiosk) {
-                                Modifier
-                                    .border(
-                                        width = 2.dp,
-                                        color = primaryColor,
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
-                                    .pointerInput(Unit) {
-                                        awaitPointerEventScope {
-                                            while (true) {
-                                                awaitPointerEvent().apply {
-                                                    // 이벤트를 소비하여 터치를 막음
-                                                }
-                                            }
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .then(if (isKiosk) {
+                        Modifier
+                            .border(
+                                width = 2.dp,
+                                color = primaryColor,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .pointerInput(Unit) {
+                                awaitPointerEventScope {
+                                    while (true) {
+                                        awaitPointerEvent().apply {
+                                            // 이벤트를 소비하여 터치를 막음
                                         }
                                     }
-                            } else {
-                                Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                                }
                             }
-                        )
-                ){
+                    } else {
+                        Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                    })
+                ) {
+
                     if (cartItems.isNotEmpty()) {
 
 
@@ -242,10 +237,14 @@ fun MenuCartScreen(
                                 color = polishedSteelColor,
 
                                 modifier = Modifier
-                                    .semantics { contentDescription = "cart_open_dialog" }
+                                    .semantics {
+                                        contentDescription = "cart_open_dialog"
+                                    }
                                     .noRippleClickable {
                                         isAllDeleteDialogOpen.value = true
-                                        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartOpenDialog)
+                                        if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                                            KeyWeButtonEvent.CartOpenDialog
+                                        )
                                     })
                         }
 
@@ -283,7 +282,9 @@ fun MenuCartScreen(
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                                 .padding(bottom = 104.dp),
-                            verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
+                            verticalArrangement = Arrangement.spacedBy(
+                                20.dp, Alignment.CenterVertically
+                            ),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Image(
@@ -301,7 +302,7 @@ fun MenuCartScreen(
                 Box(
                     modifier = Modifier
                         .padding(top = 12.dp)
-                        .align(Alignment.BottomCenter)
+//                        .align(Alignment.BottomCenter)
                         .background(whiteBackgroundColor)
                         .fillMaxWidth(),
                 ) {
@@ -320,6 +321,7 @@ fun MenuCartScreen(
                     .fillMaxSize()
                     .padding(top = 16.dp),
 //                    .background(titleTextColor.copy(alpha = 0.5f))
+
                 contentAlignment = Alignment.TopCenter
             ) {
                 FloatingUsingButton()
