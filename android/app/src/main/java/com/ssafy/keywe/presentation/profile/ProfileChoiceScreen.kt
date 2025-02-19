@@ -38,9 +38,8 @@ import com.ssafy.keywe.domain.profile.GetProfileListModel
 import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
-import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.lightColor
-import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -82,7 +81,7 @@ fun ProfileChoiceScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("isJoin $isJoinApp")
+//                Text("isJoin $isJoinApp")
                 Box(
                     modifier = Modifier
                         .size(120.dp)
@@ -94,7 +93,7 @@ fun ProfileChoiceScreen(
                     Image(
                         painter = painterResource(id = R.drawable.profileplus),
                         contentDescription = "계정 추가",
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
 
@@ -111,12 +110,12 @@ fun ProfileChoiceScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 24.dp)
             ) {
-                Text("isJoin $isJoinApp")
+//                Text("isJoin $isJoinApp")
                 // 부모 프로필 섹션
                 if (parentProfiles.isNotEmpty()) {
                     Text(
                         text = "부모님",
-                        style = subtitle1,
+                        style = h6sb,
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                     ProfileGrid(
@@ -138,7 +137,7 @@ fun ProfileChoiceScreen(
                 if (childProfiles.isNotEmpty() || parentProfiles.isNotEmpty()) {
                     Text(
                         text = "자녀",
-                        style = subtitle1,
+                        style = h6sb,
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                     ProfileGrid(
@@ -152,36 +151,31 @@ fun ProfileChoiceScreen(
                                 navController.navigate(Route.ProfileBaseRoute.ProfileEditRoute)
                             }
                         },
-
-//                        onAddClick = {
-//                        if (childProfiles.size < 4) {
-//                            navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
-//                        }
-//                    },
-
                         modifier = Modifier.weight(1f)
                     )
                 }
 
                 // 프로필 추가 버튼 (조건부 표시)
                 if (parentProfiles.isEmpty() || childProfiles.size < 4) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
-                            }
-                            .padding(vertical = 16.dp)) {
+                            .padding(vertical = 16.dp)
+                    ) {
                         Box(
                             modifier = Modifier
-                                .size(120.dp)
-                                .background(color = greyBackgroundColor),
+                                .size(30.dp)
+                                .clickable {
+                                    navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
+                                }
+                                .background(color = lightColor),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.profileplus),
                                 contentDescription = "계정 추가",
-                                modifier = Modifier.size(48.dp)
+                                modifier = Modifier.size(30.dp)
                             )
                         }
 
@@ -239,6 +233,5 @@ fun ProfileGrid(
                     .fillMaxWidth()
                     .clickable { onProfileClick(profile) })
         }
-//        item {}
     }
 }

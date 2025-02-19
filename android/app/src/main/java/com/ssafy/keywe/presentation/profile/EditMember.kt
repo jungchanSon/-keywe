@@ -113,14 +113,6 @@ fun EditMemberScreen(
             ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
 
             Spacer(modifier = Modifier.height(16.dp))
-//            Box(modifier = Modifier
-//                .size(150.dp)
-//                .align(Alignment.CenterHorizontally)
-//                .padding(vertical = 24.dp)
-//                .clickable { imagePicker.launch("image/*") })
-//            // 프로필 이미지 섹션
-//            ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
-//            Spacer(modifier = Modifier.height(16.dp))
 
             // 이름 입력 필드
             DefaultTextFormField(label = "이름",

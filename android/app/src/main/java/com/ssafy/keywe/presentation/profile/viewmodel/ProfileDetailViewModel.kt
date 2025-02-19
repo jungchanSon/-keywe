@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssafy.keywe.R
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.ResponseResult
 import com.ssafy.keywe.data.TokenManager
@@ -49,30 +50,6 @@ class ProfileDetailViewModel @Inject constructor(
         _password.value = newPassword
     }
 
-//    suspend fun fetchProfileWithRetry(
-//        profileId: Long,
-//        retryCount: Int = 3,
-//        delayMillis: Long = 1000
-//    ): ResponseResult<GetProfileDetailModel> {
-//        repeat(retryCount) { attempt ->
-//            when (val result = repository.getProfileDetail(profileId)) {
-//                is ResponseResult.Success -> return result
-//                is ResponseResult.ServerError -> {
-//                    Log.e("ProfileDetailViewModel", "❌ Server error (attempt ${attempt + 1})")
-//                }
-//
-//                is ResponseResult.Exception -> {
-//                    Log.e(
-//                        "ProfileDetailViewModel",
-//                        "❌ Network error (attempt ${attempt + 1}): ${result.message}"
-//                    )
-//                }
-//            }
-//            delay(delayMillis) // 1초 대기 후 재시도
-//        }
-//        return ResponseResult.ServerError(Status(code = 500, message = "서버 오류 발생"))
-//    }
-
 
     fun loadProfileDetail() {
 
@@ -102,18 +79,21 @@ class ProfileDetailViewModel @Inject constructor(
                 return@launch
             }
 
+
             Log.d("ProfileDetailViewModel", "✅ Fetching profile detail for ID: $profileId")
 
             when (val result = repository.getProfileDetail(profileId)) {
                 is ResponseResult.Success -> {
                     val profileData = result.data
-                    Log.d("ProfileDetailViewModel", "🔍 Raw Profile Data from Server: $profileData")
-                    _state.value = profileData.copy(
-                        image = profileData.image?.takeIf { it.isNotEmpty() }
+                    val processedProfile = profileData.copy(
+                        image = profileData.image?.takeIf { it.isNotBlank() }
+                            ?: R.drawable.humanimage.toString()
                     )
+                    _state.value = processedProfile
+
                     Log.d(
                         "ProfileDetailViewModel",
-                        "✅ Profile data loaded successfully: $profileData"
+                        "✅ Profile data loaded successfully: $processedProfile"
                     )
                 }
 
