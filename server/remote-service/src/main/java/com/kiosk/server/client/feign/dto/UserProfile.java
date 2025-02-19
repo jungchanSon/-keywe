@@ -1,4 +1,6 @@
 package com.kiosk.server.client.feign.dto;
 
-public record UserProfile(String id, String name) {
+import java.io.Serializable;
+
+public record UserProfile(String id, String name) implements Serializable {
 }

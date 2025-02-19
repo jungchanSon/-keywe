@@ -51,7 +51,8 @@ public class RemoteOrderRequestedEventListener {
             30
         );
 
-        List<String> helperIds = remoteOrderSessionRepository.findHelperIds(session.getFamilyId());
+        Map<String, String> helperIdNameMap = remoteOrderSessionRepository.findHelperIdNameMap(session.getFamilyId());
+        List<String> helperIds = helperIdNameMap.keySet().stream().toList();
 
         SendFcmMessageRequest request = new SendFcmMessageRequest("PROFILE", helperIds, notificationMessage);
 

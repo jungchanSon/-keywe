@@ -1,5 +1,6 @@
 package com.kiosk.server.domain;
 
+import com.kiosk.server.client.feign.dto.UserProfile;
 import com.kiosk.server.websocket.exception.NotAcceptableRequestStateException;
 import com.kiosk.server.websocket.exception.SessionNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +12,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
 public class RemoteOrderSessionRepository {
 
-    private final RedisTemplate<String, Object> objectRedisTemplate;
+    private final RedisTemplate<String, String> stringRedisTemplate;
     private final RedisTemplate<String, RemoteOrderSession> sessionRedisTemplate;
 
     private static final String HELPER_PREFIX = "remote_order:helpers:";
@@ -45,27 +46,34 @@ public class RemoteOrderSessionRepository {
         );
     }
 
-    public List<String> findHelperIds(String familyId) {
-        Set<Object> members = objectRedisTemplate.opsForSet().members(HELPER_PREFIX + familyId);
-        if (members == null) {
-            return Collections.emptyList();
-        }
-        return members.stream()
-            .map(Object::toString)
-            .toList();
+    public Map<String, String> findHelperIdNameMap(String familyId) {
+        Map<Object, Object> entries = stringRedisTemplate.opsForHash()
+            .entries(HELPER_PREFIX + familyId);
+
+        return entries.entrySet().stream()
+            .collect(Collectors.toMap(
+                entry -> entry.getKey().toString(),
+                entry -> entry.getValue().toString()
+            ));
     }
 
-    public void saveHelperIds(String familyId, List<String> helperIds) {
-        objectRedisTemplate.opsForSet().add(
-            HELPER_PREFIX + familyId,
-            helperIds.toArray()
-        );
+    public void saveHelperIdNameMap(String familyId, List<UserProfile> helperProfiles) {
+        String key = HELPER_PREFIX + familyId;
+        Map<String, String> helperMap = helperProfiles.stream()
+            .collect(Collectors.toMap(
+                UserProfile::id,
+                UserProfile::name
+            ));
+
+        stringRedisTemplate.opsForHash().putAll(key, helperMap);
     }
 
     public boolean isHelper(String familyId, String userId) {
-        return Boolean.TRUE.equals(
-            objectRedisTemplate.opsForSet().isMember(HELPER_PREFIX + familyId, userId)
-        );
+        return Boolean.TRUE.equals(stringRedisTemplate.opsForHash().hasKey(HELPER_PREFIX + familyId, userId));
+    }
+
+    public String getHelperName(String familyId, String userId) {
+        return (String) stringRedisTemplate.opsForHash().get(HELPER_PREFIX + familyId, userId);
     }
 
     public RemoteOrderSession acceptSession(String sessionId, String helperUserId) {
