@@ -29,8 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -207,16 +207,15 @@ fun MenuDetailScreen(
                                     shape = RoundedCornerShape(8.dp)
 
                                 )
-                                .pointerInteropFilter { true }
-//                                .pointerInput(Unit) {
-//                                    awaitPointerEventScope {
-//                                        while (true) {
-//                                            awaitPointerEvent().apply {
-//                                                // 이벤트를 소비하여 터치를 막음
-//                                            }
-//                                        }
-//                                    }
-//                                }
+                                .pointerInput(Unit) {
+                                    awaitPointerEventScope {
+                                        while (true) {
+                                            val event =
+                                                awaitPointerEvent(PointerEventPass.Initial) // 모든 터치 이벤트 감지
+                                            event.changes.forEach { it.consume() } // 터치 이벤트 소비하여 상위로 전달되지 않게 만듦
+                                        }
+                                    }
+                                }
                         } else {
                             Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
                         }

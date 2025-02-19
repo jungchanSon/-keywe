@@ -7,16 +7,9 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -38,10 +31,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
@@ -113,41 +105,6 @@ fun MenuScreen(
         }
     }
 
-    val infiniteTransition = rememberInfiniteTransition()
-    val animatedOffset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 4000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
-
-    val colors = listOf(
-        Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Magenta, Color.Red
-    )
-
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp)
-//            .background(Color.Black) // 배경색
-//            .border(
-//                width = 8.dp,
-//                brush = Brush.sweepGradient(colors.mapIndexed { index, color ->
-//                    color.copy(alpha = (1f - (index * 0.15f) + animatedOffset) % 1f)
-//                }),
-//                shape = RoundedCornerShape(16.dp)
-//            )
-//    ) {
-//        Text(
-//            text = "무지개 Border 효과!",
-//            color = Color.White,
-//            modifier = Modifier.align(Alignment.Center)
-//        )
-//    }
-
-
     Box(
         modifier = Modifier
             .zIndex(1f)
@@ -163,7 +120,6 @@ fun MenuScreen(
             MenuCartDeleteDialog(title = "통화 종료", description = "통화를 종료하시겠습니까?", onCancel = {
                 appBarViewModel.closeDialog()
 //                if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
-
             }, onConfirm = {
                 /* 너의 action */
                 disConnect(
@@ -176,59 +132,46 @@ fun MenuScreen(
 
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
 
-        Scaffold(
-            topBar = {
-                DefaultOrderAppBar(
-                    title = "주문하기",
-                    navController = navController,
-                    viewModel = appBarViewModel,
-                    keyWeViewModel = keyWeViewModel,
-                    isRoot = true,
-                    isKiosk = isKiosk
-                )
-            },
-            modifier = Modifier
-                .fillMaxSize(),
-            floatingActionButton = {
-                FloatingCartButton(
-                    navController,
-                    menuCartViewModel,
-                    storeId,
-                    keyWeViewModel,
-                    isKiosk
-                )
-            }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .then(
-                        if (isKiosk) {
-                            Modifier
-                                .border(
-                                    width = 2.dp,
-                                    color = primaryColor,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .pointerInteropFilter { true }
-//                                .pointerInput(Unit) {
-//                                    awaitPointerEventScope {
-//                                        while (true) {
-//                                            awaitPointerEvent().changes.forEach {
-//                                                it.consume() // 모든 터치 이벤트를 소모하여 차단
-//                                            }
-//                                        }
-//                                    }
-//                                }
-                        } else {
-                            Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
-                        })
-            ) {
+        Scaffold(topBar = {
+            DefaultOrderAppBar(
+                title = "주문하기",
+                navController = navController,
+                viewModel = appBarViewModel,
+                keyWeViewModel = keyWeViewModel,
+                isRoot = true,
+                isKiosk = isKiosk
+            )
+        }, modifier = Modifier.fillMaxSize(), floatingActionButton = {
+            FloatingCartButton(
+                navController, menuCartViewModel, storeId, keyWeViewModel, isKiosk
+            )
+        }) {
+            Column(modifier = Modifier
+                .fillMaxHeight()
+
+                .then(if (isKiosk) {
+                    Modifier
+                        .border(
+                            width = 2.dp,
+                            color = primaryColor,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event =
+                                        awaitPointerEvent(PointerEventPass.Initial) // 모든 터치 이벤트 감지
+                                    event.changes.forEach { it.consume() } // 터치 이벤트 소비하여 상위로 전달되지 않게 만듦
+                                }
+                            }
+                        }
+//                        .pointerInteropFilter { true }
+                } else {
+                    Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                })) {
                 /// 메뉴 내용
                 MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
                 MenuSubCategory("Popular Coffee")
@@ -250,19 +193,9 @@ fun MenuScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 16.dp)
-//                    .pointerInput(Unit) {
-//                        awaitPointerEventScope {
-//                            while (true) {
-//                                val event = awaitPointerEvent()
-//                                event.changes.forEach { it.consume() } // 🔹 터치 이벤트 강제 차단
-//                            }
-//                        }
-//                    },
-//                    .background(titleTextColor.copy(alpha = 0.5f))
             ) {
                 FloatingUsingButton()
             }
-        } else {
         }
     }
 }
@@ -312,20 +245,16 @@ fun FloatingCartButton(
     val cartItems by menuCartViewModel.cartItems.collectAsState()
     val cartItemsCount = cartItems.sumOf { it.quantity }
 
-    Box(
-        contentAlignment = Alignment.TopEnd, // 오른쪽 상단 정렬
+    Box(contentAlignment = Alignment.TopEnd, // 오른쪽 상단 정렬
         modifier = Modifier
             .size(48.dp) // FloatingActionButton 크기와 동일하게 설정
             .background(whiteBackgroundColor, shape = CircleShape)
             .shadow(4.dp, CircleShape, clip = false)
-            .then(
-                if (isKiosk) {
-                    Modifier
-                        .pointerInteropFilter { true }
-                } else {
-                    Modifier
-                })
-    ) {
+            .then(if (isKiosk) {
+                Modifier.pointerInteropFilter { true }
+            } else {
+                Modifier
+            })) {
         FloatingActionButton(onClick = {
             navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId))
             if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.MenuCart)
@@ -368,7 +297,7 @@ fun FloatingCartButton(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FloatingUsingButton(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         contentAlignment = Alignment.Center,

@@ -71,7 +71,7 @@ fun MenuMenuList(
 
 
     // [변경된 부분 1] 스크롤 상태 전송 (로컬 -> 원격)
-    if(!isKiosk){
+    if (!isKiosk) {
         LaunchedEffect(listState) {
             snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
                 .debounce(100) // 100ms마다 업데이트 전송
@@ -103,7 +103,8 @@ fun MenuMenuList(
     }
 
     // Accompanist Snapper를 이용한 스냅 플링 동작 생성
-    val snapFlingBehavior = rememberSnapFlingBehavior(lazyGridState = listState, snapPosition = SnapPosition.Start)
+    val snapFlingBehavior =
+        rememberSnapFlingBehavior(lazyGridState = listState, snapPosition = SnapPosition.Start)
 
     Box(
         modifier = Modifier
@@ -125,7 +126,6 @@ fun MenuMenuList(
                     menuId = menu.menuId,
                     selectItem = {
                         if (isKeyWe) {
-
                             Log.d("MenuScreen", "Click Menu = ${menu.menuId}")
                             if (!isKiosk) {
                                 keyWeViewModel.sendButtonEvent(
