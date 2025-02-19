@@ -2,7 +2,10 @@ package com.ssafy.keywe.presentation.profile.viewmodel
 
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +22,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.ByteArrayInputStream
 import java.io.File
 import javax.inject.Inject
 
@@ -134,6 +138,15 @@ class ProfileDetailViewModel @Inject constructor(
         }
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData("image", file.name, requestFile)
+    }
+
+    private fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+            BitmapFactory.decodeStream(ByteArrayInputStream(decodedBytes))
+        } catch (e: IllegalArgumentException) {
+            null
+        }
     }
 
 }

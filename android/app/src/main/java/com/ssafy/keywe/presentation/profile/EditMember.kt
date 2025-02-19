@@ -2,7 +2,10 @@ package com.ssafy.keywe.presentation.profile
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Base64
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -50,13 +54,13 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.app.DefaultTextFormField
 import com.ssafy.keywe.common.manager.ProfileIdManager
-import com.ssafy.keywe.presentation.order.component.Base64Image
 import com.ssafy.keywe.presentation.profile.viewmodel.EditMemberViewModel
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.primaryColor
+import java.io.ByteArrayInputStream
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @Composable
@@ -107,7 +111,8 @@ fun EditMemberScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp)
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 프로필 이미지 선택 및 표시
             ProfileImagePicker(viewModel, { imagePicker.launch("image/*") })
@@ -174,28 +179,47 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
     val selectImageUri by viewModel.profileImageUri.collectAsStateWithLifecycle()
     val existingImageState by viewModel.state.collectAsStateWithLifecycle()
 
-    Box(modifier = Modifier
-        .size(150.dp)
-        .padding(vertical = 24.dp)
-        .clickable { imagePicker() }) {
+    Box(
+        modifier = Modifier
+            .size(150.dp)
+            .padding(vertical = 24.dp)
+            .clickable { imagePicker() },
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            selectImageUri != null -> {
+                Image(
+                    painter = rememberAsyncImagePainter(selectImageUri),
+                    contentDescription = "선택한 프로필 이미지",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
-        if (selectImageUri != null) {
-            Image(
-                painter = rememberAsyncImagePainter(selectImageUri),
-                contentDescription = "선택한 프로필 이미지",
-                modifier = Modifier.fillMaxSize()
-            )
-        } else if (!existingImageState.profileImage.isNullOrBlank()) {
-            Base64Image(
-                base64String = existingImageState.profileImage!!,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.humanimage),
-                contentDescription = "기본 프로필 이미지",
-                modifier = Modifier.fillMaxSize()
-            )
+            !existingImageState.profileImage.isNullOrBlank() -> {
+                val bitmap = decodeBase64ToBitmap(existingImageState.profileImage!!)
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "프로필 이미지",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Log.e("ProfileImagePicker", "비트맵 변환 실패")
+                    Image(
+                        painter = painterResource(id = R.drawable.humanimage),
+                        contentDescription = "기본 프로필 이미지",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            else -> {
+                Image(
+                    painter = painterResource(id = R.drawable.humanimage),
+                    contentDescription = "기본 프로필 이미지",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
         // 수정 버튼 아이콘
         Image(painter = painterResource(id = R.drawable.edit),
@@ -254,6 +278,16 @@ fun PhoneNumberInput(
             textStyle = body2,
             singleLine = true
         )
+    }
+}
+
+@Composable
+private fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+    return try {
+        val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+        BitmapFactory.decodeStream(ByteArrayInputStream(decodedBytes))
+    } catch (e: IllegalArgumentException) {
+        null
     }
 }
 

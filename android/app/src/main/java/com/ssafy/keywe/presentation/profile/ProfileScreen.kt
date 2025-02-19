@@ -1,5 +1,8 @@
 package com.ssafy.keywe.presentation.profile
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -23,7 +26,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,13 +38,14 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.TokenManager
-import com.ssafy.keywe.presentation.order.component.Base64Image
 import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileDetailViewModel
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
+import com.ssafy.keywe.ui.theme.h5
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.lightColor
 import kotlinx.coroutines.launch
+import java.io.ByteArrayInputStream
 
 
 @Composable
@@ -82,9 +88,12 @@ fun ProfileScreen(
                         .size(120.dp)
                         .background(lightColor)
                 ) {
-                    if (!profileState.value?.image.isNullOrBlank()) {
-                        Base64Image(
-                            base64String = profileState.value?.image ?: "",
+                    val profileImage = profileState.value?.image
+                    val bitmap = profileImage?.let { decodeBase64ToBitmap(it) }
+                    if (bitmap != null) {
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = "프로필 이미지",
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
@@ -103,9 +112,10 @@ fun ProfileScreen(
                 ) {
                     Text(
                         text = profileState.value?.name ?: "",
-                        style = h6sb,
+                        style = h5.copy(fontWeight = FontWeight.ExtraBold),
                         modifier = Modifier.padding(top = 8.dp)
                     )
+                    Spacer(modifier = Modifier.height(15.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp), // 두 텍스트 사이 간격 조정
@@ -117,7 +127,7 @@ fun ProfileScreen(
                                 "CHILD" -> "자녀"
                                 else -> profileState.value?.role ?: ""
                             },
-                            style = h6sb,
+                            style = h5.copy(fontWeight = FontWeight.ExtraBold),
                             color = Color.Gray
                         )
 
@@ -177,5 +187,15 @@ fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager
                 }
             }
         })
+    }
+}
+
+@Composable
+private fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+    return try {
+        val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+        BitmapFactory.decodeStream(ByteArrayInputStream(decodedBytes))
+    } catch (e: IllegalArgumentException) {
+        null
     }
 }
