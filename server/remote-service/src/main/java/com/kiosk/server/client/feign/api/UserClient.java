@@ -16,6 +16,4 @@ public interface UserClient {
     @GetMapping("/internal/users/{familyId}/profiles/child")
     List<UserProfile> getHelperProfiles(@PathVariable(name = "familyId") String familyId);
 
-    @GetMapping(value = "/internal/profiles/{userId}/role/parent")
-    boolean verifyParentRole(@PathVariable("userId") String userId);
 }
