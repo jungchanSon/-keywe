@@ -32,19 +32,21 @@ public class RemoteOrderRequestedEventListener {
     @EventListener
     public void handleRemoteOrderHelpRequested(RemoteOrderRequestedEvent event) {
         RemoteOrderSession session = event.session();
+        String kioskUserName = session.getKioskUserName();
 
         // FCM 메시지 구성 로직
         Map<String, String> notificationData = Map.of(
             "title", "대리 주문 도움 요청",
-            "body", "키오스크 주문 도움이 필요합니다.",
+            "body", kioskUserName + "님이 키오스크 주문 도움을 요청했습니다",
             "sessionId", session.getSessionId(),
             "storeId", session.getStoreId(),
-            "kioskUserId", session.getKioskUserId()
+            "kioskUserId", session.getKioskUserId(),
+            "kioskUserName", kioskUserName
         );
 
         NotificationMessage notificationMessage = new NotificationMessage(
             "대리 주문 도움 요청",
-            "키오스크 주문 도움이 필요합니다.",
+            kioskUserName + "님이 키오스크 주문 도움을 요청했습니다",
             "REMOTE-ORDER",
             notificationData,
             NotificationMessage.MessagePriority.HIGH,
