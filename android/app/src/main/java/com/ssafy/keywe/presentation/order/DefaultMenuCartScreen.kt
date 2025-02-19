@@ -106,8 +106,11 @@ fun DefaultMenuCartScreen(
             MenuCartFinishDialog(title = "주문 완료", description = "주문이 정상적으로 완료되었습니다.", onConfirm = {
                 menuCartViewModel.clearCart()
                 menuCartViewModel.closeCompleteOrderDialog()
-                navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId))
-                navController.navigate(Route.MenuBaseRoute.KioskHomeRoute)
+                navController.navigate(Route.MenuBaseRoute.KioskHomeRoute) {
+                    popUpTo(Route.MenuBaseRoute.KioskHomeRoute) {
+                        inclusive = true
+                    }
+                }
             })
         }
 
@@ -198,7 +201,7 @@ fun DefaultMenuCartScreen(
                 MenuCartBottom(
                     cartItems.sumOf { it.quantity },
                     cartItems.sumOf { it.price * it.quantity },
-                    menuCartViewModel
+                    menuCartViewModel,
                 )
             }
         }

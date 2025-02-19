@@ -4,6 +4,7 @@ package com.ssafy.keywe.presentation.order
 //import com.ssafy.keywe.webrtc.data.Touch
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ssafy.keywe.R
+import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultOrderAppBar
 import com.ssafy.keywe.data.TokenManager
@@ -66,6 +68,7 @@ import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
+import com.ssafy.keywe.webrtc.screen.closeSTOMP
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import com.ssafy.keywe.webrtc.viewmodel.SignalViewModel
 
@@ -157,8 +160,31 @@ fun MenuCartScreen(
             MenuCartFinishDialog(title = "주문 완료", description = "주문이 정상적으로 완료되었습니다.", onConfirm = {
                 menuCartViewModel.clearCart()
                 menuCartViewModel.closeCompleteOrderDialog()
-                navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId))
-                navController.navigate(Route.MenuBaseRoute.KioskHomeRoute)
+                closeSTOMP(context)
+                keyWeViewModel.exit()
+                tokenManager.clearKeyWeToken()
+                Log.d("MenuScreen", "종료")
+                Toast.makeText(context, "대리주문이 종료됩니다.", Toast.LENGTH_LONG).show()
+                // 키오스크
+                if (isKiosk) {
+                    Log.d("Back", "Back")
+                    navController.navigate(Route.MenuBaseRoute.KioskHomeRoute) {
+                        popUpTo(Route.MenuBaseRoute.KioskHomeRoute) {
+                            inclusive = true
+                        }
+                    }
+                } else {
+                    // 사용자 홈으로
+                    navController.navigate(BottomRoute.ProfileRoute) {
+                        popUpTo(BottomRoute.ProfileRoute) {
+                            inclusive = true
+                        }
+                    }
+                }
+        
+
+//                navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId))
+//                navController.navigate(Route.MenuBaseRoute.KioskHomeRoute)
             })
         }
 
@@ -307,7 +333,7 @@ fun MenuCartScreen(
                     MenuCartBottom(
                         cartItems.sumOf { it.quantity },
                         cartItems.sumOf { it.price * it.quantity },
-                        menuCartViewModel
+                        menuCartViewModel,
                     )
                 }
             }
