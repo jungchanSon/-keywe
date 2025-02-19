@@ -7,16 +7,26 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.FloatingActionButton
@@ -28,8 +38,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -99,7 +113,39 @@ fun MenuScreen(
         }
     }
 
+    val infiniteTransition = rememberInfiniteTransition()
+    val animatedOffset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 4000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
 
+    val colors = listOf(
+        Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Magenta, Color.Red
+    )
+
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp)
+//            .background(Color.Black) // 배경색
+//            .border(
+//                width = 8.dp,
+//                brush = Brush.sweepGradient(colors.mapIndexed { index, color ->
+//                    color.copy(alpha = (1f - (index * 0.15f) + animatedOffset) % 1f)
+//                }),
+//                shape = RoundedCornerShape(16.dp)
+//            )
+//    ) {
+//        Text(
+//            text = "무지개 Border 효과!",
+//            color = Color.White,
+//            modifier = Modifier.align(Alignment.Center)
+//        )
+//    }
 
 
     Box(
@@ -129,36 +175,85 @@ fun MenuScreen(
     }
 
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
 
+    ) {
 
-    Scaffold(topBar = {
-        DefaultOrderAppBar(
-            title = "주문하기",
-            navController = navController,
-            viewModel = appBarViewModel,
-            keyWeViewModel = keyWeViewModel,
-            isRoot = true,
-            isKiosk = isKiosk
-        )
-    }, modifier = Modifier.fillMaxSize(), floatingActionButton = {
-        FloatingCartButton(navController, menuCartViewModel, storeId, keyWeViewModel, isKiosk)
-    }) {
-        Column(
-            modifier = Modifier.fillMaxHeight()
+        Scaffold(
+            topBar = {
+                DefaultOrderAppBar(
+                    title = "주문하기",
+                    navController = navController,
+                    viewModel = appBarViewModel,
+                    keyWeViewModel = keyWeViewModel,
+                    isRoot = true,
+                    isKiosk = isKiosk
+                )
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .then(
+                    if (isKiosk) {
+                        Modifier.border(
+                            width = 2.dp,
+                            color = primaryColor,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    } else {
+                        Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                    }
+                ),
+            floatingActionButton = {
+                FloatingCartButton(
+                    navController,
+                    menuCartViewModel,
+                    storeId,
+                    keyWeViewModel,
+                    isKiosk
+                )
+            }
         ) {
-            /// 메뉴 내용
-            MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
-            MenuSubCategory("Popular Coffee")
+            Column(
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                /// 메뉴 내용
+                MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
+                MenuSubCategory("Popular Coffee")
 
-            MenuMenuList(
-                navController = navController,
-                menuViewModel,
-                menuCartViewModel,
-                isKeyWe = true,
-                storeId,
-                keyWeViewModel = keyWeViewModel,
-                isKiosk
-            )
+                MenuMenuList(
+                    navController = navController,
+                    menuViewModel,
+                    menuCartViewModel,
+                    isKeyWe = true,
+                    storeId,
+                    keyWeViewModel = keyWeViewModel,
+                    isKiosk
+                )
+            }
+        }
+        if (isKiosk) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp)
+//                    .background(titleTextColor.copy(alpha = 0.5f))
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent().apply {
+                                    // 이벤트를 소비하여 터치를 막음
+                                }
+                            }
+                        }
+                    },
+                contentAlignment = Alignment.TopCenter
+            ) {
+                FloatingUsingButton()
+            }
+        } else {
         }
     }
 }
@@ -252,3 +347,26 @@ fun FloatingCartButton(
         }
     }
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun FloatingUsingButton(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .wrapContentSize()
+            .background(primaryColor, shape = CircleShape)
+
+//            .pointerInput(Unit) {}
+    ) {
+        Text(
+            text = "KeyWe 서비스를 이용 중입니다.",
+            color = whiteBackgroundColor,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+    }
+}
+
