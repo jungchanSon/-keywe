@@ -1,6 +1,6 @@
 package com.kiosk.server.event;
 
-import com.kiosk.server.client.feign.api.NotificationClient;
+import com.kiosk.server.client.feign.api.NotificationServiceClient;
 import com.kiosk.server.client.feign.dto.NotificationMessage;
 import com.kiosk.server.client.feign.dto.SendFcmMessageRequest;
 import com.kiosk.server.client.feign.dto.SendFcmMessageResponse;
@@ -24,8 +24,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RemoteOrderRequestedEventListener {
 
-    private final NotificationClient notificationClient;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationServiceClient notificationServiceClient;
     private final RemoteOrderSessionRepository remoteOrderSessionRepository;
 
     @Async
@@ -58,7 +58,7 @@ public class RemoteOrderRequestedEventListener {
 
         SendFcmMessageRequest request = new SendFcmMessageRequest("PROFILE", helperIds, notificationMessage);
 
-        ResponseEntity<SendFcmMessageResponse> response = notificationClient.sendFcmMessage(request);
+        ResponseEntity<SendFcmMessageResponse> response = notificationServiceClient.sendFcmMessage(request);
 
         if (
             response.getStatusCode() != HttpStatus.OK ||

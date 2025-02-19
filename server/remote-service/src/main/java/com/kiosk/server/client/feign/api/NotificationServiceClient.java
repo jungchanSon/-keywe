@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "notificationClient", url = "${service.notification}")
-public interface NotificationClient {
+public interface NotificationServiceClient {
 
     @PostMapping("/internal/notification/messages")
     ResponseEntity<SendFcmMessageResponse> sendFcmMessage(@RequestBody SendFcmMessageRequest request);

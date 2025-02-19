@@ -1,6 +1,6 @@
 package com.kiosk.server.service;
 
-import com.kiosk.server.client.feign.api.UserClient;
+import com.kiosk.server.client.feign.api.UserServiceClient;
 import com.kiosk.server.client.feign.dto.UserProfile;
 import com.kiosk.server.common.util.IdUtil;
 import com.kiosk.server.domain.RemoteOrderSession;
@@ -24,8 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RemoteOrderService {
 
-    private final UserClient userClient;
     private final TaskScheduler taskScheduler;
+    private final UserServiceClient userServiceClient;
     private final SimpMessagingTemplate messagingTemplate;
     private final ApplicationEventPublisher eventPublisher;
     private final RemoteOrderSessionRepository sessionRepository;
@@ -33,7 +33,7 @@ public class RemoteOrderService {
     private static final Duration SESSION_TIMEOUT = Duration.ofSeconds(30);
 
     public RemoteOrderSession saveSession(String userId, String familyId, String storeId) {
-        UserProfile userProfile = userClient.getUserProfile(userId);
+        UserProfile userProfile = userServiceClient.getUserProfile(userId);
 
         if (!userProfile.role().equals("PARENT")) {
             throw new ChildRemoteOrderForbiddenException();
@@ -51,7 +51,7 @@ public class RemoteOrderService {
 
         sessionRepository.save(session);
 
-        List<UserProfile> helperProfiles = userClient.getHelperProfiles(familyId);
+        List<UserProfile> helperProfiles = userServiceClient.getHelperProfiles(familyId);
         sessionRepository.saveHelperIdNameMap(familyId, helperProfiles);
 
         scheduleTimeoutCheck(session.getSessionId());
