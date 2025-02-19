@@ -33,7 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -202,30 +204,29 @@ fun MenuCartScreen(
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
-                    .then(if (isKiosk) {
-                        Modifier
-                            .border(
-                                width = 2.dp,
-                                color = primaryColor,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .pointerInput(Unit) {
-                                awaitPointerEventScope {
-                                    while (true) {
-                                        awaitPointerEvent().apply {
-                                            // 이벤트를 소비하여 터치를 막음
-                                        }
-                                    }
-                                }
-                            }
-                    } else {
-                        Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
-                    })
+                    .then(
+                        if (isKiosk) {
+                            Modifier
+                                .border(
+                                    width = 2.dp,
+                                    color = primaryColor,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .pointerInteropFilter { true }
+//                                .pointerInput(Unit) {
+//                                    awaitPointerEventScope {
+//                                        while (true) {
+//                                            awaitPointerEvent().changes.forEach {
+//                                                it.consume() // 모든 터치 이벤트를 소모하여 차단
+//                                            }
+//                                        }
+//                                    }
+//                                }
+                        } else {
+                            Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                        })
                 ) {
-
                     if (cartItems.isNotEmpty()) {
-
-
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -317,12 +318,19 @@ fun MenuCartScreen(
 
         if (isKiosk) {
             Box(
+                contentAlignment = Alignment.TopCenter,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 16.dp),
+                    .padding(top = 16.dp)
+//                    .pointerInput(Unit) {
+//                        awaitPointerEventScope {
+//                            while (true) {
+//                                val event = awaitPointerEvent()
+//                                event.changes.forEach { it.consume() } // 🔹 터치 이벤트 강제 차단
+//                            }
+//                        }
+//                    },
 //                    .background(titleTextColor.copy(alpha = 0.5f))
-
-                contentAlignment = Alignment.TopCenter
             ) {
                 FloatingUsingButton()
             }

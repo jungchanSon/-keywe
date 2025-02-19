@@ -30,6 +30,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -206,15 +207,16 @@ fun MenuDetailScreen(
                                     shape = RoundedCornerShape(8.dp)
 
                                 )
-                                .pointerInput(Unit) {
-                                    awaitPointerEventScope {
-                                        while (true) {
-                                            awaitPointerEvent().apply {
-                                                // 이벤트를 소비하여 터치를 막음
-                                            }
-                                        }
-                                    }
-                                }
+                                .pointerInteropFilter { true }
+//                                .pointerInput(Unit) {
+//                                    awaitPointerEventScope {
+//                                        while (true) {
+//                                            awaitPointerEvent().apply {
+//                                                // 이벤트를 소비하여 터치를 막음
+//                                            }
+//                                        }
+//                                    }
+//                                }
                         } else {
                             Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
                         }
@@ -323,20 +325,20 @@ fun MenuDetailScreen(
 
         if (isKiosk) {
             Box(
+                contentAlignment = Alignment.TopCenter,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 16.dp)
 //                    .background(titleTextColor.copy(alpha = 0.5f))
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                awaitPointerEvent().apply {
-                                    // 이벤트를 소비하여 터치를 막음
-                                }
-                            }
-                        }
-                    },
-                contentAlignment = Alignment.TopCenter
+//                    .pointerInput(Unit) {
+//                        awaitPointerEventScope {
+//                            while (true) {
+//                                awaitPointerEvent().apply {
+//                                    // 이벤트를 소비하여 터치를 막음
+//                                }
+//                            }
+//                        }
+//                    },
             ) {
                 FloatingUsingButton()
             }

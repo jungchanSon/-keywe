@@ -215,19 +215,19 @@ fun MenuScreen(
                                     color = primaryColor,
                                     shape = RoundedCornerShape(8.dp)
                                 )
-                                .pointerInput(Unit) {
-                                    awaitPointerEventScope {
-                                        while (true) {
-                                            awaitPointerEvent().apply {
-                                                // 이벤트를 소비하여 터치를 막음
-                                            }
-                                        }
-                                    }
-                                }
+                                .pointerInteropFilter { true }
+//                                .pointerInput(Unit) {
+//                                    awaitPointerEventScope {
+//                                        while (true) {
+//                                            awaitPointerEvent().changes.forEach {
+//                                                it.consume() // 모든 터치 이벤트를 소모하여 차단
+//                                            }
+//                                        }
+//                                    }
+//                                }
                         } else {
                             Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
-                        }
-                    )
+                        })
             ) {
                 /// 메뉴 내용
                 MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
@@ -246,11 +246,19 @@ fun MenuScreen(
         }
         if (isKiosk) {
             Box(
+                contentAlignment = Alignment.TopCenter,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 16.dp),
-//                    .background(titleTextColor.copy(alpha = 0.5f)),
-                contentAlignment = Alignment.TopCenter
+                    .padding(top = 16.dp)
+//                    .pointerInput(Unit) {
+//                        awaitPointerEventScope {
+//                            while (true) {
+//                                val event = awaitPointerEvent()
+//                                event.changes.forEach { it.consume() } // 🔹 터치 이벤트 강제 차단
+//                            }
+//                        }
+//                    },
+//                    .background(titleTextColor.copy(alpha = 0.5f))
             ) {
                 FloatingUsingButton()
             }
