@@ -64,6 +64,7 @@ public class RemoteOrderHandler {
             Map.of(
                 "sessionId", session.getSessionId(),
                 "helperUserId", helperUserId,
+                "helperUserName", session.getHelperName(),
                 "kioskUserId", session.getKioskUserId(),
                 "channel", agoraChannelInfo
             )

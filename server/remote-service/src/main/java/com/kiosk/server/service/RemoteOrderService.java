@@ -48,11 +48,8 @@ public class RemoteOrderService {
 
         sessionRepository.save(session);
 
-        List<String> helperIds = userClient.getHelperProfiles(familyId)
-            .stream()
-            .map(UserProfile::id)
-            .toList();
-        sessionRepository.saveHelperIds(familyId, helperIds);
+        List<UserProfile> helperProfiles = userClient.getHelperProfiles(familyId);
+        sessionRepository.saveHelperIdNameMap(familyId, helperProfiles);
 
         scheduleTimeoutCheck(session.getSessionId());
         eventPublisher.publishEvent(new RemoteOrderRequestedEvent(session));
@@ -64,21 +61,17 @@ public class RemoteOrderService {
         if (!sessionRepository.isHelper(familyId, helperUserId)) {
             throw new UnauthorizedRemoteOrderAcceptException();
         }
-        return sessionRepository.acceptSession(sessionId, helperUserId);
-    }
 
-    public RemoteOrderSession endSession(String userId, String sessionId) {
-        RemoteOrderSession session = sessionRepository.findById(sessionId);
-        if (session == null) {
-            throw new SessionNotFoundException();
+        RemoteOrderSession session = sessionRepository.acceptSession(sessionId, helperUserId);
+
+        // Helper의 이름 가져오기
+        String helperName = sessionRepository.getHelperName(familyId, helperUserId);
+        if (helperName == null) {
+            throw new IllegalStateException("Helper name not found");
         }
 
-        if (!userId.equals(session.getKioskUserId()) && !userId.equals(session.getHelperUserId())) {
-            throw new UnauthorizedRemoteOrderEndException();
-        }
-
-        session.setStatus(RemoteOrderStatus.ENDED.name());
-        sessionRepository.saveWithTTL(session);
+        session.setHelperName(helperName);
+        sessionRepository.save(session);
 
         return session;
     }
