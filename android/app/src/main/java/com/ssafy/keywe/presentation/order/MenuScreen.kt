@@ -299,6 +299,7 @@ fun disConnect(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FloatingCartButton(
     navController: NavController,
@@ -317,6 +318,13 @@ fun FloatingCartButton(
             .size(48.dp) // FloatingActionButton 크기와 동일하게 설정
             .background(whiteBackgroundColor, shape = CircleShape)
             .shadow(4.dp, CircleShape, clip = false)
+            .then(
+                if (isKiosk) {
+                    Modifier
+                        .pointerInteropFilter { true }
+                } else {
+                    Modifier
+                })
     ) {
         FloatingActionButton(onClick = {
             navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId))
