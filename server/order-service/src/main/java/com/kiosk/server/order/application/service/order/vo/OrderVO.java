@@ -5,8 +5,10 @@ import java.util.List;
 public class OrderVO {
 
     public record save(
+            long profileId,
+            long totalPrice,
             long shopId,
-            long phoneNumber,
+            String phoneNumber,
             List<OrderMenu> menuList
     ) { }
 

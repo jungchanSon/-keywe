@@ -10,5 +10,6 @@ public class OrderMenuOption {
     private long orderId;
     private long orderMenuId;
     private long optionValueId;
+    private long price;
     private long optionCount;
 }
