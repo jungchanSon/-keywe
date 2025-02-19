@@ -14,7 +14,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -61,6 +64,7 @@ fun isOnlyCurrentScreenInBackStack(navController: NavController): Boolean {
     return navController.previousBackStackEntry == null
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("RestrictedApi", "StateFlowValueCalledInComposition")
 @Composable
 fun DefaultOrderAppBar(
@@ -83,9 +87,15 @@ fun DefaultOrderAppBar(
         navigationIcon = {
             if (!isOnlyCurrentOrderScreenInBackStack(navController)) {
                 IconButton(
-                    modifier = Modifier.semantics {
-                        contentDescription = "back_button"
-                    },
+                    modifier = Modifier
+                        .then(if (isKiosk) {
+                            Modifier.pointerInteropFilter { true }
+                        } else {
+                            Modifier
+                        })
+                        .semantics {
+                            contentDescription = "back_button"
+                        },
                     onClick = {
                         if (isRoot) viewModel.openDialog()
                         else navController.popBackStack()
@@ -94,7 +104,8 @@ fun DefaultOrderAppBar(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = if (!isKiosk) Color.Black else Color.Transparent,
                     )
                 }
             }
