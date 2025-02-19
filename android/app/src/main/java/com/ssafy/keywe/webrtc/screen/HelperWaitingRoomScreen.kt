@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.ssafy.keywe.common.BottomRoute
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.manager.ProfileIdManager
@@ -188,7 +189,7 @@ fun HelperWaitingRoomScreen(
                         closeSTOMP(context)
                         scope.launch {
                             delay(2000)
-                            navController.navigate(Route.MenuBaseRoute.KioskHomeRoute) {
+                            navController.navigate(BottomRoute.ProfileRoute) {
                                 popUpTo(navController.graph.startDestinationId)
                                 launchSingleTop = true
                             }

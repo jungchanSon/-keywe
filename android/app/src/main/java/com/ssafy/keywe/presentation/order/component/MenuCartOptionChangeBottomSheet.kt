@@ -26,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,8 @@ import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +52,8 @@ fun OptionChangeBottomSheet(
     viewModel: MenuCartViewModel,
     onDismiss: () -> Unit,
     storeId: Long,
+    keyWeViewModel: KeyWeViewModel,
+    isKiosk: Boolean = false,
 ) {
 
     val menu by viewModel.selectedDetailMenu.collectAsState()
@@ -153,10 +159,14 @@ fun OptionChangeBottomSheet(
                     ) {
                         MenuDetailCommonOptionRow(sizeValues,
                             selectedSize.value,
-                            onSelect = { selectedSize.value = it })
+                            onSelect = { selectedSize.value = it }, isKiosk = isKiosk,
+                            keyWeViewModel
+                        )
                         MenuDetailCommonOptionRow(temperatureValues,
                             selectedTemperature.value,
-                            onSelect = { selectedTemperature.value = it })
+                            onSelect = { selectedTemperature.value = it }, isKiosk = isKiosk,
+                            keyWeViewModel
+                        )
                     }
                 }
             }
@@ -189,7 +199,9 @@ fun OptionChangeBottomSheet(
                                         if (count == 0) extraOptions.remove(id)
                                         else extraOptions[id] =
                                             optionValue to count // ✅ optionValue 저장
-                                    })
+                                    },
+                                    isKiosk = isKiosk,
+                                    keyWeViewModel = keyWeViewModel)
                             }
                         }
                     }
@@ -231,6 +243,7 @@ fun OptionChangeBottomSheet(
             sheetState.hide() // 슬라이딩 애니메이션으로 닫기
             onDismiss()
         }
+        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
     }, sheetState = sheetState, buttons = {
         Row(
             modifier = Modifier
@@ -241,13 +254,19 @@ fun OptionChangeBottomSheet(
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally)
         ) {
             BottomButton(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics {
+                        contentDescription = "close_bottom_sheet"
+                    },
                 content = "취소",
+
                 onClick = {
                     coroutineScope.launch {
                         sheetState.hide()
                         onDismiss()
                     }
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
                 },
                 colors = ButtonColors(
                     containerColor = greyBackgroundColor,
@@ -256,7 +275,11 @@ fun OptionChangeBottomSheet(
                     disabledContainerColor = greyBackgroundColor
                 ),
             )
-            BottomButton(modifier = Modifier.weight(1f), content = "수정", onClick = {
+            BottomButton(modifier = Modifier
+                .weight(1f)
+                .semantics {
+                    contentDescription = "accept_bottom_sheet"
+                }, content = "수정", onClick = {
                 coroutineScope.launch {
                     viewModel.updateCartItem(
                         cartItem.id,
@@ -268,6 +291,7 @@ fun OptionChangeBottomSheet(
                     )
                     sheetState.hide()
                     onDismiss()
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptBottomSheet)
                 }
             })
         }

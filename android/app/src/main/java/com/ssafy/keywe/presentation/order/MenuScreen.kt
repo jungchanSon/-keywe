@@ -7,16 +7,26 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.FloatingActionButton
@@ -28,10 +38,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -53,6 +69,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.data.STOMPTYPE
 import com.ssafy.keywe.webrtc.screen.closeSTOMP
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
@@ -96,6 +113,40 @@ fun MenuScreen(
         }
     }
 
+    val infiniteTransition = rememberInfiniteTransition()
+    val animatedOffset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 4000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    val colors = listOf(
+        Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Magenta, Color.Red
+    )
+
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp)
+//            .background(Color.Black) // 배경색
+//            .border(
+//                width = 8.dp,
+//                brush = Brush.sweepGradient(colors.mapIndexed { index, color ->
+//                    color.copy(alpha = (1f - (index * 0.15f) + animatedOffset) % 1f)
+//                }),
+//                shape = RoundedCornerShape(16.dp)
+//            )
+//    ) {
+//        Text(
+//            text = "무지개 Border 효과!",
+//            color = Color.White,
+//            modifier = Modifier.align(Alignment.Center)
+//        )
+//    }
+
 
     Box(
         modifier = Modifier
@@ -109,127 +160,91 @@ fun MenuScreen(
     ) {
         // 통화 종료 다이얼로그
         if (isStopCallingDialogOpen) {
-            MenuCartDeleteDialog(title = "통화 종료",
-                description = "통화를 종료하시겠습니까?",
-                onCancel = { appBarViewModel.closeDialog() },
-                onConfirm = {
-                    /* 너의 action */
-                    disConnect(
-                        context,
-                        keyWeViewModel,
-                        appBarViewModel,
-                        isKiosk,
-                        navController,
-                        tokenManager
-                    )
-                })
+            MenuCartDeleteDialog(title = "통화 종료", description = "통화를 종료하시겠습니까?", onCancel = {
+                appBarViewModel.closeDialog()
+//                if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseDialog)
+
+            }, onConfirm = {
+                /* 너의 action */
+                disConnect(
+                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                )
+//                keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
+            })
         }
     }
 
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
 
-
-    Scaffold(topBar = {
-        DefaultOrderAppBar(
-            title = "주문하기",
-            navController = navController,
-            viewModel = appBarViewModel,
-            keyWeViewModel = keyWeViewModel,
-            isRoot = true
-        )
-    }, modifier = Modifier
-        .fillMaxSize()
-//        .pointerInput(Unit) {
-//            awaitEachGesture {
-//                // 첫 터치 다운 이벤트를 감지하되, 소비하지 않음 (requireUnconsumed = false)
-//                val down = awaitFirstDown(requireUnconsumed = false)
-//                val startPosition = down.position
-//                Log.d("ParentGesture", "Down at: $startPosition")
-//                var isDragging = false
-//
-//                // 터치가 계속되는 동안 이벤트를 관찰
-//                do {
-//                    // Initial 패스로 이벤트를 관찰 (이벤트 소비 X)
-//                    val event = awaitPointerEvent(PointerEventPass.Initial)
-//                    event.changes.forEach { change ->
-//                        // 터치 이동이 발생하면 드래그로 판단
-//                        val delta = change.positionChange()
-//                        if (delta != Offset.Zero) {
-//                            isDragging = true
-//                            Log.d(
-//                                "ParentGesture",
-//                                "Dragging: current x=${change.position.x}, y=${change.position.y}, delta=(${
-//                                    delta.x
-//                                }, ${delta.y})"
-//                            )
-//                        }
-//                    }
-//                    // 터치가 여전히 진행 중이면 반복
-//                } while (event.changes.any { it.pressed })
-//
-//                // 드래그가 없었으면 클릭으로 간주
-//                if (!isDragging) {
-//                    Log.d("ParentGesture", "Click detected at: $startPosition")
-//                }
-//            }
-//        }
-//        .pointerInteropFilter { motionEvent ->
-//            when (motionEvent.action) {
-//                MotionEvent.ACTION_DOWN -> {
-////                val x = ScreenRatioUtil.pixelToDp(motionEvent.x, density)
-////                val y = ScreenRatioUtil.pixelToDp(motionEvent.y, density)
-//
-//                    Log.d(
-//                        "sendGesture",
-//                        "실제 클릭한 위치 x PX = ${motionEvent.x} y DP = ${motionEvent.y}"
-//                    )
-////                Log.d("sendGesture", "실제 클릭한 위치 x DP = ${x} y DP = ${y}")
-////                    if (!isKiosk)
-////                        keyWeViewModel.sendClickGesture(
-////                        Touch(
-////                            MessageType.Touch, motionEvent.x, motionEvent.y,
-////                        )
-////                    )
-//                    println("Tapped at x=${motionEvent.x}, y=${motionEvent.y}")
-//                }
-//
-//                MotionEvent.ACTION_MOVE -> {
-////                    if (!isKiosk) keyWeViewModel.sendClickGesture(
-////                        Drag(
-////                            MessageType.Drag, motionEvent.x, motionEvent.y,
-////                        )
-////                    )
-//                    println("Moved at x=${motionEvent.x}, y=${motionEvent.y}")
-//                }
-//
-//                else -> {
-//                    Log.d("MotionEvent", "click")
-//                }
-//            }
-//            false
-//        }
-        ,
-
-
-        floatingActionButton = {
-            FloatingCartButton(navController, menuCartViewModel, storeId)
-        }) {
-        Column(
-            modifier = Modifier.fillMaxHeight()
+        Scaffold(
+            topBar = {
+                DefaultOrderAppBar(
+                    title = "주문하기",
+                    navController = navController,
+                    viewModel = appBarViewModel,
+                    keyWeViewModel = keyWeViewModel,
+                    isRoot = true,
+                    isKiosk = isKiosk
+                )
+            },
+            modifier = Modifier
+                .fillMaxSize(),
+            floatingActionButton = {
+                FloatingCartButton(
+                    navController,
+                    menuCartViewModel,
+                    storeId,
+                    keyWeViewModel,
+                    isKiosk
+                )
+            }
         ) {
-            /// 메뉴 내용
-            MenuCategoryScreen(menuViewModel, storeId)
-            MenuSubCategory("Popular Coffee")
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .then(
+                        if (isKiosk) {
+                            Modifier.border(
+                                width = 2.dp,
+                                color = primaryColor,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                        } else {
+                            Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                        }
+                    )
+            ) {
+                /// 메뉴 내용
+                MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
+                MenuSubCategory("Popular Coffee")
 
-            MenuMenuList(
-                navController = navController,
-                menuViewModel,
-                menuCartViewModel,
-                isKeyWe = true,
-                storeId,
-                keyWeViewModel,
-                isKiosk
-            )
+                MenuMenuList(
+                    navController = navController,
+                    menuViewModel,
+                    menuCartViewModel,
+                    isKeyWe = true,
+                    storeId,
+                    keyWeViewModel = keyWeViewModel,
+                    isKiosk
+                )
+            }
+        }
+        if (isKiosk) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp),
+//                    .background(titleTextColor.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                FloatingUsingButton()
+            }
+        } else {
         }
     }
 }
@@ -271,6 +286,8 @@ fun FloatingCartButton(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel = hiltViewModel(),
     storeId: Long,
+    keyWeViewModel: KeyWeViewModel,
+    isKiosk: Boolean = false,
 ) {
 //    val cartItemCount by viewModel.cartItemCount.collectAsState()
     val cartItems by menuCartViewModel.cartItems.collectAsState()
@@ -283,8 +300,10 @@ fun FloatingCartButton(
             .background(whiteBackgroundColor, shape = CircleShape)
             .shadow(4.dp, CircleShape, clip = false)
     ) {
-        FloatingActionButton(
-            onClick = { navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId)) },
+        FloatingActionButton(onClick = {
+            navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId))
+            if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.MenuCart)
+        },
             containerColor = Color.White,
             contentColor = Color.White,
             shape = CircleShape,
@@ -292,7 +311,9 @@ fun FloatingCartButton(
             modifier = Modifier
                 .size(48.dp)
                 .border(2.dp, primaryColor, CircleShape)
-        ) {
+                .semantics {
+                    contentDescription = "menu_cart"
+                }) {
             Image(
                 modifier = Modifier.background(whiteBackgroundColor),
                 painter = painterResource(R.drawable.outline_shopping_cart_24),
@@ -317,3 +338,26 @@ fun FloatingCartButton(
         }
     }
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun FloatingUsingButton(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .wrapContentSize()
+            .background(primaryColor, shape = CircleShape)
+
+//            .pointerInput(Unit) {}
+    ) {
+        Text(
+            text = "KeyWe 서비스를 이용 중입니다.",
+            color = whiteBackgroundColor,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+    }
+}
+

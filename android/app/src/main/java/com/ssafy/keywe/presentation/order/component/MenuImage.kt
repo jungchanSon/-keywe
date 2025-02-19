@@ -12,6 +12,7 @@ fun MenuImage(
 //    Log.d("이미지 확인용", "$menu")
     val menuImage = menu?.image ?: ""
 
+
     if (menuImage.isNotBlank()) {
         // Base64 데이터 처리
         Base64Image(base64String = menuImage)

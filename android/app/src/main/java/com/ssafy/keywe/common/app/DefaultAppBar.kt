@@ -14,13 +14,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 import io.agora.rtc2.Constants
 
@@ -65,6 +70,7 @@ fun DefaultOrderAppBar(
     viewModel: OrderAppBarViewModel = hiltViewModel(),
     keyWeViewModel: KeyWeViewModel,
     isRoot: Boolean = false,
+    isKiosk: Boolean = false,
 ) {
 //    val speakerSound by viewModel.speakerSound.collectAsState()
 //    val isKiWiMatching by viewModel.isKiWiMatching.collectAsState()
@@ -76,10 +82,16 @@ fun DefaultOrderAppBar(
         title = { Text(text = title, style = h6) },
         navigationIcon = {
             if (!isOnlyCurrentOrderScreenInBackStack(navController)) {
-                IconButton(onClick = {
-                    if (isRoot) viewModel.openDialog()
-                    else navController.popBackStack()
-                }) {
+                IconButton(
+                    modifier = Modifier.semantics {
+                        contentDescription = "back_button"
+                    },
+                    onClick = {
+                        if (isRoot) viewModel.openDialog()
+                        else navController.popBackStack()
+                        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.BackButton)
+                    },
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = null
@@ -109,5 +121,10 @@ fun DefaultOrderAppBar(
 }
 
 fun isOnlyCurrentOrderScreenInBackStack(navController: NavController): Boolean {
-    return navController.previousBackStackEntry == null
+    val isCurrentDestination = try {
+        navController.currentDestination == navController.getBackStackEntry<Route.MenuBaseRoute.MenuRoute>().destination
+    } catch (e: IllegalArgumentException) {
+        false
+    }
+    return isCurrentDestination
 }

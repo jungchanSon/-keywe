@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +21,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h6
 import com.ssafy.keywe.ui.theme.noRippleClickable
@@ -29,6 +33,8 @@ import com.ssafy.keywe.ui.theme.orangeColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 
 @Composable
 fun MenuDetailCommonOption(
@@ -37,8 +43,11 @@ fun MenuDetailCommonOption(
     selectedSize: String = "Tall",
     selectedTemperature: String = "Hot",
     onSizeSelected: (String) -> Unit,
-    onTemperatureSelected: (String) -> Unit
+    onTemperatureSelected: (String) -> Unit,
+    isKiosk: Boolean = false,
+    keyWeViewModel: KeyWeViewModel = hiltViewModel()
 ) {
+
 //    val sizeList = listOf("Tall", "Grande", "Venti")
 //    val temperatureList = listOf("Hot", "Ice")
 
@@ -55,8 +64,8 @@ fun MenuDetailCommonOption(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MenuDetailCommonOptionRow(sizeOptions, selectedSize, onSizeSelected)
-            MenuDetailCommonOptionRow(temperatureOptions, selectedTemperature, onTemperatureSelected)
+            MenuDetailCommonOptionRow(sizeOptions, selectedSize, onSizeSelected, isKiosk, keyWeViewModel)
+            MenuDetailCommonOptionRow(temperatureOptions, selectedTemperature, onTemperatureSelected, isKiosk, keyWeViewModel)
 
         }
     }
@@ -64,7 +73,13 @@ fun MenuDetailCommonOption(
 }
 
 @Composable
-fun MenuDetailCommonOptionRow(options: List<String>, selected: String, onSelect: (String) -> Unit) {
+fun MenuDetailCommonOptionRow(
+    options: List<String>,
+    selected: String,
+    onSelect: (String) -> Unit,
+    isKiosk: Boolean = false,
+    keyWeViewModel: KeyWeViewModel
+) {
 
     Row(
         modifier = Modifier
@@ -76,7 +91,14 @@ fun MenuDetailCommonOptionRow(options: List<String>, selected: String, onSelect:
                 option = option,
                 modifier = Modifier.weight(1f).height(45.dp),
                 isSelected = selected == option,
-                onSelect = { onSelect(option) }
+                onSelect = {
+                    onSelect(option)
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                        KeyWeButtonEvent.MenuDetailSelectCommonOption(
+                            option
+                        )
+                    )
+                           },
             )
         }
     }
@@ -89,10 +111,12 @@ fun MenuDetailCommonOptionButton(
     isSelected: Boolean,
     onSelect: () -> Unit,
 ) {
+    Log.d("DetailCommonOptionName", "$option")
     Box(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .semantics { contentDescription = "select_common_option_$option" }
             .clip(RoundedCornerShape(10.dp))
             .background(whiteBackgroundColor)
             .border(
@@ -100,7 +124,9 @@ fun MenuDetailCommonOptionButton(
                 color = if (isSelected) orangeColor else polishedSteelColor,
                 shape = RoundedCornerShape(10.dp)
             )
-            .noRippleClickable { onSelect() } // 클릭 이벤트 적용
+            .noRippleClickable {
+                onSelect()
+            } // 클릭 이벤트 적용
             .padding(vertical = 8.dp, horizontal = 16.dp), // 패딩 추가하여 버튼 크기 조정
         contentAlignment = Alignment.Center
     ) {

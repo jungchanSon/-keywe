@@ -62,7 +62,7 @@ fun DefaultMenuScreen(
             modifier = Modifier.fillMaxHeight()
         ) {
 
-            MenuCategoryScreen(menuViewModel, storeId)
+            MenuCategoryScreen(menuViewModel, storeId = storeId)
             MenuSubCategory("Popular Coffee")
 
             MenuMenuList(
@@ -81,6 +81,7 @@ fun DefaultFloatingCartButton(
     navController: NavController,
     menuCartViewModel: MenuCartViewModel,
     storeId: Long,
+
 ) {
     val cartItems by menuCartViewModel.cartItems.collectAsState()
     val cartItemsCount = cartItems.sumOf { it.quantity }

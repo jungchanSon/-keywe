@@ -81,7 +81,9 @@ fun InputPasswordScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        modifier = Modifier.padding(top = 40.dp, bottom = 10.dp),
+                        modifier = Modifier.padding(
+//                            top = 40.dp,
+                            bottom = 10.dp),
                         text = "인증 번호를 입력해주세요.",
                         style = h6.copy(letterSpacing = 0.sp)
                     )

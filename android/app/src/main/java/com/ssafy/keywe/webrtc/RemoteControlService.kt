@@ -2,12 +2,13 @@ package com.ssafy.keywe.webrtc
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.accessibilityservice.GestureDescription
 import android.content.Intent
+import android.graphics.Path
 import android.os.Build
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.view.accessibility.AccessibilityWindowInfo
 import com.ssafy.keywe.webrtc.data.MessageType
 
 
@@ -15,7 +16,7 @@ class RemoteControlService : AccessibilityService() {
     override fun onCreate() {
         super.onCreate()
 //        serviceInfo.flags = AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
-        Log.d("RemoteControlService", "onCreate")
+        Log.d(TAG, "onCreate")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -30,6 +31,14 @@ class RemoteControlService : AccessibilityService() {
                     handleButtonEvent(intent)
                 }
 
+                MessageType.DRAG_EVENT.name -> {
+                    Log.d(TAG, "드래그 이벤트 처리 시작")
+                    val firstVisibleItemIndex = intent.getIntExtra("firstVisibleItemIndex", 0)
+                    val firstVisibleItemScrollOffset =
+                        intent.getIntExtra("firstVisibleItemScrollOffset", 0)
+//                    performDragGesture(targetScrollY)
+                }
+
                 else -> {
                     Log.e(TAG, "알 수 없는 intent.action: ${intent.action}")
                 }
@@ -39,37 +48,28 @@ class RemoteControlService : AccessibilityService() {
     }
 
     override fun onServiceConnected() {
-        super.onServiceConnected()
-        Log.d(TAG, "onServiceConnected")
-
         val info = AccessibilityServiceInfo()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
-//            info.eventTypes =
-//                AccessibilityEvent.TYPE_VIEW_CLICKED or AccessibilityEvent.TYPE_VIEW_FOCUSED
-        }
-
-        info.apply {
-            feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL
-            notificationTimeout = 100  // 반응성 향상을 위해 타임아웃 감소
-            flags =
-                AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
-        }
-
+        info.eventTypes =
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL
+        info.notificationTimeout = 100
+        info.flags =
+            AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
         this.serviceInfo = info
     }
 
 
     override fun onInterrupt() {
-        Log.d("RemoteControlService", "onInterrupt")
+        Log.d(TAG, "onInterrupt")
     }
 
     fun stopAccessibilityService() {
         disableSelf()
-        Log.d("AccessibilityService", "서비스 종료됨")
+        Log.d(TAG, "서비스 종료됨")
     }
 
     override fun onDestroy() {
-        Log.d("RemoteControlService", "onDestroy")
+        Log.d(TAG, "onDestroy")
         stopAccessibilityService()
         super.onDestroy()
     }
@@ -93,9 +93,96 @@ class RemoteControlService : AccessibilityService() {
                 Log.d(TAG, "MenuAddToCart: $menuId")
                 findAndClickNodeByDescription("add_to_cart_$menuId")
             }
+
+            "MenuCart" -> {
+                Log.d(TAG, "MenuCart: ")
+                findAndClickNodeByDescription("menu_cart")
+            }
+
+            "CartOpenDialog" -> {
+                Log.d(TAG, "CartOpenDialog: ")
+                findAndClickNodeByDescription("cart_open_dialog")
+            }
+
+            "CartCloseDialog" -> {
+                Log.d(TAG, "CartCloseDialog: ")
+                findAndClickNodeByDescription("cart_close_dialog")
+            }
+
+            "CartAcceptDialog" -> {
+                Log.d(TAG, "CartAcceptDialog: ")
+                findAndClickNodeByDescription("cart_accept_dialog")
+            }
+
+            "CartIdOpenDialog" -> {
+                val cartId = intent.getLongExtra("cartId", -1L)
+                Log.d(TAG, "CartIdOpenDialog: ")
+                findAndClickNodeByDescription("cart_open_dialog_$cartId")
+            }
+
+            "CartIdOpenBottomSheet" -> {
+                val cartId = intent.getLongExtra("cartId", -1L)
+                Log.d(TAG, "CartIdOpenBottomSheet: ")
+                findAndClickNodeByDescription("cart_open_bottom_sheet_$cartId")
+            }
+
+            "CartCloseBottomSheet" -> {
+                Log.d(TAG, "CartCloseBottomSheet: ")
+                findAndClickNodeByDescription("close_bottom_sheet")
+            }
+
+            "CartAcceptBottomSheet" -> {
+                Log.d(TAG, "CartAcceptBottomSheet: ")
+                findAndClickNodeByDescription("accept_bottom_sheet")
+            }
+
+            "BackButton" -> {
+                Log.d(TAG, "BackButton: ")
+                findAndClickNodeByDescription("back_button")
+            }
+
+            "StoreButton" -> {
+                Log.d(TAG, "StoreButton: ")
+                findAndClickNodeByDescription("menu_detail_store_button")
+            }
+
+            "OrderButton" -> {
+                Log.d(TAG, "OrderButton: ")
+                findAndClickNodeByDescription("menu_detail_order_button")
+            }
+
+            "MenuDetailSelectCommonOption" -> {
+                val optionValue = intent.getStringExtra("optionValue") ?: return
+                Log.d(TAG, "optionValue: $optionValue")
+                findAndClickNodeByDescription("select_common_option_$optionValue")
+            }
+
+            "MenuDetailPlusExtraOption" -> {
+                val optionName = intent.getStringExtra("optionName") ?: return
+                Log.d(TAG, "optionName: $optionName")
+                findAndClickNodeByDescription("plus_extra_option_$optionName")
+            }
+
+            "MenuDetailMinusExtraOption" -> {
+                val optionName = intent.getStringExtra("optionName") ?: return
+                Log.d(TAG, "optionName: $optionName")
+                findAndClickNodeByDescription("minus_extra_option_$optionName")
+            }
+
+            "MenuCartPlusAmount" -> {
+                val cartItemId = intent.getLongExtra("cartItemId", -1L) ?: return
+                Log.d(TAG, "cartItemName: $cartItemId")
+                findAndClickNodeByDescription("plus_amount_$cartItemId")
+            }
+
+            "MenuCartMinusAmount" -> {
+                val cartItemId = intent.getLongExtra("cartItemId", -1L) ?: return
+                Log.d(TAG, "cartItemName: $cartItemId")
+                findAndClickNodeByDescription("minus_amount_$cartItemId")
+            }
         }
     }
-    
+
     private fun findAndClickNodeByText(text: String) {
         // 매번 최신의 루트 노드를 새로 가져옴
 //        val rootNode = getActiveRootNode()
@@ -110,7 +197,7 @@ class RemoteControlService : AccessibilityService() {
         while (nodes.isNotEmpty()) {
             val node = nodes.removeAt(0)
 
-            if (node.text?.toString()?.contains(text, ignoreCase = true) == true) {
+            if (node.text?.toString()?.equals(text, ignoreCase = true) == true) {
                 Log.d(TAG, "Found node with text: $text")
 
                 // 1. 포커스 주기
@@ -167,7 +254,7 @@ class RemoteControlService : AccessibilityService() {
             val node = nodes.removeAt(0)
 
             if (node.contentDescription?.toString()
-                    ?.contains(description, ignoreCase = true) == true
+                    ?.equals(description, ignoreCase = true) == true
             ) {
                 Log.d(TAG, "Found node with description: $description")
 
@@ -214,18 +301,19 @@ class RemoteControlService : AccessibilityService() {
         val contentDescription = nodeInfo.contentDescription?.toString() ?: "없음"
         val text = nodeInfo.text?.toString() ?: "없음"
 
+        Log.d(TAG, "eventType = ${event.eventType}, name = ${event}")
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
                 -> {
-                Log.d("Accessibility", "화면 변경 감지됨: ${event.className}")
+                Log.d(TAG, "화면 변경 감지됨: ${event.className}")
 
                 // 새로운 화면의 루트 노드 업데이트
                 updateCurrentRootNode()
             }
         }
 
-        Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
+//        Log.d(TAG, "Event: type=$eventType, text=$text, description=$contentDescription")
     }
 
     /**
@@ -233,13 +321,45 @@ class RemoteControlService : AccessibilityService() {
      */
     private fun updateCurrentRootNode() {
         val rootNode = rootInActiveWindow ?: return
-        Log.d("Accessibility", "현재 화면의 루트 노드 갱신됨")
+        Log.d(TAG, "현재 화면의 루트 노드 갱신됨")
 
         // 특정 요소를 찾고 싶다면 여기에 추가
-        val targetNodes = rootNode.findAccessibilityNodeInfosByText("네비게이션 버튼")
-        targetNodes?.forEach {
-            Log.d("Accessibility", "찾은 요소: ${it.text}")
+//        val targetNodes = rootNode.findAccessibilityNodeInfosByText("네비게이션 버튼")
+//        targetNodes?.forEach {
+//            Log.d(TAG, "찾은 요소: ${it.text}")
+//        }
+    }
+
+
+    // targetScrollY: A 스크린에서 받은 절대 스크롤 위치(예시)
+    fun performDragGesture(targetScrollY: Int) {
+        // 예시: 화면 중앙에서 targetScrollY 만큼 드래그하는 제스처 경로 생성
+        val startX = resources.displayMetrics.widthPixels / 2f
+        val startY = resources.displayMetrics.heightPixels * 0.8f
+        val endX = startX
+        // targetScrollY 값에 따라 끝점 Y 계산 (예시: 단순히 startY에서 targetScrollY 만큼 위로 이동)
+        val endY = startY - targetScrollY.toFloat()
+
+        val path = Path().apply {
+            moveTo(startX, startY)
+            lineTo(endX, endY)
         }
+
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 500))
+            .build()
+
+        dispatchGesture(gesture, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                super.onCompleted(gestureDescription)
+                // 제스처 완료 후 추가 작업
+            }
+
+            override fun onCancelled(gestureDescription: GestureDescription?) {
+                super.onCancelled(gestureDescription)
+                // 제스처 취소 처리
+            }
+        }, null)
     }
 
     companion object {

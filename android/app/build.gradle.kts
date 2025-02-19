@@ -70,15 +70,13 @@ android {
         compose = true
     }
 }
-
 dependencies {
 // https://mvnrepository.com/artifact/io.getstream/stream-webrtc-android
 //    implementation("org.webrtc:google-webrtc:1.0.30039@aar")
 //    implementation("io.getstream:stream-webrtc-android:1.3.7")
 //    implementation("io.agora.rtc:voice-sdk:4.")
 //    implementation(libs.webrtc)
-
-
+    implementation("com.google.accompanist:accompanist-pager:0.36.0")
     // STOMP
     implementation("org.hildan.krossbow:krossbow-stomp-core:7.0.0")
     implementation("org.hildan.krossbow:krossbow-websocket-builtin:7.0.0")
@@ -97,7 +95,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // ✅ Gson Converter 추가
 
     // 시스템 UI 조작 가능
-    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
     // Firebase FCM
     implementation(platform(libs.firebase.bom))

@@ -40,19 +40,14 @@ class KeyWeWebSocket @Inject constructor(
 
     suspend fun connect(token: String): Boolean {
         Log.d("WebSocket", "connect $token")
-        if (token != null) {
-            session = token.run {
-                stompClient.connect(
-                    SocketUrl, customStompConnectHeaders = mapOf(
-                        "Authorization" to token
-                    )
-                ).withMoshi(moshi)
-            }
-            return true
-        } else {
-            Log.e("WebSocket", "Token is null")
-            return false
+        session = token.run {
+            stompClient.connect(
+                SocketUrl, customStompConnectHeaders = mapOf(
+                    "Authorization" to token
+                )
+            ).withMoshi(moshi)
         }
+        return true
     }
 
     suspend fun subscribe(profileId: String): Flow<StompFrame.Message> {

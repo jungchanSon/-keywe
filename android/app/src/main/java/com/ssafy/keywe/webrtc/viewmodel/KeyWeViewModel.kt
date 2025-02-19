@@ -57,7 +57,7 @@ class KeyWeViewModel @Inject constructor(
     private val applicationContext: Context = application.applicationContext
 
     private val _localDataStreamId = MutableStateFlow<Int?>(null)
-    private val _remoteDataStreamId = MutableStateFlow<Int?>(null)
+//    private val _remoteDataStreamId = MutableStateFlow<Int?>(null)
 
 //    private var _localScreenSize: ScreenSize? = null
 //    private var _remoteScreenSize: ScreenSize? = null
@@ -89,6 +89,26 @@ class KeyWeViewModel @Inject constructor(
     val json = Json {
         serializersModule = module
         classDiscriminator = "type"  // JSON 변환 시 타입 정보 유지
+    }
+
+    private val _remoteScrollState = MutableStateFlow<KeyWeButtonEvent.ScrollEvent?>(null)
+    val remoteScrollState = _remoteScrollState.asStateFlow()
+
+    // 스크롤 데이터를 전송하는 함수 추가
+    fun sendScrollData(firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) {
+        val scrollEvent = KeyWeButtonEvent.ScrollEvent(
+            firstVisibleItemIndex = firstVisibleItemIndex,
+            firstVisibleItemScrollOffset = firstVisibleItemScrollOffset
+        )
+        val jsonString = json.encodeToString<MessageData>(scrollEvent)
+        val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
+        Log.d("KeyWeViewModel", "ScrollEvent 전송: $scrollEvent")
+        val result = _localDataStreamId.value?.let {
+            _rtcEngine.value?.sendStreamMessage(it, messageBytes)
+        }
+        if (result != 0) {
+            Log.e("KeyWeViewModel", "ScrollEvent 전송 실패")
+        }
     }
 
     fun connectWebRTC() {
@@ -169,11 +189,11 @@ class KeyWeViewModel @Inject constructor(
 
                     override fun onStreamMessage(uid: Int, streamId: Int, data: ByteArray) {
                         super.onStreamMessage(uid, streamId, data)
-                        if (_remoteDataStreamId.value == null) {
-                            _remoteDataStreamId.update {
-                                streamId
-                            }
-                        }
+//                        if (_remoteDataStreamId.value == null) {
+//                            _remoteDataStreamId.update {
+//                                streamId
+//                            }
+//                        }
 
                         try {
                             val jsonString = data.toString(Charsets.UTF_8)
@@ -368,13 +388,14 @@ class KeyWeViewModel @Inject constructor(
 ////        intent.putExtra("y", offset.second)
 //        applicationContext.startService(intent)
 //    }
+
     fun sendButtonEvent(event: KeyWeButtonEvent) {
         val jsonString = json.encodeToString<MessageData>(event)
         val messageBytes = jsonString.toByteArray(Charsets.UTF_8)
         Log.d("KeyWeViewModel", "이벤트 전송: $event")
 
-//        Log.d("KeyWeViewModel", "_localDataStreamId.value: ${_localDataStreamId.value}")
-//        Log.d("KeyWeViewModel", "_rtcEngine.value: ${_rtcEngine.value}")
+        Log.d("KeyWeViewModel", "_localDataStreamId.value: ${_localDataStreamId.value}")
+        Log.d("KeyWeViewModel", "_rtcEngine.value: ${_rtcEngine.value}")
 
         val result = _localDataStreamId.value?.let {
             _rtcEngine.value?.sendStreamMessage(it, messageBytes)
@@ -408,6 +429,89 @@ class KeyWeViewModel @Inject constructor(
                         is KeyWeButtonEvent.MenuAddToCart -> {
                             putExtra("eventType", "MenuAddToCart")
                             putExtra("menuId", messageData.menuId)
+                        }
+
+                        is KeyWeButtonEvent.MenuDetailSelectCommonOption -> {
+                            putExtra("eventType", "MenuDetailSelectCommonOption")
+                            putExtra("optionValue", messageData.optionValue)
+                        }
+
+                        is KeyWeButtonEvent.MenuDetailPlusExtraOption -> {
+                            putExtra("eventType", "MenuDetailPlusExtraOption")
+                            putExtra("optionName", messageData.optionName)
+                        }
+
+                        is KeyWeButtonEvent.MenuDetailMinusExtraOption -> {
+                            putExtra("eventType", "MenuDetailMinusExtraOption")
+                            putExtra("optionName", messageData.optionName)
+                        }
+
+                        is KeyWeButtonEvent.MenuCartPlusAmount -> {
+                            putExtra("eventType", "MenuCartPlusAmount")
+                            putExtra("cartItemId", messageData.cartItemId)
+                        }
+
+                        is KeyWeButtonEvent.MenuCartMinusAmount -> {
+                            putExtra("eventType", "MenuCartMinusAmount")
+                            putExtra("cartItemId", messageData.cartItemId)
+                        }
+
+                        is KeyWeButtonEvent.MenuCart -> {
+                            putExtra("eventType", "MenuCart")
+                        }
+
+                        is KeyWeButtonEvent.CartAcceptDialog -> {
+                            putExtra(
+                                "eventType", "CartAcceptDialog"
+                            )
+                        }
+
+                        is KeyWeButtonEvent.CartCloseDialog -> {
+                            putExtra(
+                                "eventType", "CartCloseDialog"
+                            )
+                        }
+
+                        is KeyWeButtonEvent.CartOpenDialog -> {
+                            putExtra(
+                                "eventType", "CartOpenDialog"
+                            )
+                        }
+
+                        is KeyWeButtonEvent.CartIdOpenDialog -> {
+                            putExtra("eventType", "CartIdOpenDialog")
+                            putExtra("cartId", messageData.cartId)
+                        }
+
+                        is KeyWeButtonEvent.CartIdOpenBottomSheet -> {
+                            putExtra("eventType", "CartIdOpenBottomSheet")
+                            putExtra("cartId", messageData.cartId)
+                        }
+
+                        is KeyWeButtonEvent.CartAcceptBottomSheet -> {
+                            putExtra("eventType", "CartAcceptBottomSheet")
+                        }
+
+                        is KeyWeButtonEvent.CartCloseBottomSheet -> {
+                            putExtra("eventType", "CartCloseBottomSheet")
+                        }
+
+                        is KeyWeButtonEvent.BackButton -> {
+                            putExtra("eventType", "BackButton")
+                        }
+
+                        is KeyWeButtonEvent.OrderButton -> {
+                            putExtra("eventType", "OrderButton")
+                        }
+
+                        is KeyWeButtonEvent.StoreButton -> {
+                            putExtra("eventType", "StoreButton")
+                        }
+
+                        is KeyWeButtonEvent.ScrollEvent -> {
+                            // 원격에서 수신한 스크롤 데이터를 Flow 업데이트로 전달
+                            _remoteScrollState.value = messageData
+
                         }
                     }
                 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -24,10 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ssafy.keywe.R
 import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.ui.theme.caption
@@ -35,12 +37,16 @@ import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
+import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 
 @Composable
 fun MenuCartMenuBox(
     cartItem: MenuCartViewModel.CartItem,
     viewModel: MenuCartViewModel,
     storeId: Long,
+    keyWeViewModel: KeyWeViewModel = hiltViewModel(),
+    isKiosk: Boolean = false,
 ) {
     Box {
         Column {
@@ -58,18 +64,23 @@ fun MenuCartMenuBox(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .width(16.5.dp)
-                            .height(16.5.dp)
-                            .noRippleClickable { viewModel.openDeleteDialog(cartItem) },
-                        painter = painterResource(R.drawable.x),
-                        contentDescription = "x"
+                    Image(modifier = Modifier
+                        .width(16.5.dp)
+                        .height(16.5.dp)
+                        .semantics { contentDescription = "cart_open_dialog_${cartItem.id}" }
+                        .noRippleClickable {
+                            viewModel.openDeleteDialog(cartItem)
+                            if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                                KeyWeButtonEvent.CartIdOpenDialog(
+                                    cartItem.id
+                                )
+                            )
+                        }, painter = painterResource(R.drawable.x), contentDescription = "x"
                     )
                 }
             }
             // 이미지 + 이름 + 가격
-            MenuCartMenu(cartItem, viewModel, storeId)
+            MenuCartMenu(cartItem, viewModel, storeId, keyWeViewModel, isKiosk)
         }
     }
 }
@@ -79,6 +90,8 @@ fun MenuCartMenu(
     cartItem: MenuCartViewModel.CartItem,
     viewModel: MenuCartViewModel,
     storeId: Long,
+    keyWeViewModel: KeyWeViewModel,
+    isKiosk: Boolean = false,
 ) {
     val cartItems by viewModel.cartItems.collectAsState()
     val updatedCartItem = cartItems.find { it.id == cartItem.id }
@@ -99,9 +112,10 @@ fun MenuCartMenu(
     }
     Log.d("extraOptions", "$extraOptions")
 
-    LaunchedEffect(cartItem.menuId) {
-        viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
-    }
+//    LaunchedEffect(cartItem.menuId) {
+//        Log.d("MenuCartViewModel", "스크린쪽 호출")
+//        viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
+//    }
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -188,9 +202,17 @@ fun MenuCartMenu(
                                 Text(text = "옵션 변경",
                                     style = caption.copy(fontSize = 14.sp, letterSpacing = 0.em),
                                     color = polishedSteelColor,
-                                    modifier = Modifier.noRippleClickable {
-                                        isOptionChangeSheetOpen.value = true
-                                    })
+                                    modifier = Modifier
+                                        .semantics {
+                                            contentDescription =
+                                                "cart_open_bottom_sheet_${cartItem.id}"
+                                        }
+                                        .noRippleClickable {
+                                            isOptionChangeSheetOpen.value = true
+                                            if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                                                KeyWeButtonEvent.CartIdOpenBottomSheet(cartItem.id)
+                                            )
+                                        })
                             }
 
                             Box(modifier = Modifier.height(24.dp)) {
@@ -200,11 +222,23 @@ fun MenuCartMenu(
                                             cartItem.id, quantity - 1
                                         ) // 업데이트 로직 호출
                                     }
+                                    if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                                        KeyWeButtonEvent.MenuCartMinusAmount(
+                                            cartItem.id
+                                        )
+                                    )
                                 }, onIncrease = {
                                     viewModel.updateCartQuantity(
                                         cartItem.id, quantity + 1
                                     ) // 업데이트 로직 호출
-                                })
+                                    if (!isKiosk) keyWeViewModel.sendButtonEvent(
+                                        KeyWeButtonEvent.MenuCartPlusAmount(
+                                            cartItem.id
+                                        )
+                                    )
+                                },
+                                    cartItemId = cartItem.id
+                                )
                             }
                         }
                     }
@@ -218,14 +252,21 @@ fun MenuCartMenu(
             cartItem = cartItem,
             viewModel = viewModel,
             onDismiss = { isOptionChangeSheetOpen.value = false },
-            storeId
+            storeId,
+            keyWeViewModel,
+            isKiosk
         )
     }
 
 }
 
 @Composable
-fun CartMenuAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> Unit) {
+fun CartMenuAmount(
+    cartItemId: Long,
+    optionAmount: Int,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .width(88.dp)
@@ -237,6 +278,7 @@ fun CartMenuAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> 
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
+                .semantics { contentDescription = "minus_amount_$cartItemId" }
                 .noRippleClickable { onDecrease() },
             painter = painterResource(R.drawable.minus_circle),
             contentDescription = "minus in circle"
@@ -248,6 +290,7 @@ fun CartMenuAmount(optionAmount: Int, onDecrease: () -> Unit, onIncrease: () -> 
             modifier = Modifier
                 .width(20.dp)
                 .height(20.dp)
+                .semantics { contentDescription = "plus_amount_$cartItemId" }
                 .noRippleClickable { onIncrease() },
             painter = painterResource(R.drawable.profileplus),
             contentDescription = "plus in circle"

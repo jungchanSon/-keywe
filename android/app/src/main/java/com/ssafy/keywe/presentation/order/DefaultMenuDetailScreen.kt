@@ -35,6 +35,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
+import com.ssafy.keywe.webrtc.viewmodel.KeyWeViewModel
 
 @Composable
 fun DefaultMenuDetailScreen(
@@ -161,7 +162,8 @@ fun DefaultMenuDetailScreen(
                                     optionPrice * pair.second
                                 }
                             },
-                            onTemperatureSelected = { temp -> selectedTemperature.value = temp })
+                            onTemperatureSelected = { temp -> selectedTemperature.value = temp },
+                            )
                         Spacer(
                             modifier = Modifier
                                 .height(12.dp)
