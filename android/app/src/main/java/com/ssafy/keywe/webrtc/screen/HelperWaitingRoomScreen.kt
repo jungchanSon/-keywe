@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,9 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -67,6 +71,7 @@ fun HelperWaitingRoomScreen(
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
     val connected by signalViewModel.connected.collectAsStateWithLifecycle()
     val subscribe by signalViewModel.subscribed.collectAsStateWithLifecycle()
+    val partnerName by signalViewModel.partnerName.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -75,7 +80,7 @@ fun HelperWaitingRoomScreen(
     val profileId by ProfileIdManager.profileId.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
-    val isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(true) }
 
     if (message != null) {
         Text(text = "Received message: ${message}")
@@ -146,6 +151,8 @@ fun HelperWaitingRoomScreen(
                         val helperUserId = it.data.helperUserId
                         val kioskUserId = it.data.kioskUserId
                         val channel = it.data.channel!!
+                        signalViewModel.updatePartnerName(it.data.partnerName!!)
+                        isLoading = false
                         keyWeViewModel.connectWebRTC()
                         keyWeViewModel.joinChannel(channel)
                         keyWeViewModel.remoteStats.collect { state ->
@@ -207,13 +214,33 @@ fun HelperWaitingRoomScreen(
             title = "대기방", navController = navController
         )
     }) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            if (isLoading) {
+            if (partnerName != null) {
+                // 로딩이 끝난 후 표시할 UI
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(153.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "${partnerName}님과\n연결되었습니다.", style = h4, textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+
+            } else {
                 // 🔄 로딩 중일 때 스피너 표시
                 Box(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -229,10 +256,6 @@ fun HelperWaitingRoomScreen(
 
 //                    CountdownTimer(navController, signalViewModel)
                 }
-            } else {
-                // 로딩이 끝난 후 표시할 UI
-                Text(text = "연결 완료!")
-//                CountdownTimer(navController, signalViewModel)
             }
         }
     }

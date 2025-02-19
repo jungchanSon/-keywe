@@ -24,6 +24,7 @@ data class STOMPData(
     val sessionId: String?,
     val helperUserId: String?,
     val kioskUserId: String?,
+    val partnerName: String?,
     val channel: ChannelData?,
     val message: String?,
     val code: String?,

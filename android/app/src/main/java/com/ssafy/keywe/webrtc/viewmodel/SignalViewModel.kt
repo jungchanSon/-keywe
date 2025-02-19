@@ -8,6 +8,7 @@ import com.ssafy.keywe.webrtc.data.WebSocketMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +19,9 @@ class SignalViewModel @Inject constructor(
     val stompMessageFlow: StateFlow<WebSocketMessage?> = signalRepository.stompMessageFlow
     val connected: StateFlow<Boolean> = signalRepository.connected
     val subscribed: StateFlow<Boolean> = signalRepository.subscribed
+
+    private val _partnerName = MutableStateFlow<String?>(null)
+    val partnerName: StateFlow<String?> = _partnerName.asStateFlow()
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> get() = _isConnected
@@ -31,5 +35,9 @@ class SignalViewModel @Inject constructor(
 
     fun setConnected(value: Boolean) {
         _isConnected.value = value
+    }
+
+    fun updatePartnerName(name: String) {
+        _partnerName.value = name
     }
 }

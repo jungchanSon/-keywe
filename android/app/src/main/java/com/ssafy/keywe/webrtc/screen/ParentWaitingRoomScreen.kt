@@ -3,7 +3,6 @@ package com.ssafy.keywe.webrtc.screen
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -36,7 +34,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.ssafy.keywe.R
 import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.manager.ProfileIdManager
@@ -94,6 +91,7 @@ fun ParentWaitingRoomScreen(
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
     val connected by signalViewModel.connected.collectAsStateWithLifecycle()
     val subscribed by signalViewModel.subscribed.collectAsStateWithLifecycle()
+    val partnerName by signalViewModel.partnerName.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -163,6 +161,7 @@ fun ParentWaitingRoomScreen(
                         val helperUserId = it.data.helperUserId
                         val kioskUserId = it.data.kioskUserId
                         val channel = it.data.channel!!
+                        signalViewModel.updatePartnerName(it.data.partnerName!!)
                         isConnected = true
                         keyWeViewModel.connectWebRTC()
                         keyWeViewModel.joinChannel(channel)
@@ -248,23 +247,22 @@ fun ParentWaitingRoomScreen(
             contentAlignment = Alignment.Center
         ) {
             when {
-                isConnected -> {
+                isConnected && partnerName != null -> {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.humanimage),
-                            contentDescription = null,
-                            modifier = Modifier.size(width = 190.dp, height = 231.dp)
-                        )
                         Box(
                             modifier = Modifier
                                 .width(300.dp)
                                 .height(153.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("김싸피님과\n연결되었습니다.", style = h4, textAlign = TextAlign.Center)
+                            Text(
+                                "${partnerName}님과\n연결되었습니다.",
+                                style = h4,
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
                 }
