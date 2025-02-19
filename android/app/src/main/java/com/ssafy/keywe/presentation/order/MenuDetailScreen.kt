@@ -5,6 +5,7 @@ package com.ssafy.keywe.presentation.order
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -44,6 +47,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.MenuDetailViewModel
 import com.ssafy.keywe.presentation.order.viewmodel.OrderAppBarViewModel
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.titleTextColor
 import com.ssafy.keywe.ui.theme.whiteBackgroundColor
 import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
@@ -69,6 +73,7 @@ fun MenuDetailScreen(
     val context = LocalContext.current
 
     val menu by menuDetailViewModel.selectedDetailMenu.collectAsState()
+    val isKiosk = tokenManager.isKiosk
     val message by signalViewModel.stompMessageFlow.collectAsStateWithLifecycle()
 
     BackHandler {
@@ -167,120 +172,175 @@ fun MenuDetailScreen(
             })
         }
     }
-
-    Scaffold(
-        topBar = {
-            DefaultOrderAppBar(
-                title = "주문하기",
-                navController = navController,
-                viewModel = appBarViewModel,
-                keyWeViewModel = keyWeViewModel,
-                isKiosk = isKiosk
-            )
-        }, modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
-                .background(whiteBackgroundColor),
-        ) {
-            Column(
-                modifier = Modifier.align(Alignment.TopCenter)
-            ) {
-                // 상단 스크롤 가능 영역
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                ) {
-                    item {
-                        MenuDetailMenu(
-                            modifier = Modifier.fillMaxWidth(),
-                            menuId = menuId,
-                            menuPrice = totalPrice.value,
-                            menuDetailViewModel,
-                            storeId,
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .height(12.dp)
-                                .background(greyBackgroundColor)
-                        )
-                    }
-
-                    item {
-                        MenuDetailCommonOption(
-                            sizeOptions = sizeValues,
-                            temperatureOptions = temperatureValues,
-                            selectedSize = selectedSize.value, // 🔹 MutableState<String> 자체를 전달
-                            selectedTemperature = selectedTemperature.value,
-                            onSizeSelected = { size ->
-                                selectedSize.value = size
-                                totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value]
-                                    ?: 0) + extraOptions.entries.sumOf { (optionId, pair) ->
-                                    val optionPrice = extraOptionList.find { option ->
-                                        option.optionsValueGroup.any { it.optionValueId == optionId }
-                                    }?.optionPrice ?: 0
-                                    optionPrice * pair.second
-                                }
-                            },
-                            onTemperatureSelected = { temp -> selectedTemperature.value = temp },
-                            isKiosk = isKiosk,
-                            keyWeViewModel = keyWeViewModel
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .height(12.dp)
-                                .fillMaxWidth()
-                                .background(greyBackgroundColor)
-                        )
-                    }
-
-                    item {
-
-                        MenuDetailExtraOption(
-                            options = sortedExtraOptions,
-                            onOptionSelected = { id, name, newAmount ->
-                                if (newAmount == 0) extraOptions.remove(id)
-                                else extraOptions[id] = name to newAmount
-                            },
-                            isKiosk = isKiosk,
-                            keyWeViewModel = keyWeViewModel
-                        )
-
-                        totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value]
-                            ?: 0) + extraOptions.entries.sumOf { (optionId, pair) ->
-                            val optionPrice = extraOptionList.find { option ->
-                                option.optionsValueGroup.any { it.optionValueId == optionId }
-                            }?.optionPrice ?: 0
-                            optionPrice * pair.second
-                        }
-                    }
-                }
-            }
-
-            // 하단 고정 영역
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter) // 하단 정렬
-            ) {
-                MenuDetailBottom(
-                    menuId = menuId,
-                    selectedSize = selectedSize.value,
-                    selectedTemperature = selectedTemperature.value,
-                    extraOptions = extraOptions.mapValues { it.value },
-                    totalPrice = totalPrice.value,
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Scaffold(
+            topBar = {
+                DefaultOrderAppBar(
+                    title = "주문하기",
                     navController = navController,
-                    menuCartViewModel = menuCartViewModel,
-                    storeId = storeId,
-                    isKeyWe = true,
+                    viewModel = appBarViewModel,
                     keyWeViewModel = keyWeViewModel,
                     isKiosk = isKiosk
                 )
+            },
+            modifier = Modifier
+                .fillMaxSize()
+
+
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .background(whiteBackgroundColor)
+                    .then(
+                        if (isKiosk) {
+                            Modifier
+                                .border(
+                                    width = 2.dp,
+                                    color = primaryColor,
+                                    shape = RoundedCornerShape(8.dp)
+
+                                )
+                                .pointerInput(Unit) {
+                                    awaitPointerEventScope {
+                                        while (true) {
+                                            awaitPointerEvent().apply {
+                                                // 이벤트를 소비하여 터치를 막음
+                                            }
+                                        }
+                                    }
+                                }
+                        } else {
+                            Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                        }
+                    ),
+            ) {
+                Column(
+                    modifier = Modifier.align(Alignment.TopCenter)
+                ) {
+                    // 상단 스크롤 가능 영역
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                    ) {
+                        item {
+                            MenuDetailMenu(
+                                modifier = Modifier.fillMaxWidth(),
+                                menuId = menuId,
+                                menuPrice = totalPrice.value,
+                                menuDetailViewModel,
+                                storeId,
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(12.dp)
+                                    .background(greyBackgroundColor)
+                            )
+                        }
+
+                        item {
+                            MenuDetailCommonOption(
+                                sizeOptions = sizeValues,
+                                temperatureOptions = temperatureValues,
+                                selectedSize = selectedSize.value, // 🔹 MutableState<String> 자체를 전달
+                                selectedTemperature = selectedTemperature.value,
+                                onSizeSelected = { size ->
+                                    selectedSize.value = size
+                                    totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value]
+                                        ?: 0) + extraOptions.entries.sumOf { (optionId, pair) ->
+                                        val optionPrice = extraOptionList.find { option ->
+                                            option.optionsValueGroup.any { it.optionValueId == optionId }
+                                        }?.optionPrice ?: 0
+                                        optionPrice * pair.second
+                                    }
+                                },
+                                onTemperatureSelected = { temp ->
+                                    selectedTemperature.value = temp
+                                },
+                                isKiosk = isKiosk,
+                                keyWeViewModel = keyWeViewModel
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(12.dp)
+                                    .fillMaxWidth()
+                                    .background(greyBackgroundColor)
+                            )
+                        }
+
+                        item {
+
+                            MenuDetailExtraOption(
+                                options = sortedExtraOptions,
+                                onOptionSelected = { id, name, newAmount ->
+                                    if (newAmount == 0) extraOptions.remove(id)
+                                    else extraOptions[id] = name to newAmount
+                                },
+                                isKiosk = isKiosk,
+                                keyWeViewModel = keyWeViewModel
+                            )
+
+                            totalPrice.value = menuPrice + (sizePriceMap[selectedSize.value]
+                                ?: 0) + extraOptions.entries.sumOf { (optionId, pair) ->
+                                val optionPrice = extraOptionList.find { option ->
+                                    option.optionsValueGroup.any { it.optionValueId == optionId }
+                                }?.optionPrice ?: 0
+                                optionPrice * pair.second
+                            }
+                        }
+                    }
+                }
+
+                // 하단 고정 영역
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter) // 하단 정렬
+                ) {
+                    MenuDetailBottom(
+                        menuId = menuId,
+                        selectedSize = selectedSize.value,
+                        selectedTemperature = selectedTemperature.value,
+                        extraOptions = extraOptions.mapValues { it.value },
+                        totalPrice = totalPrice.value,
+                        navController = navController,
+                        menuCartViewModel = menuCartViewModel,
+                        storeId = storeId,
+                        isKeyWe = true,
+                        keyWeViewModel = keyWeViewModel,
+                        isKiosk = isKiosk
+                    )
+                }
             }
+        }
+
+        if (isKiosk) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp)
+//                    .background(titleTextColor.copy(alpha = 0.5f))
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent().apply {
+                                    // 이벤트를 소비하여 터치를 막음
+                                }
+                            }
+                        }
+                    },
+                contentAlignment = Alignment.TopCenter
+            ) {
+                FloatingUsingButton()
+            }
+        } else {
         }
     }
 }

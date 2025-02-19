@@ -179,7 +179,6 @@ fun MenuScreen(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
-
     ) {
 
         Scaffold(
@@ -194,18 +193,7 @@ fun MenuScreen(
                 )
             },
             modifier = Modifier
-                .fillMaxSize()
-                .then(
-                    if (isKiosk) {
-                        Modifier.border(
-                            width = 2.dp,
-                            color = primaryColor,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                    } else {
-                        Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
-                    }
-                ),
+                .fillMaxSize(),
             floatingActionButton = {
                 FloatingCartButton(
                     navController,
@@ -217,7 +205,19 @@ fun MenuScreen(
             }
         ) {
             Column(
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .then(
+                        if (isKiosk) {
+                            Modifier.border(
+                                width = 2.dp,
+                                color = primaryColor,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                        } else {
+                            Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                        }
+                    )
             ) {
                 /// 메뉴 내용
                 MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
@@ -238,17 +238,8 @@ fun MenuScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 16.dp)
-//                    .background(titleTextColor.copy(alpha = 0.5f))
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                awaitPointerEvent().apply {
-                                    // 이벤트를 소비하여 터치를 막음
-                                }
-                            }
-                        }
-                    },
+                    .padding(top = 16.dp),
+//                    .background(titleTextColor.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.TopCenter
             ) {
                 FloatingUsingButton()
