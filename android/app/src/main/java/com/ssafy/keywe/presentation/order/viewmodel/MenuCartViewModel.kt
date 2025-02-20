@@ -129,12 +129,22 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
             sizeOptionId?.let { updatedSelectedOptions[it] = 1 }
             temperatureOptionId?.let { updatedSelectedOptions[it] = 1 }
 
-            val cartExtraOptions = updatedSelectedOptions.mapValues { (optionId, count) ->
-                val optionName = menuData.options.flatMap { it.optionsValueGroup }
-                    .find { it.optionValueId == optionId }?.optionValue ?: "Unknown"
+            val cartExtraOptions = updatedSelectedOptions.mapNotNull { (optionId, count) ->
+                val optionModel = menuData.options.find { option ->
+                    option.optionsValueGroup.any { it.optionValueId == optionId }
+                }
 
-                optionName to count
-            }
+                val optionType = optionModel?.optionType ?: "Unknown"
+                val optionName = optionModel?.optionsValueGroup
+                    ?.find { it.optionValueId == optionId }?.optionValue ?: "Unknown"
+
+                // ✅ "Extra" 옵션만 저장
+                if (optionType == "Extra") {
+                    optionId to (optionName to count)
+                } else {
+                    null // "Extra"가 아닌 경우 저장하지 않음
+                }
+            }.toMap()
 
             val currentCart = _cartItems.value.toMutableList()
 
@@ -252,6 +262,8 @@ class MenuCartViewModel @Inject constructor(private val repository: OrderReposit
                     updatedCart.removeIf { it.id == cartItemId }
                 } else {
                     updatedCart.replaceAll { cartItem ->
+
+
                         if (cartItem.id == cartItemId) {
                             cartItem.copy(
                                 size = size,
