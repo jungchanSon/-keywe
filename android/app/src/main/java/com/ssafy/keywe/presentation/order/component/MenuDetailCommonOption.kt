@@ -41,7 +41,7 @@ fun MenuDetailCommonOption(
     sizeOptions: List<String>,
     temperatureOptions: List<String>,
     selectedSize: String = "Tall",
-    selectedTemperature: String = "Hot",
+    selectedTemperature: String = "Ice",
     onSizeSelected: (String) -> Unit,
     onTemperatureSelected: (String) -> Unit,
     isKiosk: Boolean = false,

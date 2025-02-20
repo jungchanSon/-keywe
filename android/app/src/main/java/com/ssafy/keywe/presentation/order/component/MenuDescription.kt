@@ -53,7 +53,10 @@ fun MenuDescription(
             modifier = Modifier.weight(1f, fill = false)
         ) {
             Text(
-                text = menuName, style = TextStyle(
+                text = menuName,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(
                     fontSize = 15.sp,
                     fontFamily = pretendardkr,
                     fontWeight = FontWeight.Bold,
@@ -83,7 +86,7 @@ fun MenuDescription(
             )
         }
         MenuPlusButton({ menuCartViewModel.addToCart(
-                menuId, "Tall", "Hot", emptyMap(), menuPrice, storeId
+                menuId, "Tall", "Ice", emptyMap(), menuPrice, storeId
             )
             if (!isKiosk) keyWeViewModel.sendButtonEvent(
                 KeyWeButtonEvent.MenuAddToCart(menuId)

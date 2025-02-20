@@ -94,13 +94,44 @@ fun OptionChangeBottomSheet(
 
     val extraOptionList = menu?.options?.filter { it.optionType == "Extra" } ?: emptyList()
 
+//    val totalPrice = remember {
+//        derivedStateOf {
+//            val menuPrice = menu?.menuPrice ?: 0
+//            val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
+//            val extraOptionPrice = extraOptions.entries.sumOf { (_, pair) ->
+//                val optionPrice = extraOptionList.find {
+//                    it.optionsValueGroup.firstOrNull()?.optionValue == pair.first
+//                }?.optionPrice ?: 0
+//                optionPrice * pair.second
+//            }
+//            menuPrice + sizePrice + extraOptionPrice
+//        }
+//    }
+
+//    val totalPrice = remember { mutableStateOf(0) }
+//
+//    LaunchedEffect(menu) {
+//        if (menu != null) {
+//            val menuPrice = menu!!.menuPrice ?: 0
+//            val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
+//            val extraOptionPrice = extraOptions.entries.sumOf { (_, pair) ->
+//                val optionPrice = extraOptionList.find {
+//                    it.optionsValueGroup.any { value -> value.optionValue == pair.first }
+//                }?.optionPrice ?: 0
+//                optionPrice * pair.second
+//            }
+//            totalPrice.value = menuPrice + sizePrice + extraOptionPrice
+//        }
+//    }
+
+
     val totalPrice = remember {
         derivedStateOf {
             val menuPrice = menu?.menuPrice ?: 0
             val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
-            val extraOptionPrice = extraOptions.entries.sumOf { (_, pair) ->
+            val extraOptionPrice = extraOptions.toMap().entries.sumOf { (_, pair) ->
                 val optionPrice = extraOptionList.find {
-                    it.optionsValueGroup.firstOrNull()?.optionValue == pair.first
+                    it.optionsValueGroup.any { value -> value.optionValue == pair.first }
                 }?.optionPrice ?: 0
                 optionPrice * pair.second
             }

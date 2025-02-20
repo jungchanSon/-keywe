@@ -175,6 +175,7 @@ fun EditMemberScreen(
 fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) {
     val selectImageUri by viewModel.profileImageUri.collectAsStateWithLifecycle()
     val existingImageState by viewModel.state.collectAsStateWithLifecycle()
+    Log.d("Edit Member", "selectImageUri: $selectImageUri")
 
     Box(
         modifier = Modifier
@@ -194,6 +195,7 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
 
             !existingImageState.profileImage.isNullOrBlank() -> {
                 val bitmap = decodeBase64ToBitmap(existingImageState.profileImage!!)
+                Log.d("Edit Member", "bitmap : $bitmap")
                 if (bitmap != null) {
                     Image(
                         bitmap = bitmap.asImageBitmap(),

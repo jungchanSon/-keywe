@@ -121,7 +121,7 @@ fun DefaultMenuScreen(
         ) {
 
             MenuCategoryScreen(menuViewModel, storeId = storeId)
-            MenuSubCategory("Popular Coffee")
+            MenuSubCategory("Popular Menu")
 
             MenuMenuList(
                 navController = navController,

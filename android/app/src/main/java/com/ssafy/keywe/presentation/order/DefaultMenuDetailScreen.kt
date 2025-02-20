@@ -70,7 +70,7 @@ fun DefaultMenuDetailScreen(
     val menuPrice = menu?.menuPrice ?: 0
 
     var selectedSize = remember { mutableStateOf("Tall") }
-    var selectedTemperature = remember { mutableStateOf("Hot") }
+    var selectedTemperature = remember { mutableStateOf("Ice") }
 
     val extraOptions = remember { mutableStateMapOf<Long, Pair<String, Int>>() }
     val totalPrice = remember(menuPrice) { mutableStateOf(menuPrice) }
