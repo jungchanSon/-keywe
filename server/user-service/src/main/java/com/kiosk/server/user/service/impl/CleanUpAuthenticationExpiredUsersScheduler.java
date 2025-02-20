@@ -12,7 +12,7 @@ public class CleanUpAuthenticationExpiredUsersScheduler {
 
     private final CleanUpAuthenticationExpiredUsersService cleanUpService;
 
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 1800000)
     public void cleanup() {
         log.info("CleanUpAuthenticationExpiredUsersScheduler started");
         cleanUpService.execute();
