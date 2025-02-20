@@ -202,12 +202,14 @@ fun OptionChangeBottomSheet(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        MenuDetailCommonOptionRow(sizeValues,
+                        MenuDetailCommonOptionRow(
+                            sizeValues,
                             selectedSize.value,
                             onSelect = { selectedSize.value = it }, isKiosk = isKiosk,
                             keyWeViewModel
                         )
-                        MenuDetailCommonOptionRow(temperatureValues,
+                        MenuDetailCommonOptionRow(
+                            temperatureValues,
                             selectedTemperature.value,
                             onSelect = { selectedTemperature.value = it }, isKiosk = isKiosk,
                             keyWeViewModel
@@ -230,14 +232,17 @@ fun OptionChangeBottomSheet(
                                 val optionId = optionValue.optionValueId
                                 val optionName = optionValue.optionValue
 
-                                OptionBox(id = optionId,
+                                OptionBox(
+                                    id = optionId,
                                     name = optionName,
                                     optionPrice = option.optionPrice,
                                     extraOptions = tempOptions,
 //                                    extraOptions = extraOptions,
                                     onOptionSelected = { id, _, count ->
-                                        val optionValue = extraOptionList.flatMap { it.optionsValueGroup }
-                                            .find { it.optionValueId == id }?.optionValue ?: "Unknown"
+                                        val optionValue =
+                                            extraOptionList.flatMap { it.optionsValueGroup }
+                                                .find { it.optionValueId == id }?.optionValue
+                                                ?: "Unknown"
 
                                         if (count == 0) extraOptions.remove(id)
                                         else extraOptions[id] = optionValue to count
@@ -254,7 +259,8 @@ fun OptionChangeBottomSheet(
 //                                            optionValue to count
 //                                    },
                                     isKiosk = isKiosk,
-                                    keyWeViewModel = keyWeViewModel)
+                                    keyWeViewModel = keyWeViewModel
+                                )
                             }
                         }
                     }
@@ -314,7 +320,11 @@ fun OptionChangeBottomSheet(
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally)
         ) {
             BottomButton(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics {
+                        contentDescription = "close_bottom_sheet"
+                    },
                 content = "취소",
                 onClick = {
                     coroutineScope.launch {
@@ -325,7 +335,14 @@ fun OptionChangeBottomSheet(
                         extraOptions.clear()
                         extraOptions.putAll(initialOptions.deepCopy())
                     }
-                }
+                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
+                },
+                colors = ButtonColors(
+                    containerColor = greyBackgroundColor,
+                    contentColor = titleTextColor,
+                    disabledContentColor = polishedSteelColor,
+                    disabledContainerColor = greyBackgroundColor
+                )
             )
 
 
@@ -353,7 +370,11 @@ fun OptionChangeBottomSheet(
 //            )
 
             BottomButton(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .semantics {
+                        contentDescription = "accept_bottom_sheet"
+                    },
                 content = "수정",
                 onClick = {
                     coroutineScope.launch {
