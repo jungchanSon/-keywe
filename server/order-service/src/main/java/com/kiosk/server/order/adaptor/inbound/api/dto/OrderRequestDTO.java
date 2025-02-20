@@ -5,6 +5,8 @@ import java.util.List;
 public class OrderRequestDTO {
 
     public record Order(
+        long totalPrice,
+        long profileId,
         String phoneNumber,
         List<MenuItem> menuList
     ) { }

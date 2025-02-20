@@ -30,8 +30,23 @@ public class AccountEntity {
 
     private Long balance;
 
+    private Long withdrawSnapshotId = 0L;
+
+    private Long depositSnapshotId = 0L;
+
     private String phoneNumber;
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public Boolean minus(long amount) {
+        if(this.balance < amount) return false;
+        this.balance -= amount;
+
+        return true;
+    }
+
+    public void plus(long amount) {
+        this.balance += amount;
+    }
 }

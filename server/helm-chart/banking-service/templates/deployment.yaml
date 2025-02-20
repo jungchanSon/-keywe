@@ -25,5 +25,5 @@ spec:
               value: {{ .Values.banking_mysql_url}}
             - name: PROFILE
               value: prod
-            - name: KAFKAURL
-              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local
+            - name: KAFKA_URL
+              value: "kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local"

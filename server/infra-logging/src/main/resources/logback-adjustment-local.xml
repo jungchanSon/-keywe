@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <logger name="org.apache.kafka.clients.producer.ProducerConfig" level="WARN"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%n%yellow(%d{yyyy-MM-dd'T'HH:mm:ss.SSS}) | %highlight(%5level) | %green(%36.36logger) (%blue(method:%M) \) %magenta(thread:%thread) %n%msg</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+        <encoder class="com.github.danielwegener.logback.kafka.encoding.LayoutKafkaMessageEncoder">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <Pattern>{ "level":"%level", "class":"%logger{36}", "method":"%M", "timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSS}", "thread":"%thread", "traceId":"%X{traceId}",  "spanId":"%X{spanId}", "logger":"%logger", "message":"%msg"}%n</Pattern>
+            </layout>
+        </encoder>
+        <topic>log-adjustment</topic>
+        <producerConfig>bootstrap.servers=localhost:9092</producerConfig>
+    </appender>
+
+    <appender name="ASYNC_KAFKA" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="KAFKA"/>
+        <queueSize>1024</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="com.myapp" level="INFO">
+        <appender-ref ref="ASYNC_KAFKA"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ASYNC_KAFKA"/>
+    </root>
+
+</configuration>

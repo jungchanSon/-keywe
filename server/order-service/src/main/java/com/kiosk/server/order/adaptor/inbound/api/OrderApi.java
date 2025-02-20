@@ -20,7 +20,7 @@ public class OrderApi {
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO.Response> createOrder(@RequestHeader("userId") long shopId, @RequestBody OrderRequestDTO.Order order) {
-        log.info("createOrder() called with userId={}, order={}", shopId, order);
+        log.info("[주문] 주문 요청 userId={}, order={}", shopId, order);
         long orderId = orderUseCase.commandOrder(orderDTOMapper.toVO(order, shopId));
 
         return ResponseEntity.ok().body(

@@ -22,4 +22,30 @@ public class AccountCommandAdaptor implements AccountCommandPort {
 
         return savedAccount.getAccountId();
     }
+
+    @Override
+    public Long plus(long id, long amount) {
+        AccountEntity accountEntity = accountRepository.findById(id).orElseThrow();
+        accountEntity.plus(amount);
+
+        return accountEntity.getAccountId();
+    }
+
+    @Override
+    public Long minus(long id, long amount) {
+        AccountEntity accountEntity = accountRepository.findById(id).orElseThrow();
+
+        if(accountEntity.minus(amount))
+            return accountEntity.getAccountId();
+        else {
+            throw new RuntimeException("계좌 잔액 부족");
+        }
+
+    }
+
+    @Override
+    public Long update(Account account) {
+        AccountEntity savedAccount = accountRepository.save(accountMapper.toEntity(account));
+        return savedAccount.getAccountId();
+    }
 }
