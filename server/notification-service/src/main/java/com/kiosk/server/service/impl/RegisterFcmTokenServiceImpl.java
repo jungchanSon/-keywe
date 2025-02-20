@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -18,8 +20,17 @@ public class RegisterFcmTokenServiceImpl implements RegisterFcmTokenService {
     @Override
     @Transactional
     public void doService(Long userId, Long profileId, String deviceId, String fcmToken) {
-        PushToken pushToken = pushTokenRepository.findByDeviceId(deviceId)
-            .orElse(new PushToken(userId, profileId, deviceId, fcmToken));
+        log.info("RegisterFcmTokenService executed : userId {} / profileId {} / deviceId {} / fcmToken {}", userId, profileId, deviceId, fcmToken);
+        Optional<PushToken> optionalPushToken = pushTokenRepository.findByDeviceId(deviceId);
+        PushToken pushToken;
+
+        if (optionalPushToken.isEmpty()){
+            log.info("기존 디바이스 등록 토큰 없음");
+            pushToken = new PushToken(userId, profileId, deviceId, fcmToken);
+        } else {
+            pushToken = optionalPushToken.get();
+            log.info("기존 디바이스 등록 토큰 발견 - token: {}", pushToken.getToken());
+        }
 
         pushToken.updateToken(fcmToken);
 

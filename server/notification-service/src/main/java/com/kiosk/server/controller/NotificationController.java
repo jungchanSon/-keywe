@@ -4,9 +4,11 @@ import com.kiosk.server.dto.RegisterTokenRequest;
 import com.kiosk.server.service.RegisterFcmTokenService;
 import com.kiosk.server.service.UnregisterFcmTokenService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/notification")
@@ -21,7 +23,9 @@ public class NotificationController {
         @RequestHeader("profileId") Long profileId,
         @RequestBody RegisterTokenRequest request
     ) {
+        log.info("푸시 토큰 등록 요청 수신");
         registerFcmTokenService.doService(userId, profileId, request.deviceId(), request.token());
+        log.info("푸시 토큰 등록 요청 완료");
         return ResponseEntity.ok().build();
     }
 
