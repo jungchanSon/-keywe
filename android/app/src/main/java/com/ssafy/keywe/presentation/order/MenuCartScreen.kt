@@ -107,7 +107,13 @@ fun MenuCartScreen(
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
                 disConnect(
-                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager,
+                    menuCartViewModel
                 )
             }
         }
@@ -181,7 +187,7 @@ fun MenuCartScreen(
                         }
                     }
                 }
-        
+
 
 //                navController.navigate(Route.MenuBaseRoute.MenuRoute(storeId))
 //                navController.navigate(Route.MenuBaseRoute.KioskHomeRoute)
@@ -198,7 +204,13 @@ fun MenuCartScreen(
 
                 /* 너의 action */
                 disConnect(
-                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager,
+                    menuCartViewModel
                 )
 //                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
 
@@ -278,7 +290,7 @@ fun MenuCartScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.TopCenter)
-                                .padding(top = 24.dp, bottom = 130.dp),
+                                .padding(top = 24.dp),
                         ) {
                             items(cartItems, key = { it.id }) { item ->
                                 MenuCartMenuBox(

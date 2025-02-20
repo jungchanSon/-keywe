@@ -101,7 +101,13 @@ fun MenuDetailScreen(
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
                 disConnect(
-                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager,
+                    cartViewModel = menuCartViewModel
                 )
             }
         }
@@ -166,7 +172,13 @@ fun MenuDetailScreen(
             }, onConfirm = {
                 /* 너의 action */
                 disConnect(
-                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager,
+                    menuCartViewModel
                 )
 //                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
 
@@ -174,9 +186,7 @@ fun MenuDetailScreen(
         }
     }
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Scaffold(
             topBar = {
@@ -187,9 +197,7 @@ fun MenuDetailScreen(
                     keyWeViewModel = keyWeViewModel,
                     isKiosk = isKiosk
                 )
-            },
-            modifier = Modifier
-                .fillMaxSize()
+            }, modifier = Modifier.fillMaxSize()
 
 
         ) { innerPadding ->
@@ -198,28 +206,26 @@ fun MenuDetailScreen(
                     .fillMaxSize()
                     .padding(top = innerPadding.calculateTopPadding())
                     .background(whiteBackgroundColor)
-                    .then(
-                        if (isKiosk) {
-                            Modifier
-                                .border(
-                                    width = 2.dp,
-                                    color = primaryColor,
-                                    shape = RoundedCornerShape(8.dp)
+                    .then(if (isKiosk) {
+                        Modifier
+                            .border(
+                                width = 2.dp,
+                                color = primaryColor,
+                                shape = RoundedCornerShape(8.dp)
 
-                                )
-                                .pointerInput(Unit) {
-                                    awaitPointerEventScope {
-                                        while (true) {
-                                            val event =
-                                                awaitPointerEvent(PointerEventPass.Initial) // 모든 터치 이벤트 감지
-                                            event.changes.forEach { it.consume() } // 터치 이벤트 소비하여 상위로 전달되지 않게 만듦
-                                        }
+                            )
+                            .pointerInput(Unit) {
+                                awaitPointerEventScope {
+                                    while (true) {
+                                        val event =
+                                            awaitPointerEvent(PointerEventPass.Initial) // 모든 터치 이벤트 감지
+                                        event.changes.forEach { it.consume() } // 터치 이벤트 소비하여 상위로 전달되지 않게 만듦
                                     }
                                 }
-                        } else {
-                            Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
-                        }
-                    ),
+                            }
+                    } else {
+                        Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                    }),
             ) {
                 Column(
                     modifier = Modifier.align(Alignment.TopCenter)

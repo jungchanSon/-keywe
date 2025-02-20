@@ -99,7 +99,13 @@ fun MenuScreen(
             if (it.type == STOMPTYPE.END) {
                 Log.d("WaitingRoomScreen", "종료")
                 disConnect(
-                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager,
+                    menuCartViewModel
                 )
             }
         }
@@ -123,7 +129,13 @@ fun MenuScreen(
             }, onConfirm = {
                 /* 너의 action */
                 disConnect(
-                    context, keyWeViewModel, appBarViewModel, isKiosk, navController, tokenManager
+                    context,
+                    keyWeViewModel,
+                    appBarViewModel,
+                    isKiosk,
+                    navController,
+                    tokenManager,
+                    menuCartViewModel
                 )
 //                keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptDialog)
             })
@@ -207,11 +219,13 @@ fun disConnect(
     isKiosk: Boolean,
     navController: NavController,
     tokenManager: TokenManager,
+    cartViewModel: MenuCartViewModel,
 ) {
     closeSTOMP(context)
     keyWeViewModel.exit()
     appBarViewModel.closeDialog()
     tokenManager.clearKeyWeToken()
+    cartViewModel.clearCart()
     Log.d("MenuScreen", "종료")
     Toast.makeText(context, "대리주문이 종료됩니다.", Toast.LENGTH_LONG).show()
     // 키오스크
