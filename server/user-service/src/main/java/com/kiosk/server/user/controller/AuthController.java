@@ -2,6 +2,7 @@ package com.kiosk.server.user.controller;
 
 import com.kiosk.server.user.controller.dto.*;
 import com.kiosk.server.user.service.*;
+import com.kiosk.server.user.util.EmailVerificationTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
