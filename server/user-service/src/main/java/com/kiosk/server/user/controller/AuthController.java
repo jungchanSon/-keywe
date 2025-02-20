@@ -2,6 +2,7 @@ package com.kiosk.server.user.controller;
 
 import com.kiosk.server.user.controller.dto.*;
 import com.kiosk.server.user.service.*;
+import com.kiosk.server.user.util.EmailVerificationTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,8 @@ public class AuthController {
     private final CeoLoginService ceoLoginService;
     private final UserLoginService userLoginService;
     private final VerifyEmailService verifyEmailService;
+    private final ProfileLoginService profileLoginService;
     private final KioskUserLoginService kioskUserLoginService;
-    private final FindUserProfileByIdService findUserProfileByIdService;
 
     @PostMapping("/user/login")
     public ResponseEntity<LoginResponse> login(@RequestBody UserLoginRequest request) {
@@ -31,9 +32,12 @@ public class AuthController {
 
     // 프로필 선택
     @PostMapping("/user/profile")
-    public ResponseEntity<ProfileLoginResponse> getUserProfile(@RequestHeader("userId") Long userId, @Validated @RequestBody UserProfileRequest request) {
-        log.info("Request User Profile Id: {}", request.profileId());
-        String authToken = findUserProfileByIdService.doService(userId, request.profileId());
+    public ResponseEntity<ProfileLoginResponse> selectUserProfile(
+        @RequestHeader("userId") Long userId,
+        @Validated @RequestBody UserProfileRequest request
+    ) {
+        log.info("Profile Login Id: {}", request.profileId());
+        String authToken = profileLoginService.doService(userId, request.profileId());
         ProfileLoginResponse response = new ProfileLoginResponse(authToken);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

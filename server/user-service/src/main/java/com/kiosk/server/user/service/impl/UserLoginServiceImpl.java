@@ -39,6 +39,11 @@ public class UserLoginServiceImpl implements UserLoginService {
             throw new UnauthorizedException("인증에 실패했습니다. 올바른 비밀번호를 입력해 주세요.");
         }
 
+        if (!UserRole.CUSTOMER.equals(foundUser.getRole())) {
+            log.warn("로그인 실패 - 일반 회원이 아님: email={}", email);
+            throw new UnauthorizedException("인증에 실패했습니다. 일반 회원 계정만 이용 가능합니다.");
+        }
+
         if(Boolean.FALSE.equals(foundUser.getVerified())) {
             return new LoginResponse("", false);
         } else {

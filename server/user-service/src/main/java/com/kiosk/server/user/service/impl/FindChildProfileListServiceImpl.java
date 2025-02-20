@@ -1,6 +1,6 @@
 package com.kiosk.server.user.service.impl;
 
-import com.kiosk.server.user.controller.dto.ChildProfileResponse;
+import com.kiosk.server.user.controller.dto.UserProfileResponse;
 import com.kiosk.server.user.domain.ProfileRole;
 import com.kiosk.server.user.domain.UserProfileRepository;
 import com.kiosk.server.user.service.FindChildProfileListService;
@@ -20,13 +20,12 @@ public class FindChildProfileListServiceImpl implements FindChildProfileListServ
 
     @Override
     @Transactional(readOnly = true)
-    public List<ChildProfileResponse> doService(long userId) {
+    public List<UserProfileResponse> doService(long userId) {
         log.info("FindChildProfileListService: userId={}", userId);
 
         return userProfileRepository.getUserProfileList(userId)
             .stream()
             .filter(profile -> ProfileRole.CHILD == profile.role())
-            .map(profile -> new ChildProfileResponse(String.valueOf(profile.id()), profile.name()))
             .toList();
     }
 }

@@ -25,7 +25,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
 
             if (("GET".equalsIgnoreCase(method) && "/user/profile/list".equals(requestURI)) ||
-                ("POST".equalsIgnoreCase(method) && "/user/profile".equals(requestURI))) {
+                ("POST".equalsIgnoreCase(method) && "/user/profile".equals(requestURI)) ||
+                ("POST".equalsIgnoreCase(method) && "/user/profile/sms/send".equals(requestURI)) ||
+                ("POST".equalsIgnoreCase(method) && "/user/profile/sms/verify".equals(requestURI))) {
                 return true;
             }
 

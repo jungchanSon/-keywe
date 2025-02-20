@@ -10,6 +10,7 @@ import com.kiosk.server.user.domain.EmailAuthenticationRepository;
 import com.kiosk.server.user.domain.User;
 import com.kiosk.server.user.domain.UserRepository;
 import com.kiosk.server.user.service.RegisterUserService;
+import com.kiosk.server.user.util.EmailVerificationTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +55,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             // 인증 링크가 포함된 이메일 발송
             notificationServiceClient.sendEmail(new SendEmailRequest(
                 email,
-                "회원가입 인증 메일",
+                "KeyWe 회원가입 인증 메일",
                 createVerificationEmailContent(email, verificationToken)
             ));
 
@@ -70,14 +71,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
         String verificationLink = String.format(SERVER_BASE_URL + "/auth/verify-email?email=%s&token=%s",
             email, token);
 
-        return String.format("""
-            안녕하세요.
-            회원가입을 완료하기 위해 아래 링크를 클릭해주세요.
-            
-            %s
-            
-            본 인증 링크는 30분간 유효합니다.
-            """, verificationLink);
+        return String.format(EmailVerificationTemplate.VERIFICATION_EMAIL.getTemplate(), verificationLink);
     }
 
     private String createVerificationToken() {

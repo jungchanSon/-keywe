@@ -13,8 +13,7 @@
     <!-- 이메일 중복 확인 -->
     <select id="existsByEmail" parameterType="String" resultType="boolean">
         SELECT EXISTS (
-        SELECT 1 FROM users
-        WHERE email = #{email}
+            SELECT 1 FROM users WHERE email = #{email} LIMIT 1
         );
     </select>
 
@@ -30,5 +29,15 @@
         SET verified = true
         WHERE user_id = #{userId}
     </update>
+
+    <!-- 인증 시간이 만료된 회원 정보 삭제 -->
+    <delete id="deleteUnverifiedUsersByEmails">
+        DELETE FROM users
+        WHERE email IN
+        <foreach item="email" collection="emails" open="(" separator="," close=")">
+            #{email}
+        </foreach>
+        AND verified = false
+    </delete>
 
 </mapper>

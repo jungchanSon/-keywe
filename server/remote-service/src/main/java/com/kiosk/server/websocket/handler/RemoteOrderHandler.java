@@ -31,19 +31,25 @@ public class RemoteOrderHandler {
         RemoteOrderRequest requestMessage,
         @Header("simpSessionAttributes") Map<String, Object> sessionAttributes
     ) {
+        log.info("대리 주문 요청 처리 시작");
         String userId = (String) sessionAttributes.get("userId");
         String familyId = (String) sessionAttributes.get("familyId");
-        String sessionId = remoteOrderService.saveSession(userId, familyId, requestMessage.storeId());
+        RemoteOrderSession session = remoteOrderService.saveSession(userId, familyId, requestMessage.storeId());
 
         // 키오스크에게 sessionId 전달
         RemoteOrderResponse responseMessage = RemoteOrderResponse.success(
             RemoteOrderResponseType.REQUESTED,
-            Map.of("sessionId", sessionId)
+            Map.of(
+                "sessionId", session.getSessionId(),
+                "username", session.getKioskUserName()
+            )
         );
 
         messagingTemplate.convertAndSend("/topic/" + userId, responseMessage);
 
-        sessionAttributes.put("sessionId", sessionId);
+        sessionAttributes.put("sessionId", session.getSessionId());
+
+        log.info("대리 주문 요청 처리 완료");
     }
 
     @MessageMapping("/remote-order/accept")
@@ -51,27 +57,53 @@ public class RemoteOrderHandler {
         RemoteOrderAcceptRequest message,
         @Header("simpSessionAttributes") Map<String, Object> sessionAttributes
     ) {
+        log.info("대리 주문 수락 요청");
         String helperUserId = (String) sessionAttributes.get("userId");
         String familyId = (String) sessionAttributes.get("familyId");
 
+        log.info("수락 처리 시작");
         RemoteOrderSession session = remoteOrderService.acceptSession(message.sessionId(), helperUserId, familyId);
+        log.info("수락 처리 완료");
+
         // Agora 채널 생성 및 전송
+        log.info("Agora 채널 생성 시작");
         AgoraChannelInfo agoraChannelInfo = agoraService.createChannel(session.getSessionId());
+        log.info("Agora 채널 생성 완료");
 
         // 양쪽에 Agora 토큰 전달
-        RemoteOrderResponse responseMessage = RemoteOrderResponse.success(
+        RemoteOrderResponse kioskUserResponseMessage = RemoteOrderResponse.success(
             RemoteOrderResponseType.ACCEPTED,
             Map.of(
                 "sessionId", session.getSessionId(),
                 "helperUserId", helperUserId,
                 "kioskUserId", session.getKioskUserId(),
+                "partnerName", session.getHelperUserName(),
                 "channel", agoraChannelInfo
             )
         );
 
-        messagingTemplate.convertAndSend("/topic/" + helperUserId, responseMessage);
-        messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), responseMessage);
+        RemoteOrderResponse helperUserResponseMessage = RemoteOrderResponse.success(
+            RemoteOrderResponseType.ACCEPTED,
+            Map.of(
+                "sessionId", session.getSessionId(),
+                "helperUserId", helperUserId,
+                "kioskUserId", session.getKioskUserId(),
+                "partnerName", session.getKioskUserName(),
+                "channel", agoraChannelInfo
+            )
+        );
+
+        log.info("수락 완료 메시지 전달 시작");
+
+        messagingTemplate.convertAndSend("/topic/" + helperUserId, helperUserResponseMessage);
+        messagingTemplate.convertAndSend("/topic/" + session.getKioskUserId(), kioskUserResponseMessage);
+
+        log.info("수락 완료 메시지 전달 완료");
+
 
         sessionAttributes.put("sessionId", session.getSessionId());
+
+        log.info("대리 주문 수락 처리 완료");
     }
+
 }
