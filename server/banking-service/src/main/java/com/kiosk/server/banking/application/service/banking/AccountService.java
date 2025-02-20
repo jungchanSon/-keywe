@@ -7,11 +7,13 @@ import com.kiosk.server.banking.domain.Account;
 import com.kiosk.server.banking.domain.Deposit;
 import com.kiosk.server.banking.domain.Withdraw;
 import lombok.RequiredArgsConstructor;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.backoff.BackOff;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,9 @@ public class AccountService implements AccountUseCase {
 
     @Override
     @Transactional
+    @Retryable(
+        backoff = @Backoff(delay=300)
+    )
     public Account getAccount(Long memberId) {
         Account account = accountQueryPort.getAccountByUserId(memberId);
 

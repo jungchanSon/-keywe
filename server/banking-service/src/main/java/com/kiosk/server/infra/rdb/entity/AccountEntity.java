@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,9 @@ public class AccountEntity {
     private Long depositSnapshotId = 0L;
 
     private String phoneNumber;
+
+    @Version
+    private Long version;
 
     @CreatedDate
     private LocalDateTime createdAt;
