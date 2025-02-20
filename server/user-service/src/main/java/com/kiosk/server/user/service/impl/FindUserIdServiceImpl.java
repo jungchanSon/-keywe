@@ -16,7 +16,7 @@ public class FindUserIdServiceImpl implements FindUserIdService {
     @Override
     public Optional<Long> doService(Long profileId) {
         return Optional.of(
-                userProfileRepository.findByProfileId(profileId).getProfileId()
+                userProfileRepository.findByProfileId(profileId).getUserId()
         );
     }
 }
