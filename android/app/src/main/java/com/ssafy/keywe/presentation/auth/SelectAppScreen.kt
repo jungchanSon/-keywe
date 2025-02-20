@@ -39,8 +39,8 @@ fun SelectAppScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(50.dp))
 
                 Text(
-                    "KEYWE는 어르신들이 키오스크를 쉽게 사용하도록\n" +
-                            "키오스크 원격 조정 서비스를 제공합니다.",
+                    "KEYWE는 어르신들이\n" + "키오스크를 쉽게 사용하도록\n" +
+                            "대리주문 원격 조정 서비스를 제공합니다.",
                     style = h6sb,
                     modifier = Modifier.fillMaxWidth(),
 //                    textAlign = TextAlign.Center

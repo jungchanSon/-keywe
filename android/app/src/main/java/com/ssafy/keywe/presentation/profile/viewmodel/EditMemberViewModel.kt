@@ -2,7 +2,10 @@ package com.ssafy.keywe.presentation.profile.viewmodel
 
 //import com.ssafy.keywe.data.dto.profile.GetProfileRequest
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Base64
 import android.util.Log
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -227,6 +230,16 @@ class EditMemberViewModel @Inject constructor(
                     Log.e("deleteProfile", "네트워크 오류로 프로필 삭제 실패: ${result.message}")
                 }
             }
+        }
+    }
+
+    fun decodeBase64ToBitmap(base64String: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            Log.e("decodeBase64ToBitmap", "비트맵 변환 실패: ${e.message}")
+            null
         }
     }
 }
