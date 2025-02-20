@@ -138,3 +138,49 @@ services:
       replicas: 1
     networks:
       - kiwi-service-network
+      
+  settlement-service-app:
+    build:
+      context: ./store-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:3386/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8095:8095"
+    environment:
+      - STORE_MYSQL_URL=kiwi-db-store:3306
+      - CONFIG_SERVICE_URL=config-service-app
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+      
+  banking-service-app:
+    build:
+      context: ./banking-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8300/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8095:8095"
+    environment:
+      - ADJUSTMENT_MYSQL_URL=kiwi-db-adjustment:3306
+      - CONFIG_SERVICE_URL=config-service-app
+      - BANKING_SERVICE_URL=banking-service-app
+      - MENU_SERVICE_URL=store-service-app
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
