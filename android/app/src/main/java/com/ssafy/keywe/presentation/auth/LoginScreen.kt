@@ -54,6 +54,7 @@ import com.ssafy.keywe.presentation.auth.viewmodel.LoginViewModel
 import com.ssafy.keywe.ui.theme.caption
 import com.ssafy.keywe.ui.theme.h6sb
 import com.ssafy.keywe.ui.theme.logo
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.primaryColor
 
 
@@ -111,7 +112,7 @@ fun LoginScreen(
 
     Box(modifier = modifier
 //        .windowInsetsPadding(WindowInsets.systemBars)
-        .clickable {
+        .noRippleClickable {
             focusManager.clearFocus()
         }
         .fillMaxSize()) {
@@ -182,7 +183,7 @@ fun LoginScreen(
                 "계정이 없으신가요?",
                 modifier = modifier
                     .fillMaxWidth()
-                    .clickable {
+                    .noRippleClickable {
                         navController.navigate(SignUpRoute)
                     },
                 textAlign = TextAlign.Center,

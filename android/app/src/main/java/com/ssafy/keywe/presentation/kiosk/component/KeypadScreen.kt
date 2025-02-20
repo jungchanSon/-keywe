@@ -30,6 +30,7 @@ import com.ssafy.keywe.common.ext.fieldModifier
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.h5
 import com.ssafy.keywe.ui.theme.h6
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.subtitle2
@@ -100,7 +101,7 @@ fun KeypadButton(
         modifier = modifier
             .width(88.dp).height(88.dp)
             .background(greyBackgroundColor, shape = RoundedCornerShape(20.dp))
-            .clickable { onClick() },
+            .noRippleClickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(text = text, style = h5)
@@ -113,7 +114,7 @@ fun BackspaceButton(modifier: Modifier, onClick: () -> Unit) {
         modifier = modifier
             .width(88.dp).height(88.dp)
             .background(greyBackgroundColor, shape = RoundedCornerShape(20.dp))
-            .clickable { onClick() },
+            .noRippleClickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -141,7 +142,7 @@ fun ActionButton(
                 color = if (isEnabled) backgroundColor else greyBackgroundColor,
                 shape = RoundedCornerShape(12.dp)
             )
-            .clickable(enabled = isEnabled) { onClick()   },
+            .clickable(enabled = isEnabled) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(

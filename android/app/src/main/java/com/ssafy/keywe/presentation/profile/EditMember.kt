@@ -59,6 +59,7 @@ import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.body2
 import com.ssafy.keywe.ui.theme.button
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.primaryColor
 import java.io.ByteArrayInputStream
 
@@ -101,10 +102,8 @@ fun EditMemberScreen(
     },
         modifier = Modifier
             .fillMaxSize()
-            .clickable(interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { focusManager.clearFocus() } // 빈 공간 클릭 시 포커스 제거
-            )) { paddingValues ->
+            .noRippleClickable{ focusManager.clearFocus() } // 빈 공간 클릭 시 포커스 제거
+            ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -161,7 +160,7 @@ fun EditMemberScreen(
                     }
                 }, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 24.dp),
             ) {
                 Text(
                     text = "프로필 삭제하기", style = button, textDecoration = TextDecoration.Underline
@@ -181,7 +180,7 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
         modifier = Modifier
             .size(150.dp)
             .padding(vertical = 24.dp)
-            .clickable { imagePicker() },
+            .noRippleClickable { imagePicker() },
         contentAlignment = Alignment.Center
     ) {
         when {
@@ -225,7 +224,7 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
             modifier = Modifier
                 .size(20.dp)
                 .align(Alignment.BottomEnd)
-                .clickable { imagePicker() })
+                .noRippleClickable { imagePicker() })
     }
 }
 

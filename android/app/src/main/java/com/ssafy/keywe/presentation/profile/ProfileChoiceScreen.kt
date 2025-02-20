@@ -38,6 +38,7 @@ import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.h6sb
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.subtitle2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -84,7 +85,7 @@ fun ProfileChoiceScreen(
                     modifier = Modifier
                         .size(120.dp)
 //                        .background(color = lightColor)
-                        .clickable {
+                        .noRippleClickable {
                             navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
                         }, contentAlignment = Alignment.Center
                 ) {
@@ -164,7 +165,7 @@ fun ProfileChoiceScreen(
                         Box(
                             modifier = Modifier
                                 .size(30.dp)
-                                .clickable {
+                                .noRippleClickable {
                                     navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
                                 }
 //                                .background(color = lightColor)
@@ -230,7 +231,7 @@ fun ProfileGrid(
                 profileImage = profile.image, // Base64 이미지 전달
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onProfileClick(profile) })
+                    .noRippleClickable { onProfileClick(profile) })
         }
     }
 }

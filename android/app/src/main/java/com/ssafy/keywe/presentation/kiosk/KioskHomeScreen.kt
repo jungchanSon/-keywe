@@ -35,6 +35,7 @@ import com.ssafy.keywe.common.screen.openAccessibilitySettingsAndGranted
 import com.ssafy.keywe.data.TokenManager
 import com.ssafy.keywe.presentation.order.component.OrderOptionCard
 import com.ssafy.keywe.ui.theme.caption
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import kotlinx.coroutines.launch
 
 @Composable
@@ -144,7 +145,7 @@ fun KioskHomeScreen(
             modifier = Modifier
                 .padding(bottom = 16.dp)
                 .fillMaxWidth()
-                .clickable {
+                .noRippleClickable {
                     scope.launch {
                         tokenManager.clearTokens()
                     }
