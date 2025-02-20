@@ -57,4 +57,8 @@ public class PushToken {
             throw new UnauthorizedProfileAccessException(requestedProfileId, this.profileId);
         }
     }
+
+    public void updateToken(String newToken) {
+        this.token = newToken;
+    }
 }
