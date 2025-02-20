@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -173,7 +174,11 @@ fun OptionBox(
     keyWeViewModel: KeyWeViewModel
 ) {
 
-    val optionAmount = remember { mutableIntStateOf(extraOptions[id]?.second ?: 0) }
+//    val optionAmount = remember { mutableIntStateOf(extraOptions[id]?.second ?: 0) }
+
+    val optionAmount = remember(extraOptions[id]?.second) {
+        mutableIntStateOf(extraOptions[id]?.second ?: 0)
+    }
 
     Box(
         modifier = Modifier

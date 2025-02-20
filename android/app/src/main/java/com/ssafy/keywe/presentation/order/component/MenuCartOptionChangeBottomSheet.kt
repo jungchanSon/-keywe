@@ -1,5 +1,6 @@
 package com.ssafy.keywe.presentation.order.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +55,17 @@ fun OptionChangeBottomSheet(
     storeId: Long,
     keyWeViewModel: KeyWeViewModel,
     isKiosk: Boolean = false,
+    extraOptions: MutableMap<Long, Pair<String, Int>>
 ) {
+
+    // ✅ 임시 상태: tempOptions
+    val tempOptions = remember { mutableStateMapOf<Long, Pair<String, Int>>() }
+
+    // ✅ BottomSheet가 열릴 때 tempOptions 초기화
+    LaunchedEffect(Unit) {
+        tempOptions.clear()
+        tempOptions.putAll(extraOptions)
+    }
 
     val menu by viewModel.selectedDetailMenu.collectAsState()
 
@@ -67,13 +78,13 @@ fun OptionChangeBottomSheet(
     val selectedSize = remember { mutableStateOf(cartItem.size) }
     val selectedTemperature = remember { mutableStateOf(cartItem.temperature) }
 
-    val extraOptions = remember(cartItem) {
-        mutableStateMapOf<Long, Pair<String, Int>>().apply {
-            cartItem.extraOptions.forEach { (optionId, pair) ->
-                put(optionId, pair)
-            }
-        }
-    }
+//    val extraOptions = remember(cartItem) {
+//        mutableStateMapOf<Long, Pair<String, Int>>().apply {
+//            cartItem.extraOptions.forEach { (optionId, pair) ->
+//                put(optionId, pair)
+//            }
+//        }
+//    }
 
     val commonOptionList = menu?.options?.filter { it.optionType == "Common" } ?: emptyList()
     val sizeOptions = commonOptionList.find { it.optionName.equals("size", ignoreCase = true) }
@@ -116,15 +127,49 @@ fun OptionChangeBottomSheet(
 
     val coroutineScope = rememberCoroutineScope() // CoroutineScope 추가
 
-    LaunchedEffect(viewModel.selectedCartItem.collectAsState().value) {
-        viewModel.selectedCartItem.value?.let { cartItem ->
-            selectedSize.value = cartItem.size
-            selectedTemperature.value = cartItem.temperature
-            extraOptions.clear()
-            cartItem.extraOptions.forEach { (optionId, pair) ->
-                extraOptions[optionId] = pair
-            }
-        }
+    fun MutableMap<Long, Pair<String, Int>>.deepCopy(): MutableMap<Long, Pair<String, Int>> {
+        return this.mapValues { (_, value) ->
+            value.first to value.second
+        }.toMutableMap()
+    }
+
+
+// 초기 상태 저장
+    val initialOptions = remember { extraOptions.deepCopy() }
+
+// BottomSheet가 열릴 때 초기 상태 저장
+    LaunchedEffect(Unit) {
+        initialOptions.clear()
+        initialOptions.putAll(extraOptions.deepCopy())
+    }
+
+
+//    LaunchedEffect(menu) {
+//        Log.d("OptionChangeBottomSheet", "menu 상태: $menu")
+//        if (menu != null) {
+//            Log.d("OptionChangeBottomSheet", "extraOptions 초기화")
+//            extraOptions.clear()
+//            cartItem.extraOptions.forEach { (optionId, pair) ->
+//                extraOptions[optionId] = pair
+//            }
+//            Log.d("OptionChangeBottomSheet", "extraOptions 상태: $extraOptions")
+//        }
+//    }
+
+//    LaunchedEffect(viewModel.selectedCartItem.collectAsState().value) {
+//        viewModel.selectedCartItem.value?.let { cartItem ->
+//            selectedSize.value = cartItem.size
+//            selectedTemperature.value = cartItem.temperature
+//            extraOptions.clear()
+//            cartItem.extraOptions.forEach { (optionId, pair) ->
+//                extraOptions[optionId] = pair
+//            }
+//        }
+//    }
+
+    LaunchedEffect(Unit) {
+        // tempOptions 제거하고 extraOptions만 사용
+        viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
     }
 
     DefaultModalBottomSheet(content = {
@@ -182,24 +227,32 @@ fun OptionChangeBottomSheet(
                     ) {
                         extraOptionList.forEach { option ->
                             option.optionsValueGroup.forEach { optionValue ->
-                                val optionId =
-                                    optionValue.optionValueId // ✅ optionId가 아니라 optionValueId 사용
+                                val optionId = optionValue.optionValueId
                                 val optionName = optionValue.optionValue
 
-                                OptionBox(id = optionId, // ✅ optionValueId를 id로 설정
+                                OptionBox(id = optionId,
                                     name = optionName,
                                     optionPrice = option.optionPrice,
-                                    extraOptions = extraOptions,
+                                    extraOptions = tempOptions,
+//                                    extraOptions = extraOptions,
                                     onOptionSelected = { id, _, count ->
-                                        val optionValue =
-                                            extraOptionList.flatMap { it.optionsValueGroup }
-                                                .find { it.optionValueId == id }?.optionValue
-                                                ?: "Unknown"
+                                        val optionValue = extraOptionList.flatMap { it.optionsValueGroup }
+                                            .find { it.optionValueId == id }?.optionValue ?: "Unknown"
 
                                         if (count == 0) extraOptions.remove(id)
-                                        else extraOptions[id] =
-                                            optionValue to count // ✅ optionValue 저장
+                                        else extraOptions[id] = optionValue to count
                                     },
+
+//                                    onOptionSelected = { id, _, count ->
+//                                        val optionValue =
+//                                            extraOptionList.flatMap { it.optionsValueGroup }
+//                                                .find { it.optionValueId == id }?.optionValue
+//                                                ?: "Unknown"
+//
+//                                        if (count == 0) extraOptions.remove(id)
+//                                        else extraOptions[id] =
+//                                            optionValue to count
+//                                    },
                                     isKiosk = isKiosk,
                                     keyWeViewModel = keyWeViewModel)
                             }
@@ -239,9 +292,16 @@ fun OptionChangeBottomSheet(
             }
         }
     }, onDismissRequest = {
+        extraOptions.clear()
+        extraOptions.putAll(initialOptions.deepCopy())
         coroutineScope.launch {
+
             sheetState.hide() // 슬라이딩 애니메이션으로 닫기
             onDismiss()
+
+            // ✅ 초기 상태로 복원
+
+
         }
         if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
     }, sheetState = sheetState, buttons = {
@@ -254,46 +314,88 @@ fun OptionChangeBottomSheet(
             horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally)
         ) {
             BottomButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .semantics {
-                        contentDescription = "close_bottom_sheet"
-                    },
+                modifier = Modifier.weight(1f),
                 content = "취소",
-
                 onClick = {
                     coroutineScope.launch {
                         sheetState.hide()
                         onDismiss()
+
+                        // ✅ 초기 상태로 복원
+                        extraOptions.clear()
+                        extraOptions.putAll(initialOptions.deepCopy())
                     }
-                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
-                },
-                colors = ButtonColors(
-                    containerColor = greyBackgroundColor,
-                    contentColor = titleTextColor,
-                    disabledContentColor = polishedSteelColor,
-                    disabledContainerColor = greyBackgroundColor
-                ),
-            )
-            BottomButton(modifier = Modifier
-                .weight(1f)
-                .semantics {
-                    contentDescription = "accept_bottom_sheet"
-                }, content = "수정", onClick = {
-                coroutineScope.launch {
-                    viewModel.updateCartItem(
-                        cartItem.id,
-                        cartItem.menuId,
-                        selectedSize.value,
-                        selectedTemperature.value,
-                        extraOptions.mapValues { (_, pair) -> pair.second },
-                        storeId
-                    )
-                    sheetState.hide()
-                    onDismiss()
-                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptBottomSheet)
                 }
-            })
+            )
+
+
+//            BottomButton(
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .semantics {
+//                        contentDescription = "close_bottom_sheet"
+//                    },
+//                content = "취소",
+//
+//                onClick = {
+//                    coroutineScope.launch {
+//                        sheetState.hide()
+//                        onDismiss()
+//                    }
+//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
+//                },
+//                colors = ButtonColors(
+//                    containerColor = greyBackgroundColor,
+//                    contentColor = titleTextColor,
+//                    disabledContentColor = polishedSteelColor,
+//                    disabledContainerColor = greyBackgroundColor
+//                ),
+//            )
+
+            BottomButton(
+                modifier = Modifier.weight(1f),
+                content = "수정",
+                onClick = {
+                    coroutineScope.launch {
+                        sheetState.hide()
+                        onDismiss()
+
+                        // ✅ extraOptions에 수정 사항 반영
+                        viewModel.updateCartItem(
+                            cartItem.id,
+                            cartItem.menuId,
+                            selectedSize.value,
+                            selectedTemperature.value,
+                            extraOptions.mapValues { (_, pair) -> pair.second },
+                            storeId
+                        )
+
+                        // ✅ 수정 완료 이벤트 전송
+                        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptBottomSheet)
+                    }
+                }
+            )
+
+
+//            BottomButton(modifier = Modifier
+//                .weight(1f)
+//                .semantics {
+//                    contentDescription = "accept_bottom_sheet"
+//                }, content = "수정", onClick = {
+//                coroutineScope.launch {
+//                    viewModel.updateCartItem(
+//                        cartItem.id,
+//                        cartItem.menuId,
+//                        selectedSize.value,
+//                        selectedTemperature.value,
+//                        extraOptions.mapValues { (_, pair) -> pair.second },
+//                        storeId
+//                    )
+//                    sheetState.hide()
+//                    onDismiss()
+//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptBottomSheet)
+//                }
+//            })
         }
     })
 }

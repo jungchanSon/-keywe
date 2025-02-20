@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -96,21 +97,60 @@ fun MenuCartMenu(
     val cartItems by viewModel.cartItems.collectAsState()
     val updatedCartItem = cartItems.find { it.id == cartItem.id }
     val quantity = updatedCartItem?.quantity ?: cartItem.quantity
-    val isOptionChangeSheetOpen = remember { mutableStateOf(false) }
 
     val name = cartItem.name
     val price = cartItem.price
     val size = cartItem.size
     val image = cartItem.image ?: ""
     val temperature = cartItem.temperature
-    val extraOptions = remember(cartItem) {
+//    val extraOptions = remember(cartItem) {
+//        mutableStateMapOf<Long, Pair<String, Int>>().apply {
+//            cartItem.extraOptions.forEach { (optionId, pair) ->
+//                put(optionId, pair)
+//            }
+//        }
+//    }
+//    Log.d("extraOptions", "$extraOptions")
+
+    val extraOptions = remember {
         mutableStateMapOf<Long, Pair<String, Int>>().apply {
-            cartItem.extraOptions.forEach { (optionId, pair) ->
-                put(optionId, pair)
+            // ✅ 초기 상태 한 번만 설정
+            if (isEmpty()) {
+                cartItem.extraOptions.forEach { (optionId, pair) ->
+                    put(optionId, pair)
+                }
             }
         }
     }
-    Log.d("extraOptions", "$extraOptions")
+
+
+    val isOptionChangeSheetOpen = remember { mutableStateOf(false) }
+    val menu by viewModel.selectedDetailMenu.collectAsState()
+
+    LaunchedEffect(isOptionChangeSheetOpen.value) {
+        if (isOptionChangeSheetOpen.value) {
+            // ✅ OptionChangeBottomSheet가 열리도록 상태가 변경된 경우에만 데이터 로드
+            viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
+        }
+    }
+
+//    LaunchedEffect(menu) {
+//        if (menu != null && extraOptions.isEmpty()) {
+//            extraOptions.clear()
+//            cartItem.extraOptions.forEach { (optionId, pair) ->
+//                extraOptions[optionId] = pair
+//            }
+//        }
+//    }
+
+
+
+// ✅ selectedDetailMenu 상태가 변경되었을 때만 sheetState.show() 호출
+//    LaunchedEffect(menu) {
+//        if (isOptionChangeSheetOpen.value && menu != null) {
+//            Log.d("MenuCartMenu", "✅ 메뉴 데이터 로드 완료: $menu")
+//        }
+//    }
 
 //    LaunchedEffect(cartItem.menuId) {
 //        Log.d("MenuCartViewModel", "스크린쪽 호출")
@@ -247,16 +287,30 @@ fun MenuCartMenu(
         }
     }
 
-    if (isOptionChangeSheetOpen.value) {
+    if (isOptionChangeSheetOpen.value && menu != null) {
         OptionChangeBottomSheet(
             cartItem = cartItem,
             viewModel = viewModel,
-            onDismiss = { isOptionChangeSheetOpen.value = false },
+            onDismiss = {
+                isOptionChangeSheetOpen.value = false
+            },
             storeId,
             keyWeViewModel,
-            isKiosk
+            isKiosk,
+                    extraOptions // ✅ extraOptions 상태 전달
         )
     }
+
+//    if (isOptionChangeSheetOpen.value) {
+//        OptionChangeBottomSheet(
+//            cartItem = cartItem,
+//            viewModel = viewModel,
+//            onDismiss = { isOptionChangeSheetOpen.value = false },
+//            storeId,
+//            keyWeViewModel,
+//            isKiosk
+//        )
+//    }
 
 }
 
