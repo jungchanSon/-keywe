@@ -9,7 +9,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -134,7 +133,7 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "이용자님\n\n키위로 더 간단하고\n" + "스마트한 하루를 시작하세요.", style = h6sb
+                    "사용자님\n\n키위로 더 간단하고\n" + "스마트한 하루를 시작하세요.", style = h6sb
                 )
                 Image(
                     painter = rememberAsyncImagePainter(model = R.drawable.user),

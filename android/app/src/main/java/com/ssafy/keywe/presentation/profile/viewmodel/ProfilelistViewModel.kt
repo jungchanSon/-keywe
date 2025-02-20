@@ -158,6 +158,16 @@ class ProfileViewModel @Inject constructor(
 
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            val deviceId = PushNotificationManager.deviceId.value
+            deviceId?.let {
+                fcmRepository.deleteFCM(it)
+            }
+            tokenManager.clearTokens()
+        }
+    }
+
 
     private fun handleSuccess(
         model: List<GetProfileListModel>,

@@ -53,11 +53,11 @@ fun SelectAppScreen(navController: NavHostController) {
 //
 //                Spacer(modifier = Modifier.height(50.dp))
 //
-//                Text("키위 이용자 선택하기", style = h6)
+//                Text("키위 사용자 선택하기", style = h6)
 //
 //
 ////                Text(
-////                    "사장님 고객은 “사장님으로 시작하기”를,\n" + "이용자 고객님은 “이용자로 시작하기를” 선택해주세요.  ",
+////                    "사장님 고객은 “사장님으로 시작하기”를,\n" + "사용자 고객님은 “사용자로 시작하기를” 선택해주세요.  ",
 ////                    style = subtitle1
 ////                )
 //
@@ -88,7 +88,7 @@ fun SelectAppScreen(navController: NavHostController) {
 //                Spacer(modifier = Modifier.height(8.dp))
 //
 //
-//                SelectOptionCard(title = "이용자로 시작하기",
+//                SelectOptionCard(title = "사용자로 시작하기",
 //                    description = "키위매칭 서비스 이용",
 //                    imageRes = R.drawable.user,
 //                    backgroundColor = Color(0xFFD9F1D2),
@@ -131,7 +131,7 @@ fun SelectAppScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(50.dp))
 
         Text(
-            text = "키위 이용자 선택하기",
+            text = "키위 사용자 선택하기",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -140,7 +140,7 @@ fun SelectAppScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = "키위는 사장님과 이용자 고객님이\n사용하도록 만들었습니다.",
+            text = "키위는 사장님과 사용자 고객님이\n사용하도록 만들었습니다.",
             fontSize = 18.sp,
             color = Color.Gray,
         )
@@ -160,7 +160,7 @@ fun SelectAppScreen(navController: NavHostController) {
                     )
                 })
 
-            OrderOptionCard(title = "이용자 이용",
+            OrderOptionCard(title = "사용자 이용",
                 imageRes = R.drawable.person,
                 modifier = Modifier.weight(1f),
                 onClick = {

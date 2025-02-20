@@ -6,7 +6,6 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,8 +81,7 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(120.dp)
+                    modifier = Modifier.size(120.dp)
 //                        .background(lightColor)
                 ) {
                     val profileImage = profileState.value?.image
@@ -130,9 +128,7 @@ fun ProfileScreen(
                         )
 
                         Text(
-                            text = profileState.value?.phone ?: "",
-                            style = h6sb,
-                            color = Color.Gray
+                            text = profileState.value?.phone ?: "", style = h6sb, color = Color.Gray
                         )
                     }
                 }
@@ -141,20 +137,25 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
 //            // 계정관리 버튼
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .clickable { }
-                .padding(16.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {}
-            MenuButtonComponent(navController, tokenManager)
+                verticalAlignment = Alignment.CenterVertically
+            ) {}
+            MenuButtonComponent(navController, tokenManager, profileViewModel)
         }
     }
 }
 
 
 @Composable
-fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager) {
+fun MenuButtonComponent(
+    navController: NavController,
+    tokenManager: TokenManager,
+    profileViewModel: ProfileViewModel,
+) {
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
@@ -170,16 +171,13 @@ fun MenuButtonComponent(navController: NavController, tokenManager: TokenManager
 //                Route.ProfileBaseRoute.ProfileChoiceRoute(false)
         })
         MenuButton(text = "로그아웃", onClick = {
-            scope.launch {
-                tokenManager.clearTokens()
-            }
+            profileViewModel.logout()
+
         })
         MenuButton(text = "회원탈퇴", onClick = {
             scope.launch {
-                tokenManager.clearTokens()
-
+                profileViewModel.logout()
                 Toast.makeText(navController.context, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-
                 navController.navigate(Route.AuthBaseRoute.LoginRoute) {
                     popUpTo(Route.ProfileBaseRoute.ProfileScreenRoute) { inclusive = true }
                 }
