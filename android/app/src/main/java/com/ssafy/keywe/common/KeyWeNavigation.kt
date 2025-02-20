@@ -134,18 +134,7 @@ sealed interface Route {
         data object CeoLoginRoute
 
     }
-
-    companion object {
-        // ✅ 문자열 기반의 EmailVerificationRoute 추가
-        fun EmailVerificationRoute(email: String): String {
-            return "email_verification?email=$email"
-        }
-
-        fun LoginRoute(): String {
-            return "login"
-        }
-    }
-
+    
 
 //    @Serializable
 //    data object KioskBaseRoute : Route {

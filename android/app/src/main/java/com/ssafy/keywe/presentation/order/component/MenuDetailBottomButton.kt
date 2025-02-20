@@ -207,9 +207,23 @@ fun MenuDetailBottomCartButton(
             if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.OrderButton)
 
             if (isKeyWe) {
-                navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId))
+                navController.navigate(Route.MenuBaseRoute.MenuCartRoute(storeId)) {
+                    popUpTo(Route.MenuBaseRoute.MenuDetailRoute(menuId, storeId)) {
+                        inclusive = true
+                    }
+
+                    launchSingleTop = true
+                }
             } else {
-                navController.navigate(Route.MenuBaseRoute.DefaultMenuCartRoute(storeId))
+                navController.navigate(Route.MenuBaseRoute.DefaultMenuCartRoute(storeId)) {
+                    popUpTo(
+                        Route.MenuBaseRoute.DefaultMenuDetailRoute(
+                            menuId,
+                            storeId
+                        )
+                    ) { inclusive = true }
+                    launchSingleTop = true
+                }
             }
 
         }, modifier = Modifier

@@ -25,4 +25,15 @@ class FCMRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteFCM(deviceId: String): ResponseResult<Unit> {
+        return when (val result = fcmDataSource.deleteFCM(deviceId)) {
+            is ResponseResult.Exception -> ResponseResult.Exception(
+                result.e, EXCEPTION_NETWORK_ERROR_MESSAGE
+            )
+
+            is ResponseResult.ServerError -> ResponseResult.ServerError(result.status)
+            is ResponseResult.Success -> ResponseResult.Success(Unit)
+        }
+    }
+
 }
