@@ -32,7 +32,7 @@ public class RegisterFcmTokenServiceImpl implements RegisterFcmTokenService {
             log.info("기존 디바이스 등록 토큰 발견 - token: {}", pushToken.getToken());
         }
 
-        pushToken.updateToken(fcmToken);
+        pushToken.updateToken(userId, profileId, fcmToken);
 
         pushTokenRepository.save(pushToken);
 

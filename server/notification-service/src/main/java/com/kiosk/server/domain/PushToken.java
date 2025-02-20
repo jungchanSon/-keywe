@@ -58,7 +58,9 @@ public class PushToken {
         }
     }
 
-    public void updateToken(String newToken) {
+    public void updateToken(Long userId, Long profileId, String newToken) {
+        this.userId = userId;
+        this.profileId = profileId;
         this.token = newToken;
     }
 }
