@@ -7,7 +7,6 @@ import android.view.Surface
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -93,7 +92,7 @@ fun LoginScreen(
         if (isLoggedIn) {
             val toRoute = Route.ProfileBaseRoute.ProfileChoiceRoute(true)
             navController.navigate(toRoute, builder = {
-                popUpTo(navController.graph.startDestinationId) {
+                popUpTo(0) {
                     inclusive = true
                 }
                 launchSingleTop = true
