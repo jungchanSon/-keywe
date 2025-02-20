@@ -46,6 +46,7 @@ import com.ssafy.keywe.common.app.DefaultTextFormField
 import com.ssafy.keywe.presentation.auth.viewmodel.SignUpViewModel
 import com.ssafy.keywe.presentation.kiosk.component.NoTitleOneButtonDialog
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
+import com.ssafy.keywe.ui.theme.noRippleClickable
 import com.ssafy.keywe.ui.theme.polishedSteelColor
 import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.subtitle2
@@ -110,7 +111,7 @@ fun SignUpScreen(
     }) {
         Box(modifier = modifier
             .fillMaxSize()
-            .clickable {
+            .noRippleClickable {
                 focusManager.clearFocus()
             }) {
             Column(
