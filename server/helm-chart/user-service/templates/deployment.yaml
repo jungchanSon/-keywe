@@ -25,5 +25,13 @@ spec:
               value: {{ .Values.springEnv.userMysqlUrl}}
             - name: PROFILE
               value: prod
-            - name: KAFKAURL
-              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local
+            - name: KAFKA_URL
+              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
+            - name: NOTIFICATION_SERVICE_URL
+              value: notification-server-app.notification.svc.cluster.local
+            - name: DOMAIN_NAME
+              value: i12a404.p.ssafy.io
+            - name: USER_SERVICE_REDIS_NAME
+              value: redis-0.redis.user.svc.cluster.local
+            - name: USER_SERVICE_REDIS_PORT
+              value: "6379"

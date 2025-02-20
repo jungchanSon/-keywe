@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: mysql
-  serviceName: notification-mysql-service
+  serviceName: mysql
   template:
     metadata:
       labels:
@@ -30,6 +30,13 @@ spec:
           volumeMounts:
             - name: volume-mysql
               mountPath: /var/lib/mysql
+            - name: init-table
+              mountPath: /docker-entrypoint-initdb.d/
+              readOnly: true
+      volumes:
+        - name: init-table
+          configMap:
+            name: initdb-config-user
   volumeClaimTemplates:
     - metadata:
         name: volume-mysql
@@ -38,4 +45,3 @@ spec:
         resources:
           requests:
             storage: 10Gi
-

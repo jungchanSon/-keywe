@@ -2,15 +2,11 @@ image:
   repository: rnrmf
   name: kiwi-config
   pullPolicy: IfNotPresent
-  tag: latest
-
+  tag: 104
 replicaCount: 1
-
 containerPort: 8888
 protocol: TCP
-
 service:
   type: ClusterIP
   port: 8888
-
 namespace: config

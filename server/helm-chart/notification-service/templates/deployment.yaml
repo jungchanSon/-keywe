@@ -13,7 +13,7 @@ spec:
         app:  {{ .Chart.Name }}
     spec:
       containers:
-        - name: order-service-container
+        - name: notification-service-container
           image: "{{ .Values.image.repository}}/{{ .Values.image.name }}:{{ .Values.image.tag}}"
           imagePullPolicy: {{ .Values.image.pullPolicy}}
           ports:
@@ -22,4 +22,4 @@ spec:
             - name: CONFIG_SERVICE_URL
               value: config-server-app-service.config.svc.cluster.local
             - name: NOTIFICATION_MYSQL_URL
-              value: {{ .Values.order_mysql_url}}
+              value: {{ .Values.notification_mysql_url}}

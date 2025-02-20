@@ -26,4 +26,4 @@ spec:
             - name: PROFILE
               value: prod
             - name: KAFKA_URL
-              value: "kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local"
+              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092

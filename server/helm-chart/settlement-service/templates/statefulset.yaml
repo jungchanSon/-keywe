@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: mysql
-  serviceName: notification-mysql-service
+  serviceName: mysql
   template:
     metadata:
       labels:
@@ -28,14 +28,13 @@ spec:
             - containerPort: 3306
               name: mysql
           volumeMounts:
-            - name: volume-mysql
+            - name: settlement-volume-mysql
               mountPath: /var/lib/mysql
   volumeClaimTemplates:
     - metadata:
-        name: volume-mysql
+        name: settlement-volume-mysql
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
             storage: 10Gi
-

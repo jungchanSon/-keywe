@@ -2,7 +2,7 @@ image:
   repository: rnrmf
   name: kiwi-order-service
   pullPolicy: IfNotPresent
-  tag: latest
+  tag: 152
 replicaCount: 1
 containerPort: 8100
 protocol: TCP
@@ -10,4 +10,4 @@ service:
   type: ClusterIP
   port: 8100
 namespace: order
-order_mysql_url: mysql-0.mysql.order.svc.cluster.local
+order_mysql_url: mysql-0.order-mysql-service.order.svc.cluster.local

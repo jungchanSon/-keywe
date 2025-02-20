@@ -25,5 +25,11 @@ spec:
               value: {{ .Values.order_mysql_url}}
             - name: PROFILE
               value: prod
-            - name: KAFKAURL
+            - name: KAFKA_URL
               value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local
+            - name: BANKING_SERVICE_URL
+              value: banking-server-app.banking.svc.cluster.local
+            - name: USER_SERVICE_URL
+              value: user-service-app.user.svc.cluster.local
+            - name: MENU_SERVICE_URL
+              value: store-service-app.store.svc.cluster.local

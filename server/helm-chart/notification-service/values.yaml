@@ -1,8 +1,8 @@
 image:
   repository: rnrmf
-  name: kiwi-notification-service
+  name: notification-service-app
   pullPolicy: IfNotPresent
-  tag: latest
+  tag: 30
 replicaCount: 1
 containerPort: 8110
 protocol: TCP
@@ -10,4 +10,4 @@ service:
   type: ClusterIP
   port: 8110
 namespace: notification
-order_mysql_url: mysql-0.notification-mysql-service.notification.svc.cluster.local
+notification_mysql_url: mysql-0.notification-mysql-service.notification.svc.cluster.local

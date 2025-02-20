@@ -31,7 +31,3 @@ spec:
               value: order-server-app.order.svc.cluster.local
             - name: NOTIFICATION_SERVICE_URL
               value: notification-server-app.notification.svc.cluster.local
-            - name: PROFILE
-              value: prod
-            - name: KAFKAURL
-              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local

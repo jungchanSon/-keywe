@@ -2,7 +2,7 @@ image:
   repository: rnrmf
   name: kiwi-banking-service
   pullPolicy: IfNotPresent
-  tag: latest
+  tag: 26
 replicaCount: 1
 containerPort: 8300
 protocol: TCP

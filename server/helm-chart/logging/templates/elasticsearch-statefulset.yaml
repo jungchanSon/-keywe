@@ -36,7 +36,11 @@ spec:
           volumeMounts:
             - name: elastic-data
               mountPath: /usr/share/elasticsearch/data
-      volumes:
-        - name: elastic-data
-          emptyDir:
-            sizeLimit: 5Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: elastic-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

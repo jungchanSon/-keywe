@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: order-mysql-service
+  name: mysql
 spec:
   clusterIP: None
   selector:
