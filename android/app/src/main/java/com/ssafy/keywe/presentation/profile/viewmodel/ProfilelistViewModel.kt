@@ -3,6 +3,8 @@ package com.ssafy.keywe.presentation.profile.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ssafy.keywe.PushNotificationManager
 import com.ssafy.keywe.R
 import com.ssafy.keywe.common.manager.ProfileIdManager
@@ -79,12 +81,11 @@ class ProfileViewModel @Inject constructor(
             ProfileIdManager.updateProfileId(model.id.toLong())
             profileDataStore.saveProfileId(model.id.toLong())
             saveToken(response)
+        }.onException { e, message ->
+            Log.d("Select User onException", "SelectError $message")
+        }.onServerError { status ->
+            Log.d("Select User onServerError", "SelectError $status")
         }
-            .onException { e, message ->
-                Log.d("Select User onException", "SelectError $message")
-            }.onServerError { status ->
-                Log.d("Select User onServerError", "SelectError $status")
-            }
 
 //        }
 
@@ -120,13 +121,40 @@ class ProfileViewModel @Inject constructor(
     private fun saveToken(model: SelectProfileModel) {
         val token = PushNotificationManager.token.value
         val deviceId = PushNotificationManager.deviceId.value
-        val request = FCMRequest(token!!, deviceId!!)
-        tokenManager.saveCacheAccessToken(model.accessToken)
+        Log.d("ProfileViewModel", "token = $token")
         viewModelScope.launch {
-            tokenManager.saveAccessToken(model.accessToken)
-            fcmRepository.registFCM(request)
-//            tokenManager.saveRefreshToken(model.refreshToken)
+            if (token == null) {
+                Log.d("ProfileViewModel", "NoToken")
+                FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.d(
+                            "push notification device token", "failed with error: ${task.exception}"
+                        )
+                        return@OnCompleteListener
+                    }
+                    val token = task.result
+                    Log.d("push notification device token", "token received: $token")
+                    PushNotificationManager.updateToken(token)
+
+                    val request = FCMRequest(token!!, deviceId!!)
+                    tokenManager.saveCacheAccessToken(model.accessToken)
+                    viewModelScope.launch {
+                        tokenManager.saveAccessToken(model.accessToken)
+                        fcmRepository.registFCM(request)
+                    }
+                })
+            } else {
+                val request = FCMRequest(token!!, deviceId!!)
+                tokenManager.saveCacheAccessToken(model.accessToken)
+                viewModelScope.launch {
+                    tokenManager.saveAccessToken(model.accessToken)
+                    fcmRepository.registFCM(request)
+                }
+            }
+
+
         }
+
 
     }
 
