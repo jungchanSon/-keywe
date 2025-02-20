@@ -1,7 +1,6 @@
 package com.ssafy.keywe.presentation.profile.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +14,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ssafy.keywe.R
 import com.ssafy.keywe.presentation.order.component.Base64Image
-import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.subtitle2
 
 
@@ -23,7 +21,7 @@ import com.ssafy.keywe.ui.theme.subtitle2
 fun Profile(
     name: String,
     profileImage: String?, // Base64 문자열이 전달됨
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -32,7 +30,7 @@ fun Profile(
         Box(
             modifier = Modifier
                 .size(120.dp)
-                .background(color = lightColor)
+//                .background(color = lightColor)
         ) {
             if (profileImage == "DEFAULT") {  // ✅ 기본 이미지 적용
                 Image(

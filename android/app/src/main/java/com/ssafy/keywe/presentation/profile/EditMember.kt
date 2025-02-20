@@ -67,7 +67,7 @@ import java.io.ByteArrayInputStream
 fun EditMemberScreen(
     navController: NavController,
     viewModel: EditMemberViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -86,12 +86,10 @@ fun EditMemberScreen(
     }
 
     Scaffold(topBar = {
-        DefaultAppBar(title = "프로필 수정", actions = {
+        DefaultAppBar(title = "프로필 수정", navController = navController, actions = {
             TextButton(onClick = {
                 viewModel.updateProfile(
-                    context,
-                    profileViewModel,
-                    navController
+                    context, profileViewModel, navController
                 )
                 navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
                     popUpTo(Route.ProfileBaseRoute.ProfileEditRoute) { inclusive = true }
@@ -235,7 +233,7 @@ fun ProfileImagePicker(viewModel: EditMemberViewModel, imagePicker: () -> Unit) 
 fun PhoneNumberInput(
     phone: String, // ✅ 기존에 저장된 핸드폰 번호를 불러오도록 수정
     onPhoneChange: (String) -> Unit, // ✅ 핸드폰 번호 변경 함수 전달
-    isPhoneValid: Boolean // ✅ 유효성 검사 상태 전달
+    isPhoneValid: Boolean, // ✅ 유효성 검사 상태 전달
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     var isFocused by remember { mutableStateOf(false) }

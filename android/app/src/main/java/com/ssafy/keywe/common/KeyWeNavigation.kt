@@ -1,5 +1,6 @@
 package com.ssafy.keywe.common
 
+import KioskHomeScreen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -19,7 +20,6 @@ import com.ssafy.keywe.presentation.auth.LoginScreen
 import com.ssafy.keywe.presentation.auth.SelectAppScreen
 import com.ssafy.keywe.presentation.kiosk.InputPasswordScreen
 import com.ssafy.keywe.presentation.kiosk.InputPhoneNumberScreen
-import com.ssafy.keywe.presentation.kiosk.KioskHomeScreen
 import com.ssafy.keywe.presentation.order.DefaultMenuCartScreen
 import com.ssafy.keywe.presentation.order.DefaultMenuDetailScreen
 import com.ssafy.keywe.presentation.order.DefaultMenuScreen

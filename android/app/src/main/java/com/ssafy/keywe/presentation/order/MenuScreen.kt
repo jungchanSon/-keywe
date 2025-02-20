@@ -174,7 +174,7 @@ fun MenuScreen(
                 })) {
                 /// 메뉴 내용
                 MenuCategoryScreen(menuViewModel, keyWeViewModel, storeId, isKiosk)
-                MenuSubCategory("Popular Coffee")
+                MenuSubCategory("Popular Menu")
 
                 MenuMenuList(
                     navController = navController,

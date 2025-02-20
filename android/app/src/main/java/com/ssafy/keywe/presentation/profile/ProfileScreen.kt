@@ -6,7 +6,6 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +42,6 @@ import com.ssafy.keywe.presentation.profile.viewmodel.ProfileDetailViewModel
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.h5
 import com.ssafy.keywe.ui.theme.h6sb
-import com.ssafy.keywe.ui.theme.lightColor
 import kotlinx.coroutines.launch
 import java.io.ByteArrayInputStream
 
@@ -53,7 +51,7 @@ fun ProfileScreen(
     navController: NavController,
     tokenManager: TokenManager,
     viewModel: ProfileDetailViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
 
     val profileState = viewModel.state.collectAsStateWithLifecycle()
@@ -86,7 +84,7 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier
                         .size(120.dp)
-                        .background(lightColor)
+//                        .background(lightColor)
                 ) {
                     val profileImage = profileState.value?.image
                     val bitmap = profileImage?.let { decodeBase64ToBitmap(it) }

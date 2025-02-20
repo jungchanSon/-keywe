@@ -1,7 +1,6 @@
 package com.ssafy.keywe.presentation.profile
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,6 @@ import com.ssafy.keywe.presentation.fcm.viewmodel.FCMViewModel
 import com.ssafy.keywe.presentation.profile.component.Profile
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
 import com.ssafy.keywe.ui.theme.h6sb
-import com.ssafy.keywe.ui.theme.lightColor
 import com.ssafy.keywe.ui.theme.subtitle2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -85,7 +83,7 @@ fun ProfileChoiceScreen(
                 Box(
                     modifier = Modifier
                         .size(120.dp)
-                        .background(color = lightColor)
+//                        .background(color = lightColor)
                         .clickable {
                             navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
                         }, contentAlignment = Alignment.Center
@@ -169,7 +167,8 @@ fun ProfileChoiceScreen(
                                 .clickable {
                                     navController.navigate(Route.ProfileBaseRoute.ProfileAddRoute)
                                 }
-                                .background(color = lightColor),
+//                                .background(color = lightColor)
+                            ,
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
@@ -195,7 +194,7 @@ private fun joinHome(
     profileViewModel: ProfileViewModel,
     profile: GetProfileListModel,
     navController: NavController,
-    scope: CoroutineScope
+    scope: CoroutineScope,
 ) {
     scope.launch {
         profileViewModel.selectAccount(profile)
