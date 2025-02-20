@@ -2,6 +2,7 @@ package com.ssafy.keywe.presentation.profile
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.text.TextUtils.replace
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -37,6 +39,8 @@ import com.ssafy.keywe.common.Route
 import com.ssafy.keywe.common.app.DefaultAppBar
 import com.ssafy.keywe.common.manager.ProfileIdManager
 import com.ssafy.keywe.data.TokenManager
+import com.ssafy.keywe.presentation.order.component.Base64Image
+import com.ssafy.keywe.presentation.order.component.Base64ProfileImage
 import com.ssafy.keywe.presentation.profile.component.MenuButton
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileDetailViewModel
 import com.ssafy.keywe.presentation.profile.viewmodel.ProfileViewModel
@@ -87,13 +91,11 @@ fun ProfileScreen(
 //                        .background(lightColor)
                 ) {
                     val profileImage = profileState.value?.image
-                    val bitmap = profileImage?.let { decodeBase64ToBitmap(it) }
-                    if (bitmap != null) {
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = "프로필 이미지",
-                            modifier = Modifier.fillMaxSize()
-                        )
+                    Log.d("ProfileScreen_profileImage : ", "$profileImage")
+//                    val bitmap = profileImage?.let { decodeBase64ToBitmap(it) }
+//                    Log.d("ProfileScreen_bitmap : ", "$bitmap")
+                    if (profileImage != null) {
+                        Base64ProfileImage(Modifier, profileImage)
                     } else {
                         Image(
                             painter = painterResource(id = R.drawable.humanimage),
@@ -101,6 +103,23 @@ fun ProfileScreen(
                             modifier = Modifier.fillMaxSize()
                         )
                     }
+//                    val profileImage = profileState.value?.image
+//                    Log.d("ProfileScreen_profileImage : ", "$profileImage")
+//                    val bitmap = profileImage?.let { decodeBase64ToBitmap(it) }
+//                    Log.d("ProfileScreen_bitmap : ", "$bitmap")
+//                    if (bitmap != null) {
+//                        Image(
+//                            bitmap = bitmap.asImageBitmap(),
+//                            contentDescription = "프로필 이미지",
+//                            modifier = Modifier.fillMaxSize()
+//                        )
+//                    } else {
+//                        Image(
+//                            painter = painterResource(id = R.drawable.humanimage),
+//                            contentDescription = "기본 프로필 이미지",
+//                            modifier = Modifier.fillMaxSize()
+//                        )
+//                    }
                 }
                 Column(
                     modifier = Modifier
@@ -131,7 +150,7 @@ fun ProfileScreen(
 
                         Text(
                             text = profileState.value?.phone ?: "",
-                            style = h6sb,
+                            style = h6sb.copy(fontSize = 18.sp),
                             color = Color.Gray
                         )
                     }
@@ -141,12 +160,13 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
 //            // 계정관리 버튼
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .clickable { }
-                .padding(16.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {}
+                verticalAlignment = Alignment.CenterVertically
+            ) {}
             MenuButtonComponent(navController, tokenManager)
         }
     }

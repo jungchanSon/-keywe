@@ -92,7 +92,7 @@ fun EditMemberScreen(
                 viewModel.updateProfile(
                     context, profileViewModel, navController
                 )
-                navController.navigate(Route.ProfileBaseRoute.ProfileChoiceRoute(false)) {
+                navController.navigate(Route.ProfileBaseRoute.ProfileScreenRoute) {
                     popUpTo(Route.ProfileBaseRoute.ProfileEditRoute) { inclusive = true }
                 }
             }) {

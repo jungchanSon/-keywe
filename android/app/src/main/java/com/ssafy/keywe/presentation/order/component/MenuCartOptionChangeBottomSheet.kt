@@ -2,10 +2,12 @@ package com.ssafy.keywe.presentation.order.component
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -27,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +42,7 @@ import com.ssafy.keywe.presentation.order.viewmodel.MenuCartViewModel
 import com.ssafy.keywe.ui.theme.contentTextColor
 import com.ssafy.keywe.ui.theme.greyBackgroundColor
 import com.ssafy.keywe.ui.theme.polishedSteelColor
+import com.ssafy.keywe.ui.theme.primaryColor
 import com.ssafy.keywe.ui.theme.subtitle1
 import com.ssafy.keywe.ui.theme.subtitle2
 import com.ssafy.keywe.ui.theme.titleTextColor
@@ -78,14 +83,6 @@ fun OptionChangeBottomSheet(
     val selectedSize = remember { mutableStateOf(cartItem.size) }
     val selectedTemperature = remember { mutableStateOf(cartItem.temperature) }
 
-//    val extraOptions = remember(cartItem) {
-//        mutableStateMapOf<Long, Pair<String, Int>>().apply {
-//            cartItem.extraOptions.forEach { (optionId, pair) ->
-//                put(optionId, pair)
-//            }
-//        }
-//    }
-
     val commonOptionList = menu?.options?.filter { it.optionType == "Common" } ?: emptyList()
     val sizeOptions = commonOptionList.find { it.optionName.equals("size", ignoreCase = true) }
     val temperatureOptions =
@@ -96,20 +93,6 @@ fun OptionChangeBottomSheet(
         temperatureOptions?.optionsValueGroup?.map { it.optionValue } ?: listOf("Hot", "Ice")
 
     val extraOptionList = menu?.options?.filter { it.optionType == "Extra" } ?: emptyList()
-
-//    val totalPrice = remember {
-//        derivedStateOf {
-//            val menuPrice = menu?.menuPrice ?: 0
-//            val sizePrice = viewModel.sizePriceMap[selectedSize.value] ?: 0
-//            val extraOptionPrice = extraOptions.entries.sumOf { (name, count) ->
-//                val optionPrice = extraOptionList.find {
-//                    it.optionsValueGroup.firstOrNull()?.optionValue == name
-//                }?.optionPrice ?: 0
-//                optionPrice * count
-//            }
-//            menuPrice + sizePrice + extraOptionPrice
-//        }
-//    }
 
     val totalPrice = remember {
         derivedStateOf {
@@ -134,289 +117,279 @@ fun OptionChangeBottomSheet(
     }
 
 
-// 초기 상태 저장
+    // 초기 상태 저장
     val initialOptions = remember { extraOptions.deepCopy() }
 
-// BottomSheet가 열릴 때 초기 상태 저장
+    // BottomSheet가 열릴 때 초기 상태 저장
     LaunchedEffect(Unit) {
         initialOptions.clear()
         initialOptions.putAll(extraOptions.deepCopy())
     }
-
-
-//    LaunchedEffect(menu) {
-//        Log.d("OptionChangeBottomSheet", "menu 상태: $menu")
-//        if (menu != null) {
-//            Log.d("OptionChangeBottomSheet", "extraOptions 초기화")
-//            extraOptions.clear()
-//            cartItem.extraOptions.forEach { (optionId, pair) ->
-//                extraOptions[optionId] = pair
-//            }
-//            Log.d("OptionChangeBottomSheet", "extraOptions 상태: $extraOptions")
-//        }
-//    }
-
-//    LaunchedEffect(viewModel.selectedCartItem.collectAsState().value) {
-//        viewModel.selectedCartItem.value?.let { cartItem ->
-//            selectedSize.value = cartItem.size
-//            selectedTemperature.value = cartItem.temperature
-//            extraOptions.clear()
-//            cartItem.extraOptions.forEach { (optionId, pair) ->
-//                extraOptions[optionId] = pair
-//            }
-//        }
-//    }
 
     LaunchedEffect(Unit) {
         // tempOptions 제거하고 extraOptions만 사용
         viewModel.fetchMenuDetailById(cartItem.menuId, storeId)
     }
 
-    DefaultModalBottomSheet(content = {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(whiteBackgroundColor)
-                .padding(horizontal = 24.dp)
-                .padding(top = 40.dp)
-                .heightIn(max = 580.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
-            horizontalAlignment = Alignment.Start
-        ) {
-            item {
-                Text(
-                    text = "옵션 변경", fontSize = 20.sp, fontWeight = FontWeight.Bold
-                )
-            }
 
-            item {
-                Box(
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        // 🔥 isKiosk가 true일 때만 터치 이벤트를 막음
+        if (isKiosk) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent(PointerEventPass.Initial)
+                                // 🔥 모든 터치 이벤트 소비하여 터치가 작동하지 않도록
+                                event.changes.forEach { it.consume() }
+                            }
+                        }
+                    }
+            )
+        }
+        DefaultModalBottomSheet(content = {
+            Box(
+                modifier = Modifier
+                    .then(if (isKiosk) {
+                        Modifier
+//                            .border(
+//                                width = 2.dp,
+//                                color = primaryColor,
+//                                shape = RoundedCornerShape(8.dp)
+//                            )
+                            .pointerInput(Unit) {
+                                awaitPointerEventScope {
+                                    while (true) {
+                                        val event =
+                                            awaitPointerEvent(PointerEventPass.Initial) // 모든 터치 이벤트 감지
+                                        event.changes.forEach { it.consume() } // 터치 이벤트 소비하여 상위로 전달되지 않게 만듦
+                                    }
+                                }
+                            }
+//
+                    } else {
+                        Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                    })
+            ){
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(whiteBackgroundColor) // 원하는 배경색 적용
+                        .background(whiteBackgroundColor)
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 40.dp)
+                        .heightIn(max = 580.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.Top),
+                    horizontalAlignment = Alignment.Start
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        MenuDetailCommonOptionRow(
-                            sizeValues,
-                            selectedSize.value,
-                            onSelect = { selectedSize.value = it }, isKiosk = isKiosk,
-                            keyWeViewModel
-                        )
-                        MenuDetailCommonOptionRow(
-                            temperatureValues,
-                            selectedTemperature.value,
-                            onSelect = { selectedTemperature.value = it }, isKiosk = isKiosk,
-                            keyWeViewModel
+                    item {
+                        Text(
+                            text = "옵션 변경", fontSize = 20.sp, fontWeight = FontWeight.Bold
                         )
                     }
-                }
-            }
 
-            item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(text = "추가 옵션", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        extraOptionList.forEach { option ->
-                            option.optionsValueGroup.forEach { optionValue ->
-                                val optionId = optionValue.optionValueId
-                                val optionName = optionValue.optionValue
-
-                                OptionBox(
-                                    id = optionId,
-                                    name = optionName,
-                                    optionPrice = option.optionPrice,
-                                    extraOptions = tempOptions,
-//                                    extraOptions = extraOptions,
-                                    onOptionSelected = { id, _, count ->
-                                        val optionValue =
-                                            extraOptionList.flatMap { it.optionsValueGroup }
-                                                .find { it.optionValueId == id }?.optionValue
-                                                ?: "Unknown"
-
-                                        if (count == 0) extraOptions.remove(id)
-                                        else extraOptions[id] = optionValue to count
-                                    },
-
-//                                    onOptionSelected = { id, _, count ->
-//                                        val optionValue =
-//                                            extraOptionList.flatMap { it.optionsValueGroup }
-//                                                .find { it.optionValueId == id }?.optionValue
-//                                                ?: "Unknown"
-//
-//                                        if (count == 0) extraOptions.remove(id)
-//                                        else extraOptions[id] =
-//                                            optionValue to count
-//                                    },
-                                    isKiosk = isKiosk,
-                                    keyWeViewModel = keyWeViewModel
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(whiteBackgroundColor) // 원하는 배경색 적용
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                MenuDetailCommonOptionRow(
+                                    sizeValues,
+                                    selectedSize.value,
+                                    onSelect = { selectedSize.value = it }, isKiosk = isKiosk,
+                                    keyWeViewModel
                                 )
+                                MenuDetailCommonOptionRow(
+                                    temperatureValues,
+                                    selectedTemperature.value,
+                                    onSelect = { selectedTemperature.value = it }, isKiosk = isKiosk,
+                                    keyWeViewModel
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(text = "추가 옵션", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                extraOptionList.forEach { option ->
+                                    option.optionsValueGroup.forEach { optionValue ->
+                                        val optionId = optionValue.optionValueId
+                                        val optionName = optionValue.optionValue
+
+                                        OptionBox(
+                                            id = optionId,
+                                            name = optionName,
+                                            optionPrice = option.optionPrice,
+                                            extraOptions = tempOptions,
+//                                    extraOptions = extraOptions,
+                                            onOptionSelected = { id, _, count ->
+                                                val optionValue =
+                                                    extraOptionList.flatMap { it.optionsValueGroup }
+                                                        .find { it.optionValueId == id }?.optionValue
+                                                        ?: "Unknown"
+
+                                                if (count == 0) extraOptions.remove(id)
+                                                else extraOptions[id] = optionValue to count
+                                            },
+                                            isKiosk = isKiosk,
+                                            keyWeViewModel = keyWeViewModel
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(whiteBackgroundColor)
-                .padding(horizontal = 24.dp)
-                .padding(top = 16.dp, bottom = 8.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(whiteBackgroundColor)
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 16.dp, bottom = 8.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height(36.dp)
+                        .background(
+                            color = greyBackgroundColor, shape = RoundedCornerShape(8.dp)
+                        ), contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "가격", style = subtitle1, color = contentTextColor
+                        )
+                        Text(
+                            text = "${totalPrice.value}원",
+                            style = subtitle2,
+                            color = contentTextColor
+                        )
+                    }
+                }
+            }
+        }, onDismissRequest = {
+            extraOptions.clear()
+            extraOptions.putAll(initialOptions.deepCopy())
+            coroutineScope.launch {
+                sheetState.hide() // 슬라이딩 애니메이션으로 닫기
+                onDismiss()
+            }
+            if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
+        }, sheetState = sheetState, buttons = {
             Box(
                 modifier = Modifier
-                    .height(36.dp)
-                    .background(
-                        color = greyBackgroundColor, shape = RoundedCornerShape(8.dp)
-                    ), contentAlignment = Alignment.Center
-            ) {
+                    .then(if (isKiosk) {
+                        Modifier
+//                            .border(
+//                                width = 2.dp,
+//                                color = primaryColor,
+//                                shape = RoundedCornerShape(8.dp)
+//                            )
+                            .pointerInput(Unit) {
+                                awaitPointerEventScope {
+                                    while (true) {
+                                        val event =
+                                            awaitPointerEvent(PointerEventPass.Initial) // 모든 터치 이벤트 감지
+                                        event.changes.forEach { it.consume() } // 터치 이벤트 소비하여 상위로 전달되지 않게 만듦
+                                    }
+                                }
+                            }
+//
+                    } else {
+                        Modifier // isKiosk가 false일 경우 추가적인 Modifier 없음
+                    })
+            ){
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(bottom = 24.dp)
+                        .padding(horizontal = 24.dp)
+                        .background(whiteBackgroundColor),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally)
                 ) {
-                    Text(
-                        text = "가격", style = subtitle1, color = contentTextColor
+                    BottomButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics {
+                                contentDescription = "close_bottom_sheet"
+                            },
+                        content = "취소",
+                        onClick = {
+                            coroutineScope.launch {
+                                sheetState.hide()
+                                onDismiss()
+
+                                // ✅ 초기 상태로 복원
+                                extraOptions.clear()
+                                extraOptions.putAll(initialOptions.deepCopy())
+                            }
+                            if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
+                        },
+                        colors = ButtonColors(
+                            containerColor = greyBackgroundColor,
+                            contentColor = titleTextColor,
+                            disabledContentColor = polishedSteelColor,
+                            disabledContainerColor = greyBackgroundColor
+                        )
                     )
-                    Text(
-                        text = "${totalPrice.value}원", style = subtitle2, color = contentTextColor
+
+                    BottomButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics {
+                                contentDescription = "accept_bottom_sheet"
+                            },
+                        content = "수정",
+                        onClick = {
+                            coroutineScope.launch {
+                                sheetState.hide()
+                                onDismiss()
+
+                                // ✅ extraOptions에 수정 사항 반영
+                                viewModel.updateCartItem(
+                                    cartItem.id,
+                                    cartItem.menuId,
+                                    selectedSize.value,
+                                    selectedTemperature.value,
+                                    extraOptions.mapValues { (_, pair) -> pair.second },
+                                    storeId
+                                )
+
+                                // ✅ 수정 완료 이벤트 전송
+                                if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptBottomSheet)
+                            }
+                        }
                     )
                 }
             }
-        }
-    }, onDismissRequest = {
-        extraOptions.clear()
-        extraOptions.putAll(initialOptions.deepCopy())
-        coroutineScope.launch {
-
-            sheetState.hide() // 슬라이딩 애니메이션으로 닫기
-            onDismiss()
-
-            // ✅ 초기 상태로 복원
-
-
-        }
-        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
-    }, sheetState = sheetState, buttons = {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-                .padding(horizontal = 24.dp)
-                .background(whiteBackgroundColor),
-            horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally)
-        ) {
-            BottomButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .semantics {
-                        contentDescription = "close_bottom_sheet"
-                    },
-                content = "취소",
-                onClick = {
-                    coroutineScope.launch {
-                        sheetState.hide()
-                        onDismiss()
-
-                        // ✅ 초기 상태로 복원
-                        extraOptions.clear()
-                        extraOptions.putAll(initialOptions.deepCopy())
-                    }
-                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
-                },
-                colors = ButtonColors(
-                    containerColor = greyBackgroundColor,
-                    contentColor = titleTextColor,
-                    disabledContentColor = polishedSteelColor,
-                    disabledContainerColor = greyBackgroundColor
-                )
-            )
-
-
-//            BottomButton(
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .semantics {
-//                        contentDescription = "close_bottom_sheet"
-//                    },
-//                content = "취소",
-//
-//                onClick = {
-//                    coroutineScope.launch {
-//                        sheetState.hide()
-//                        onDismiss()
-//                    }
-//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartCloseBottomSheet)
-//                },
-//                colors = ButtonColors(
-//                    containerColor = greyBackgroundColor,
-//                    contentColor = titleTextColor,
-//                    disabledContentColor = polishedSteelColor,
-//                    disabledContainerColor = greyBackgroundColor
-//                ),
-//            )
-
-            BottomButton(
-                modifier = Modifier
-                    .weight(1f)
-                    .semantics {
-                        contentDescription = "accept_bottom_sheet"
-                    },
-                content = "수정",
-                onClick = {
-                    coroutineScope.launch {
-                        sheetState.hide()
-                        onDismiss()
-
-                        // ✅ extraOptions에 수정 사항 반영
-                        viewModel.updateCartItem(
-                            cartItem.id,
-                            cartItem.menuId,
-                            selectedSize.value,
-                            selectedTemperature.value,
-                            extraOptions.mapValues { (_, pair) -> pair.second },
-                            storeId
-                        )
-
-                        // ✅ 수정 완료 이벤트 전송
-                        if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptBottomSheet)
-                    }
-                }
-            )
-
-
-//            BottomButton(modifier = Modifier
-//                .weight(1f)
-//                .semantics {
-//                    contentDescription = "accept_bottom_sheet"
-//                }, content = "수정", onClick = {
-//                coroutineScope.launch {
-//                    viewModel.updateCartItem(
-//                        cartItem.id,
-//                        cartItem.menuId,
-//                        selectedSize.value,
-//                        selectedTemperature.value,
-//                        extraOptions.mapValues { (_, pair) -> pair.second },
-//                        storeId
-//                    )
-//                    sheetState.hide()
-//                    onDismiss()
-//                    if (!isKiosk) keyWeViewModel.sendButtonEvent(KeyWeButtonEvent.CartAcceptBottomSheet)
-//                }
-//            })
-        }
-    })
+        })
+    }
 }
