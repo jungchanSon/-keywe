@@ -34,7 +34,7 @@ Kotlin: 243.22562.218-IJ
 
 # AOS 프로젝트 세팅
 프로젝트 루트 폴더에서 local.properties 파일 안에 API KEY 추가
-Agora APP ID:
+AGORA_APP_ID=2a649e9d060a46849cd443c41382f60a
 AGORA_APP_CERT=4e60af7c172b4a10957eac6b3ac9211e
 
 # 빌드 시 사용되는 환경 변수 값들
