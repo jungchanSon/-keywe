@@ -126,6 +126,9 @@ PROFILE = prod
 - Helm Chart를 통해 배포해주세요!
 -  운영환경을 최우선 환경으로 개발을 진행하였습니다.
 
-
+# 사용한 외부 서비스
+- Argora
+- FCM
+- CoolSMS 
 
 Config 서버로 부터 Git Token 인증이 안될 경우, 김동철 학생에게 문의해주세요~!
