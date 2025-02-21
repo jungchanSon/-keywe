@@ -37,7 +37,7 @@ Kotlin: 243.22562.218-IJ
 Agora APP ID:
 AGORA_APP_CERT=4e60af7c172b4a10957eac6b3ac9211e
 
-# K8s 위에서 구동 시 설정할 값들
+# 빌드 시 사용되는 환경 변수 값들
 ## 공통
 PROFILE = prod
 
@@ -122,7 +122,9 @@ PROFILE = prod
   value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
 ****
 
-
+# 배포 시 특이 사항
+- Helm Chart를 통해 배포해주세요!
+-  운영환경을 최우선 환경으로 개발을 진행하였습니다.
 
 
 
