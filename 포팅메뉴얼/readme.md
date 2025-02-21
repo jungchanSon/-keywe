@@ -32,6 +32,25 @@ Kotlin: 243.22562.218-IJ
 - DB 관련 도커 파일(설정 내용 포함)
   - docker/db/docker-compose.yaml
 
+# AOS IDE 버전
+Android Studio Ladybug | 2024.2.1 Patch 3
+Build #AI-242.23339.11.2421.12700392, built on November 23, 2024
+Runtime version: 21.0.3+-12282718-b509.11 amd64
+VM: OpenJDK 64-Bit Server VM by JetBrains s.r.o.
+Toolkit: sun.awt.windows.WToolkit
+Windows 11.0
+GC: G1 Young Generation, G1 Concurrent GC, G1 Old Generation
+Memory: 4040M
+Cores: 20
+Registry:
+  ide.experimental.ui=true
+  i18n.locale=
+Non-Bundled Plugins:
+  com.ankit.mahadik.json.dart.class (2.16)
+  Dart (242.24931)
+  wu.seal.tool.jsontokotlin (3.7.6)
+  io.flutter (83.0.3)
+
 # AOS 프로젝트 세팅
 프로젝트 루트 폴더에서 local.properties 파일 안에 API KEY 추가
 AGORA_APP_ID=2a649e9d060a46849cd443c41382f60a
