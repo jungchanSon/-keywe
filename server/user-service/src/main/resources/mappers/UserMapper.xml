@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kiosk.server.user.domain.UserRepository">
+
+    <!-- 회원가입 -->
+    <insert id="registerUser" parameterType="User">
+        INSERT INTO users (user_id, role, email, password, salt, reg_date, verified)
+        VALUES (#{userId}, #{role}, #{email}, #{password}, #{salt}, #{regDate}, #{verified});
+    </insert>
+
+    <!-- 이메일 중복 확인 -->
+    <select id="existsByEmail" parameterType="String" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM users WHERE email = #{email} LIMIT 1
+        );
+    </select>
+
+    <!-- 이메일로 회원 정보 찾기 -->
+    <select id="findByEmail" parameterType="String" resultType="User">
+        SELECT * FROM users
+        WHERE email = #{email};
+    </select>
+
+    <!-- 이메일 인증 처리 -->
+    <update id="verifyEmail" parameterType="Long">
+        UPDATE users
+        SET verified = true
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 인증 시간이 만료된 회원 정보 삭제 -->
+    <delete id="deleteUnverifiedUsersByEmails">
+        DELETE FROM users
+        WHERE email IN
+        <foreach item="email" collection="emails" open="(" separator="," close=")">
+            #{email}
+        </foreach>
+        AND verified = false
+    </delete>
+
+</mapper>

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app:  {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app:  {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: notification-service-container
+          image: "{{ .Values.image.repository}}/{{ .Values.image.name }}:{{ .Values.image.tag}}"
+          imagePullPolicy: {{ .Values.image.pullPolicy}}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: CONFIG_SERVICE_URL
+              value: config-server-app-service.config.svc.cluster.local
+            - name: NOTIFICATION_MYSQL_URL
+              value: {{ .Values.notification_mysql_url}}

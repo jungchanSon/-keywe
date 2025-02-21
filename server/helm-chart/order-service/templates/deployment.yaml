@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app:  {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app:  {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: order-service-container
+          image: "{{ .Values.image.repository}}/{{ .Values.image.name }}:{{ .Values.image.tag}}"
+          imagePullPolicy: {{ .Values.image.pullPolicy}}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: CONFIG_SERVICE_URL
+              value: config-server-app-service.config.svc.cluster.local
+            - name: ORDER_MYSQL_URL
+              value: {{ .Values.order_mysql_url}}
+            - name: PROFILE
+              value: prod
+            - name: KAFKA_URL
+              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local
+            - name: BANKING_SERVICE_URL
+              value: banking-server-app.banking.svc.cluster.local
+            - name: USER_SERVICE_URL
+              value: user-service-app.user.svc.cluster.local
+            - name: MENU_SERVICE_URL
+              value: store-service-app.store.svc.cluster.local

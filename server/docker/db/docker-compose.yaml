@@ -1,0 +1,165 @@
+networks:
+  kiwi-service-network:
+    driver: bridge
+    external: true
+
+services:
+  kiwi-db-dev:
+    container_name: kiwi-db-dev
+    image: mysql:8.0.30
+    volumes:
+      - ./dev/conf.d:/etc/mysql/conf.d
+      - ./dev/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=dev
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network
+
+  kiwi-db-user:
+    container_name: kiwi-db-user
+    image: mysql:8.0.30
+    volumes:
+      - ./user/conf.d:/etc/mysql/conf.d
+      - ./user/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3316:3306"
+    environment:
+      - MYSQL_DATABASE=user
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network
+
+  kiwi-redis-user:
+    container_name: kiwi-redis-user
+    image: redis:7.0
+    ports:
+      - "6400:6379"
+    networks:
+      - kiwi-service-network
+
+  kiwi-db-store:
+    container_name: kiwi-db-store
+    image: mysql:8.0.30
+    volumes:
+      - ./store/conf.d:/etc/mysql/conf.d
+      - ./store/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3326:3306"
+    environment:
+      - MYSQL_DATABASE=store
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network
+
+  kiwi-db-order:
+    container_name: kiwi-db-order
+    image: mysql:8.0.30
+    volumes:
+      - ./order/conf.d:/etc/mysql/conf.d
+      - ./order/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3336:3306"
+    environment:
+      - MYSQL_DATABASE=order
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network
+
+  kiwi-redis-remote-order:
+    container_name: kiwi-redis-remote-order
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    networks:
+      - kiwi-service-network
+
+  kiwi-db-notification:
+    container_name: kiwi-db-notification
+    image: mysql:8.0.30
+    ports:
+      - "3346:3306"
+    environment:
+      - MYSQL_DATABASE=notification
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network
+
+  kiwi-db-banking:
+    container_name: kiwi-db-banking
+    image: mysql:8.0.30
+    volumes:
+      - ./banking/conf.d:/etc/mysql/conf.d
+      - ./banking/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3366:3306"
+    environment:
+      - MYSQL_DATABASE=banking
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network
+
+  kiwi-db-adjustment:
+    container_name: kiwi-db-adjustment
+    image: mysql:8.0.30
+    volumes:
+      - ./adjustment/conf.d:/etc/mysql/conf.d
+      - ./adjustment/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "3386:3306"
+    environment:
+      - MYSQL_DATABASE=adjustment
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    networks:
+      - kiwi-service-network

@@ -1,0 +1,19 @@
+server:
+  port: 8888
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: git@github.com:csct3434/keywe-cloud-config.git
+          # 기본 브랜치 설정
+          default-label: main
+          # 컨테이너 내부의 SSH 설정만 사용
+          ignore-local-ssh-settings: true
+          # Config 서버 ECDSA 개인키
+          private-key: ${CONFIG_SERVER_PRIVATE_KEY}
+          # GitHub 서버의 공개 호스트 키 조회 : ssh-keyscan -t ecdsa github.com
+          hostKeyAlgorithm: ecdsa-sha2-nistp256
+          host-key: AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
+          # GitHub 서버가 정말 GitHub 서버가 맞는지 검증하는 용도
+          strict-host-key-checking: true

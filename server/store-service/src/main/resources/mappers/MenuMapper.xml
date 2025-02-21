@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kiosk.server.store.domain.MenuRepository">
+
+    <!-- 주어진 카테고리 이름으로 카테고리 ID 조회 -->
+    <select id="findCategoryIdByName" parameterType="map" resultType="java.lang.Long">
+        SELECT category_id
+        FROM menu_category
+        WHERE category_name = #{categoryName}
+        AND user_id = #{userId}
+    </select>
+
+    <!-- 메뉴 등록 -->
+    <insert id="insert" parameterType="StoreMenu">
+        INSERT INTO menu (menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at)
+        VALUES (#{menuId}, #{userId}, #{categoryId}, #{menuName}, #{menuDescription}, #{menuRecipe}, #{menuPrice}, #{createdAt});
+    </insert>
+
+    <!-- 메뉴 수정 -->
+    <update id="update" parameterType="map">
+        UPDATE menu
+        SET
+        menu_name = #{menuName}, menu_description = #{menuDescription}, menu_recipe = #{menuRecipe}, menu_price = #{menuPrice}, category_id = #{categoryId}
+        WHERE menu_id = #{menuId}
+        AND user_id = #{userId};
+    </update>
+
+    <!-- 메뉴 단건 조회 -->
+    <select id="findById" parameterType="map" resultType="StoreMenu">
+        SELECT menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at FROM menu
+        WHERE user_id = #{userId}
+        AND menu_id = #{menuId}
+        LIMIT 1;
+    </select>
+
+    <!-- 전체 메뉴 조회 -->
+    <select id="findAll" parameterType="java.lang.Long" resultType="StoreMenu">
+        SELECT menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at FROM menu
+        WHERE user_id = #{userId};
+    </select>
+
+    <!-- 특정 카테고리 메뉴 조회 -->
+    <select id="findByCategory" parameterType="map" resultType="StoreMenu">
+        SELECT menu_id, user_id, category_id, menu_name, menu_description, menu_recipe, menu_price, created_at FROM menu
+        WHERE user_id = #{userId}
+        AND category_id = #{categoryId};
+    </select>
+
+    <!-- 메뉴 삭제 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM menu WHERE menu_id = #{menuId};
+    </delete>
+
+</mapper>

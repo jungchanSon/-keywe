@@ -1,0 +1,11 @@
+tasks.named("bootJar") {
+    enabled = false
+}
+
+dependencies {
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}

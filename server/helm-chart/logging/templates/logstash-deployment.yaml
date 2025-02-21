@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: elastic/logstash:7.17.2
+          ports:
+            - name: logstash-tcp
+              containerPort: 5000
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: elkusername
+            - configMapRef:
+                name: elkpassword
+          volumeMounts:
+            - name: config-volume
+              mountPath: /usr/share/logstash/config
+            - name: tz-seoul
+              mountPath: /etc/localtime
+            - name: logstash-user-pipeline-volume
+              mountPath: /usr/share/logstash/pipeline/log_user.conf
+              subPath: log_user.conf
+            - name: logstash-store-pipeline-volume
+              mountPath: /usr/share/logstash/pipeline/log_store.conf
+              subPath: log_store.conf
+            - name: logstash-order-pipeline-volume
+              mountPath: /usr/share/logstash/pipeline/log_order.conf
+              subPath: log_order.conf
+            - name: logstash-banking-pipeline-volume
+              mountPath: /usr/share/logstash/pipeline/log_banking.conf
+              subPath: log_banking.conf
+      volumes:
+        - name: tz-seoul
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Seoul
+
+        - name: config-volume
+          configMap:
+            name: logstash-configmap
+            items:
+              - key: logstash.yml
+                path: logstash.yml
+              - key: pipelines.yml
+                path: pipelines.yml
+
+        - name: logstash-user-pipeline-volume
+          configMap:
+            name: logstash-user-configmap
+            items:
+              - key: log_user.conf
+                path: log_user.conf
+
+        - name: logstash-store-pipeline-volume
+          configMap:
+            name: logstash-store-configmap
+            items:
+              - key: log_store.conf
+                path: log_store.conf
+
+        - name: logstash-banking-pipeline-volume
+          configMap:
+            name: logstash-banking-configmap
+            items:
+              - key: log_banking.conf
+                path: log_banking.conf
+
+        - name: logstash-order-pipeline-volume
+          configMap:
+            name: logstash-order-configmap
+            items:
+              - key: log_order.conf
+                path: log_order.conf

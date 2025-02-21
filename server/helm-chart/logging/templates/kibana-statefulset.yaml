@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kibana
+  labels:
+    app: kibana
+spec:
+  serviceName: kibana
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: elastic/kibana:7.17.2
+          envFrom:
+            - configMapRef:
+                name: kibanausername
+            - configMapRef:
+                name: kibanapassword
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch:9200"
+            - name: discovery.type
+              value: single-node
+          ports:
+            - containerPort: 5601

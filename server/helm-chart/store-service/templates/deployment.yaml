@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app:  {{ .Chart.Name }}-app
+  template:
+    metadata:
+      labels:
+        app:  {{ .Chart.Name }}-app
+    spec:
+      containers:
+        - name: store-service-container
+          image: "{{ .Values.image.repository}}/{{ .Values.image.name }}:{{ .Values.image.tag}}"
+          imagePullPolicy: {{ .Values.image.pullPolicy}}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: CONFIG_SERVICE_URL
+              value: config-server-app-service.config.svc.cluster.local
+            - name: STORE_MYSQL_URL
+              value: {{ .Values.springEnv.storeMysqlUrl}}
+            - name: PROFILE
+              value: prod
+            - name: KAFKA_URL
+              value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092

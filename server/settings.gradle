@@ -1,1 +1,20 @@
-rootProject.name = 'server'
+rootProject.name = 'kiosk'
+
+include(
+        "user-service",
+        "store-service",
+        "order-service",
+        "remote-service",
+        "notification-service",
+        "banking-service",
+        "settlement-service",
+        "infra-gateway",
+        "infra-config",
+        "common",
+        "common-token",
+        "common-http",
+        "swagger",
+        "infra-logging",
+        "infra-kafka",
+        "image-handler"
+)

@@ -1,0 +1,186 @@
+networks:
+  kiwi-service-network:
+    driver: bridge
+    external: true
+
+services:
+  kiwi-gateway:
+    build:
+      context: ./infra-gateway
+      dockerfile: Dockerfile
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "8080:8080"
+    depends_on:
+      config-service-app:
+        condition: service_healthy
+    deploy:
+      replicas: 1
+    environment:
+      - USER_SERVICE_URL=user-service-app
+      - STORE_SERVICE_URL=store-service-app
+      - REMOTE_SERVICE_URL=remote-service-app
+      - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_SERVICE_URL=notification-service-app
+    networks:
+      - kiwi-service-network
+
+  user-service-app:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8090/actuator/health || exit 1"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8090:8090"
+    environment:
+      - USER_MYSQL_URL=kiwi-db-user:3306
+      - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_SERVICE_URL=notification-service-app
+      - DOMAIN_NAME=i12a404.p.ssafy.io
+      - USER_SERVICE_REDIS_NAME=kiwi-redis-user
+      - USER_SERVICE_REDIS_PORT=6379
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+
+  config-service-app:
+    build:
+      context: ./infra-config
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8888/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    ports:
+      - "8888:8888"
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+
+  store-service-app:
+    build:
+      context: ./store-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8095/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8095:8095"
+    environment:
+      - STORE_MYSQL_URL=kiwi-db-store:3306
+      - CONFIG_SERVICE_URL=config-service-app
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+
+  remote-service-app:
+    build:
+      context: ./remote-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8097/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8097:8097"
+    environment:
+      - USER_SERVICE_URL=user-service-app
+      - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_SERVICE_URL=notification-service-app
+      - REMOTE_SERVICE_REDIS=kiwi-redis-remote-order
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+
+  notification-service-app:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8110/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8110:8110"
+    environment:
+      - CONFIG_SERVICE_URL=config-service-app
+      - NOTIFICATION_MYSQL_URL=kiwi-db-notification:3306
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+      
+  settlement-service-app:
+    build:
+      context: ./store-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:3386/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8095:8095"
+    environment:
+      - STORE_MYSQL_URL=kiwi-db-store:3306
+      - CONFIG_SERVICE_URL=config-service-app
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network
+      
+  banking-service-app:
+    build:
+      context: ./banking-service
+      dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8300/actuator/health || exit 1" ]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      kiwi-gateway:
+        condition: service_healthy
+    ports:
+      - "8095:8095"
+    environment:
+      - ADJUSTMENT_MYSQL_URL=kiwi-db-adjustment:3306
+      - CONFIG_SERVICE_URL=config-service-app
+      - BANKING_SERVICE_URL=banking-service-app
+      - MENU_SERVICE_URL=store-service-app
+    deploy:
+      replicas: 1
+    networks:
+      - kiwi-service-network

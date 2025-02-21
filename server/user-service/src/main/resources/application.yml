@@ -1,0 +1,17 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: user
+  config:
+    import:
+    - optional:configserver:http://${CONFIG_SERVICE_URL:localhost}:8888
+    - config-log.yml
+
+---
+springdoc:
+  api-docs:
+    enabled: true
+    path: /user/v3/api-docs
+  swagger-ui:
+    enabled: true
