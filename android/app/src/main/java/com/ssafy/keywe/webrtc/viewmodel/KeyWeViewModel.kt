@@ -16,7 +16,6 @@ import com.ssafy.keywe.webrtc.data.ChannelData
 import com.ssafy.keywe.webrtc.data.KeyWeButtonEvent
 import com.ssafy.keywe.webrtc.data.MessageData
 import com.ssafy.keywe.webrtc.data.MessageType
-import com.ssafy.keywe.webrtc.ui.AudioStatsInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.agora.api.example.compose.data.SettingPreferences
 import io.agora.rtc2.ChannelMediaOptions
@@ -33,6 +32,10 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import javax.inject.Inject
 
+data class AudioStatsInfo(
+    var localAudioStats: IRtcEngineEventHandler.LocalAudioStats? = null,
+    var remoteAudioStats: IRtcEngineEventHandler.RemoteAudioStats? = null,
+)
 
 @HiltViewModel
 class KeyWeViewModel @Inject constructor(
