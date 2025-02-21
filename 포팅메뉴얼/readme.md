@@ -121,3 +121,9 @@ PROFILE = prod
 - name: KAFKA_URL
   value: kraft-cluster-kafka-bootstrap.kafka.svc.cluster.local:9092
 ****
+
+
+
+
+
+Config 서버로 부터 Git Token 인증이 안될 경우, 김동철 학생에게 문의해주세요~!
