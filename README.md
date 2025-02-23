@@ -5,8 +5,7 @@
 - 회원가입
     - 스크린샷
         
-        ![SignUp](./포팅메뉴얼/images/SignUp.jpg)
-        
+        <img src="./exec/포팅메뉴얼/images/SignUp.jpg" width="300" height="400" alt="SignUp" />
     
     - 소개 : 회원가입(회원 계정 생성)을 위한 화면
     
@@ -32,7 +31,7 @@
 - 사장 / 유저 선택
     - 스크린샷
         
-        ![UserSelect](./포팅메뉴얼/images/UserSelect.jpg)
+        <img src="./exec/포팅메뉴얼/images/UserSelect.jpg" width="300" height="400" alt="UserSelect" />
         
     
     - 소개 :  **"KEYWE"** 애플리케이션의 사용자 유형을 선택하는 페이지. 사용자는 **사장님(관리자) 또는 일반 사용자(고객)** 중 하나를 선택하여 앱을 이용할 수 있습니다.
@@ -57,7 +56,7 @@
 - 사장님 로그인
     - 스크린샷
         
-        ![LoginCEO](./포팅메뉴얼/images/LoginCEO.jpg)
+        <img src="./exec/포팅메뉴얼/images/LoginCEO.jpg" width="300" height="400" alt="LoginCEO" />
         
     - 소개 : **사장님(관리자) 전용 로그인 페이지.** 매장을 운영하는 사용자가 로그인하여 서비스를 이용할 수 있도록 구성되어 있습니다.
     
@@ -85,7 +84,7 @@
 - 이용자 로그인
     - 스크린샷
         
-        ![LoginUser](./포팅메뉴얼/images/LoginUser.jpg)
+        <img src="./exec/포팅메뉴얼/images/LoginUser.jpg" width="300" height="400" alt="LoginUser" />
         
     
     - 소개 : **일반 사용자(고객) 로그인 페이지.** 키오스크를 이용하는 고객이 로그인하여 서비스를 사용할 수 있도록 구성되어 있습니다.
@@ -115,8 +114,7 @@
 - 프로필 추가(부모)
     - 스크린샷
         
-        ![ProfileAddParents](./포팅메뉴얼/images/ProfileAddParents.jpg)
-        
+        <img src="./exec/포팅메뉴얼/images/ProfileAddParents.jpg" width="300" height="400" alt="ProfileAddParents" />
     
     - 소개 : **사용자의 프로필을 추가하는 페이지.** 부모님의 정보를 입력하여 계정을 생성할 수 있도록 구성되어 있습니다.
     - 상세기능
@@ -150,9 +148,8 @@
 - 프로필 추가(자녀)
     - 스크린샷
         
-        ![ProfileAddChild](./포팅메뉴얼/images/ProfileAddChild.jpg)
+        <img src="./exec/포팅메뉴얼/images/ProfileAddChild.jpg" width="300" height="400" alt="ProfileAddChild" />
         
-    
     - 소개 : **사용자의 프로필을 추가하는 페이지.** 자녀의 정보를 입력하여 계정을 생성할 수 있도록 구성되어 있습니다.
     - 상세기능
     
@@ -173,8 +170,7 @@
 - 프로필 수정(부모)
     - 스크린샷
         
-        ![ProfileEditParents](./포팅메뉴얼/images/ProfileEditParents.jpg)
-        
+        <img src="./exec/포팅메뉴얼/images/ProfileEditParents.jpg" width="300" height="400" alt="ProfileEditParents" />
     
     - 소개 :  **사용자가 기존 프로필을 수정할 수 있는 페이지**. 사용자는 이름, 휴대폰 번호, 간편 비밀번호를 확인하거나 변경할 수 있으며, 프로필을 삭제할 수도 있습니다.
     
@@ -201,9 +197,8 @@
 - 프로필 수정(자녀)
     - 스크린샷
         
-        ![ProfileEditChild](./포팅메뉴얼/images/ProfileEditChild.jpg)
+        <img src="./exec/포팅메뉴얼/images/ProfileEditChild.jpg" width="300" height="400" alt="ProfileEditChild" />
         
-    
     - 소개 : **사용자가 자신의 프로필을 수정하거나 삭제할 수 있는 페이지**. 프로필의 이름을 확인할 수 있으며, 필요에 따라 프로필을 삭제할 수도 있습니다.
     
     - 상세 기능
@@ -224,8 +219,7 @@
 - 프로필 선택
     - 스크린샷
         
-        ![ProfileSelect](./포팅메뉴얼/images/ProfileSelect.jpg.jpg)
-        
+        <img src="./exec/포팅메뉴얼/images/ProfileSelect.jpg" width="300" height="400" alt="ProfileSelect" /> 
     
     - 소개 : **사용자가 로그인 후 사용할 프로필을 선택하는 페이지**. 여러 개의 프로필 중 하나를 선택하여 해당 계정으로 서비스를 이용할 수 있습니다.
     
@@ -249,8 +243,7 @@
 - 프로필 상세 페이지(자녀 / 부모)
     - 스크린샷
         
-        ![ProfileHome](./포팅메뉴얼/images/ProfileHome.jpg)
-        
+        <img src="./exec/포팅메뉴얼/images/ProfileHome.jpg" width="300" height="400" alt="ProfileHome" />
     
     - 소개 : **사용자가 자신의 프로필을 관리할 수 있는 페이지.** 프로필 수정, 로그아웃, 회원 탈퇴 등의 기능을 제공합니다.
     
@@ -273,8 +266,9 @@
           - 하단 네비게이션 바에서 **"프로필"** 아이콘이 강조되어 있으며, 현재 사용자가 프로필 관리 화면에 있다는 것을 나타냅니다.
 
 # 주문 선택
-- 주문 선택
-  - 스크린샷
+- 주문 선택   
+  - 스크린샷   
+        <img src="./exec/포팅메뉴얼/images/KioskHome.jpg" width="300" height="400" alt="KioskHome"/>
   - 소개 : **사용자가 주문 방식을 선택하는 키오스크의 초기 화면** 사용자는 **일반 주문** 또는 **대리 주문** 중 하나를 선택할 수 있습니다.
   - 상세 기능
     1. **타이틀 - "KEYWE" 및 안내 문구**
@@ -297,7 +291,8 @@
 # 일반 주문
 - 메뉴 조회
   - 스크린샷
-      - ![ChildMenu](./포팅메뉴얼/images/ChildMenu.jpg)
+    
+      <img src="./exec/포팅메뉴얼/images/ChildMenu.jpg" width="300" height="400" alt="ChildMenu" />
 
   - 소개 : **주문 키오스크에서 장바구니에 담긴 음료의 옵션을 수정하는 페이지**. 사용자는 선택한 음료의 크기, 온도, 추가 옵션을 조정할 수 있으며, 최종 가격을 확인한 후 수정할 수 있습니다.
 
@@ -331,8 +326,9 @@
 
 
 - 메뉴 상세 조회
-  - 스크린샷
-    - ![ChildMenuDetailjpg](./포팅메뉴얼/images/ChildMenuDetailjpg)
+  - 스크린샷   
+        <img src="./exec/포팅메뉴얼/images/ChildMenuDetail.jpg" width="300" height="400" alt="ChildMenuDetail" />
+
   - 소개 : **키오스크에서 사용자가 원하는 음료를 선택하고 옵션을 조정하여 주문할 수 있는 페이지**. 사용자는 음료의 크기, 온도, 추가 옵션을 설정한 후, 최종 결정을 내릴 수 있습니다.
   - 기능 설명
     1. **음료 정보 표시**
@@ -354,8 +350,8 @@
       - **"담기" 버튼**: 현재 선택한 옵션을 장바구니에 추가하고, 다른 음료를 더 선택할 수 있도록 합니다.
       - **"주문하기" 버튼**: 바로 결제 단계로 진행하여 주문을 확정합니다.
 - 장바구니
-  - 스크린샷
-    ![ChildCart](./포팅메뉴얼/images/ChildCart.jpg)
+  - 스크린샷   
+        <img src="./exec/포팅메뉴얼/images/ChildCart.jpg" width="300" height="400" alt="ChildCart" />
   - 소개 : **키오스크에서 사용자가 주문한 항목을 확인하고, 수량 및 옵션을 조정한 후 결제하는 페이지.**
   - 기능 설명
     1. **주문 목록**
@@ -374,9 +370,8 @@
        - 사용자가 **주문을 확정하고 결제 단계로 이동**하려면 **"결제하기" 버튼**을 클릭합니다.
 
 - 메뉴 카테고리 조회
-  - 스크린샷
-    ![MenuCategory](./포팅메뉴얼/images/MenuCategory.jpg)
-
+  - 스크린샷   
+        <img src="./exec/포팅메뉴얼/images/MenuCategory.jpg" width="300" height="400" alt="MenuCategory" /> 
   - 소개 : 키오스크에서 사용자가 원하는 음료를 선택하여 장바구니에 추가할 수 있는 메뉴 선택 페이지.
 
   -  **기능 설명**
@@ -397,7 +392,7 @@
          - 사용자가 장바구니에 담은 제품을 확인하고 결제할 수 있도록 이동하는 버튼입니다.
 
 # 대리 주문
-![Screenshot_20250221_054019_KeyWe.jpg](./포팅메뉴얼/images/ParentsmENU.jpg)
+<img src="./exec/포팅메뉴얼/images/ParentsMenu.jpg" width="300" height="400" alt="ParentsMenu" />
 
 소개 : **자녀가 원격으로 대리 주문을 진행할 때 키오스크에서 표시되는 화면**. 부모님이 직접 조작할 수 있는 부분과 자녀가 원격으로 조작하는 부분이 나누어져 있습니다.
 
@@ -420,7 +415,7 @@
     - 부모님은 키오스크에서 직접 **장바구니 아이콘**을 눌러 현재 담긴 주문을 확인할 수 있습니다.
     - 자녀가 원격으로 장바구니를 조작하면 실시간으로 업데이트됩니다.
 
-![Screenshot_20250221_054031_KeyWe.jpg](./포팅메뉴얼/images/ParentsMenuDetail.jpg)
+<img src="./exec/포팅메뉴얼/images/ParentsMenuDetail.jpg" width="300" height="400" alt="ParentsMenuDetail" />
 
 소개 : **자녀가 원격으로 대리 주문을 진행할 때 키오스크에서 표시되는 화면**. 메뉴 옵션에 대한 조작 부분이 있습니다.
 
@@ -445,7 +440,7 @@
         - 샷 추가 (+500원) → **1개**
     - **담기 버튼 & 주문하기 버튼**: 자녀가 원격으로 클릭하여 주문을 진행할 수 있습니다.
 
-![Screenshot_20250221_054048_KeyWe.jpg](./포팅메뉴얼/images/ParentsCart.jpg)
+<img src="./exec/포팅메뉴얼/images/ParentsCart.jpg" width="300" height="400" alt="ParentsCart" />
 
 소개 : **자녀가 원격으로 대리 주문을 진행할 때, 키오스크에서 표시되는 장바구니 화면**입니다. 부모님이 직접 조작할 수 있는 부분과 자녀가 원격으로 조작하는 부분이 구분되어 있습니다.
 
@@ -472,7 +467,7 @@
     - **"결제하기" 버튼이 활성화되어 있으며**, 주문이 확정되면 결제 단계로 이동할 수 있습니다.
     - 부모님이 직접 **"결제하기" 버튼을 눌러 결제 진행 가능**
 
-![Screenshot_20250221_054104_KeyWe.jpg](./포팅메뉴얼/images/ParentsChangeOption.jpg)
+<img src="./exec/포팅메뉴얼/images/ParentsChangeOption.jpg" width="300" height="400" alt="ParentsChangeOption" />
 
 소개 : **자녀가 원격으로 대리 주문을 진행할 때, 키오스크에서 장바구니의 옵션을 수정하는 화면**입니다. 부모님이 직접 조작할 수 있는 부분과 자녀가 원격으로 조작하는 부분이 구분되어 있습니다.
 
@@ -501,7 +496,7 @@
     - **"수정" 버튼**을 누르면 변경된 옵션이 적용됩니다.
     - **"취소" 버튼**을 누르면 기존 옵션이 유지됩니다.
 
-![Screenshot_20250221_054116_KeyWe.jpg](./포팅메뉴얼/images/CompleteOrder1.jpg)
+<img src="./exec/포팅메뉴얼/images/CompleteOrder1.jpg" width="300" height="400" alt="CompleteOrder1" />
 
 소개 : **자녀가 원격으로 주문을 완료한 후, 부모님(노인)이 키오스크에서 "결제하기" 버튼을 눌렀을 때 표시되는 주문 완료 화면**입니다.
 
@@ -518,7 +513,7 @@
     - 주문 완료 후, 배경의 장바구니 화면이 비활성화되었습니다.
     - **"결제하기" 버튼이 비활성화(회색 처리)** 되어 있으며, 추가 결제 진행이 불가능함을 나타냅니다.
 
-![Screenshot_20250221_054116_KeyWe.jpg](./포팅메뉴얼/images/CompleteOrderParents.jpg)
+<img src="./exec/포팅메뉴얼/images/CompleteOrderParents.jpg" width="300" height="400" alt="CompleteOrderParents" />
 
 소개 : **부모님이 키오스크에서 자녀에게 원격 주문 요청을 보낸 후, 연결이 성공적으로 완료되었을 때 표시되는 화면**입니다.
 
@@ -531,7 +526,7 @@
     - 부모님과 자녀 간의 원격 주문 연결이 정상적으로 이루어졌음을 알립니다.
     - 이 메시지는 **일정 시간이 지나면 자동으로 사라지고, 키오스크가 원격 주문 모드로 전환됩니다.**
 
-![Screenshot_20250221_054116_KeyWe.jpg](./포팅메뉴얼/images/CompleteOrderChild.jpg)
+<img src="./exec/포팅메뉴얼/images/CompleteOrderChild.jpg" width="300" height="400" alt="CompleteOrderChild" />
 
 소개 : **부모님이 키오스크에서 자녀에게 원격 주문 요청을 보낸 후, 자녀의 핸드폰에서 연결이 성공적으로 완료되었을 때 표시되는 화면**입니다.
 
@@ -544,9 +539,9 @@
     - 부모님과 자녀 간의 원격 주문 연결이 정상적으로 이루어졌음을 알립니다.
     - 이 메시지는 **일정 시간이 지나면 자동으로 사라지고, 키오스크가 원격 주문 모드로 전환됩니다.**
 
-![Screenshot_20250221_054116_KeyWe.jpg](./포팅메뉴얼/images/ConnectingChild.jpg)
+<img src="./exec/포팅메뉴얼/images/ConnectingChild.jpg" width="300" height="400" alt="ConnectingChild" />
 
-![Screenshot_20250221_054116_KeyWe.jpg](./포팅메뉴얼/images/ConnectingParents.jpg)
+<img src="./exec/포팅메뉴얼/images/ConnectingParents.jpg" width="300" height="400" alt="ConnectingParents" />
 
 소개 : **부모님이 키오스크에서 자녀에게 원격 주문 요청을 보낸 후, 연결이 진행되는 과정**을 나타냅니다.
 
@@ -562,7 +557,7 @@
     - 연결이 완료되면, 키오스크 화면이 자동으로 **대리 주문 모드로 전환**됩니다.
     - 만약 자녀가 응답하지 않거나 연결이 실패하면 **연결 실패 메시지**가 표시될 수 있습니다.
 
-![Screenshot_20250221_054116_KeyWe.jpg](./포팅메뉴얼/images/CompleteOrderParents.jpg)
+<img src="./exec/포팅메뉴얼/images/CompleteOrderParents.jpg" width="300" height="400" alt="CompleteOrderParents" />
 
 소개 : **대리 주문이 종료되었을 때, 키오스크가 다시 기본 주문 화면으로 돌아가는 상태**를 나타냅니다.
 
